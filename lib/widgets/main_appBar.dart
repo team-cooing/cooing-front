@@ -13,7 +13,7 @@ class _MainAppBarState extends State<MainAppBar>
     Tab(text: '피드'),
     Tab(text: '메시지'),
     Tab(
-      text: '확인용', //text로 확인하기 위해(아이콘은 널값)
+      text: '확인용', //text로 확인하기 위해(아이콘은 널값이라 오류나서)
       icon: Icon(Icons.settings),
     ),
   ];
