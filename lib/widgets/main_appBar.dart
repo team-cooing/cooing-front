@@ -13,7 +13,7 @@ class _MainAppBarState extends State<MainAppBar>
     Tab(text: '피드'),
     Tab(text: '메시지'),
     Tab(
-      text: '확인용',
+      text: '확인용', //text로 확인하기 위해(아이콘은 널값)
       icon: Icon(Icons.settings),
     ),
   ];
@@ -45,6 +45,7 @@ class _MainAppBarState extends State<MainAppBar>
                 labelStyle: const TextStyle(
                     fontSize: 18.0, fontWeight: FontWeight.bold),
                 labelColor: Colors.black,
+                indicatorColor: Colors.transparent,
                 unselectedLabelColor: Colors.grey,
                 tabs: myTabs),
           ],
@@ -56,7 +57,7 @@ class _MainAppBarState extends State<MainAppBar>
           final String label = tab.text!.toLowerCase();
           return Center(
             child: Text(
-              'This is the $label tab',
+              '여기는 $label tab',
               style: const TextStyle(fontSize: 35),
             ),
           );
