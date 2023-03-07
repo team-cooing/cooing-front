@@ -1,3 +1,4 @@
+import 'package:cooing_front/pages/signup_page.dart';
 import 'package:flutter/material.dart';
 
 class KakaoLoginPage extends StatefulWidget {
@@ -40,7 +41,13 @@ class _KakaoLoginPageState extends State<KakaoLoginPage> {
                   width: double.infinity,
                   child: TextButton(
                     child: Image.asset('images/kakao_login_medium_wide.png'),
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const SignUpPage()),
+                      );
+                    },
                   ))
             ]),
           ),
