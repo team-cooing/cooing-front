@@ -1,25 +1,21 @@
-import 'package:cooing_front/pages/main_page.dart';
 import 'package:flutter/material.dart';
 
-class AskPage extends StatefulWidget {
-  const AskPage({super.key});
+class QuestionPage extends StatefulWidget {
+  const QuestionPage({super.key});
+
   @override
-  _AskPageState createState() => _AskPageState();
+  _QuestionPageState createState() => _QuestionPageState();
 }
 
-class _AskPageState extends State<AskPage> {
-  final int _selectedPageIndex = 0;
-
-  final List _pages = [
-    const AskPage(),
-    const Text('page2'),
-    const Text('page3'),
-    const Text('page4')
-  ];
-
+class _QuestionPageState extends State<QuestionPage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: Center(child: _pages[_selectedPageIndex]));
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('question_Page'),
+        titleTextStyle: const TextStyle(color: Color(0xff9754FB)),
+      ),
+    );
   }
 
   Widget _askBody() {
