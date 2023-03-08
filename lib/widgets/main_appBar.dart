@@ -1,3 +1,4 @@
+import 'package:cooing_front/pages/ask_page.dart';
 import 'package:flutter/material.dart';
 
 class MainAppBar extends StatefulWidget {
@@ -13,7 +14,6 @@ class _MainAppBarState extends State<MainAppBar>
     Tab(text: '피드'),
     Tab(text: '메시지'),
     Tab(
-      text: '확인용', //text로 확인하기 위해(아이콘은 널값이라 오류나서)
       icon: Icon(Icons.settings),
     ),
   ];
@@ -51,18 +51,12 @@ class _MainAppBarState extends State<MainAppBar>
           ],
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: myTabs.map((Tab tab) {
-          final String label = tab.text!.toLowerCase();
-          return Center(
-            child: Text(
-              '여기는 $label tab',
-              style: const TextStyle(fontSize: 35),
-            ),
-          );
-        }).toList(),
-      ),
+      body: TabBarView(controller: _tabController, children: const [
+        AskPage(),
+        Tab(icon: Icon(Icons.directions_car)),
+        Tab(icon: Icon(Icons.directions_bike_outlined)),
+        Tab(icon: Icon(Icons.directions_boat))
+      ]),
     );
   }
 }
