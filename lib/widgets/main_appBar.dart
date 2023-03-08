@@ -1,4 +1,4 @@
-import 'package:cooing_front/pages/ask_page.dart';
+import 'package:cooing_front/pages/question_page.dart';
 import 'package:flutter/material.dart';
 
 class MainAppBar extends StatefulWidget {
