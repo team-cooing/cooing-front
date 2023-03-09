@@ -34,11 +34,10 @@ class _QuestionPageState extends State<QuestionPage> {
   late Color buttonColor = _colors[0];
 
   changeAskCard() {
-    var question = questionList[_random.nextInt(questionList.length)];
-
     setState(() {
       switch (askButtonText) {
         case '질문 받기':
+          var question = questionList[_random.nextInt(questionList.length)];
           cardHeight = 305.0;
           askText = question;
           askButtonText = getAnswer;
@@ -57,6 +56,10 @@ class _QuestionPageState extends State<QuestionPage> {
           break;
 
         case '질문 닫기':
+          var question = questionList[_random.nextInt(questionList.length)];
+          askText = question;
+          askClosedMent = '새로운 질문이 도착했어요!';
+          buttonColor = _colors[0];
           break;
       }
     });
