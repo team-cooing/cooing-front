@@ -19,15 +19,24 @@ class _QuestionPageState extends State<QuestionPage> {
   late String askButtonText = getAsk;
 
   var questionList = ['내 첫인상은 어땠어?', '내 mbti는 무엇인 것 같아?', '나랑 닮은 동물은 뭐야?'];
-
   final _random = Random();
 
   changeAskCard() {
     var question = questionList[_random.nextInt(questionList.length)];
 
     setState(() {
-      askText = question;
-      askButtonText = getAnswer;
+      switch (askButtonText) {
+        case '질문 받기':
+          askText = question;
+          askButtonText = getAnswer;
+          break;
+        case '답변 받기':
+          askButtonText = closeAsk;
+          break;
+        case '질문 닫기':
+          askButtonText = '';
+          break;
+      }
     });
   }
 
