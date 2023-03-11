@@ -8,7 +8,11 @@ class QuestionPage extends StatefulWidget {
   _QuestionPageState createState() => _QuestionPageState();
 }
 
-class _QuestionPageState extends State<QuestionPage> {
+class _QuestionPageState extends State<QuestionPage>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
   double cardHeight = 273.0;
   double timeAttackSize = 0.0;
   double askClosedMentSize = 0.0;
@@ -46,6 +50,11 @@ class _QuestionPageState extends State<QuestionPage> {
 
           break;
         case '답변 받기':
+          padding(8.0);
+          copyLink();
+          padding(8.0);
+          shareInsta();
+
           timetextColor = _colors[2];
           timeAttackSize = 0.0;
           askButtonText = closeAsk;
@@ -67,6 +76,8 @@ class _QuestionPageState extends State<QuestionPage> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+
     return Scaffold(
       body: _askBody(),
     );
@@ -81,11 +92,11 @@ class _QuestionPageState extends State<QuestionPage> {
                     child: Column(children: <Widget>[
           const Padding(padding: EdgeInsets.all(8.0)),
           pupleBox(),
-          const Padding(padding: EdgeInsets.all(8.0)),
-          copyLink(),
-          const Padding(padding: EdgeInsets.all(8.0)),
-          shareInsta()
         ])))));
+  }
+
+  Widget padding(double num) {
+    return Padding(padding: EdgeInsets.all(num));
   }
 
   Widget copyLink() {

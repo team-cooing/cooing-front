@@ -5,10 +5,12 @@ class TabPage extends StatefulWidget {
   const TabPage({super.key});
 
   @override
-  _TabPageState createState() => _TabPageState();
+  TabPageState createState() => TabPageState();
 }
 
-class _TabPageState extends State<TabPage> with SingleTickerProviderStateMixin {
+class TabPageState extends State<TabPage> with TickerProviderStateMixin {
+  late TabController _tabController;
+
   static const List<Tab> myTabs = <Tab>[
     Tab(text: '질문'),
     Tab(text: '피드'),
@@ -18,12 +20,11 @@ class _TabPageState extends State<TabPage> with SingleTickerProviderStateMixin {
     ),
   ];
 
-  late TabController _tabController;
-
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(vsync: this, length: myTabs.length);
+    _tabController =
+        TabController(length: myTabs.length, vsync: this, initialIndex: 0);
   }
 
   @override
@@ -43,29 +44,31 @@ class _TabPageState extends State<TabPage> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color(0xffFFFFFF),
-        flexibleSpace: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            TabBar(
-                controller: _tabController,
-                labelStyle: const TextStyle(
-                    fontSize: 18.0, fontWeight: FontWeight.bold),
-                labelColor: Colors.black,
-                indicatorColor: Colors.transparent,
-                unselectedLabelColor: Colors.grey,
-                tabs: myTabs),
-          ],
-        ),
-      ),
-      body: TabBarView(controller: _tabController, children: const [
-        QuestionPage(),
-        Tab(icon: Icon(Icons.directions_car)),
-        Tab(icon: Icon(Icons.directions_bike_outlined)),
-        Tab(icon: Icon(Icons.directions_boat))
-      ]),
-    );
+    return DefaultTabController(
+        length: myTabs.length,
+        child: Scaffold(
+          appBar: AppBar(
+            backgroundColor: const Color(0xffFFFFFF),
+            flexibleSpace: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TabBar(
+                    controller: _tabController,
+                    labelStyle: const TextStyle(
+                        fontSize: 18.0, fontWeight: FontWeight.bold),
+                    labelColor: Colors.black,
+                    indicatorColor: Colors.transparent,
+                    unselectedLabelColor: Colors.grey,
+                    tabs: myTabs),
+              ],
+            ),
+          ),
+          body: TabBarView(controller: _tabController, children: const [
+            QuestionPage(),
+            Tab(icon: Icon(Icons.directions_car)),
+            Tab(icon: Icon(Icons.directions_bike_outlined)),
+            Tab(icon: Icon(Icons.directions_boat))
+          ]),
+        ));
   }
 }
