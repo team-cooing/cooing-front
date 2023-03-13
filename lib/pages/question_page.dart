@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import "dart:math";
+import "package:cooing_front/widgets/timer_widget.dart";
 
 class QuestionPage extends StatefulWidget {
   const QuestionPage({super.key});
@@ -13,7 +14,7 @@ class _QuestionPageState extends State<QuestionPage>
   @override
   bool get wantKeepAlive => true;
 
-  double cardHeight = 273.0;
+  double cardHeight = 400.0;
   double timeAttackSize = 0.0;
   double askClosedMentSize = 0.0;
   String checking = '<버튼누름>';
@@ -37,6 +38,8 @@ class _QuestionPageState extends State<QuestionPage>
   late String askButtonText = getAsk;
   late Color buttonColor = _colors[0];
 
+  TimerWidget? Timer;
+
   changeAskCard() {
     setState(() {
       switch (askButtonText) {
@@ -46,7 +49,6 @@ class _QuestionPageState extends State<QuestionPage>
           askText = question;
           askButtonText = getAnswer;
           timeAttack = '남은 시간 13:04:03';
-          timeAttackSize = 12.0;
 
           break;
         case '답변 받기':
@@ -131,13 +133,7 @@ class _QuestionPageState extends State<QuestionPage>
         child: Column(
           children: <Widget>[
             const Padding(padding: EdgeInsets.all(9.0)),
-            Container(
-                padding: const EdgeInsets.only(right: 190.0),
-                child: Text(
-                  timeAttack,
-                  style:
-                      TextStyle(color: timetextColor, fontSize: timeAttackSize),
-                )),
+            const SizedBox(height: 12, width: 80, child: TimerWidget()),
             const Padding(padding: EdgeInsets.all(9.0)),
             const SizedBox(
               width: 80.0,
