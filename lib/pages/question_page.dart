@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import "dart:math";
-import "package:cooing_front/widgets/timer_widget.dart";
+import "dart:async";
 
 class QuestionPage extends StatefulWidget {
   const QuestionPage({super.key});
@@ -14,8 +14,7 @@ class _QuestionPageState extends State<QuestionPage>
   @override
   bool get wantKeepAlive => true;
 
-  double cardHeight = 400.0;
-  double timeAttackSize = 0.0;
+  double cardHeight = 273.0;
   double askClosedMentSize = 0.0;
   String checking = '<버튼누름>';
   String askDefault = '똑똑똑! 오늘의 질문이 도착했어요.';
@@ -25,7 +24,6 @@ class _QuestionPageState extends State<QuestionPage>
   var questionList = ['내 첫인상은 어땠어?', '내 mbti는 무엇인 것 같아?', '나랑 닮은 동물은 뭐야?'];
   final _random = Random();
 
-  String timeAttack = '';
   String askClosedMent = '';
   final List<Color> _colors = <Color>[
     Colors.white,
@@ -33,12 +31,31 @@ class _QuestionPageState extends State<QuestionPage>
     const Color(0xff9754FB)
   ];
 
+  String timeAttack = '';
+  double timeAttackSize = 0.0;
   late Color timetextColor = _colors[0];
+
   late String askText = askDefault;
   late String askButtonText = getAsk;
   late Color buttonColor = _colors[0];
 
-  TimerWidget? Timer;
+  Timer? _secTimer;
+  Timer? _minTimer;
+  Timer? _hourTimer;
+
+  var _secTime = 1;
+  var _minTime = 1;
+  var _hourTime = 1;
+
+  var _isPlaying = false;
+
+  @override
+  void dispose() {
+    _secTimer?.cancel();
+    _minTimer?.cancel();
+    _hourTimer?.cancel();
+    super.dispose();
+  }
 
   changeAskCard() {
     setState(() {
@@ -48,8 +65,8 @@ class _QuestionPageState extends State<QuestionPage>
           cardHeight = 305.0;
           askText = question;
           askButtonText = getAnswer;
-          timeAttack = '남은 시간 13:04:03';
-
+          timeAttackSize = 12.0;
+          _click();
           break;
         case '답변 받기':
           padding(8.0);
@@ -71,6 +88,7 @@ class _QuestionPageState extends State<QuestionPage>
           askText = question;
           askClosedMent = '새로운 질문이 도착했어요!';
           buttonColor = _colors[0];
+          _reset();
           break;
       }
     });
@@ -83,6 +101,55 @@ class _QuestionPageState extends State<QuestionPage>
     return Scaffold(
       body: _askBody(),
     );
+  }
+
+  void _click() {
+    _isPlaying = !_isPlaying;
+
+    if (_isPlaying) {
+      _start();
+    } else {
+      _reset();
+    }
+  }
+
+  void _start() {
+    _secTimer = Timer.periodic(const Duration(seconds: 1), (secTimer) {
+      setState(() {
+        _secTime++;
+        if (_secTime > 60) {
+          _secTime %= 60;
+        }
+      });
+    });
+
+    _minTimer = Timer.periodic(const Duration(minutes: 1), (minTimer) {
+      setState(() {
+        _minTime++;
+        if (_minTime > 60) {
+          _minTime %= 60;
+        }
+      });
+    });
+
+    _hourTimer = Timer.periodic(const Duration(hours: 1), (hourTimer) {
+      setState(() {
+        _hourTime++;
+      });
+    });
+  }
+
+  void _reset() {
+    setState(() {
+      _isPlaying = false;
+      _secTimer?.cancel();
+      _minTimer?.cancel();
+      _hourTimer?.cancel();
+
+      _secTime = 1;
+      _minTime = 0;
+      _hourTime = 0;
+    });
   }
 
   Widget _askBody() {
@@ -123,6 +190,16 @@ class _QuestionPageState extends State<QuestionPage>
     );
   }
 
+  String timeText() {
+    var hour = 24 - (_hourTime);
+    var minute = 60 - (_minTime);
+    var sec = 60 - (_secTime);
+
+    String time = '남은 시간 $hour : $minute : $sec';
+
+    return time;
+  }
+
   Widget pupleBox() {
     return SizedBox(
       width: 347.0,
@@ -132,8 +209,15 @@ class _QuestionPageState extends State<QuestionPage>
         color: const Color(0xff9754FB),
         child: Column(
           children: <Widget>[
-            const Padding(padding: EdgeInsets.all(9.0)),
-            const SizedBox(height: 12, width: 80, child: TimerWidget()),
+            const Padding(padding: EdgeInsets.all(5.0)),
+            Container(
+                padding: const EdgeInsets.only(right: 175.0),
+                child: Text(timeText(),
+                    style: TextStyle(
+                      color: Colors.white,
+                      backgroundColor: _colors[2],
+                      fontSize: timeAttackSize,
+                    ))),
             const Padding(padding: EdgeInsets.all(9.0)),
             const SizedBox(
               width: 80.0,
