@@ -16,8 +16,8 @@ class _QuestionPageState extends State<QuestionPage>
 
   double cardHeight = 273.0;
   double askClosedMentSize = 0.0;
-  String checking = '<버튼누름>';
-  String askDefault = '똑똑똑! 오늘의 질문이 도착했어요.';
+
+  late String askText = '똑똑똑! 오늘의 질문이 도착했어요.';
   String getAsk = '질문 받기';
   String getAnswer = '답변 받기';
   String closeAsk = '질문 닫기';
@@ -31,23 +31,23 @@ class _QuestionPageState extends State<QuestionPage>
     const Color(0xff9754FB)
   ];
 
+  late String askButtonText = getAsk;
+  late Color buttonColor = _colors[0];
+
+  //time
+  Timer? _secTimer;
+  Timer? _minTimer;
+  Timer? _hourTimer;
+  var _secTime = 1;
+  var _minTime = 1;
+  var _hourTime = 1;
+  var _isPlaying = false;
   String timeAttack = '';
   double timeAttackSize = 0.0;
   late Color timetextColor = _colors[0];
 
-  late String askText = askDefault;
-  late String askButtonText = getAsk;
-  late Color buttonColor = _colors[0];
-
-  Timer? _secTimer;
-  Timer? _minTimer;
-  Timer? _hourTimer;
-
-  var _secTime = 1;
-  var _minTime = 1;
-  var _hourTime = 1;
-
-  var _isPlaying = false;
+  //shareCard
+  bool _openshareCard = false;
 
   @override
   void dispose() {
@@ -55,52 +55,6 @@ class _QuestionPageState extends State<QuestionPage>
     _minTimer?.cancel();
     _hourTimer?.cancel();
     super.dispose();
-  }
-
-  changeAskCard() {
-    setState(() {
-      switch (askButtonText) {
-        case '질문 받기':
-          var question = questionList[_random.nextInt(questionList.length)];
-          cardHeight = 305.0;
-          askText = question;
-          askButtonText = getAnswer;
-          timeAttackSize = 12.0;
-          _click();
-          break;
-        case '답변 받기':
-          padding(8.0);
-          copyLink();
-          padding(8.0);
-          shareInsta();
-
-          timetextColor = _colors[2];
-          timeAttackSize = 0.0;
-          askButtonText = closeAsk;
-          buttonColor = _colors[1];
-          askClosedMent = '해당 질문은 22일 00시부터 닫을 수 있습니다.';
-          askClosedMentSize = 10.0;
-
-          break;
-
-        case '질문 닫기':
-          var question = questionList[_random.nextInt(questionList.length)];
-          askText = question;
-          askClosedMent = '새로운 질문이 도착했어요!';
-          buttonColor = _colors[0];
-          _reset();
-          break;
-      }
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    super.build(context);
-
-    return Scaffold(
-      body: _askBody(),
-    );
   }
 
   void _click() {
@@ -152,6 +106,49 @@ class _QuestionPageState extends State<QuestionPage>
     });
   }
 
+  changeAskCard() {
+    setState(() {
+      switch (askButtonText) {
+        case '질문 받기':
+          var question = questionList[_random.nextInt(questionList.length)];
+          cardHeight = 305.0;
+          askText = question;
+          askButtonText = getAnswer;
+          timeAttackSize = 12.0;
+          _click();
+
+          break;
+        case '답변 받기':
+          timetextColor = _colors[2];
+          timeAttackSize = 0.0;
+          askButtonText = closeAsk;
+          buttonColor = _colors[1];
+          askClosedMent = '해당 질문은 22일 00시부터 닫을 수 있습니다.';
+          askClosedMentSize = 10.0;
+          _openshareCard = true;
+
+          break;
+
+        case '질문 닫기':
+          var question = questionList[_random.nextInt(questionList.length)];
+          askText = question;
+          askClosedMent = '새로운 질문이 도착했어요!';
+          buttonColor = _colors[0];
+          _reset();
+          break;
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+
+    return Scaffold(
+      body: _askBody(),
+    );
+  }
+
   Widget _askBody() {
     return Padding(
         padding: const EdgeInsets.all(15.0),
@@ -161,6 +158,8 @@ class _QuestionPageState extends State<QuestionPage>
                     child: Column(children: <Widget>[
           const Padding(padding: EdgeInsets.all(8.0)),
           pupleBox(),
+          const Padding(padding: EdgeInsets.all(10.0)),
+          shareCard(),
         ])))));
   }
 
@@ -168,26 +167,113 @@ class _QuestionPageState extends State<QuestionPage>
     return Padding(padding: EdgeInsets.all(num));
   }
 
-  Widget copyLink() {
-    return SizedBox(
-      width: 347.0,
-      height: 98.0,
-      child: Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        color: const Color(0xffF2F3F3),
-      ),
-    );
-  }
-
-  Widget shareInsta() {
-    return SizedBox(
-      width: 347.0,
-      height: 98.0,
-      child: Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        color: const Color(0xffF2F3F3),
-      ),
-    );
+  Widget shareCard() {
+    if (_openshareCard == true) {
+      return (Column(children: <Widget>[
+        SizedBox(
+          width: 347.0,
+          height: 98.0,
+          child: Card(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            color: const Color(0xffF2F3F3),
+            child: Row(children: [
+              const Padding(padding: EdgeInsets.all(10.0)),
+              const SizedBox(
+                  width: 30.0,
+                  height: 30.0,
+                  child: Image(image: AssetImage('images/icon_copyLink.png'))),
+              const Padding(padding: EdgeInsets.all(7.0)),
+              const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "1단계",
+                    style: TextStyle(fontSize: 12, color: Color(0xff333D4B)),
+                  ),
+                  Text(
+                    "링크 복사하기",
+                    style: TextStyle(
+                        fontSize: 16,
+                        color: Color(0xff333D4B),
+                        fontWeight: FontWeight.bold),
+                  )
+                ],
+              ),
+              const Padding(padding: EdgeInsets.all(45.0)),
+              ElevatedButton(
+                  onPressed: null,
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: _colors[2],
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0)),
+                  ),
+                  child: const Text(
+                    "복사",
+                    style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
+                  ))
+            ]),
+          ),
+        ),
+        SizedBox(
+          width: 347.0,
+          height: 98.0,
+          child: Card(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            color: const Color(0xffF2F3F3),
+            child: Row(children: [
+              const Padding(padding: EdgeInsets.all(10.0)),
+              const SizedBox(
+                  width: 30.0,
+                  height: 30.0,
+                  child: Image(image: AssetImage('images/icon_instagram.png'))),
+              const Padding(padding: EdgeInsets.all(7.0)),
+              const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "2단계",
+                    style: TextStyle(fontSize: 12, color: Color(0xff333D4B)),
+                  ),
+                  Text(
+                    "친구들에게 공유",
+                    style: TextStyle(
+                        fontSize: 16,
+                        color: Color(0xff333D4B),
+                        fontWeight: FontWeight.bold),
+                  )
+                ],
+              ),
+              const Padding(padding: EdgeInsets.all(39.0)),
+              ElevatedButton(
+                  onPressed: null,
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: _colors[2],
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0)),
+                  ),
+                  child: const Text(
+                    "공유",
+                    style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
+                  ))
+            ]),
+          ),
+        )
+      ]));
+    } else {
+      return const Padding(padding: EdgeInsets.all(3.0));
+    }
   }
 
   String timeText() {
