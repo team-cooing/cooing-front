@@ -120,7 +120,6 @@ class _QuestionPageState extends State<QuestionPage>
           break;
         case '답변 받기':
           timetextColor = _colors[2];
-          timeAttackSize = 0.0;
           askButtonText = closeAsk;
           buttonColor = _colors[1];
           askClosedMent = '해당 질문은 22일 00시부터 닫을 수 있습니다.';
@@ -135,11 +134,19 @@ class _QuestionPageState extends State<QuestionPage>
           askClosedMent = '새로운 질문이 도착했어요!';
           buttonColor = _colors[0];
           _reset();
+          timeAttackSize = 0.0;
           break;
       }
     });
   }
 
+  copyLink(){
+    
+  }
+
+  shareInsta(){
+    
+  }
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -158,7 +165,7 @@ class _QuestionPageState extends State<QuestionPage>
                     child: Column(children: <Widget>[
           const Padding(padding: EdgeInsets.all(8.0)),
           pupleBox(),
-          const Padding(padding: EdgeInsets.all(10.0)),
+          const Padding(padding: EdgeInsets.all(8.0)),
           shareCard(),
         ])))));
   }
