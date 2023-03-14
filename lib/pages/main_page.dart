@@ -1,4 +1,4 @@
-import 'package:cooing_front/widgets/main_appBar.dart';
+import 'package:cooing_front/pages/answer_page.dart';
 import 'package:flutter/material.dart';
 
 class MainPage extends StatefulWidget {
@@ -11,6 +11,6 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
-    return const MainAppBar();
+    return const AnswerPage();
   }
 }
