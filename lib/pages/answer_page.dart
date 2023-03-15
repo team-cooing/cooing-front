@@ -107,6 +107,9 @@ class _AnswerPageState extends State<AnswerPage> {
         height: 150,
         child: Column(children: [
           TextField(
+            enableSuggestions: false,
+            autocorrect: false,
+            style: const TextStyle(color: Colors.white70),
             controller: _textController,
             maxLines: 5,
             maxLength: 100,
@@ -118,9 +121,9 @@ class _AnswerPageState extends State<AnswerPage> {
             decoration: InputDecoration(
               counterText: "",
               border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                  borderSide:
-                      const BorderSide(width: 0, style: BorderStyle.none)),
+                borderRadius: BorderRadius.circular(10.0),
+                borderSide: const BorderSide(width: 0, style: BorderStyle.none),
+              ),
               contentPadding: const EdgeInsets.all(10),
               filled: true,
               fillColor: Colors.white24,
