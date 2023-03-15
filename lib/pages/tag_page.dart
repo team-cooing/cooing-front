@@ -33,14 +33,14 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  final int _selectedPageIndex = 0;
+  // final int _selectedPageIndex = 0;
 
-  final List _pages = [
-    const Text('질문'),
-    const Text('피드'),
-    const Text('메시지'),
-    const Text('설정')
-  ];
+  // final List _pages = [
+  //   const Text('질문'),
+  //   const Text('피드'),
+  //   const Text('메시지'),
+  //   const Text('설정')
+  // ];
 
   @override
   Widget build(BuildContext context) {

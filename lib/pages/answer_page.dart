@@ -14,6 +14,7 @@ class _AnswerPageState extends State<AnswerPage> {
   int maxLength = 100;
   String textValue = "";
   final TextEditingController _textController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,7 +71,7 @@ class _AnswerPageState extends State<AnswerPage> {
     return Center(
         child: SizedBox(
             width: 346.0,
-            height: 500.0,
+            height: 355.0,
             child: Card(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30)),
@@ -103,7 +104,7 @@ class _AnswerPageState extends State<AnswerPage> {
 
     return SizedBox(
         width: 300,
-        height: 200,
+        height: 150,
         child: Column(children: [
           TextField(
             controller: _textController,
@@ -130,12 +131,16 @@ class _AnswerPageState extends State<AnswerPage> {
               ),
             ),
           ),
+          const Padding(padding: EdgeInsets.all(4)),
           SizedBox(
-              height: 14,
-              child: Text(
-                "\n\n\n\n\n${textValue.length} / $maxLength",
-                style: const TextStyle(color: Colors.white54, fontSize: 12),
-              ))
+              height: 12,
+              child: Row(children: [
+                const Padding(padding: EdgeInsets.only(right: 242)),
+                Text(
+                  "${textValue.length} / $maxLength",
+                  style: const TextStyle(color: Colors.white54, fontSize: 12),
+                )
+              ])),
         ]));
   }
 
@@ -149,6 +154,7 @@ class _AnswerPageState extends State<AnswerPage> {
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
             activeColor: const Color(0xff9754FB),
+            focusColor: const Color(0xff9754FB),
             value: _checkSecret,
             onChanged: (value) {
               setState(() {
@@ -158,7 +164,7 @@ class _AnswerPageState extends State<AnswerPage> {
           ),
         ),
         const Text(
-          '악명',
+          '익명',
           style: TextStyle(fontSize: 14, color: Color(0xff333D4B)),
         )
       ],
