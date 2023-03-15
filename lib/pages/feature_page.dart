@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:toggle_switch/toggle_switch.dart';
 
 class FeaturePage extends StatefulWidget {
   const FeaturePage({super.key});
@@ -9,6 +8,8 @@ class FeaturePage extends StatefulWidget {
 }
 
 class _FeaturePageState extends State<FeaturePage> {
+  final List<bool> _selected = <bool>[false, false];
+
   final List<String> _textList = [
     '어떤 눈을 가졌나요?',
     'MBTI는?',
@@ -26,7 +27,7 @@ class _FeaturePageState extends State<FeaturePage> {
         ),
         backgroundColor: Color(0xFFffffff),
         body: Container(
-            padding: const EdgeInsets.only(left: 20, right: 0, bottom: 20),
+            padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
             child: Form(
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -38,6 +39,215 @@ class _FeaturePageState extends State<FeaturePage> {
                           fontSize: 22,
                           color: Color.fromARGB(255, 51, 61, 75)),
                     ),
+                    // MBTI
+                    Container(
+                      padding: const EdgeInsets.only(top: 40, bottom: 20),
+                      child: Text(
+                        'MBTI',
+                        style: TextStyle(
+                            fontSize: 20,
+                            color: Color.fromARGB(255, 51, 61, 75)),
+                      ),
+                    ),
+                    Column(children: [
+                      Container(
+                        child: SizedBox(
+                            height: 60,
+                            child: Column(children: [
+                              ToggleButtons(
+                                selectedColor:
+                                    Color.fromARGB(255, 151, 84, 251),
+                                fillColor: Color.fromRGBO(151, 84, 251, 0.2),
+                                disabledColor: Color.fromRGBO(243, 242, 242, 1),
+                                borderRadius:
+                                    const BorderRadius.all(Radius.circular(8)),
+                                children: <Widget>[
+                                  Container(
+                                    alignment: Alignment.center,
+                                    width: (MediaQuery.of(context).size.width -
+                                            43) /
+                                        2,
+                                    child: Text('I',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                            color: Color.fromARGB(
+                                                255, 151, 84, 251))),
+                                  ),
+                                  Container(
+                                    alignment: Alignment.center,
+                                    width: (MediaQuery.of(context).size.width -
+                                            43) /
+                                        2,
+                                    child: Text('E',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                            color: Color.fromARGB(
+                                                255, 151, 84, 251))),
+                                  ),
+                                ],
+                                isSelected: _selected,
+                                onPressed: (int index) {
+                                  setState(() {
+                                    // The button that is tapped is set to true, and the others to false.
+                                    for (int i = 0; i < _selected.length; i++) {
+                                      _selected[i] = i == index;
+                                    }
+                                  });
+                                },
+                              ),
+                            ])),
+                      ),
+                      Container(
+                        child: SizedBox(
+                            height: 60,
+                            child: Column(children: [
+                              ToggleButtons(
+                                selectedColor:
+                                    Color.fromARGB(255, 151, 84, 251),
+                                fillColor: Color.fromRGBO(151, 84, 251, 0.2),
+                                disabledColor: Color.fromRGBO(243, 242, 242, 1),
+                                borderRadius:
+                                    const BorderRadius.all(Radius.circular(8)),
+                                children: <Widget>[
+                                  Container(
+                                    alignment: Alignment.center,
+                                    width: (MediaQuery.of(context).size.width -
+                                            43) /
+                                        2,
+                                    child: Text('N',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                            color: Color.fromARGB(
+                                                255, 151, 84, 251))),
+                                  ),
+                                  Container(
+                                    alignment: Alignment.center,
+                                    width: (MediaQuery.of(context).size.width -
+                                            43) /
+                                        2,
+                                    child: Text('S',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                            color: Color.fromARGB(
+                                                255, 151, 84, 251))),
+                                  ),
+                                ],
+                                isSelected: _selected,
+                                onPressed: (int index) {
+                                  setState(() {
+                                    // The button that is tapped is set to true, and the others to false.
+                                    for (int i = 0; i < _selected.length; i++) {
+                                      _selected[i] = i == index;
+                                    }
+                                  });
+                                },
+                              ),
+                            ])),
+                      ),
+                      Container(
+                        child: SizedBox(
+                            height: 60,
+                            child: Column(children: [
+                              ToggleButtons(
+                                selectedColor:
+                                    Color.fromARGB(255, 151, 84, 251),
+                                fillColor: Color.fromRGBO(151, 84, 251, 0.2),
+                                disabledColor: Color.fromRGBO(243, 242, 242, 1),
+                                borderRadius:
+                                    const BorderRadius.all(Radius.circular(8)),
+                                children: <Widget>[
+                                  Container(
+                                    alignment: Alignment.center,
+                                    width: (MediaQuery.of(context).size.width -
+                                            43) /
+                                        2,
+                                    child: Text('T',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                            color: Color.fromARGB(
+                                                255, 151, 84, 251))),
+                                  ),
+                                  Container(
+                                    alignment: Alignment.center,
+                                    width: (MediaQuery.of(context).size.width -
+                                            43) /
+                                        2,
+                                    child: Text('F',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                            color: Color.fromARGB(
+                                                255, 151, 84, 251))),
+                                  ),
+                                ],
+                                isSelected: _selected,
+                                onPressed: (int index) {
+                                  setState(() {
+                                    // The button that is tapped is set to true, and the others to false.
+                                    for (int i = 0; i < _selected.length; i++) {
+                                      _selected[i] = i == index;
+                                    }
+                                  });
+                                },
+                              ),
+                            ])),
+                      ),
+                      Container(
+                        child: SizedBox(
+                            height: 60,
+                            child: Column(children: [
+                              ToggleButtons(
+                                selectedColor:
+                                    Color.fromARGB(255, 151, 84, 251),
+                                fillColor: Color.fromRGBO(151, 84, 251, 0.2),
+                                disabledColor: Color.fromRGBO(243, 242, 242, 1),
+                                borderRadius:
+                                    const BorderRadius.all(Radius.circular(8)),
+                                children: <Widget>[
+                                  Container(
+                                    alignment: Alignment.center,
+                                    width: (MediaQuery.of(context).size.width -
+                                            43) /
+                                        2,
+                                    child: Text('J',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                            color: Color.fromARGB(
+                                                255, 151, 84, 251))),
+                                  ),
+                                  Container(
+                                    alignment: Alignment.center,
+                                    width: (MediaQuery.of(context).size.width -
+                                            43) /
+                                        2,
+                                    child: Text('P',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                            color: Color.fromARGB(
+                                                255, 151, 84, 251))),
+                                  ),
+                                ],
+                                isSelected: _selected,
+                                onPressed: (int index) {
+                                  setState(() {
+                                    // The button that is tapped is set to true, and the others to false.
+                                    for (int i = 0; i < _selected.length; i++) {
+                                      _selected[i] = i == index;
+                                    }
+                                  });
+                                },
+                              ),
+                            ])),
+                      ),
+                    ]),
+                    //눈 무쌍,유쌍
                     Container(
                       padding: const EdgeInsets.only(top: 40, bottom: 20),
                       child: Text(
@@ -47,38 +257,45 @@ class _FeaturePageState extends State<FeaturePage> {
                             color: Color.fromARGB(255, 51, 61, 75)),
                       ),
                     ),
-                    Container(
-                      // width: double.infinity,
-                      child: ToggleSwitch(
-                        minWidth: double.infinity,
-                        minHeight: 60.0,
-                        initialLabelIndex: 0,
-                        // fontSize: 18,
-                        cornerRadius: 8.0,
-                        activeFgColor: Color.fromRGBO(151, 84, 251, 1),
-                        inactiveBgColor: Color.fromRGBO(243, 242, 242, 1),
-                        inactiveFgColor: Color.fromRGBO(51, 61, 75, 0.4),
-                        totalSwitches: 2,
-                        labels: ['무쌍', '유쌍'],
-                        activeBgColors: [
-                          [Color.fromRGBO(151, 84, 251, 0.2)],
-                          [Color.fromRGBO(151, 84, 251, 0.2)],
+                    SizedBox(
+                      height: 60,
+                      child: ToggleButtons(
+                        selectedColor: Color.fromARGB(255, 151, 84, 251),
+                        fillColor: Color.fromRGBO(151, 84, 251, 0.2),
+                        disabledColor: Color.fromRGBO(243, 242, 242, 1),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(8)),
+                        children: <Widget>[
+                          Container(
+                            alignment: Alignment.center,
+                            width: (MediaQuery.of(context).size.width - 43) / 2,
+                            child: Text('무쌍',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    color: Color.fromARGB(255, 151, 84, 251))),
+                          ),
+                          Container(
+                            alignment: Alignment.center,
+                            width: (MediaQuery.of(context).size.width - 43) / 2,
+                            child: Text('유쌍',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    color: Color.fromARGB(255, 151, 84, 251))),
+                          ),
                         ],
-                        onToggle: (index) {
-                          print('switched to: $index');
+                        isSelected: _selected,
+                        onPressed: (int index) {
+                          setState(() {
+                            // The button that is tapped is set to true, and the others to false.
+                            for (int i = 0; i < _selected.length; i++) {
+                              _selected[i] = i == index;
+                            }
+                          });
                         },
-                        customTextStyles: [
-                          TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Color.fromRGBO(151, 84, 251, 1),
-                              fontSize: 16),
-                          TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Color.fromRGBO(151, 84, 251, 1),
-                              fontSize: 16),
-                        ],
                       ),
-                    ),
+                    )
                   ]),
             )));
   }
