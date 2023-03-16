@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cooing_front/pages/main_page.dart';
 
 class AnswerPage extends StatefulWidget {
   const AnswerPage({super.key});
@@ -22,9 +23,12 @@ class _AnswerPageState extends State<AnswerPage> {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0.0,
-          leading: const IconButton(
-            icon: Icon(Icons.close),
-            onPressed: null,
+          leading: IconButton(
+            icon: const Icon(Icons.close_rounded),
+            color: Colors.black54,
+            onPressed: () {
+              Navigator.pop(context);
+            },
           ),
         ),
         body: SafeArea(child: _answerBody()),
@@ -180,7 +184,10 @@ class _AnswerPageState extends State<AnswerPage> {
         width: 350,
         height: 60,
         child: ElevatedButton(
-            onPressed: null,
+            onPressed: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const MainPage()));
+            },
             style: OutlinedButton.styleFrom(
               foregroundColor: Colors.white,
               backgroundColor: const Color(0xff9754FB),
