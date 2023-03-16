@@ -140,13 +140,6 @@ class _QuestionPageState extends State<QuestionPage>
     });
   }
 
-  copyLink(){
-    
-  }
-
-  shareInsta(){
-    
-  }
   @override
   Widget build(BuildContext context) {
     super.build(context);
