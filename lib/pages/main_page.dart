@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:cooing_front/pages/tap_page.dart';
 
@@ -12,6 +11,6 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
-    return TagPage();
+    return const TabPage();
   }
 }
