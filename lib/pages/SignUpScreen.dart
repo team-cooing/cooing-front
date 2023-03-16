@@ -1,14 +1,15 @@
+import 'package:cooing_front/pages/SchoolScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class SignUpPage extends StatefulWidget {
-  const SignUpPage({super.key});
+class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({super.key});
 
   @override
-  _SignUpPageState createState() => _SignUpPageState();
+  _SignUpScreenState createState() => _SignUpScreenState();
 }
 
-class _SignUpPageState extends State<SignUpPage> {
+class _SignUpScreenState extends State<SignUpScreen> {
   final List<String> _textList = [
     '이름을 입력해주세요.',
     '휴대폰 번호를 입력해주세요.',
@@ -142,7 +143,11 @@ class _SignUpPageState extends State<SignUpPage> {
                               title = 1;
                             });
                           } else {
-                            print('고등학교 넘어가기');
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const SchoolScreen()),
+                            );
                           }
                         },
                       )))

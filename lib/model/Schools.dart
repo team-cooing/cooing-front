@@ -4,8 +4,8 @@ class Schools {
 
   Schools({required this.name, required this.location});
 
-  News.fromMap(Map<String, dynamic>? map) {
-    title = map?['title'] ?? '';
-    content = map?['description'] ?? '';
+  Schools.fromMap(Map<String, dynamic>? map) {
+    name = map?['SCHUL_NM'] ?? '';
+    location = map?['ORG_RDNMA'] ?? '';
   }
 }

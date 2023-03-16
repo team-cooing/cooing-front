@@ -1,8 +1,8 @@
-import 'package:cooing_front/pages/SampleScreen.dart';
+import 'package:cooing_front/pages/LoginScreen.dart';
+import 'package:cooing_front/pages/SchoolScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:cooing_front/pages/main_page.dart';
-import 'package:cooing_front/pages/kakaoLogin_page.dart';
-import 'package:cooing_front/pages/feature_page.dart';
+import 'package:cooing_front/pages/FeatureScreen.dart';
 import 'package:cooing_front/widgets/grid_boy.dart';
 import 'package:cooing_front/pages/MultiSelectscreen.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home: SampleScreen(),
+      home: FeatureScreen(),
     );
   }
 }

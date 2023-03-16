@@ -1,20 +1,20 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:cooing_front/pages/signup_page.dart';
+import 'package:cooing_front/pages/SignUpScreen.dart';
 import 'package:cooing_front/model/Login_platform.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 
-class SampleScreen extends StatefulWidget {
-  const SampleScreen({Key? key}) : super(key: key);
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({Key? key}) : super(key: key);
 
   @override
-  State<SampleScreen> createState() => _SampleScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _SampleScreenState extends State<SampleScreen> {
+class _LoginScreenState extends State<LoginScreen> {
   LoginPlatform _loginPlatform = LoginPlatform.none;
 
   void signInWithKakao() async {
@@ -45,7 +45,7 @@ class _SampleScreenState extends State<SampleScreen> {
 
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const SignUpPage()),
+        MaterialPageRoute(builder: (context) => const SignUpScreen()),
       );
     } catch (error) {
       print('카카오톡으로 로그인 실패 $error');

@@ -81,6 +81,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.5"
+  customtogglebuttons:
+    dependency: "direct main"
+    description:
+      name: customtogglebuttons
+      sha256: "842a247c3a776061ca330128e9dfab0a02c0b98b95b723fb2e44b73aa9c59703"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.5"
   dio:
     dependency: transitive
     description:
