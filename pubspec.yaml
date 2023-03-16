@@ -68,7 +68,7 @@ flutter:
     - images/sohee.jpg
     - images/icon_copyLink.png
     - images/icon_instagram.png
-    - images/icon_close.png
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
