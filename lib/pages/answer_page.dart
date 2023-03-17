@@ -140,12 +140,12 @@ class _AnswerPageState extends State<AnswerPage> {
           ),
           const Padding(padding: EdgeInsets.all(4)),
           SizedBox(
-              height: 12,
+              height: 13,
               child: Row(children: [
                 const Padding(padding: EdgeInsets.only(right: 242)),
                 Text(
                   "${textValue.length} / $maxLength",
-                  style: const TextStyle(color: Colors.white54, fontSize: 12),
+                  style: const TextStyle(color: Colors.white54, fontSize: 13),
                 )
               ])),
         ]));

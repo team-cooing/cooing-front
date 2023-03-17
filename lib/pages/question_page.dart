@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import "dart:math";
 import "dart:async";
+import 'package:cooing_front/widgets/link.dart';
+import 'package:flutter/services.dart';
 
 class QuestionPage extends StatefulWidget {
   const QuestionPage({super.key});
@@ -49,6 +51,10 @@ class _QuestionPageState extends State<QuestionPage>
   //shareCard
   bool _openshareCard = false;
 
+  //link
+  final DynamicLink _link = DynamicLink();
+  final String _userId = 'id';
+  String _userUri = '';
   @override
   void dispose() {
     _secTimer?.cancel();
@@ -119,10 +125,14 @@ class _QuestionPageState extends State<QuestionPage>
 
           break;
         case '답변 받기':
+          DateTime nowDate = DateTime.now();
+          print('$nowDate');
+          DateTime newDate = nowDate.add(const Duration(hours: 24));
           timetextColor = _colors[2];
           askButtonText = closeAsk;
           buttonColor = _colors[1];
-          askClosedMent = '해당 질문은 22일 00시부터 닫을 수 있습니다.';
+          askClosedMent =
+              '해당 질문은 ${newDate.day}일 ${newDate.hour}시 ${newDate.minute}부터 닫을 수 있습니다.';
           askClosedMentSize = 10.0;
           _openshareCard = true;
 
@@ -158,7 +168,7 @@ class _QuestionPageState extends State<QuestionPage>
                     child: Column(children: <Widget>[
           const Padding(padding: EdgeInsets.all(8.0)),
           pupleBox(),
-          const Padding(padding: EdgeInsets.all(8.0)),
+          const Padding(padding: EdgeInsets.all(5.0)),
           shareCard(),
         ])))));
   }
@@ -203,7 +213,16 @@ class _QuestionPageState extends State<QuestionPage>
               ),
               const Padding(padding: EdgeInsets.all(45.0)),
               ElevatedButton(
-                  onPressed: null,
+                  onPressed: () async {
+                    _userUri = await _link.getShortLink('AnswerPage', 'id');
+                    Clipboard.setData(ClipboardData(text: _userUri))
+                        .then((value) {
+                      return ScaffoldMessenger.of(context)
+                          .showSnackBar(const SnackBar(
+                        content: Text("링크가 복사되었습니다."),
+                      ));
+                    });
+                  },
                   style: OutlinedButton.styleFrom(
                     foregroundColor: Colors.white,
                     backgroundColor: _colors[2],
@@ -220,6 +239,7 @@ class _QuestionPageState extends State<QuestionPage>
             ]),
           ),
         ),
+        const Padding(padding: EdgeInsets.all(2.5)),
         SizedBox(
           width: 347.0,
           height: 98.0,

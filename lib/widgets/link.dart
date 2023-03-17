@@ -45,7 +45,7 @@ class DynamicLink {
       String id = dynamicLinkData.link.queryParameters['id']!;
 
       switch (link) {
-        case 'link':
+        case 'AnswerPage':
           Get.offAll(
             () => const AnswerPage(),
           );
@@ -61,7 +61,7 @@ class DynamicLink {
       link: Uri.parse('$dynamicLinkPrefix / $screenName?id=$id'),
       uriPrefix: dynamicLinkPrefix,
       androidParameters: const AndroidParameters(
-        packageName: 'com.cooing.android',
+        packageName: 'com.example.cooing_front',
         minimumVersion: 0,
       ),
       iosParameters: const IOSParameters(
