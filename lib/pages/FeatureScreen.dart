@@ -1,3 +1,5 @@
+import 'package:cooing_front/model/UserInfo.dart';
+import 'package:cooing_front/pages/MultiSelectscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:customtogglebuttons/customtogglebuttons.dart';
 
@@ -15,19 +17,24 @@ class _FeatureScreenState extends State<FeatureScreen> {
   final List<bool> _mbti3 = <bool>[false, false];
   final List<bool> _mbti4 = <bool>[false, false];
 
+  final List<bool> _button = <bool>[false, false, false, false];
+
   final List<String> _textList = [
     '어떤 눈을 가졌나요?',
     'MBTI는?',
-    '좋아하는 취미는?',
-    '나는 OOO 스타일?',
   ];
 
   int title = 0;
   bool mbti = false;
 
+  int eyes = 0;
+  List<String> _mbti = <String>[];
+
   @override
   Widget build(BuildContext context) {
     // final node1 = FocusNode();
+    final args = ModalRoute.of(context)!.settings.arguments as UserInfo;
+    print(args);
 
     return Scaffold(
         appBar: AppBar(
@@ -134,8 +141,7 @@ class _FeatureScreenState extends State<FeatureScreen> {
                                                     i++) {
                                                   _mbti1[i] = i == index;
                                                 }
-                                                title = 1;
-                                                mbti = true;
+                                                _button[0] = true;
                                               });
                                             },
                                           )),
@@ -208,8 +214,7 @@ class _FeatureScreenState extends State<FeatureScreen> {
                                                     i++) {
                                                   _mbti2[i] = i == index;
                                                 }
-                                                title = 1;
-                                                mbti = true;
+                                                _button[1] = true;
                                               });
                                             },
                                           )),
@@ -282,8 +287,7 @@ class _FeatureScreenState extends State<FeatureScreen> {
                                                     i++) {
                                                   _mbti3[i] = i == index;
                                                 }
-                                                title = 1;
-                                                mbti = true;
+                                                _button[2] = true;
                                               });
                                             },
                                           )),
@@ -355,8 +359,7 @@ class _FeatureScreenState extends State<FeatureScreen> {
                                                     i++) {
                                                   _mbti4[i] = i == index;
                                                 }
-                                                title = 1;
-                                                mbti = true;
+                                                _button[3] = true;
                                               });
                                             },
                                           )),
@@ -425,6 +428,8 @@ class _FeatureScreenState extends State<FeatureScreen> {
                                 for (int i = 0; i < _eyes.length; i++) {
                                   _eyes[i] = i == index;
                                 }
+                                eyes = index + 1;
+                                print(eyes);
                                 title = 1;
                                 mbti = true;
                               });
@@ -432,6 +437,63 @@ class _FeatureScreenState extends State<FeatureScreen> {
                           )),
                     )
                   ]),
-            )));
+            )),
+        bottomNavigationBar: AnimatedOpacity(
+          opacity: !_button.contains(false) ? 1.0 : 0.0,
+          duration: const Duration(milliseconds: 500),
+          child: Visibility(
+              visible: !_button.contains(false),
+              child: Padding(
+                padding: EdgeInsets.all(20),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          primary: Color.fromARGB(255, 151, 84, 251)),
+                      child: const Text('확인',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 15)),
+                      onPressed: () {
+                        if (_mbti1[0]) {
+                          _mbti.add('I');
+                        } else {
+                          _mbti.add('E');
+                        }
+                        if (_mbti2[0]) {
+                          _mbti.add('N');
+                        } else {
+                          _mbti.add('S');
+                        }
+                        if (_mbti3[0]) {
+                          _mbti.add('T');
+                        } else {
+                          _mbti.add('F');
+                        }
+                        if (_mbti4[0]) {
+                          _mbti.add('J');
+                        } else {
+                          _mbti.add('P');
+                        }
+                        Navigator.pushNamed(
+                          context,
+                          'select',
+                          arguments: UserInfo(
+                              name: args.name,
+                              profileImage: args.profileImage,
+                              age: args.age,
+                              number: args.number,
+                              school: args.school,
+                              grade: args.grade,
+                              group: args.group,
+                              eyes: eyes,
+                              mbti: _mbti.join(''),
+                              hobby: '',
+                              style: []),
+                        );
+                      }),
+                ),
+              )),
+        ));
   }
 }

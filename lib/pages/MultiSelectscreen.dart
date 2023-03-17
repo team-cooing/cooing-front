@@ -1,3 +1,4 @@
+import 'package:cooing_front/model/UserInfo.dart';
 import 'package:cooing_front/pages/FeatureScreen.dart';
 import 'package:cooing_front/pages/SchoolScreen.dart';
 import 'package:cooing_front/pages/WelcomeScreen.dart';
@@ -25,6 +26,10 @@ class _MultiSelectscreenState extends State<MultiSelectscreen> {
   bool _style = false;
   bool button = false;
   bool selectAll = false;
+
+  String _hobby = '';
+  List<String> _styleList = [];
+
   @override
   void initState() {
     // TODO: implement initState
@@ -58,123 +63,153 @@ class _MultiSelectscreenState extends State<MultiSelectscreen> {
 
   @override
   Widget build(BuildContext context) {
+    final args = ModalRoute.of(context)!.settings.arguments as UserInfo;
+
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
-      backgroundColor: Color(0xFFffffff),
-      body: SingleChildScrollView(
-          child: Column(children: [
-        Container(
-            padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(
-                _textList[title],
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 22,
-                    color: Color.fromARGB(255, 51, 61, 75)),
-              ),
-              AnimatedOpacity(
-                  opacity: _style ? 1.0 : 0.0,
-                  duration: const Duration(milliseconds: 500),
-                  child: Visibility(
-                    visible: _style,
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.only(top: 40, bottom: 10),
-                            child: Text(
-                              '스타일',
-                              style: TextStyle(
-                                  fontSize: 20,
-                                  color: Color.fromARGB(255, 51, 61, 75)),
-                            ),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.only(bottom: 10),
-                            child: Text(
-                              '3개를 선택해주세요.',
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  color: Color.fromRGBO(51, 61, 75, 0.4)),
-                            ),
-                          ),
-                          SafeArea(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                GridView.builder(
-                                  shrinkWrap: true,
-                                  physics: NeverScrollableScrollPhysics(),
-                                  itemBuilder: (ctx, index) {
-                                    return prepareStyle(index);
-                                  },
-                                  gridDelegate:
-                                      SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 3,
-                                    crossAxisSpacing: 10,
-                                    mainAxisSpacing: 10,
-                                  ),
-                                  itemCount: style.length,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ]),
-                  )),
-              Container(
-                padding: const EdgeInsets.only(top: 40, bottom: 20),
-                child: Text(
-                  '취미',
-                  style: TextStyle(
-                      fontSize: 20, color: Color.fromARGB(255, 51, 61, 75)),
-                ),
-              ),
-              SafeArea(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    GridView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemBuilder: (ctx, index) {
-                        return prepareHobby(index);
-                      },
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3,
-                        crossAxisSpacing: 10,
-                        mainAxisSpacing: 10,
-                      ),
-                      itemCount: style.length,
-                    ),
-                  ],
-                ),
-              ),
-            ]))
-      ])),
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.all(20),
-        child: SizedBox(
-          width: double.infinity,
-          height: 50,
-          child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                  primary: Color.fromARGB(255, 151, 84, 251)),
-              child: const Text('확인',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-              onPressed: () {
-                print('넘어가라');
-                Navigator.push(context, MaterialPageRoute(builder: (_) {
-                  return WelcomeScreen();
-                }));
-              }),
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
         ),
-      ),
-    );
+        backgroundColor: Color(0xFFffffff),
+        body: SingleChildScrollView(
+            child: Column(children: [
+          Container(
+              padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      _textList[title],
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 22,
+                          color: Color.fromARGB(255, 51, 61, 75)),
+                    ),
+                    AnimatedOpacity(
+                        opacity: _style ? 1.0 : 0.0,
+                        duration: const Duration(milliseconds: 500),
+                        child: Visibility(
+                          visible: _style,
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.only(
+                                      top: 40, bottom: 10),
+                                  child: Text(
+                                    '스타일',
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        color: Color.fromARGB(255, 51, 61, 75)),
+                                  ),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.only(bottom: 10),
+                                  child: Text(
+                                    '3개를 선택해주세요.',
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        color: Color.fromRGBO(51, 61, 75, 0.4)),
+                                  ),
+                                ),
+                                SafeArea(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      GridView.builder(
+                                        shrinkWrap: true,
+                                        physics: NeverScrollableScrollPhysics(),
+                                        itemBuilder: (ctx, index) {
+                                          return prepareStyle(index);
+                                        },
+                                        gridDelegate:
+                                            SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: 3,
+                                          crossAxisSpacing: 10,
+                                          mainAxisSpacing: 10,
+                                        ),
+                                        itemCount: style.length,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ]),
+                        )),
+                    Container(
+                      padding: const EdgeInsets.only(top: 40, bottom: 20),
+                      child: Text(
+                        '취미',
+                        style: TextStyle(
+                            fontSize: 20,
+                            color: Color.fromARGB(255, 51, 61, 75)),
+                      ),
+                    ),
+                    SafeArea(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          GridView.builder(
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemBuilder: (ctx, index) {
+                              return prepareHobby(index);
+                            },
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 3,
+                              crossAxisSpacing: 10,
+                              mainAxisSpacing: 10,
+                            ),
+                            itemCount: style.length,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ]))
+        ])),
+        bottomNavigationBar: AnimatedOpacity(
+            opacity: button ? 1.0 : 0.0,
+            duration: const Duration(milliseconds: 1000),
+            child: Visibility(
+              visible: button,
+              child: Padding(
+                padding: EdgeInsets.all(20),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          primary: Color.fromARGB(255, 151, 84, 251)),
+                      child: const Text('확인',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 15)),
+                      onPressed: () {
+                        for (int i = 0; i < style.length; i++) {
+                          if (style[i].selected) {
+                            _styleList.add(style[i].name);
+                          }
+                        }
+                        print(_styleList);
+                        Navigator.pushNamed(
+                          context,
+                          'welcome',
+                          arguments: UserInfo(
+                              name: args.name,
+                              profileImage: args.profileImage,
+                              age: args.age,
+                              number: args.number,
+                              school: args.school,
+                              grade: args.grade,
+                              group: args.group,
+                              eyes: args.eyes,
+                              mbti: args.mbti,
+                              hobby: _hobby,
+                              style: _styleList),
+                        );
+                      }),
+                ),
+              ),
+            )));
   }
 
   Widget prepareHobby(int k) {
@@ -195,6 +230,7 @@ class _MultiSelectscreenState extends State<MultiSelectscreen> {
                           for (int i = 0; i < hobby.length; i++) {
                             hobby[i].selected = i == k;
                           }
+                          _hobby = hobby[k].title;
                         });
                       },
                       child: Container(

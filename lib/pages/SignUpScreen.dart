@@ -1,3 +1,4 @@
+import 'package:cooing_front/model/UserInfo.dart';
 import 'package:cooing_front/pages/SchoolScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -25,11 +26,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool button = true;
   int title = 0;
 
+  String _age = '';
+  String _number = '';
+
   // var thirdField = FocusNode();
 
   @override
   Widget build(BuildContext context) {
     // final node1 = FocusNode();
+    final args = ModalRoute.of(context)!.settings.arguments as UserInfo;
+    TextEditingController textEditingController =
+        TextEditingController(text: args.name);
+    // print(args.name);
 
     return Scaffold(
         appBar: AppBar(
@@ -63,7 +71,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         button = true;
                       });
                     }
-                    print(text.length);
+                    _age = text;
                     // 현재 텍스트필드의 텍스트를 출력
                   },
                   maxLength: 2,
@@ -98,7 +106,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         // FocusScope.of(context).requestFocus(ageField);
                       });
                     }
-                    print(text.length);
+                    _number = text;
                     // 현재 텍스트필드의 텍스트를 출력
                   },
                   decoration: InputDecoration(
@@ -112,7 +120,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
               ),
               TextField(
+                controller: textEditingController,
                 focusNode: node1,
+                onChanged: (value) {
+                  textEditingController.selection = TextSelection.collapsed(
+                      offset: textEditingController.text.length);
+                  args.name = value;
+                },
                 autofocus: true,
                 decoration: InputDecoration(
                     focusedBorder: UnderlineInputBorder(
@@ -143,10 +157,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               title = 1;
                             });
                           } else {
-                            Navigator.push(
+                            Navigator.pushNamed(
                               context,
-                              MaterialPageRoute(
-                                  builder: (context) => const SchoolScreen()),
+                              'school',
+                              arguments: UserInfo(
+                                  name: args.name,
+                                  profileImage: args.profileImage,
+                                  age: _age,
+                                  number: _number,
+                                  school: '',
+                                  grade: 0,
+                                  group: 0,
+                                  eyes: 0,
+                                  mbti: '',
+                                  hobby: '',
+                                  style: []),
                             );
                           }
                         },
@@ -156,3 +181,30 @@ class _SignUpScreenState extends State<SignUpScreen> {
         ));
   }
 }
+
+// class UserInfo {
+//   String name;
+//   String profileImage;
+//   late int gender;
+//   String number;
+//   String age;
+//   String birthday = '2000-02-24';
+//   String school;
+//   int grade;
+//   int group;
+//   String mbti;
+//   String hobby;
+//   List style;
+
+//   UserInfo(
+//       {required this.name,
+//       required this.profileImage,
+//       required this.number,
+//       required this.age,
+//       required this.school,
+//       required this.grade,
+//       required this.group,
+//       required this.mbti,
+//       required this.hobby,
+//       required this.style});
+// }

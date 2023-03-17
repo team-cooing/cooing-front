@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:cooing_front/model/UserInfo.dart';
 import 'package:flutter/material.dart';
 
 class WelcomeScreen extends StatefulWidget {
@@ -10,6 +13,7 @@ class WelcomeScreen extends StatefulWidget {
 class _WelcomeScreenState extends State<WelcomeScreen> {
   @override
   Widget build(BuildContext context) {
+    final args = ModalRoute.of(context)!.settings.arguments as UserInfo;
     return Scaffold(
         // appBar: AppBar(
         //   backgroundColor: Colors.transparent,
@@ -33,7 +37,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     ),
                   ),
                   Text(
-                    " 백소현님,",
+                    " ${args.name}님,",
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 22,

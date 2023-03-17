@@ -1,3 +1,5 @@
+import 'package:cooing_front/model/UserInfo.dart';
+import 'package:cooing_front/pages/FeatureScreen.dart';
 import 'package:cooing_front/pages/SchoolScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,19 +14,22 @@ class ClassScreen extends StatefulWidget {
 class _ClassScreenState extends State<ClassScreen> {
   final List<String> _textList = ['몇 학년인가요?', '몇 반인가요?'];
 
-  FocusNode _grade = FocusNode();
-  FocusNode _group = FocusNode();
+  FocusNode _gradeFocus = FocusNode();
+  FocusNode _groupFocus = FocusNode();
 
   bool grade = false;
   bool group = false;
   bool button = false;
   int title = 0;
 
+  int _grade = 0;
+  int _group = 0;
+
   // var thirdField = FocusNode();
 
   @override
   Widget build(BuildContext context) {
-    // final node1 = FocusNode();
+    final args = ModalRoute.of(context)!.settings.arguments as UserInfo;
 
     return Scaffold(
         appBar: AppBar(
@@ -48,8 +53,8 @@ class _ClassScreenState extends State<ClassScreen> {
                 visible: group,
                 child: TextField(
                   autofocus: true,
-                  focusNode: _group,
-                  maxLength: 3,
+                  focusNode: _groupFocus,
+                  maxLength: 2,
                   keyboardType: TextInputType.number,
                   inputFormatters: <TextInputFormatter>[
                     FilteringTextInputFormatter.digitsOnly
@@ -61,7 +66,7 @@ class _ClassScreenState extends State<ClassScreen> {
                         // FocusScope.of(context).requestFocus(ageField);
                       });
                     }
-                    // 현재 텍스트필드의 텍스트를 출력
+                    _group = int.parse(text);
                   },
                   decoration: InputDecoration(
                       counterText: '',
@@ -74,7 +79,7 @@ class _ClassScreenState extends State<ClassScreen> {
                 ),
               ),
               TextField(
-                focusNode: _grade,
+                focusNode: _gradeFocus,
                 autofocus: true,
                 maxLength: 1,
                 keyboardType: TextInputType.number,
@@ -92,12 +97,12 @@ class _ClassScreenState extends State<ClassScreen> {
                 onChanged: (text) {
                   if (text.length == 1) {
                     setState(() {
-                      _group.requestFocus();
+                      _groupFocus.requestFocus();
                       group = true;
                       title = 1;
                     });
                   }
-                  // 현재 텍스트필드의 텍스트를 출력
+                  _grade = int.parse(text);
                 },
               ),
               Spacer(),
@@ -107,19 +112,29 @@ class _ClassScreenState extends State<ClassScreen> {
                       width: double.infinity,
                       height: 50,
                       child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            primary: Color.fromARGB(255, 151, 84, 251)),
-                        child: const Text('확인',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 15)),
-                        onPressed: () {
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(
-                          //       builder: (context) => const SchoolScreen()),
-                          // );
-                        },
-                      )))
+                          style: ElevatedButton.styleFrom(
+                              primary: Color.fromARGB(255, 151, 84, 251)),
+                          child: const Text('확인',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 15)),
+                          onPressed: () {
+                            Navigator.pushNamed(
+                              context,
+                              'feature',
+                              arguments: UserInfo(
+                                  name: args.name,
+                                  profileImage: args.profileImage,
+                                  age: args.age,
+                                  number: args.number,
+                                  school: args.school,
+                                  grade: _grade,
+                                  group: _group,
+                                  eyes: 0,
+                                  mbti: '',
+                                  hobby: '',
+                                  style: []),
+                            );
+                          })))
             ]),
           ),
         ));

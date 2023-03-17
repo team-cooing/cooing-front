@@ -1,3 +1,4 @@
+import 'package:cooing_front/model/UserInfo.dart';
 import 'package:cooing_front/pages/ClassScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -15,6 +16,7 @@ class _SchoolScreenState extends State<SchoolScreen> {
   FocusNode node1 = FocusNode();
   List<Schools> schools = [];
   bool isLoading = true;
+  bool empty = false;
   bool button = true;
   bool disableButton = true;
   String searchSchool = '';
@@ -23,8 +25,11 @@ class _SchoolScreenState extends State<SchoolScreen> {
 
   Future initSchools(args) async {
     schools = await schoolsProvider.getSchools(args);
-    if (schools == null) {
-      // isLoading = false;
+    print(schools.length);
+    if (schools.length == 0) {
+      empty = true;
+    } else {
+      empty = false;
     }
     // print(schools[0].location);
   }
@@ -40,6 +45,11 @@ class _SchoolScreenState extends State<SchoolScreen> {
         beforeSearch = searchSchool;
         isLoading = false;
         button = false;
+
+        if (empty) {
+          button = true;
+          isLoading = true;
+        }
       });
     });
   }
@@ -47,6 +57,7 @@ class _SchoolScreenState extends State<SchoolScreen> {
   @override
   Widget build(BuildContext context) {
     // final node1 = FocusNode();
+    final args = ModalRoute.of(context)!.settings.arguments as UserInfo;
 
     return Scaffold(
         appBar: AppBar(
@@ -99,6 +110,13 @@ class _SchoolScreenState extends State<SchoolScreen> {
                         labelStyle: new TextStyle(
                             color: Color.fromARGB(255, 182, 183, 184))),
                   )),
+              Visibility(
+                  child: Text(
+                    '검색 결과가 없습니다.',
+                    style: TextStyle(
+                        color: Color.fromRGBO(51, 61, 75, 0.4), fontSize: 16),
+                  ),
+                  visible: empty),
               Visibility(visible: button, child: Spacer()),
               Visibility(
                   visible: button,
@@ -116,13 +134,12 @@ class _SchoolScreenState extends State<SchoolScreen> {
                   )),
               isLoading
                   ? Container()
-                  : SizedBox(
-                      height: 500,
+                  : Expanded(
                       child: GridView.builder(
                           gridDelegate:
                               SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 1,
-                            childAspectRatio: 6 / 1,
+                            childAspectRatio: 6 / 1.1,
                             crossAxisSpacing: 10,
                           ),
                           itemCount: schools.length,
@@ -138,11 +155,21 @@ class _SchoolScreenState extends State<SchoolScreen> {
                                 )),
                                 child: InkWell(
                                   onTap: () {
-                                    Navigator.push(
+                                    Navigator.pushNamed(
                                       context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              const ClassScreen()),
+                                      'class',
+                                      arguments: UserInfo(
+                                          name: args.name,
+                                          profileImage: args.profileImage,
+                                          age: args.age,
+                                          number: args.number,
+                                          school: schools[index].name,
+                                          grade: 0,
+                                          group: 0,
+                                          eyes: 0,
+                                          mbti: '',
+                                          hobby: '',
+                                          style: []),
                                     );
                                     ;
                                   },
@@ -151,7 +178,7 @@ class _SchoolScreenState extends State<SchoolScreen> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Container(
-                                          padding: const EdgeInsets.only(
+                                          margin: const EdgeInsets.only(
                                               top: 5, bottom: 5),
 
                                           // padding:
