@@ -1,0 +1,233 @@
+import 'package:cooing_front/model/UserInfo.dart';
+import 'package:cooing_front/pages/ClassScreen.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:cooing_front/model/Schools.dart';
+import 'package:cooing_front/providers/schools_providers.dart';
+
+class SchoolScreen extends StatefulWidget {
+  const SchoolScreen({super.key});
+
+  @override
+  _SchoolScreenState createState() => _SchoolScreenState();
+}
+
+class _SchoolScreenState extends State<SchoolScreen> {
+  FocusNode node1 = FocusNode();
+  List<Schools> schools = [];
+  bool isLoading = true;
+  bool empty = false;
+  bool button = true;
+  bool disableButton = true;
+  String searchSchool = '';
+  String beforeSearch = '';
+  SchoolsProviders schoolsProvider = SchoolsProviders();
+
+  Future initSchools(args) async {
+    schools = await schoolsProvider.getSchools(args);
+    print(schools.length);
+    if (schools.length == 0) {
+      empty = true;
+    } else {
+      empty = false;
+    }
+    // print(schools[0].location);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  void searchButton() {
+    initSchools(searchSchool).then((_) {
+      setState(() {
+        beforeSearch = searchSchool;
+        isLoading = false;
+        button = false;
+
+        if (empty) {
+          button = true;
+          isLoading = true;
+        }
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // final node1 = FocusNode();
+    final args = ModalRoute.of(context)!.settings.arguments as UserInfo;
+
+    return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+        ),
+        backgroundColor: Color(0xFFffffff),
+        body: Container(
+          padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
+          child: Form(
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(
+                '우리 학교를 검색해주세요.',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 22,
+                    color: Color.fromARGB(255, 51, 61, 75)),
+              ),
+              Container(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: TextField(
+                    onChanged: (text) {
+                      setState(() {
+                        searchSchool = text;
+
+                        if (searchSchool != beforeSearch) {
+                          button = true;
+                          isLoading = true;
+                        }
+
+                        if (text.length == 0) {
+                          setState(() {
+                            disableButton = false;
+                          });
+                        } else {
+                          setState(() {
+                            disableButton = true;
+                          });
+                        }
+                      });
+                    },
+                    focusNode: node1,
+                    autofocus: true,
+                    decoration: InputDecoration(
+                        focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                                color: Color.fromARGB(255, 151, 84, 251))),
+                        labelText: "학교 입력",
+                        labelStyle: new TextStyle(
+                            color: Color.fromARGB(255, 182, 183, 184))),
+                  )),
+              Visibility(
+                  child: Text(
+                    '검색 결과가 없습니다.',
+                    style: TextStyle(
+                        color: Color.fromRGBO(51, 61, 75, 0.4), fontSize: 16),
+                  ),
+                  visible: empty),
+              Visibility(visible: button, child: Spacer()),
+              Visibility(
+                  visible: button,
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            primary: Color.fromARGB(255, 151, 84, 251),
+                            onSurface: Color.fromRGBO(151, 84, 251, 0.2)),
+                        child: const Text('검색',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 15)),
+                        onPressed: disableButton ? searchButton : null),
+                  )),
+              isLoading
+                  ? Container()
+                  : Expanded(
+                      child: GridView.builder(
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 1,
+                            childAspectRatio: 6 / 1.1,
+                            crossAxisSpacing: 10,
+                          ),
+                          itemCount: schools.length,
+                          itemBuilder: (context, index) {
+                            return Container(
+                                padding:
+                                    const EdgeInsets.only(top: 5, bottom: 5),
+                                decoration: BoxDecoration(
+                                    border: Border(
+                                  bottom: BorderSide(
+                                      width: 2.0,
+                                      color: Color.fromRGBO(51, 61, 75, 0.2)),
+                                )),
+                                child: InkWell(
+                                  onTap: () {
+                                    Navigator.pushNamed(
+                                      context,
+                                      'class',
+                                      arguments: UserInfo(
+                                          name: args.name,
+                                          profileImage: args.profileImage,
+                                          age: args.age,
+                                          number: args.number,
+                                          school: schools[index].name,
+                                          grade: 0,
+                                          group: 0,
+                                          eyes: 0,
+                                          mbti: '',
+                                          hobby: '',
+                                          style: []),
+                                    );
+                                    ;
+                                  },
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                          margin: const EdgeInsets.only(
+                                              top: 5, bottom: 5),
+
+                                          // padding:
+                                          //     const EdgeInsets.only(bottom: 10),
+                                          child: Text(
+                                            schools[index].name,
+                                            style: TextStyle(
+                                                fontSize: 15,
+                                                color: Color.fromRGBO(
+                                                    51, 61, 75, 1)),
+                                          )),
+                                      Row(
+                                        children: [
+                                          Container(
+                                            margin: const EdgeInsets.only(
+                                                right: 10),
+                                            width: 40,
+                                            height: 20,
+                                            decoration: BoxDecoration(
+                                              color: Color.fromRGBO(
+                                                  151, 84, 251, 0.2),
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(10.0)),
+                                            ),
+                                            child: Center(
+                                                child: Text(
+                                              '주소',
+                                              style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Color.fromRGBO(
+                                                      151, 84, 251, 1)),
+                                            )),
+                                          ),
+                                          Text(
+                                            schools[index].location,
+                                            style: TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w300,
+                                                color: Color.fromRGBO(
+                                                    51, 61, 75, 1)),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ));
+                          })),
+            ]),
+          ),
+        ));
+  }
+}
