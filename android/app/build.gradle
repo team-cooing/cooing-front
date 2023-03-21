@@ -29,7 +29,7 @@ apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
-    compileSdkVersion flutter.compileSdkVersion
+    compileSdkVersion 33
     ndkVersion flutter.ndkVersion
 
     compileOptions {
@@ -51,7 +51,7 @@ android {
         applicationId "com.example.cooing_front"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
@@ -62,6 +62,8 @@ android {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig signingConfigs.debug
+            proguardFiles 'proguard-kakao.pro'
+
         }
     }
 }
@@ -71,8 +73,24 @@ flutter {
 }
 
 dependencies {
-      implementation platform('com.google.firebase:firebase-bom:30.2.0')
-  implementation 'com.google.firebase:firebase-analytics'
+    // 카카오 로그인
+    implementation group: 'com.kakao.sdk', name: 'usermgmt', version: '1.30.7'
+
+    // 카카오톡
+    implementation group: 'com.kakao.sdk', name: 'kakaotalk', version: '1.30.7'
+
+    // 카카오스토리
+    implementation group: 'com.kakao.sdk', name: 'kakaostory', version: '1.30.7'
+
+    // 카카오톡 공유
+    implementation group: 'com.kakao.sdk', name: 'kakaolink', version: '1.30.7'
+
+    // 카카오내비
+    implementation group: 'com.kakao.sdk', name: 'kakaonavi', version: '1.30.7'
+
+    implementation platform('com.google.firebase:firebase-bom:30.2.0')
+    
+    implementation 'com.google.firebase:firebase-analytics'
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }

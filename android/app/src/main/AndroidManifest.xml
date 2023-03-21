@@ -1,6 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.cooing_front">
-   <application
+<uses-permission android:name="android.permission.INTERNET"/>
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />   
+<application
         android:label="cooing_front"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
@@ -14,7 +16,8 @@
                <category android:name="android.intent.category.BROWSABLE" />
 
                <!-- Redirect URI, "kakao${YOUR_NATIVE_APP_KEY}://oauth" 형식 -->
-               <data android:scheme="kakao010e5977ad5bf0cfbc9ab47ebfaa14a2" android:host="oauth"/>
+            <data android:scheme="kakao010e5977ad5bf0cfbc9ab47ebfaa14a2" android:host="oauth"/>
+
            </intent-filter>
        </activity>
 
@@ -54,5 +57,9 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+            
+        <meta-data
+            android:name="com.kakao.sdk.AppKey"
+            android:value="010e5977ad5bf0cfbc9ab47ebfaa14a2" /> <!-- 네이티브 앱 키 설정 -->
     </application>
 </manifest>

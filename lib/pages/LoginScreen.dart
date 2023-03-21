@@ -1,8 +1,6 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:cooing_front/model/UserInfo.dart';
 
-import 'package:cooing_front/pages/SignUpScreen.dart';
 import 'package:cooing_front/model/Login_platform.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -29,7 +27,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ? await UserApi.instance.loginWithKakaoTalk()
           : await UserApi.instance.loginWithKakaoAccount();
 
-      final url = Uri.https('kapi.kakao.com', '/v2/user/me');
+      final url = Uri.https('kapi.bdkakao.com', '/v2/user/me');
 
       final response = await http.get(
         url,

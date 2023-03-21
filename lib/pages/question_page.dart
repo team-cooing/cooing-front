@@ -194,7 +194,7 @@ class _QuestionPageState extends State<QuestionPage>
                   height: 30.0,
                   child: Image(image: AssetImage('images/icon_copyLink.png'))),
               const Padding(padding: EdgeInsets.all(7.0)),
-              const Column(
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -254,7 +254,7 @@ class _QuestionPageState extends State<QuestionPage>
                   height: 30.0,
                   child: Image(image: AssetImage('images/icon_instagram.png'))),
               const Padding(padding: EdgeInsets.all(7.0)),
-              const Column(
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
