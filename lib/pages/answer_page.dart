@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cooing_front/pages/main_page.dart';
+import 'package:cooing_front/pages/send_complete_page.dart';
 
 class AnswerPage extends StatefulWidget {
   const AnswerPage({super.key});
@@ -11,10 +11,10 @@ class AnswerPage extends StatefulWidget {
 class _AnswerPageState extends State<AnswerPage> {
   var questionList = ['내 첫인상은 어땠어?', '내 mbti는 무엇인 것 같아?', '나랑 닮은 동물은 뭐야?'];
   String askText = '내 첫인상은 어땠어?';
-  bool? _checkSecret = false;
+  bool? _isAnonymous = false;
   int maxLength = 100;
   String textValue = "";
-  final TextEditingController _textController = TextEditingController();
+  final TextEditingController _answerController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -114,7 +114,7 @@ class _AnswerPageState extends State<AnswerPage> {
             enableSuggestions: false,
             autocorrect: false,
             style: const TextStyle(color: Colors.white70),
-            controller: _textController,
+            controller: _answerController,
             maxLines: 5,
             maxLength: 100,
             onChanged: (value) {
@@ -162,10 +162,10 @@ class _AnswerPageState extends State<AnswerPage> {
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
             activeColor: const Color(0xff9754FB),
             focusColor: const Color(0xff9754FB),
-            value: _checkSecret,
-            onChanged: (value) {
+            value: _isAnonymous,
+            onChanged: (bool? value) {
               setState(() {
-                _checkSecret = value;
+                _isAnonymous = value;
               });
             },
           ),
@@ -178,6 +178,10 @@ class _AnswerPageState extends State<AnswerPage> {
     );
   }
 
+  send(text) {
+    print(text + '\n_isAnonymous = $_isAnonymous');
+  }
+
   Widget sendBtn() {
     return Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
       SizedBox(
@@ -185,8 +189,12 @@ class _AnswerPageState extends State<AnswerPage> {
         height: 60,
         child: ElevatedButton(
             onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const MainPage()));
+              var answerText = _answerController.text;
+              send(answerText);
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const CompleteScreen()));
             },
             style: OutlinedButton.styleFrom(
               foregroundColor: Colors.white,
