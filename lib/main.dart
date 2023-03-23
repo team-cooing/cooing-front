@@ -1,5 +1,7 @@
 import 'package:cooing_front/firebase_options.dart';
+import 'package:cooing_front/pages/CandyScreen.dart';
 import 'package:cooing_front/pages/ClassScreen.dart';
+import 'package:cooing_front/pages/HintPage.dart';
 import 'package:cooing_front/pages/LoginScreen.dart';
 import 'package:cooing_front/pages/SchoolScreen.dart';
 import 'package:cooing_front/pages/SignUpScreen.dart';
@@ -31,7 +33,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      initialRoute: 'home',
+      initialRoute: 'hint',
       routes: {
         'home': (context) => const LoginScreen(),
         'signUp': (context) => const SignUpScreen(),
@@ -40,7 +42,9 @@ class MyApp extends StatelessWidget {
         'feature': (context) => const FeatureScreen(),
         'select': (context) => const MultiSelectscreen(),
         'welcome': (context) => const WelcomeScreen(),
-        'question': (context) => const QuestionPage()
+        'question': (context) => const QuestionPage(),
+        'hint': (context) => const HintScreen(),
+        'candy': (context) => const CandyScreen()
       },
     );
   }
