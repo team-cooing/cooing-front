@@ -8,12 +8,11 @@ class AnswerDetailPage extends StatefulWidget {
 }
 
 class _AnswerDetailPageState extends State<AnswerDetailPage> {
-  var questionList = ['내 첫인상은 어땠어?', '내 mbti는 무엇인 것 같아?', '나랑 닮은 동물은 뭐야?'];
   String askText = '내 첫인상은 어땠어?';
-  bool? isAnonymous = true;
+  bool? isAnonymous = false;
   int maxLength = 100;
   String textValue =
-      "너는 처음 봤을 때 왠지 다가가기 어려웠는데\n막상 이야기하고 나니까 좋았던 것 같아.\n\n생각보다 착해!";
+      "너는 \n처음 봤을 때 왠\n지 다가가기 어려웠는데\n막상 이ㅎㅎ야기하고 나니까 \n좋았던 것 같아.\n생각보다 착해!ㅋzzzzzzzzzzzz\nㅋ\nㅋ\nㅋ\nㅋ\nㅋ";
 
   @override
   Widget build(BuildContext context) {
@@ -49,35 +48,29 @@ class _AnswerDetailPageState extends State<AnswerDetailPage> {
 
   Widget _answerBody() {
     return SizedBox(
-      height: double.maxFinite,
       child: Column(children: [
-        Expanded(
-            child: SingleChildScrollView(
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-              Row(
-                children: [
-                  Padding(padding: EdgeInsets.only(left: 20, top: 20.0)),
-                  Text(
-                    "답변 확인",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 22.0,
-                    ),
-                    textAlign: TextAlign.center,
-                  )
-                ],
-              ),
-              const Padding(padding: EdgeInsets.all(7.0)),
-              fromMsgTxt(isAnonymous),
-              const Padding(padding: EdgeInsets.all(7.0)),
-              _answerDetailCard(),
-            ]))),
-        SizedBox(
-            width: double.infinity,
-            height: double.infinity,
-            child: bottomBtns(isAnonymous))
+        SingleChildScrollView(
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Row(
+            children: [
+              Padding(padding: EdgeInsets.only(left: 20, top: 20.0)),
+              Text(
+                "답변 확인",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 22.0,
+                ),
+                textAlign: TextAlign.center,
+              )
+            ],
+          ),
+          const Padding(padding: EdgeInsets.all(10.0)),
+          fromMsgTxt(isAnonymous),
+          const Padding(padding: EdgeInsets.all(7.0)),
+          _answerDetailCard(),
+          bottomBtns(isAnonymous)
+        ])),
       ]),
     );
   }
@@ -135,22 +128,25 @@ class _AnswerDetailPageState extends State<AnswerDetailPage> {
     return Container(
         width: 300,
         height: 150,
+        padding: EdgeInsets.all(8),
         decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(color: Colors.white, width: 0)),
-        child: Column(children: [
-          const Padding(padding: EdgeInsets.all(4)),
-          SizedBox(
-              height: 100,
-              child: Text(
-                textValue,
-                textAlign: TextAlign.justify,
-                style: TextStyle(
-                  color: Colors.black,
-                ),
-              )),
-        ]));
+        child: SingleChildScrollView(
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Padding(
+            padding: EdgeInsets.only(left: 10),
+            child: Container(
+                child: Text(
+              textValue,
+              style: TextStyle(
+                color: Colors.black,
+              ),
+            )),
+          ),
+        ])));
   }
 
   Widget bottomBtns(bool? isAnony) {
@@ -195,11 +191,17 @@ class _AnswerDetailPageState extends State<AnswerDetailPage> {
     );
 
     if (isAnony == true) {
-      return Column(
-        children: [checkFromBtn, Padding(padding: EdgeInsets.all(7)), replyBtn],
-      );
+      return Padding(
+          padding: EdgeInsets.only(top: 90),
+          child: Center(
+              child: Column(children: [
+            checkFromBtn,
+            Padding(padding: EdgeInsets.all(5)),
+            replyBtn
+          ])));
     }
 
-    return replyBtn;
+    return Padding(
+        padding: EdgeInsets.only(top: 160), child: Center(child: replyBtn));
   }
 }
