@@ -29,12 +29,15 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+<<<<<<< HEAD
   toggle_switch: ^2.0.1
   multi_select_item: ^1.0.2
   kakao_flutter_sdk_user: ^1.2.1
   http: ^0.13.5
   firebase_core: ^2.8.0
   firebase_auth: ^4.3.0
+=======
+>>>>>>> parent of 35a4f83 (Merge pull request #4 from team-cooing/kakao-login-page)
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -71,7 +74,6 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - images/kakao_login_medium_wide.png
     - images/sohee.jpg
     - images/icon_copyLink.png
     - images/icon_instagram.png

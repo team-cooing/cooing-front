@@ -6,6 +6,7 @@
         android:label="cooing_front"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+<<<<<<< HEAD
 
         <activity
            android:name="com.kakao.sdk.flutter.AuthCodeCustomTabsActivity"
@@ -22,6 +23,8 @@
        </activity>
 
 
+=======
+>>>>>>> parent of 35a4f83 (Merge pull request #4 from team-cooing/kakao-login-page)
         <activity
             android:name=".MainActivity"
             android:exported="true"
