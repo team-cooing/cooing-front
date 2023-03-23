@@ -7,7 +7,10 @@
         {
             "name": "cooing-front",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
+            "args": [
+         "--no-sound-null-safety"
+        ]
         },
         {
             "name": "cooing-front (profile mode)",

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cooing_front/pages/main_page.dart';
+import 'package:cooing_front/pages/answer_complete_page.dart';
 
 class AnswerPage extends StatefulWidget {
   const AnswerPage({super.key});
@@ -185,8 +185,10 @@ class _AnswerPageState extends State<AnswerPage> {
         height: 60,
         child: ElevatedButton(
             onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const MainPage()));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const AnswerCompleteScreen()));
             },
             style: OutlinedButton.styleFrom(
               foregroundColor: Colors.white,
