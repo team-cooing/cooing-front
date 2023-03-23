@@ -49,7 +49,7 @@ class _AnswerPageState extends State<AnswerPage> {
         child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SingleChildScrollView(
+        SingleChildScrollView(
           child: Row(
             children: [
               Padding(padding: EdgeInsets.all(15.0)),

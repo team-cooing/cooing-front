@@ -1,7 +1,10 @@
+import 'dart:async';
 import 'dart:convert';
-
 import 'package:cooing_front/model/UserInfo.dart';
+import 'package:cooing_front/pages/question_page.dart';
+import 'package:cooing_front/pages/tap_page.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({Key? key}) : super(key: key);
@@ -12,6 +15,13 @@ class WelcomeScreen extends StatefulWidget {
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
   @override
+  void initState() {
+    Timer(Duration(seconds: 3), () {
+      Get.to(TabPage());
+    });
+    super.initState();
+  }
+
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as UserInfo;
     return Scaffold(
