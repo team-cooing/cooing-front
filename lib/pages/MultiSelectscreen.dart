@@ -1,10 +1,15 @@
-import 'package:cooing_front/model/UserInfo.dart';
+import 'dart:convert';
+import 'dart:io';
+import 'package:cooing_front/model/User.dart';
+import 'package:cooing_front/model/firebase_auth_remote_data_source.dart';
 import 'package:cooing_front/pages/FeatureScreen.dart';
 import 'package:cooing_front/pages/SchoolScreen.dart';
 import 'package:cooing_front/pages/WelcomeScreen.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
 
 class MultiSelectscreen extends StatefulWidget {
   const MultiSelectscreen({super.key});
@@ -13,6 +18,7 @@ class MultiSelectscreen extends StatefulWidget {
 }
 
 class _MultiSelectscreenState extends State<MultiSelectscreen> {
+  final _firebaseAuthDataSource = firebaseAuthRemoteDataSourcen();
   List<Style> style = new List.empty(growable: true);
   List<Hobby> hobby = new List.empty(growable: true);
 
@@ -63,7 +69,7 @@ class _MultiSelectscreenState extends State<MultiSelectscreen> {
 
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as UserInfo;
+    final args = ModalRoute.of(context)!.settings.arguments as User;
 
     return Scaffold(
         appBar: AppBar(
@@ -190,10 +196,20 @@ class _MultiSelectscreenState extends State<MultiSelectscreen> {
                           }
                         }
                         print(_styleList);
+
+                        Future login() async {
+                          kakao.User user = await kakao.UserApi.instance.me();
+
+                          final token = await _firebaseAuthDataSource
+                              .createCustomToken({'uid': user.id.toString()});
+                          await firebase.FirebaseAuth.instance
+                              .signInWithCustomToken(token);
+                        }
+
                         Navigator.pushNamed(
                           context,
                           'welcome',
-                          arguments: UserInfo(
+                          arguments: User(
                               name: args.name,
                               profileImage: args.profileImage,
                               age: args.age,

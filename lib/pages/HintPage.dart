@@ -1,4 +1,4 @@
-import 'package:cooing_front/model/UserInfo.dart';
+import 'package:cooing_front/model/User.dart';
 import 'package:cooing_front/pages/CandyScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

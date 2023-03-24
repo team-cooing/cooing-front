@@ -1,36 +1,40 @@
-//class이름 User로 저장
-class UserInfo {
-  // uid 파이어베이스
-  // 카카오 이메일로 파이어베이스 가입 -> 카카오 uid 파이어베이스 비밀번호로 암호화해서 사용 -> 파이어베이스 uid를 저장
+class User {
+  late String uid;
   String name;
   String profileImage;
   late int gender; // 0:남자 1:여자
   String number;
   String age; //int
   String birthday = '2000-02-24';
-  String school; // SD_SCHUL_CODE 도 넣자.
+  String school;
+  late String schoolCode;
   int grade;
   int group;
   int eyes; // 0:무쌍 1:유쌍
   String mbti;
   String hobby;
   List style;
-  //List QuestionId_Info
-  // QuestionId_Info = [[ContentID, QuestionID], ... ]
+  late List<List>
+      questionInfos; // QuestionId_Info = [[ContentID, QuestionID], ... ]
 
-  UserInfo(
-      {required this.name,
-      required this.profileImage,
-      required this.number,
-      required this.age,
-      required this.school,
-      required this.grade,
-      required this.group,
-      required this.eyes,
-      required this.mbti,
-      required this.hobby,
-      required this.style});
+  User({
+    // required this.uid,
+    required this.name,
+    required this.profileImage,
+    required this.number,
+    required this.age,
+    required this.school,
+    // required this.schoolCode,
+    required this.grade,
+    required this.group,
+    required this.eyes,
+    required this.mbti,
+    required this.hobby,
+    required this.style,
+    // required this.questionInfos
+  });
 }
+
 
 // class Question {
 //   String id; // 마이크로세컨드까지 보낸 시간으로 사용

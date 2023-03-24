@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:cooing_front/model/UserInfo.dart';
+import 'package:cooing_front/model/User.dart';
 import 'package:cooing_front/pages/question_page.dart';
 import 'package:cooing_front/pages/tap_page.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +23,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   }
 
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as UserInfo;
+    final args = ModalRoute.of(context)!.settings.arguments as User;
     return Scaffold(
         // appBar: AppBar(
         //   backgroundColor: Colors.transparent,

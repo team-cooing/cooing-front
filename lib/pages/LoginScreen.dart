@@ -4,9 +4,10 @@ import 'package:cooing_front/model/UserInfo.dart';
 
 import 'package:cooing_front/pages/SignUpScreen.dart';
 import 'package:cooing_front/model/Login_platform.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
+import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
 // import 'package:parameters/';
 
 class LoginScreen extends StatefulWidget {
@@ -22,12 +23,12 @@ class _LoginScreenState extends State<LoginScreen> {
   String profileImage = '';
 
   void signInWithKakao() async {
-    User user;
+    kakao.User user;
     try {
-      bool isInstalled = await isKakaoTalkInstalled();
-      OAuthToken token = isInstalled
-          ? await UserApi.instance.loginWithKakaoTalk()
-          : await UserApi.instance.loginWithKakaoAccount();
+      bool isInstalled = await kakao.isKakaoTalkInstalled();
+      kakao.OAuthToken token = isInstalled
+          ? await kakao.UserApi.instance.loginWithKakaoTalk()
+          : await kakao.UserApi.instance.loginWithKakaoAccount();
 
       final url = Uri.https('kapi.kakao.com', '/v2/user/me');
 
@@ -38,7 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
         },
       );
 
-      User user = await UserApi.instance.me();
+      kakao.User user = await kakao.UserApi.instance.me();
 
       nickname = '${user.kakaoAccount?.profile?.nickname}';
       profileImage = '${user.kakaoAccount?.profile?.profileImageUrl}';
@@ -69,14 +70,14 @@ class _LoginScreenState extends State<LoginScreen> {
       );
     } catch (error) {
       print('카카오톡으로 로그인 실패 $error');
-      print(await KakaoSdk.origin);
+      print(await kakao.KakaoSdk.origin);
     }
   }
 
   void signOut() async {
     switch (_loginPlatform) {
       case LoginPlatform.kakao:
-        await UserApi.instance.logout();
+        await kakao.UserApi.instance.logout();
         break;
       case LoginPlatform.none:
         break;
@@ -96,29 +97,29 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         backgroundColor: Color(0xFFffffff),
         body: Container(
-          padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
-          child: Form(
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(
-                "당신을 몰래 좋아하는",
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 22,
-                    color: Color.fromARGB(255, 51, 61, 75)),
-              ),
-              Text(
-                "사람은 누굴까요?",
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 22,
-                    color: Color.fromARGB(255, 51, 61, 75)),
-              ),
-              Spacer(),
-              _loginButton()
-            ]),
-          ),
-        ));
+            padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
+            child: Form(
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "당신을 몰래 좋아하는",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 22,
+                          color: Color.fromARGB(255, 51, 61, 75)),
+                    ),
+                    Text(
+                      "사람은 누굴까요?",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 22,
+                          color: Color.fromARGB(255, 51, 61, 75)),
+                    ),
+                    Spacer(),
+                    _loginButton()
+                  ]),
+            )));
   }
 
   Widget _loginButton() {
