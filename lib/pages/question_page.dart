@@ -36,18 +36,6 @@ class _QuestionPageState extends State<QuestionPage>
   late String askButtonText = getAsk;
   late Color buttonColor = _colors[0];
 
-  //time
-  Timer? _secTimer;
-  Timer? _minTimer;
-  Timer? _hourTimer;
-  var _secTime = 1;
-  var _minTime = 1;
-  var _hourTime = 1;
-  var _isPlaying = false;
-  String timeAttack = '';
-  double timeAttackSize = 0.0;
-  late Color timetextColor = _colors[0];
-
   //shareCard
   bool _openshareCard = false;
 
@@ -55,60 +43,44 @@ class _QuestionPageState extends State<QuestionPage>
   final DynamicLink _link = DynamicLink();
   final String _userId = 'id';
   String _userUri = '';
-  @override
-  void dispose() {
-    _secTimer?.cancel();
-    _minTimer?.cancel();
-    _hourTimer?.cancel();
-    super.dispose();
+
+  Timer? countdownTimer;
+  Duration myDuration = Duration(days: 5);
+
+  String timeAttack = '';
+  double timeAttackSize = 0.0;
+  late Color timetextColor = _colors[0];
+
+  var nowHour = 0;
+  var nowMinute = 0;
+  var nowSecond = 0;
+
+  void startTimer() {
+    countdownTimer =
+        Timer.periodic(Duration(seconds: 1), (_) => setCountDown());
   }
 
-  void _click() {
-    _isPlaying = !_isPlaying;
-
-    if (_isPlaying) {
-      _start();
-    } else {
-      _reset();
-    }
+  // Step 4
+  void stopTimer() {
+    setState(() => countdownTimer!.cancel());
   }
 
-  void _start() {
-    _secTimer = Timer.periodic(const Duration(seconds: 1), (secTimer) {
-      setState(() {
-        _secTime++;
-        if (_secTime > 60) {
-          _secTime %= 60;
-        }
-      });
-    });
-
-    _minTimer = Timer.periodic(const Duration(minutes: 1), (minTimer) {
-      setState(() {
-        _minTime++;
-        if (_minTime > 60) {
-          _minTime %= 60;
-        }
-      });
-    });
-
-    _hourTimer = Timer.periodic(const Duration(hours: 1), (hourTimer) {
-      setState(() {
-        _hourTime++;
-      });
-    });
+  // Step 5
+  void resetTimer() {
+    stopTimer();
+    setState(() => myDuration = Duration(days: 5));
   }
 
-  void _reset() {
+  // Step 6
+  void setCountDown() {
+    const reduceSecondsBy = 1;
     setState(() {
-      _isPlaying = false;
-      _secTimer?.cancel();
-      _minTimer?.cancel();
-      _hourTimer?.cancel();
-
-      _secTime = 1;
-      _minTime = 0;
-      _hourTime = 0;
+      final seconds = myDuration.inSeconds - reduceSecondsBy;
+      if (seconds < 0) {
+        countdownTimer!.cancel();
+      } else {
+        myDuration = Duration(seconds: seconds);
+      }
     });
   }
 
@@ -120,8 +92,14 @@ class _QuestionPageState extends State<QuestionPage>
           cardHeight = 305.0;
           askText = question;
           askButtonText = getAnswer;
+
           timeAttackSize = 12.0;
-          _click();
+          DateTime now = DateTime.now();
+          nowHour = now.hour;
+          nowMinute = now.minute;
+          nowSecond = now.second;
+          print('$nowHour : $nowMinute : $nowSecond');
+          startTimer();
 
           break;
         case '답변 받기':
@@ -143,7 +121,9 @@ class _QuestionPageState extends State<QuestionPage>
           askText = question;
           askClosedMent = '새로운 질문이 도착했어요!';
           buttonColor = _colors[0];
-          _reset();
+          if (countdownTimer == null || countdownTimer!.isActive) {
+            stopTimer();
+          }
           timeAttackSize = 0.0;
           break;
       }
@@ -296,17 +276,30 @@ class _QuestionPageState extends State<QuestionPage>
     }
   }
 
-  String timeText() {
-    var hour = 24 - (_hourTime);
-    var minute = 60 - (_minTime);
-    var sec = 60 - (_secTime);
-
-    String time = '남은 시간 $hour : $minute : $sec';
-
-    return time;
-  }
-
   Widget pupleBox() {
+    String strDigits(int n) => n.toString().padLeft(2, '0');
+    // Step 7
+    // print()
+    int hours = myDuration.inHours.remainder(24 - nowHour);
+    int minutes = myDuration.inMinutes.remainder(60 - nowMinute);
+    int seconds = myDuration.inSeconds.remainder(60 - nowSecond);
+
+    if (minutes < 0) {
+      minutes += 60;
+    }
+
+    if (seconds < 0) {
+      seconds += 60;
+    }
+
+    if (hours < 0) {
+      hours += 24;
+    }
+
+    final strHours = strDigits(hours);
+    final strMinutes = strDigits(minutes);
+    final strSeconds = strDigits(seconds);
+
     return SizedBox(
       width: 347.0,
       height: cardHeight,
@@ -318,7 +311,7 @@ class _QuestionPageState extends State<QuestionPage>
             const Padding(padding: EdgeInsets.all(5.0)),
             Container(
                 padding: const EdgeInsets.only(right: 175.0),
-                child: Text(timeText(),
+                child: Text('남은 시간 $strHours : $strMinutes : $strSeconds',
                     style: TextStyle(
                       color: Colors.white,
                       backgroundColor: _colors[2],
