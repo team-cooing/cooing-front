@@ -42,7 +42,7 @@ class _AnswerDetailPageState extends State<AnswerDetailPage> {
           )
         ],
       ),
-      body: SafeArea(child: _answerBody()),
+      body: SafeArea(child: SingleChildScrollView(child: _answerBody())),
     );
   }
 
@@ -67,7 +67,6 @@ class _AnswerDetailPageState extends State<AnswerDetailPage> {
           ),
           const Padding(padding: EdgeInsets.all(10.0)),
           fromMsgTxt(isAnonymous),
-          const Padding(padding: EdgeInsets.all(7.0)),
           _answerDetailCard(),
           bottomBtns(isAnonymous)
         ])),
@@ -94,9 +93,10 @@ class _AnswerDetailPageState extends State<AnswerDetailPage> {
 
   Widget _answerDetailCard() {
     return Center(
-        child: SizedBox(
-            width: 350.0,
-            height: 370.0,
+        child: Container(
+            width: double.infinity,
+            padding:
+                EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 10),
             child: Card(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30)),
@@ -118,41 +118,35 @@ class _AnswerDetailPageState extends State<AnswerDetailPage> {
                       fontSize: 16,
                       color: Colors.white),
                 ),
-                const Padding(padding: EdgeInsets.all(15.0)),
-                answerTxtView(),
+                Container(
+                  padding: EdgeInsets.only(
+                      left: 20.0, right: 20.0, top: 25, bottom: 25),
+                  child: answerTxtView(),
+                )
               ]),
             )));
   }
 
   Widget answerTxtView() {
     return Container(
-        width: 300,
-        height: 150,
-        padding: EdgeInsets.all(8),
-        decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.white, width: 0)),
-        child: SingleChildScrollView(
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Padding(
-            padding: EdgeInsets.only(left: 10),
-            child: Container(
-                child: Text(
-              textValue,
-              style: TextStyle(
-                color: Colors.black,
-              ),
-            )),
-          ),
-        ])));
+      width: double.infinity,
+      padding: EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 15),
+      decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.white, width: 0)),
+      child: Text(
+        textValue,
+        style: TextStyle(
+          color: Colors.black,
+        ),
+      ),
+    );
   }
 
   Widget bottomBtns(bool? isAnony) {
     var checkFromBtn = SizedBox(
-      width: 350,
-      height: 60,
+      width: double.infinity,
       child: ElevatedButton(
           onPressed: () {
             print('Clicked : <누가보냈는지확인하기>');
@@ -171,8 +165,7 @@ class _AnswerDetailPageState extends State<AnswerDetailPage> {
     );
 
     var replyBtn = SizedBox(
-      width: 350,
-      height: 60,
+      width: double.infinity,
       child: ElevatedButton(
           onPressed: () {
             print("Clicked : <답장하기>");
@@ -191,17 +184,31 @@ class _AnswerDetailPageState extends State<AnswerDetailPage> {
     );
 
     if (isAnony == true) {
-      return Padding(
-          padding: EdgeInsets.only(top: 90),
-          child: Center(
-              child: Column(children: [
-            checkFromBtn,
-            Padding(padding: EdgeInsets.all(5)),
-            replyBtn
-          ])));
+      return SafeArea(
+          child: Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).systemGestureInsets.bottom + 20,
+                left: 15,
+                right: 15,
+              ),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    checkFromBtn,
+                    Padding(padding: EdgeInsets.all(5)),
+                    replyBtn
+                  ])));
     }
 
-    return Padding(
-        padding: EdgeInsets.only(top: 160), child: Center(child: replyBtn));
+    return SafeArea(
+        child: Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).systemGestureInsets.bottom + 20,
+              left: 15,
+              right: 15,
+            ),
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [replyBtn])));
   }
 }

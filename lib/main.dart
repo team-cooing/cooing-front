@@ -5,6 +5,7 @@ import 'package:cooing_front/pages/SchoolScreen.dart';
 import 'package:cooing_front/pages/SignUpScreen.dart';
 import 'package:cooing_front/pages/WelcomeScreen.dart';
 import 'package:cooing_front/pages/answer_page.dart';
+import 'package:cooing_front/pages/main_page.dart';
 import 'package:cooing_front/pages/question_page.dart';
 import 'package:flutter/material.dart';
 import 'package:cooing_front/pages/FeatureScreen.dart';
