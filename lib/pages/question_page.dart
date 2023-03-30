@@ -44,73 +44,35 @@ class _QuestionPageState extends State<QuestionPage>
   final String _userId = 'id';
   String _userUri = '';
 
-  Timer? countdownTimer;
-  Duration myDuration = Duration(days: 5);
-
+  //타이머 관련
   String timeAttack = '';
   double timeAttackSize = 0.0;
   late Color timetextColor = _colors[0];
-
-  var nowHour = 0;
-  var nowMinute = 0;
-  var nowSecond = 0;
-
-  void startTimer() {
-    countdownTimer =
-        Timer.periodic(Duration(seconds: 1), (_) => setCountDown());
-  }
-
-  // Step 4
-  void stopTimer() {
-    setState(() => countdownTimer!.cancel());
-  }
-
-  // Step 5
-  void resetTimer() {
-    stopTimer();
-    setState(() => myDuration = Duration(days: 5));
-  }
-
-  // Step 6
-  void setCountDown() {
-    const reduceSecondsBy = 1;
-    setState(() {
-      final seconds = myDuration.inSeconds - reduceSecondsBy;
-      if (seconds < 0) {
-        countdownTimer!.cancel();
-      } else {
-        myDuration = Duration(seconds: seconds);
-      }
-    });
-  }
+  Timer? _timer;
+  Duration _countdown = Duration.zero;
+  bool _isRunning = false;
 
   changeAskCard() {
     setState(() {
       switch (askButtonText) {
         case '질문 받기':
+        //질문
           var question = questionList[_random.nextInt(questionList.length)];
           cardHeight = 305.0;
           askText = question;
           askButtonText = getAnswer;
-
           timeAttackSize = 12.0;
-          DateTime now = DateTime.now();
-          nowHour = now.hour;
-          nowMinute = now.minute;
-          nowSecond = now.second;
-          print('$nowHour : $nowMinute : $nowSecond');
-          startTimer();
-
+          _startTimer();
           break;
         case '답변 받기':
           DateTime nowDate = DateTime.now();
           print('$nowDate');
-          DateTime newDate = nowDate.add(const Duration(hours: 24));
+          DateTime closeDate = nowDate.add(const Duration(hours: 24));
           timetextColor = _colors[2];
           askButtonText = closeAsk;
           buttonColor = _colors[1];
           askClosedMent =
-              '해당 질문은 ${newDate.day}일 ${newDate.hour}시 ${newDate.minute}부터 닫을 수 있습니다.';
+              '해당 질문은 ${closeDate.day}일 ${closeDate.hour}시 ${closeDate.minute}부터 닫을 수 있습니다.';
           askClosedMentSize = 10.0;
           _openshareCard = true;
 
@@ -121,13 +83,59 @@ class _QuestionPageState extends State<QuestionPage>
           askText = question;
           askClosedMent = '새로운 질문이 도착했어요!';
           buttonColor = _colors[0];
-          if (countdownTimer == null || countdownTimer!.isActive) {
-            stopTimer();
-          }
+
           timeAttackSize = 0.0;
+          _resetTimer();
           break;
       }
     });
+  }
+
+  void _startTimer() {
+    final now = DateTime.now();
+    final endOfDay = DateTime(now.year, now.month, now.day + 1);
+    final remainingSeconds = endOfDay.difference(now).inSeconds;
+    setState(() {
+      _countdown = Duration(seconds: remainingSeconds);
+      _isRunning = true;
+    });
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        if (_countdown.inSeconds == 0) {
+          _timer?.cancel();
+          _isRunning = false;
+        } else {
+          _countdown = Duration(seconds: _countdown.inSeconds - 1);
+        }
+      });
+    });
+  }
+
+  void _resetTimer() {
+    setState(() {
+      _countdown = Duration.zero;
+      _isRunning = false;
+    });
+    _timer?.cancel();
+  }
+
+  String _formatDuration(Duration duration) {
+    String twoDigits(int n) {
+      if (n >= 10) return "$n";
+      return "0$n";
+    }
+
+    String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+    String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+    String twoDigitHours = twoDigits(duration.inHours);
+
+    return "남은 시간 $twoDigitHours : $twoDigitMinutes : $twoDigitSeconds";
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
   }
 
   @override
@@ -277,29 +285,7 @@ class _QuestionPageState extends State<QuestionPage>
   }
 
   Widget pupleBox() {
-    String strDigits(int n) => n.toString().padLeft(2, '0');
-    // Step 7
-    // print()
-    int hours = myDuration.inHours.remainder(24 - nowHour);
-    int minutes = myDuration.inMinutes.remainder(60 - nowMinute);
-    int seconds = myDuration.inSeconds.remainder(60 - nowSecond);
-
-    if (minutes < 0) {
-      minutes += 60;
-    }
-
-    if (seconds < 0) {
-      seconds += 60;
-    }
-
-    if (hours < 0) {
-      hours += 24;
-    }
-
-    final strHours = strDigits(hours);
-    final strMinutes = strDigits(minutes);
-    final strSeconds = strDigits(seconds);
-
+    String remainTimer = _formatDuration(_countdown);
     return SizedBox(
       width: 347.0,
       height: cardHeight,
@@ -311,7 +297,7 @@ class _QuestionPageState extends State<QuestionPage>
             const Padding(padding: EdgeInsets.all(5.0)),
             Container(
                 padding: const EdgeInsets.only(right: 175.0),
-                child: Text('남은 시간 $strHours : $strMinutes : $strSeconds',
+                child: Text(remainTimer,
                     style: TextStyle(
                       color: Colors.white,
                       backgroundColor: _colors[2],
