@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:cooing_front/model/UserInfo.dart';
+import 'package:cooing_front/model/User.dart';
 
 import 'package:cooing_front/pages/SignUpScreen.dart';
 import 'package:cooing_front/model/Login_platform.dart';
@@ -55,7 +55,7 @@ class _LoginScreenState extends State<LoginScreen> {
       Navigator.pushNamed(
         context,
         'signUp',
-        arguments: UserInfo(
+        arguments: User(
             name: nickname,
             profileImage: profileImage,
             age: '',

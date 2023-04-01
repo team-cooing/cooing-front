@@ -1,5 +1,5 @@
 import 'dart:math';
-import 'package:cooing_front/hyeons-space/data/user.dart';
+import 'package:cooing_front/model/User.dart';
 import 'package:flutter/material.dart';
 
 List<String> generateHint(User user) {
@@ -7,7 +7,7 @@ List<String> generateHint(User user) {
   String name = user.name;
 
   // 만약 한국어 문자열이 아니라면, []를 반환
-  if(!isKorean(name)){
+  if (!isKorean(name)) {
     return result;
   }
 
@@ -27,7 +27,7 @@ List<String> generateHint(User user) {
     // 일곱번째 힌트: 몇~몇반 사이
     '${getClassRange(user.group)}반 사이',
     // 여덟번째 힌트: 무쌍/유쌍
-    user.eyes==0?'무쌍':'유쌍',
+    user.eyes == 0 ? '무쌍' : '유쌍',
     // 아홉번째 힌트: mbti 중 하나
     getMBTI(user.mbti),
     // 열번째 힌트: 취미
@@ -39,11 +39,11 @@ List<String> generateHint(User user) {
   final random = Random();
   List<String> selected = [];
 
-  while(selected.length < 3){
+  while (selected.length < 3) {
     final index = random.nextInt(hints.length);
     final hint = hints[index];
 
-    if(!selected.contains(hint)){
+    if (!selected.contains(hint)) {
       selected.add(hint);
     }
   }
@@ -66,18 +66,80 @@ List<List<String>> separateConsonantsAndVowels(String name) {
 
   const base = 0xAC00;
 
-  final firstConsonants = ['ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ',
-  'ㅂ', 'ㅃ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅉ',
-  'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'
+  final firstConsonants = [
+    'ㄱ',
+    'ㄲ',
+    'ㄴ',
+    'ㄷ',
+    'ㄸ',
+    'ㄹ',
+    'ㅁ',
+    'ㅂ',
+    'ㅃ',
+    'ㅅ',
+    'ㅆ',
+    'ㅇ',
+    'ㅈ',
+    'ㅉ',
+    'ㅊ',
+    'ㅋ',
+    'ㅌ',
+    'ㅍ',
+    'ㅎ'
   ];
-  final secondVowels = ['ㅏ', 'ㅐ', 'ㅑ', 'ㅒ', 'ㅓ', 'ㅔ', 'ㅕ',
-    'ㅖ', 'ㅗ', 'ㅘ', 'ㅙ', 'ㅚ', 'ㅛ', 'ㅜ',
-    'ㅝ', 'ㅞ', 'ㅟ', 'ㅠ', 'ㅡ', 'ㅢ', 'ㅣ']
-  ;
-  final thirdConsonants = ['', 'ㄱ', 'ㄲ', 'ㄳ', 'ㄴ', 'ㄵ', 'ㄶ',
-    'ㄷ', 'ㄹ', 'ㄺ', 'ㄻ', 'ㄼ', 'ㄽ', 'ㄾ',
-    'ㄿ', 'ㅀ', 'ㅁ', 'ㅂ', 'ㅄ', 'ㅅ', 'ㅆ',
-    'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'];
+  final secondVowels = [
+    'ㅏ',
+    'ㅐ',
+    'ㅑ',
+    'ㅒ',
+    'ㅓ',
+    'ㅔ',
+    'ㅕ',
+    'ㅖ',
+    'ㅗ',
+    'ㅘ',
+    'ㅙ',
+    'ㅚ',
+    'ㅛ',
+    'ㅜ',
+    'ㅝ',
+    'ㅞ',
+    'ㅟ',
+    'ㅠ',
+    'ㅡ',
+    'ㅢ',
+    'ㅣ'
+  ];
+  final thirdConsonants = [
+    '',
+    'ㄱ',
+    'ㄲ',
+    'ㄳ',
+    'ㄴ',
+    'ㄵ',
+    'ㄶ',
+    'ㄷ',
+    'ㄹ',
+    'ㄺ',
+    'ㄻ',
+    'ㄼ',
+    'ㄽ',
+    'ㄾ',
+    'ㄿ',
+    'ㅀ',
+    'ㅁ',
+    'ㅂ',
+    'ㅄ',
+    'ㅅ',
+    'ㅆ',
+    'ㅇ',
+    'ㅈ',
+    'ㅊ',
+    'ㅋ',
+    'ㅌ',
+    'ㅍ',
+    'ㅎ'
+  ];
 
   final nameChars = name.characters.toList();
   for (final char in nameChars) {
@@ -95,11 +157,11 @@ List<List<String>> separateConsonantsAndVowels(String name) {
 }
 
 // 첫번째 힌트: 이름 초성을 반환하는 함수
-String getConsonants(String name){
+String getConsonants(String name) {
   String result = '';
 
   final separatedName = separateConsonantsAndVowels(name);
-  for(var i in separatedName){
+  for (var i in separatedName) {
     result += i[0];
   }
 
@@ -107,20 +169,20 @@ String getConsonants(String name){
 }
 
 // 두번째 힌트: 이름의 첫 글자를 반환하는 함수
-String getFirstName(String name){
+String getFirstName(String name) {
   String result = name[0];
 
   return result;
 }
 
 // 세번째 힌트: 이름 받침 개수를 반환하는 함수
-int getSumOfConsonants(String name){
+int getSumOfConsonants(String name) {
   int result = 0;
 
   final separatedName = separateConsonantsAndVowels(name);
-  for(var i in separatedName){
-    if(i[2].isNotEmpty){
-      result+=1;
+  for (var i in separatedName) {
+    if (i[2].isNotEmpty) {
+      result += 1;
     }
   }
 
@@ -132,7 +194,10 @@ int getMostFrequentDigit(String phoneNumber) {
   int result = 0;
 
   final digitsRegExp = RegExp(r'\d');
-  final digits = phoneNumber.replaceAll('010', '').split('').where((digit) => digitsRegExp.hasMatch(digit));
+  final digits = phoneNumber
+      .replaceAll('010', '')
+      .split('')
+      .where((digit) => digitsRegExp.hasMatch(digit));
 
   if (digits.isEmpty) {
     return result;
@@ -170,7 +235,7 @@ String getMonthFromBirthday(String birthday) {
 String getClassRange(int number) {
   String result = '';
 
-  if(number<=0){
+  if (number <= 0) {
     return result;
   }
 

@@ -9,6 +9,7 @@ import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
 
 class MultiSelectscreen extends StatefulWidget {
@@ -18,7 +19,7 @@ class MultiSelectscreen extends StatefulWidget {
 }
 
 class _MultiSelectscreenState extends State<MultiSelectscreen> {
-  final _firebaseAuthDataSource = firebaseAuthRemoteDataSourcen();
+  final _authentication = firebase.FirebaseAuth.instance;
   List<Style> style = new List.empty(growable: true);
   List<Hobby> hobby = new List.empty(growable: true);
 
@@ -189,7 +190,7 @@ class _MultiSelectscreenState extends State<MultiSelectscreen> {
                       child: const Text('확인',
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 15)),
-                      onPressed: () {
+                      onPressed: () async {
                         for (int i = 0; i < style.length; i++) {
                           if (style[i].selected) {
                             _styleList.add(style[i].name);
@@ -197,31 +198,31 @@ class _MultiSelectscreenState extends State<MultiSelectscreen> {
                         }
                         print(_styleList);
 
-                        Future login() async {
-                          kakao.User user = await kakao.UserApi.instance.me();
-
-                          final token = await _firebaseAuthDataSource
-                              .createCustomToken({'uid': user.id.toString()});
-                          await firebase.FirebaseAuth.instance
-                              .signInWithCustomToken(token);
-                        }
-
-                        Navigator.pushNamed(
-                          context,
-                          'welcome',
-                          arguments: User(
-                              name: args.name,
-                              profileImage: args.profileImage,
-                              age: args.age,
-                              number: args.number,
-                              school: args.school,
-                              grade: args.grade,
-                              group: args.group,
-                              eyes: args.eyes,
-                              mbti: args.mbti,
-                              hobby: _hobby,
-                              style: _styleList),
+                        kakao.User user = await kakao.UserApi.instance.me();
+                        final newUser = await _authentication
+                            .createUserWithEmailAndPassword(
+                          email: user.kakaoAccount!.email.toString(),
+                          password: user.id.toString(),
                         );
+
+                        if (newUser.user != null) {
+                          Navigator.pushNamed(
+                            context,
+                            'welcome',
+                            arguments: User(
+                                name: args.name,
+                                profileImage: args.profileImage,
+                                age: args.age,
+                                number: args.number,
+                                school: args.school,
+                                grade: args.grade,
+                                group: args.group,
+                                eyes: args.eyes,
+                                mbti: args.mbti,
+                                hobby: _hobby,
+                                style: _styleList),
+                          );
+                        }
                       }),
                 ),
               ),
