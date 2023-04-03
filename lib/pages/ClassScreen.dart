@@ -122,6 +122,7 @@ class _ClassScreenState extends State<ClassScreen> {
                               context,
                               'feature',
                               arguments: User(
+                                  uid: '',
                                   name: args.name,
                                   profileImage: args.profileImage,
                                   age: args.age,

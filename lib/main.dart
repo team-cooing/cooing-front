@@ -1,12 +1,17 @@
+import 'dart:ffi';
+
 import 'package:cooing_front/firebase_options.dart';
 import 'package:cooing_front/pages/CandyScreen.dart';
 import 'package:cooing_front/pages/ClassScreen.dart';
 import 'package:cooing_front/pages/HintPage.dart';
+import 'package:cooing_front/pages/TokenLoginScreen.dart';
 import 'package:cooing_front/pages/LoginScreen.dart';
 import 'package:cooing_front/pages/SchoolScreen.dart';
 import 'package:cooing_front/pages/SignUpScreen.dart';
+import 'package:cooing_front/pages/SplashScreen.dart';
 import 'package:cooing_front/pages/WelcomeScreen.dart';
 import 'package:cooing_front/pages/question_page.dart';
+import 'package:cooing_front/pages/tap_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cooing_front/pages/main_page.dart';
@@ -26,21 +31,26 @@ void main() async {
   runApp(MyApp());
 }
 
+String _initialRoute = 'home';
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      initialRoute: 'home',
+      initialRoute: SplashScreen.routeName,
       routes: {
+        SplashScreen.routeName: (context) => SplashScreen(),
         'home': (context) => const LoginScreen(),
+        'token': (context) => const TokenLoginScreen(),
         'signUp': (context) => const SignUpScreen(),
         'school': (context) => const SchoolScreen(),
         'class': (context) => const ClassScreen(),
         'feature': (context) => const FeatureScreen(),
         'select': (context) => const MultiSelectscreen(),
         'welcome': (context) => const WelcomeScreen(),
-        'question': (context) => const QuestionPage(),
+        'tab': (context) => const TabPage(),
         'hint': (context) => const HintScreen(),
         'candy': (context) => const CandyScreen()
       },

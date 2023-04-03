@@ -161,6 +161,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               context,
                               'school',
                               arguments: User(
+                                  uid: '',
                                   name: args.name,
                                   profileImage: args.profileImage,
                                   age: _age,

@@ -204,12 +204,15 @@ class _MultiSelectscreenState extends State<MultiSelectscreen> {
                           email: user.kakaoAccount!.email.toString(),
                           password: user.id.toString(),
                         );
+                        final uid = newUser.user!.uid.toString();
+                        print(uid);
 
                         if (newUser.user != null) {
                           Navigator.pushNamed(
                             context,
                             'welcome',
                             arguments: User(
+                                uid: uid,
                                 name: args.name,
                                 profileImage: args.profileImage,
                                 age: args.age,

@@ -10,14 +10,14 @@ import 'package:http/http.dart' as http;
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
 // import 'package:parameters/';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+class TokenLoginScreen extends StatefulWidget {
+  const TokenLoginScreen({Key? key}) : super(key: key);
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<TokenLoginScreen> createState() => _TokenLoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _TokenLoginScreenState extends State<TokenLoginScreen> {
   LoginPlatform _loginPlatform = LoginPlatform.none;
   String nickname = '';
   String profileImage = '';
@@ -52,23 +52,7 @@ class _LoginScreenState extends State<LoginScreen> {
         _loginPlatform = LoginPlatform.kakao;
       });
 
-      Navigator.pushNamed(
-        context,
-        'signUp',
-        arguments: User(
-            uid: '',
-            name: nickname,
-            profileImage: profileImage,
-            age: '',
-            number: '',
-            school: '',
-            grade: 0,
-            group: 0,
-            eyes: 0,
-            mbti: '',
-            hobby: '',
-            style: []),
-      );
+      Navigator.pushNamed(context, 'tab');
     } catch (error) {
       print('카카오톡으로 로그인 실패 $error');
       print(await kakao.KakaoSdk.origin);

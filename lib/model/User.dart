@@ -1,5 +1,5 @@
 class User {
-  late String uid;
+  String uid;
   String name;
   String profileImage;
   late int gender; // 0:남자 1:여자
@@ -14,11 +14,13 @@ class User {
   String mbti;
   String hobby;
   List style;
+  late bool IsSubscribe;
+  late int candyCount;
   late List<List>
       questionInfos; // QuestionId_Info = [[ContentID, QuestionID], ... ]
 
   User({
-    // required this.uid,
+    required this.uid,
     required this.name,
     required this.profileImage,
     required this.number,

@@ -479,6 +479,7 @@ class _FeatureScreenState extends State<FeatureScreen> {
                           context,
                           'select',
                           arguments: User(
+                              uid: '',
                               name: args.name,
                               profileImage: args.profileImage,
                               age: args.age,
