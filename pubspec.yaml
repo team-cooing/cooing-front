@@ -37,6 +37,7 @@ dependencies:
   customtogglebuttons: ^0.0.5
   firebase_core: ^2.8.0
   firebase_auth: ^4.3.0
+  grouped_list: ^3.7.1
 
 
   # The following adds the Cupertino Icons font to your application.
