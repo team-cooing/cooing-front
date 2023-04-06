@@ -127,7 +127,7 @@ class _MessagePageState extends State<MessagePage> {
     );
   }
 
-  Widget answer_time_text(String answerTime) {
+  Widget answerTimeText(String answerTime) {
     final DateTime now = DateTime.now();
     DateTime answerDate = DateTime.parse(answerTime);
     // final DateFormat formatter = DateFormat('yyyy-MM-dd hh:mm:ss');
@@ -243,7 +243,7 @@ class _MessagePageState extends State<MessagePage> {
                         )
                       ],
                     ),
-                    answer_time_text(element['answer_time'])
+                    answerTimeText(element['answer_time'])
                   ]),
             ),
           ),
