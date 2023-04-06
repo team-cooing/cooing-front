@@ -8,16 +8,154 @@ class FeedPage extends StatefulWidget {
 }
 
 class _FeedPageState extends State<FeedPage> {
-  final List _elements = [
+  int candy = 0;
+  final List feedElements = [
+    {
+      'user_name': '쿠잉 복권',
+      'question': '오늘도 쿠잉이 캔디 쏜다~!',
+      'question_time': '2023-04-04 09:30:11',
+      'candy': -1
+    },
     {
       'user_name': '신혜은',
-      'question': '내 첫인상은 어땠어?',
-      'question_time': '2020-10-31 19:30:11'
+      'question': '"내 첫인상은 어땠어?"',
+      'question_time': '2023-04-04 10:30:11',
+      'candy': 20
+    },
+    {
+      'user_name': '백소현',
+      'question': '"요즘 내 성격은 어떤 것 같아?"',
+      'question_time': '2023-04-04 15:30:11',
+      'candy': 0
+    },
+    {
+      'user_name': '박길현',
+      'question': '"만약, 지금의 기억을 가지고 \n과거로 돌아가면 어떨 것 같아?"',
+      'question_time': '2023-04-04 19:30:11',
+      'candy': 4
     },
   ];
 
+  Widget feedButton(int candy) {
+    String btnText = '';
+
+    if (candy > 0) {
+      btnText = candy.toString();
+      return Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+        SizedBox(
+            width: 14.0,
+            height: 14.0,
+            child: Image(image: AssetImage('images/icon_candy.png'))),
+        Text(
+          '  $btnText',
+          style: TextStyle(
+              fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
+        )
+      ]);
+    } else if (candy == -1) {
+      btnText = '받기';
+    } else if (candy == 0) {
+      btnText = '답변하기';
+    }
+    return Text(
+      btnText,
+      style: TextStyle(
+          fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold(
+      body: ListView.builder(
+          itemCount: feedElements.length,
+          itemBuilder: ((context, index) {
+            return Card(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20),
+                        bottomRight: Radius.circular(20))),
+                elevation: 0,
+                margin: EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: Container(
+                    padding: EdgeInsets.all(25.0),
+                    decoration: BoxDecoration(
+                        color: Color(0xffF2F3F3),
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(20),
+                            topRight: Radius.circular(20),
+                            bottomRight: Radius.circular(20))),
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Row(
+                                children: [
+                                  SizedBox(
+                                    width: 42.0,
+                                    height: 42.0,
+                                    child: CircleAvatar(
+                                      backgroundImage:
+                                          AssetImage('images/sohee.jpg'),
+                                    ),
+                                  ),
+                                  Padding(
+                                      padding: EdgeInsets.only(right: 14.0)),
+                                  Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "${feedElements[index]['user_name']}",
+                                          softWrap: true,
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: Color(0xff333D4B),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: EdgeInsets.all(3),
+                                        ),
+                                        Text(
+                                          "${feedElements[index]['question']}",
+                                          overflow: TextOverflow.visible,
+                                          maxLines: 4,
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              color: Color(0xff333D4B),
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ])
+                                ],
+                              )
+                            ],
+                          ),
+                          Container(
+                              alignment: Alignment.center,
+                              child: ElevatedButton(
+                                  onPressed: null,
+                                  style: OutlinedButton.styleFrom(
+                                    padding: EdgeInsets.zero,
+                                    foregroundColor: Colors.white,
+                                    backgroundColor:
+                                        Color.fromRGBO(151, 84, 251, 1),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0)),
+                                  ),
+                                  child:
+                                      feedButton(feedElements[index]['candy'])))
+                        ]),
+                  ),
+                ));
+          })),
+    );
   }
 }
