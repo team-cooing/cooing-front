@@ -63,47 +63,47 @@ class _MessagePageState extends State<MessagePage> {
     },
     {
       'questionNumber': '3',
-      'question': '내가 제일 잘하는 과목은 뭐게?',
+      'question': '내가 제일 잘하는 과목은 뭘까?',
       'isFemale': true,
       'isChecked': false,
       'answer_time': '2023-04-05 10:30:11'
     },
     {
       'questionNumber': '3',
-      'question': '내가 제일 잘하는 과목은 뭐게?',
+      'question': '내가 제일 잘하는 과목은 뭘까?',
       'isFemale': false,
       'isChecked': true,
       'answer_time': '2023-04-05 16:30:11'
     },
     {
       'questionNumber': '3',
-      'question': '내가 제일 잘하는 과목은 뭐게?',
+      'question': '내가 제일 잘하는 과목은 뭘까?',
       'isFemale': true,
       'isChecked': false,
       'answer_time': '2023-04-05 19:30:11'
     },
     {
       'questionNumber': '3',
-      'question': '내가 제일 잘하는 과목은 뭐게?',
+      'question': '내가 제일 잘하는 과목은 뭘까?',
       'isFemale': true,
       'isChecked': true,
       'answer_time': '2023-04-05 22:30:11'
     },
     {
       'questionNumber': '3',
-      'question': '내가 제일 잘하는 과목은 뭐게?',
+      'question': '내가 제일 잘하는 과목은 뭘까?',
       'isFemale': false,
       'isChecked': false,
       'answer_time': '2023-04-05 23:58:11'
     },
   ];
   final Map questionList = {
-    '1': '내 첫인상은 어땠나요?',
+    '1': '내 첫인상은 어땠어?',
     '2': '내 MBTI는 무슨 유형 같아?',
-    '3': '내가 제일 잘하는 과목은 뭐게?'
+    '3': '내가 제일 잘하는 과목은 뭘까?'
   };
 
-  Widget what_icon(bool isFemale, bool isChecked) {
+  Widget whatIcon(bool isFemale, bool isChecked) {
     return Stack(
       clipBehavior: Clip.none,
       children: [
@@ -215,8 +215,7 @@ class _MessagePageState extends State<MessagePage> {
                       children: [
                         Row(
                           children: [
-                            what_icon(
-                                element['isFemale'], element['isChecked']),
+                            whatIcon(element['isFemale'], element['isChecked']),
                             Padding(padding: EdgeInsets.only(right: 20.0)),
                             element['isFemale']
                                 ? Text(
