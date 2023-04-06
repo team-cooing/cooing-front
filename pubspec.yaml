@@ -82,6 +82,7 @@ flutter:
     - images/icon_msg_girl.png
     - images/icon_msg_boy.png
     - images/icon_msg_opened.png
+    - images/icon_candy.png
 
 
   # An image asset can refer to one or more resolution-specific "variants", see
