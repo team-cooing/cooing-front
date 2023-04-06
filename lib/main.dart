@@ -4,6 +4,7 @@ import 'package:cooing_front/pages/LoginScreen.dart';
 import 'package:cooing_front/pages/SchoolScreen.dart';
 import 'package:cooing_front/pages/SignUpScreen.dart';
 import 'package:cooing_front/pages/WelcomeScreen.dart';
+import 'package:cooing_front/pages/main_page.dart';
 import 'package:cooing_front/pages/question_page.dart';
 import 'package:flutter/material.dart';
 import 'package:cooing_front/pages/FeatureScreen.dart';
@@ -11,7 +12,6 @@ import 'package:cooing_front/pages/MultiSelectscreen.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
 import 'package:firebase_core/firebase_core.dart';
-import 'package:cooing_front/pages/message_page.dart';
 
 void main() async {
   kakao.KakaoSdk.init(nativeAppKey: '010e5977ad5bf0cfbc9ab47ebfaa14a2');
@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
         'select': (context) => const MultiSelectscreen(),
         'welcome': (context) => const WelcomeScreen(),
         'question': (context) => const QuestionPage(),
-        '_working': (context) => const MessagePage(),
+        '_working': (context) => const MainPage(),
       },
     );
   }
