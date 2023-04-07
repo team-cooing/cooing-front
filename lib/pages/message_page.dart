@@ -159,96 +159,110 @@ class _MessagePageState extends State<MessagePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: GroupedListView<dynamic, String>(
-      elements: _elements,
-      groupBy: (element) => element['questionNumber'],
-      groupComparator: (value1, value2) => value2.compareTo(value1),
-      itemComparator: ((element1, element2) =>
-          element2['answer_time'].compareTo(element1['answer_time'])),
-      order: GroupedListOrder.ASC,
-      groupSeparatorBuilder: (
-        String value,
-      ) =>
-          Padding(
-              padding: const EdgeInsets.only(left: 20.0, top: 30, bottom: 15),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '# $value번째 질문',
-                    textAlign: TextAlign.left,
-                    style: TextStyle(fontSize: 14),
-                  ),
-                  Padding(padding: EdgeInsets.all(3)),
-                  Text(
-                    '"${questionList[value]}"',
-                    textAlign: TextAlign.left,
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                ],
-              )),
-      itemBuilder: ((context, element) {
-        return Card(
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
-                  bottomRight: Radius.circular(20))),
-          elevation: 0,
-          margin: EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
-          child: SizedBox(
-            width: double.infinity,
-            child: Container(
-              padding:
-                  EdgeInsets.only(left: 25.0, right: 25, top: 30, bottom: 30),
-              decoration: BoxDecoration(
-                  color: Color(0xffF2F3F3),
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(20),
-                      topRight: Radius.circular(20),
-                      bottomRight: Radius.circular(20))),
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Row(
-                          children: [
-                            whatIcon(element['isFemale'], element['isChecked']),
-                            Padding(padding: EdgeInsets.only(right: 20.0)),
-                            element['isFemale']
-                                ? Text(
-                                    '청순한 여학생',
-                                    style: TextStyle(
-                                        fontSize: 16,
-                                        color: Color(0xff333D4B),
-                                        fontWeight: FontWeight.bold),
-                                  )
-                                : Text(
-                                    '훈훈한 남학생',
-                                    style: TextStyle(
-                                        fontSize: 16,
-                                        color: Color(0xff333D4B),
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                            Text(
-                              '으로부터',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Color(0xff333D4B),
+        body: ScrollConfiguration(
+            behavior: ScrollBehavior().copyWith(overscroll: false),
+            child: GroupedListView<dynamic, String>(
+              elements: _elements,
+              groupBy: (element) => element['questionNumber'],
+              groupComparator: (value1, value2) => value2.compareTo(value1),
+              itemComparator: ((element1, element2) =>
+                  element2['answer_time'].compareTo(element1['answer_time'])),
+              order: GroupedListOrder.ASC,
+              groupSeparatorBuilder: (
+                String value,
+              ) =>
+                  Padding(
+                      padding: const EdgeInsets.only(
+                          left: 20.0, top: 30, bottom: 15),
+                      child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 5),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '# $value번째 질문',
+                                textAlign: TextAlign.left,
+                                style: TextStyle(fontSize: 14),
                               ),
-                            ),
-                          ],
-                        )
-                      ],
-                    ),
-                    answerTimeText(element['answer_time'])
-                  ]),
-            ),
-          ),
-        );
-      }),
-    ));
+                              Padding(padding: EdgeInsets.all(3)),
+                              Text(
+                                '"${questionList[value]}"',
+                                textAlign: TextAlign.left,
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ))),
+              itemBuilder: ((context, element) {
+                return Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 5),
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(20),
+                              topRight: Radius.circular(20),
+                              bottomRight: Radius.circular(20))),
+                      elevation: 0,
+                      margin: EdgeInsets.symmetric(
+                          horizontal: 15.0, vertical: 10.0),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: Container(
+                          padding: EdgeInsets.only(
+                              left: 25.0, right: 25, top: 30, bottom: 30),
+                          decoration: BoxDecoration(
+                              color: Color(0xffF2F3F3),
+                              borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(20),
+                                  topRight: Radius.circular(20),
+                                  bottomRight: Radius.circular(20))),
+                          child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        whatIcon(element['isFemale'],
+                                            element['isChecked']),
+                                        Padding(
+                                            padding:
+                                                EdgeInsets.only(right: 20.0)),
+                                        element['isFemale']
+                                            ? Text(
+                                                '청순한 여학생',
+                                                style: TextStyle(
+                                                    fontSize: 16,
+                                                    color: Color(0xff333D4B),
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              )
+                                            : Text(
+                                                '훈훈한 남학생',
+                                                style: TextStyle(
+                                                    fontSize: 16,
+                                                    color: Color(0xff333D4B),
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                        Text(
+                                          '으로부터',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            color: Color(0xff333D4B),
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                  ],
+                                ),
+                                answerTimeText(element['answer_time'])
+                              ]),
+                        ),
+                      ),
+                    ));
+              }),
+            )));
   }
 }
