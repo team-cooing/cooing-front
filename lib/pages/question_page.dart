@@ -36,18 +36,6 @@ class _QuestionPageState extends State<QuestionPage>
   late String askButtonText = getAsk;
   late Color buttonColor = _colors[0];
 
-  //time
-  Timer? _secTimer;
-  Timer? _minTimer;
-  Timer? _hourTimer;
-  var _secTime = 1;
-  var _minTime = 1;
-  var _hourTime = 1;
-  var _isPlaying = false;
-  String timeAttack = '';
-  double timeAttackSize = 0.0;
-  late Color timetextColor = _colors[0];
-
   //shareCard
   bool _openshareCard = false;
 
@@ -55,84 +43,36 @@ class _QuestionPageState extends State<QuestionPage>
   final DynamicLink _link = DynamicLink();
   final String _userId = 'id';
   String _userUri = '';
-  @override
-  void dispose() {
-    _secTimer?.cancel();
-    _minTimer?.cancel();
-    _hourTimer?.cancel();
-    super.dispose();
-  }
 
-  void _click() {
-    _isPlaying = !_isPlaying;
-
-    if (_isPlaying) {
-      _start();
-    } else {
-      _reset();
-    }
-  }
-
-  void _start() {
-    _secTimer = Timer.periodic(const Duration(seconds: 1), (secTimer) {
-      setState(() {
-        _secTime++;
-        if (_secTime > 60) {
-          _secTime %= 60;
-        }
-      });
-    });
-
-    _minTimer = Timer.periodic(const Duration(minutes: 1), (minTimer) {
-      setState(() {
-        _minTime++;
-        if (_minTime > 60) {
-          _minTime %= 60;
-        }
-      });
-    });
-
-    _hourTimer = Timer.periodic(const Duration(hours: 1), (hourTimer) {
-      setState(() {
-        _hourTime++;
-      });
-    });
-  }
-
-  void _reset() {
-    setState(() {
-      _isPlaying = false;
-      _secTimer?.cancel();
-      _minTimer?.cancel();
-      _hourTimer?.cancel();
-
-      _secTime = 1;
-      _minTime = 0;
-      _hourTime = 0;
-    });
-  }
+  //타이머 관련
+  String timeAttack = '';
+  double timeAttackSize = 0.0;
+  late Color timetextColor = _colors[0];
+  Timer? _timer;
+  Duration _countdown = Duration.zero;
+  bool _isRunning = false;
 
   changeAskCard() {
     setState(() {
       switch (askButtonText) {
         case '질문 받기':
+          //질문
           var question = questionList[_random.nextInt(questionList.length)];
           cardHeight = 305.0;
           askText = question;
           askButtonText = getAnswer;
           timeAttackSize = 12.0;
-          _click();
-
+          _startTimer();
           break;
         case '답변 받기':
           DateTime nowDate = DateTime.now();
           print('$nowDate');
-          DateTime newDate = nowDate.add(const Duration(hours: 24));
+          DateTime closeDate = nowDate.add(const Duration(hours: 24));
           timetextColor = _colors[2];
           askButtonText = closeAsk;
           buttonColor = _colors[1];
           askClosedMent =
-              '해당 질문은 ${newDate.day}일 ${newDate.hour}시 ${newDate.minute}부터 닫을 수 있습니다.';
+              '해당 질문은 ${closeDate.day}일 ${closeDate.hour}시 ${closeDate.minute}분부터 닫을 수 있습니다.';
           askClosedMentSize = 10.0;
           _openshareCard = true;
 
@@ -143,11 +83,59 @@ class _QuestionPageState extends State<QuestionPage>
           askText = question;
           askClosedMent = '새로운 질문이 도착했어요!';
           buttonColor = _colors[0];
-          _reset();
+
           timeAttackSize = 0.0;
+          _resetTimer();
           break;
       }
     });
+  }
+
+  void _startTimer() {
+    final now = DateTime.now();
+    final endOfDay = DateTime(now.year, now.month, now.day + 1);
+    final remainingSeconds = endOfDay.difference(now).inSeconds;
+    setState(() {
+      _countdown = Duration(seconds: remainingSeconds);
+      _isRunning = true;
+    });
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        if (_countdown.inSeconds == 0) {
+          _timer?.cancel();
+          _isRunning = false;
+        } else {
+          _countdown = Duration(seconds: _countdown.inSeconds - 1);
+        }
+      });
+    });
+  }
+
+  void _resetTimer() {
+    setState(() {
+      _countdown = Duration.zero;
+      _isRunning = false;
+    });
+    _timer?.cancel();
+  }
+
+  String _formatDuration(Duration duration) {
+    String twoDigits(int n) {
+      if (n >= 10) return "$n";
+      return "0$n";
+    }
+
+    String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+    String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+    String twoDigitHours = twoDigits(duration.inHours);
+
+    return "남은 시간 $twoDigitHours : $twoDigitMinutes : $twoDigitSeconds";
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
   }
 
   @override
@@ -155,176 +143,45 @@ class _QuestionPageState extends State<QuestionPage>
     super.build(context);
 
     return Scaffold(
-      body: _askBody(),
+      body: SingleChildScrollView(child: _askBody()),
     );
   }
 
   Widget _askBody() {
     return Padding(
-        padding: const EdgeInsets.all(15.0),
+        padding: const EdgeInsets.all(25.0),
         child: SafeArea(
-            child: SingleChildScrollView(
-                child: Center(
-                    child: Column(children: <Widget>[
-          const Padding(padding: EdgeInsets.all(8.0)),
+            child: Center(
+                child: Column(children: <Widget>[
           pupleBox(),
-          const Padding(padding: EdgeInsets.all(5.0)),
           shareCard(),
-        ])))));
+        ]))));
   }
 
   Widget padding(double num) {
     return Padding(padding: EdgeInsets.all(num));
   }
 
-  Widget shareCard() {
-    if (_openshareCard == true) {
-      return (Column(children: <Widget>[
-        SizedBox(
-          width: 347.0,
-          height: 98.0,
-          child: Card(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            color: const Color(0xffF2F3F3),
-            child: Row(children: [
-              const Padding(padding: EdgeInsets.all(10.0)),
-              const SizedBox(
-                  width: 30.0,
-                  height: 30.0,
-                  child: Image(image: AssetImage('images/icon_copyLink.png'))),
-              const Padding(padding: EdgeInsets.all(7.0)),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "1단계",
-                    style: TextStyle(fontSize: 12, color: Color(0xff333D4B)),
-                  ),
-                  Text(
-                    "링크 복사하기",
-                    style: TextStyle(
-                        fontSize: 16,
-                        color: Color(0xff333D4B),
-                        fontWeight: FontWeight.bold),
-                  )
-                ],
-              ),
-              const Padding(padding: EdgeInsets.all(45.0)),
-              ElevatedButton(
-                  onPressed: () async {
-                    _userUri = await _link.getShortLink('AnswerPage', 'id');
-                    Clipboard.setData(ClipboardData(text: _userUri))
-                        .then((value) {
-                      return ScaffoldMessenger.of(context)
-                          .showSnackBar(const SnackBar(
-                        content: Text("링크가 복사되었습니다."),
-                      ));
-                    });
-                  },
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor: _colors[2],
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0)),
-                  ),
-                  child: const Text(
-                    "복사",
-                    style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
-                  ))
-            ]),
-          ),
-        ),
-        const Padding(padding: EdgeInsets.all(2.5)),
-        SizedBox(
-          width: 347.0,
-          height: 98.0,
-          child: Card(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            color: const Color(0xffF2F3F3),
-            child: Row(children: [
-              const Padding(padding: EdgeInsets.all(10.0)),
-              const SizedBox(
-                  width: 30.0,
-                  height: 30.0,
-                  child: Image(image: AssetImage('images/icon_instagram.png'))),
-              const Padding(padding: EdgeInsets.all(7.0)),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "2단계",
-                    style: TextStyle(fontSize: 12, color: Color(0xff333D4B)),
-                  ),
-                  Text(
-                    "친구들에게 공유",
-                    style: TextStyle(
-                        fontSize: 16,
-                        color: Color(0xff333D4B),
-                        fontWeight: FontWeight.bold),
-                  )
-                ],
-              ),
-              const Padding(padding: EdgeInsets.all(39.0)),
-              ElevatedButton(
-                  onPressed: null,
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor: _colors[2],
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0)),
-                  ),
-                  child: const Text(
-                    "공유",
-                    style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
-                  ))
-            ]),
-          ),
-        )
-      ]));
-    } else {
-      return const Padding(padding: EdgeInsets.all(3.0));
-    }
-  }
-
-  String timeText() {
-    var hour = 24 - (_hourTime);
-    var minute = 60 - (_minTime);
-    var sec = 60 - (_secTime);
-
-    String time = '남은 시간 $hour : $minute : $sec';
-
-    return time;
-  }
-
   Widget pupleBox() {
+    String remainTimer = _formatDuration(_countdown);
     return SizedBox(
-      width: 347.0,
-      height: cardHeight,
+      width: double.infinity,
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
         color: const Color(0xff9754FB),
         child: Column(
           children: <Widget>[
-            const Padding(padding: EdgeInsets.all(5.0)),
-            Container(
-                padding: const EdgeInsets.only(right: 175.0),
-                child: Text(timeText(),
-                    style: TextStyle(
-                      color: Colors.white,
-                      backgroundColor: _colors[2],
-                      fontSize: timeAttackSize,
-                    ))),
-            const Padding(padding: EdgeInsets.all(9.0)),
+            padding(5),
+            Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+              const Padding(padding: EdgeInsets.only(left: 25.0)),
+              Text(remainTimer,
+                  style: TextStyle(
+                    color: Colors.white,
+                    backgroundColor: _colors[2],
+                    fontSize: timeAttackSize,
+                  ))
+            ]),
+            const Padding(padding: EdgeInsets.all(15.0)),
             const SizedBox(
               width: 80.0,
               height: 80.0,
@@ -332,41 +189,179 @@ class _QuestionPageState extends State<QuestionPage>
                 backgroundImage: AssetImage('images/sohee.jpg'),
               ),
             ),
-            const Padding(padding: EdgeInsets.all(10.0)),
+            const Padding(padding: EdgeInsets.all(20.0)),
             Text(
               askText,
+              textAlign: TextAlign.left,
               style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                   color: Colors.white),
             ),
-            const Padding(padding: EdgeInsets.all(15.0)),
-            OutlinedButton(
-              onPressed: () => changeAskCard(),
-              style: OutlinedButton.styleFrom(
-                fixedSize: const Size(154, 50),
-                foregroundColor: const Color(0xff9754FB),
-                backgroundColor: buttonColor,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
+            Container(
+              padding: EdgeInsets.all(25.0),
+              child: OutlinedButton(
+                onPressed: () => changeAskCard(),
+                style: OutlinedButton.styleFrom(
+                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 10),
+                  foregroundColor: const Color(0xff9754FB),
+                  backgroundColor: buttonColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                ),
+                child: Text(
+                  askButtonText,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 16),
                 ),
               ),
-              child: Text(
-                askButtonText,
-                style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-              ),
             ),
-            const Padding(padding: EdgeInsets.all(8.0)),
             Text(
               askClosedMent,
               style:
                   TextStyle(color: Colors.white, fontSize: askClosedMentSize),
             ),
-            const Padding(padding: EdgeInsets.all(0.0)),
+            const Padding(padding: EdgeInsets.all(9.0)),
           ],
         ),
       ),
     );
+  }
+
+  Widget shareCard() {
+    if (_openshareCard == true) {
+      return (Column(children: <Widget>[
+        Container(
+          width: double.infinity,
+          padding: EdgeInsets.only(top: 15, bottom: 10),
+          child: Card(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            color: const Color(0xffF2F3F3),
+            child: Row(children: [
+              const Padding(padding: EdgeInsets.all(10.0)),
+              Expanded(
+                child: Row(children: [
+                  SizedBox(
+                      width: 30.0,
+                      height: 30.0,
+                      child:
+                          Image(image: AssetImage('images/icon_copyLink.png'))),
+                  const Padding(padding: EdgeInsets.all(7.0)),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "1단계",
+                        style:
+                            TextStyle(fontSize: 12, color: Color(0xff333D4B)),
+                      ),
+                      Text(
+                        "링크 복사하기",
+                        style: TextStyle(
+                            fontSize: 16,
+                            color: Color(0xff333D4B),
+                            fontWeight: FontWeight.bold),
+                      )
+                    ],
+                  ),
+                ]),
+              ),
+              Container(
+                  padding: EdgeInsets.only(right: 20, top: 10, bottom: 10),
+                  child: ElevatedButton(
+                      onPressed: () async {
+                        _userUri = await _link.getShortLink('AnswerPage', 'id');
+                        Clipboard.setData(ClipboardData(text: _userUri))
+                            .then((value) {
+                          return ScaffoldMessenger.of(context)
+                              .showSnackBar(const SnackBar(
+                            content: Text("링크가 복사되었습니다."),
+                          ));
+                        });
+                      },
+                      style: OutlinedButton.styleFrom(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                        foregroundColor: Colors.white,
+                        backgroundColor: _colors[2],
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0)),
+                      ),
+                      child: const Text(
+                        "복사",
+                        style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white),
+                      ))),
+            ]),
+          ),
+        ),
+        Container(
+          width: double.infinity,
+          padding: EdgeInsets.only(bottom: 10),
+          child: Card(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            color: const Color(0xffF2F3F3),
+            child: Row(children: [
+              const Padding(padding: EdgeInsets.all(10.0)),
+              Expanded(
+                child: Row(children: [
+                  SizedBox(
+                      width: 30.0,
+                      height: 30.0,
+                      child: Image(
+                          image: AssetImage('images/icon_instagram.png'))),
+                  const Padding(padding: EdgeInsets.all(7.0)),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "2단계",
+                        style:
+                            TextStyle(fontSize: 12, color: Color(0xff333D4B)),
+                      ),
+                      Text(
+                        "친구들에게 공유",
+                        style: TextStyle(
+                            fontSize: 16,
+                            color: Color(0xff333D4B),
+                            fontWeight: FontWeight.bold),
+                      )
+                    ],
+                  ),
+                ]),
+              ),
+              Container(
+                  padding: EdgeInsets.only(right: 20.0, top: 10, bottom: 10),
+                  child: ElevatedButton(
+                      onPressed: null,
+                      style: OutlinedButton.styleFrom(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                        foregroundColor: Colors.white,
+                        backgroundColor: _colors[2],
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0)),
+                      ),
+                      child: const Text(
+                        "공유",
+                        style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white),
+                      )))
+            ]),
+          ),
+        )
+      ]));
+    } else {
+      return const Padding(padding: EdgeInsets.all(3.0));
+    }
   }
 }

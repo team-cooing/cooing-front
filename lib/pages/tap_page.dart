@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cooing_front/pages/question_page.dart';
+import 'package:cooing_front/pages/message_page.dart';
+import 'package:cooing_front/pages/feed_page.dart';
 
 class TabPage extends StatefulWidget {
   const TabPage({super.key});
@@ -65,8 +67,8 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
           ),
           body: TabBarView(controller: _tabController, children: const [
             QuestionPage(),
-            Tab(icon: Icon(Icons.directions_car)),
-            Tab(icon: Icon(Icons.directions_bike_outlined)),
+            FeedPage(),
+            MessagePage(),
             Tab(icon: Icon(Icons.directions_boat))
           ]),
         ));

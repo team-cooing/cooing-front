@@ -4,11 +4,10 @@ import 'package:cooing_front/pages/LoginScreen.dart';
 import 'package:cooing_front/pages/SchoolScreen.dart';
 import 'package:cooing_front/pages/SignUpScreen.dart';
 import 'package:cooing_front/pages/WelcomeScreen.dart';
+import 'package:cooing_front/pages/main_page.dart';
 import 'package:cooing_front/pages/question_page.dart';
 import 'package:flutter/material.dart';
-import 'package:cooing_front/pages/main_page.dart';
 import 'package:cooing_front/pages/FeatureScreen.dart';
-import 'package:cooing_front/widgets/grid_boy.dart';
 import 'package:cooing_front/pages/MultiSelectscreen.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
@@ -31,7 +30,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      initialRoute: 'home',
+      initialRoute: '_working',
       routes: {
         'home': (context) => const LoginScreen(),
         'signUp': (context) => const SignUpScreen(),
@@ -40,7 +39,8 @@ class MyApp extends StatelessWidget {
         'feature': (context) => const FeatureScreen(),
         'select': (context) => const MultiSelectscreen(),
         'welcome': (context) => const WelcomeScreen(),
-        'question': (context) => const QuestionPage()
+        'question': (context) => const QuestionPage(),
+        '_working': (context) => const MainPage(),
       },
     );
   }
