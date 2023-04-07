@@ -10,13 +10,12 @@ import 'package:cooing_front/pages/SchoolScreen.dart';
 import 'package:cooing_front/pages/SignUpScreen.dart';
 import 'package:cooing_front/pages/SplashScreen.dart';
 import 'package:cooing_front/pages/WelcomeScreen.dart';
+import 'package:cooing_front/pages/main_page.dart';
 import 'package:cooing_front/pages/question_page.dart';
 import 'package:cooing_front/pages/tap_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:cooing_front/pages/main_page.dart';
 import 'package:cooing_front/pages/FeatureScreen.dart';
-import 'package:cooing_front/widgets/grid_boy.dart';
 import 'package:cooing_front/pages/MultiSelectscreen.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
@@ -39,7 +38,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      initialRoute: SplashScreen.routeName,
+
+initialRoute: SplashScreen.routeName,
+
       routes: {
         SplashScreen.routeName: (context) => SplashScreen(),
         'home': (context) => const LoginScreen(),
@@ -53,6 +54,8 @@ class MyApp extends StatelessWidget {
         'tab': (context) => const TabPage(),
         'hint': (context) => const HintScreen(),
         'candy': (context) => const CandyScreen()
+        'question': (context) => const QuestionPage(),
+        '_working': (context) => const MainPage(),
       },
     );
   }

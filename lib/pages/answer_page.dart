@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cooing_front/pages/main_page.dart';
+import 'package:cooing_front/pages/answer_complete_page.dart';
 
 class AnswerPage extends StatefulWidget {
   const AnswerPage({super.key});
@@ -19,63 +19,56 @@ class _AnswerPageState extends State<AnswerPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        resizeToAvoidBottomInset: false,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0.0,
-          leading: IconButton(
-            icon: const Icon(Icons.close_rounded),
-            color: Colors.black54,
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
+      resizeToAvoidBottomInset: false,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0.0,
+        leading: IconButton(
+          icon: const Icon(Icons.close_rounded),
+          color: Colors.black54,
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
-        body: SafeArea(child: _answerBody()),
-        bottomSheet: SafeArea(
-          child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Padding(
-                padding: EdgeInsets.only(
-                  bottom:
-                      MediaQuery.of(context).systemGestureInsets.bottom + 15,
-                ),
-                child: sendBtn())
-          ]),
-        ));
+      ),
+      body: SafeArea(
+          child: Column(children: [
+        Expanded(
+          child: _answerBody(),
+        ),
+        Align(alignment: Alignment.bottomCenter, child: sendBtn())
+      ])),
+    );
   }
 
   Widget _answerBody() {
     return SingleChildScrollView(
-        child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SingleChildScrollView(
-          child: Row(
-            children: [
-              Padding(padding: EdgeInsets.all(15.0)),
-              Text(
-                "답변 작성",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 22.0,
-                ),
-                textAlign: TextAlign.center,
-              )
-            ],
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Row(
+        children: [
+          Padding(padding: EdgeInsets.all(15.0)),
+          Text(
+            "답변 작성",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 22.0,
+            ),
+            textAlign: TextAlign.center,
           ),
-        ),
-        const Padding(padding: EdgeInsets.all(7.0)),
-        _answerCard(),
-        checking(),
-      ],
-    ));
+          const Padding(padding: EdgeInsets.all(7.0)),
+        ],
+      ),
+      const Padding(padding: EdgeInsets.all(7.0)),
+      _answerCard(),
+      checking(),
+    ]));
   }
 
   Widget _answerCard() {
     return Center(
-        child: SizedBox(
-            width: 346.0,
-            height: 355.0,
+        child: Container(
+            padding: EdgeInsets.all(15.0),
+            width: double.infinity,
             child: Card(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30)),
@@ -97,7 +90,7 @@ class _AnswerPageState extends State<AnswerPage> {
                       fontSize: 16,
                       color: Colors.white),
                 ),
-                const Padding(padding: EdgeInsets.all(15.0)),
+                const Padding(padding: EdgeInsets.all(7.0)),
                 answerTxtField(),
               ]),
             )));
@@ -106,9 +99,9 @@ class _AnswerPageState extends State<AnswerPage> {
   Widget answerTxtField() {
     // String textLength = "0 / maxLength";
 
-    return SizedBox(
-        width: 300,
-        height: 150,
+    return Container(
+        width: double.infinity,
+        padding: EdgeInsets.only(left: 20.0, right: 20.0, top: 15, bottom: 10),
         child: Column(children: [
           TextField(
             enableSuggestions: false,
@@ -139,10 +132,9 @@ class _AnswerPageState extends State<AnswerPage> {
             ),
           ),
           const Padding(padding: EdgeInsets.all(4)),
-          SizedBox(
-              height: 13,
-              child: Row(children: [
-                const Padding(padding: EdgeInsets.only(right: 242)),
+          Container(
+              padding: EdgeInsets.only(top: 6, right: 15),
+              child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
                 Text(
                   "${textValue.length} / $maxLength",
                   style: const TextStyle(color: Colors.white54, fontSize: 13),
@@ -179,29 +171,35 @@ class _AnswerPageState extends State<AnswerPage> {
   }
 
   Widget sendBtn() {
-    return Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-      SizedBox(
-        width: 350,
-        height: 60,
-        child: ElevatedButton(
-            onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const MainPage()));
-            },
-            style: OutlinedButton.styleFrom(
-              foregroundColor: Colors.white,
-              backgroundColor: const Color(0xff9754FB),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0)),
-            ),
-            child: const Text(
-              "보내기",
-              style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white),
-            )),
-      )
-    ]);
+    return Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).systemGestureInsets.bottom + 20,
+          left: 20,
+          right: 20,
+        ),
+        child:
+            Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const AnswerCompleteScreen()));
+              },
+              style: OutlinedButton.styleFrom(
+                fixedSize: Size.fromHeight(50),
+                foregroundColor: Colors.white,
+                backgroundColor: const Color(0xff9754FB),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14.0)),
+              ),
+              child: const Text(
+                "보내기",
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
+              ))
+        ]));
   }
 }
