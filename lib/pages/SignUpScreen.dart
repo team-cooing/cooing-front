@@ -1,4 +1,4 @@
-import 'package:cooing_front/model/UserInfo.dart';
+import 'package:cooing_front/model/User.dart';
 import 'package:cooing_front/pages/SchoolScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -34,7 +34,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     // final node1 = FocusNode();
-    final args = ModalRoute.of(context)!.settings.arguments as UserInfo;
+    final args = ModalRoute.of(context)!.settings.arguments as User;
     TextEditingController textEditingController =
         TextEditingController(text: args.name);
     // print(args.name);
@@ -160,7 +160,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             Navigator.pushNamed(
                               context,
                               'school',
-                              arguments: UserInfo(
+                              arguments: User(
+                                  uid: '',
                                   name: args.name,
                                   profileImage: args.profileImage,
                                   age: _age,

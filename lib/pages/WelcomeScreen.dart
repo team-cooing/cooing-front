@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:cooing_front/model/UserInfo.dart';
+import 'package:cooing_front/model/User.dart';
+import 'package:cooing_front/model/hint.dart';
 import 'package:cooing_front/pages/question_page.dart';
 import 'package:cooing_front/pages/tap_page.dart';
 import 'package:flutter/material.dart';
@@ -16,14 +17,16 @@ class WelcomeScreen extends StatefulWidget {
 class _WelcomeScreenState extends State<WelcomeScreen> {
   @override
   void initState() {
-    Timer(Duration(seconds: 3), () {
+    Timer(Duration(seconds: 1), () {
       Get.to(TabPage());
     });
     super.initState();
   }
 
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as UserInfo;
+    final args = ModalRoute.of(context)!.settings.arguments as User;
+    // List<String> hint = generateHint(args);
+    // print(hint);
     return Scaffold(
         // appBar: AppBar(
         //   backgroundColor: Colors.transparent,

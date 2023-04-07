@@ -1,10 +1,17 @@
-import 'package:cooing_front/model/UserInfo.dart';
+import 'dart:convert';
+import 'dart:io';
+import 'package:cooing_front/model/User.dart';
+import 'package:cooing_front/model/firebase_auth_remote_data_source.dart';
 import 'package:cooing_front/pages/FeatureScreen.dart';
 import 'package:cooing_front/pages/SchoolScreen.dart';
 import 'package:cooing_front/pages/WelcomeScreen.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
+import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MultiSelectscreen extends StatefulWidget {
   const MultiSelectscreen({super.key});
@@ -13,6 +20,7 @@ class MultiSelectscreen extends StatefulWidget {
 }
 
 class _MultiSelectscreenState extends State<MultiSelectscreen> {
+  final _authentication = firebase.FirebaseAuth.instance;
   List<Style> style = new List.empty(growable: true);
   List<Hobby> hobby = new List.empty(growable: true);
 
@@ -63,7 +71,7 @@ class _MultiSelectscreenState extends State<MultiSelectscreen> {
 
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as UserInfo;
+    final args = ModalRoute.of(context)!.settings.arguments as User;
 
     return Scaffold(
         appBar: AppBar(
@@ -183,29 +191,59 @@ class _MultiSelectscreenState extends State<MultiSelectscreen> {
                       child: const Text('확인',
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 15)),
-                      onPressed: () {
+                      onPressed: () async {
                         for (int i = 0; i < style.length; i++) {
                           if (style[i].selected) {
                             _styleList.add(style[i].name);
                           }
                         }
                         print(_styleList);
-                        Navigator.pushNamed(
-                          context,
-                          'welcome',
-                          arguments: UserInfo(
-                              name: args.name,
-                              profileImage: args.profileImage,
-                              age: args.age,
-                              number: args.number,
-                              school: args.school,
-                              grade: args.grade,
-                              group: args.group,
-                              eyes: args.eyes,
-                              mbti: args.mbti,
-                              hobby: _hobby,
-                              style: _styleList),
+
+                        kakao.User user = await kakao.UserApi.instance.me();
+                        final newUser = await _authentication
+                            .createUserWithEmailAndPassword(
+                          email: user.kakaoAccount!.email.toString(),
+                          password: user.id.toString(),
                         );
+                        final uid = newUser.user!.uid.toString();
+                        print(uid);
+
+                        final userRef =
+                            FirebaseFirestore.instance.collection('users');
+                        await userRef.doc(uid).set({
+                          'uid': uid,
+                          "name": args.name,
+                          "profileImage": args.profileImage,
+                          'age': args.age,
+                          'number': args.number,
+                          'school': args.school,
+                          'grade': args.grade,
+                          'group': args.group,
+                          'eyes': args.eyes,
+                          'mbti': args.mbti,
+                          'hobby': _hobby,
+                          "style": _styleList,
+                        });
+
+                        // if (newUser.user != null) {
+                        //   Navigator.pushNamed(
+                        //     context,
+                        //     'welcome',
+                        //     arguments: User(
+                        //         uid: uid,
+                        //         name: args.name,
+                        //         profileImage: args.profileImage,
+                        //         age: args.age,
+                        //         number: args.number,
+                        //         school: args.school,
+                        //         grade: args.grade,
+                        //         group: args.group,
+                        //         eyes: args.eyes,
+                        //         mbti: args.mbti,
+                        //         hobby: _hobby,
+                        //         style: _styleList),
+                        //   );
+                        // }
                       }),
                 ),
               ),

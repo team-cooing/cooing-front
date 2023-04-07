@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:cooing_front/model/User.dart';
-import 'package:cooing_front/pages/tap_page.dart';
-import 'package:get/get.dart';
 
 import 'package:cooing_front/pages/SignUpScreen.dart';
 import 'package:cooing_front/model/Login_platform.dart';
@@ -12,19 +10,20 @@ import 'package:http/http.dart' as http;
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
 // import 'package:parameters/';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+class TokenLoginScreen extends StatefulWidget {
+  const TokenLoginScreen({Key? key}) : super(key: key);
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<TokenLoginScreen> createState() => _TokenLoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _TokenLoginScreenState extends State<TokenLoginScreen> {
   LoginPlatform _loginPlatform = LoginPlatform.none;
   String nickname = '';
   String profileImage = '';
 
   void signInWithKakao() async {
+    kakao.User user;
     try {
       bool isInstalled = await kakao.isKakaoTalkInstalled();
       kakao.OAuthToken token = isInstalled
@@ -42,55 +41,21 @@ class _LoginScreenState extends State<LoginScreen> {
 
       kakao.User user = await kakao.UserApi.instance.me();
 
-      String email = user.kakaoAccount?.email ?? '';
-      String uid = user.id.toString();
-
-      String nickname = '${user.kakaoAccount?.profile?.nickname}';
-      String profileImage = '${user.kakaoAccount?.profile?.profileImageUrl}';
+      nickname = '${user.kakaoAccount?.profile?.nickname}';
+      profileImage = '${user.kakaoAccount?.profile?.profileImageUrl}';
 
       print('사용자 정보 요청 성공'
           '\n닉네임: ${user.kakaoAccount?.profile?.nickname}');
-
+      //profile_image_url
+      //
       setState(() {
         _loginPlatform = LoginPlatform.kakao;
       });
 
-      await firebaseLogin(email, uid, nickname, profileImage);
+      Navigator.pushNamed(context, 'tab');
     } catch (error) {
       print('카카오톡으로 로그인 실패 $error');
       print(await kakao.KakaoSdk.origin);
-    }
-  }
-
-  Future<void> firebaseLogin(
-      String email, String uid, String name, String profileImage) async {
-    try {
-      firebase.UserCredential userCredential = await firebase
-          .FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email, password: uid);
-      Get.to(TabPage());
-      print('파이어베이스 로그인 성공');
-    } on firebase.FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        Navigator.pushNamed(
-          context,
-          'signUp',
-          arguments: User(
-              uid: uid,
-              name: name,
-              profileImage: profileImage,
-              age: '',
-              number: '',
-              school: '',
-              grade: 0,
-              group: 0,
-              eyes: 0,
-              mbti: '',
-              hobby: '',
-              style: []),
-        );
-        print('파이어베이스 로그인 실패 회원가입으로 이동');
-      }
     }
   }
 

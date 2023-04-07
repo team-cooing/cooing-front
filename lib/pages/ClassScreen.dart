@@ -1,4 +1,4 @@
-import 'package:cooing_front/model/UserInfo.dart';
+import 'package:cooing_front/model/User.dart';
 import 'package:cooing_front/pages/FeatureScreen.dart';
 import 'package:cooing_front/pages/SchoolScreen.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +29,7 @@ class _ClassScreenState extends State<ClassScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as UserInfo;
+    final args = ModalRoute.of(context)!.settings.arguments as User;
 
     return Scaffold(
         appBar: AppBar(
@@ -121,7 +121,8 @@ class _ClassScreenState extends State<ClassScreen> {
                             Navigator.pushNamed(
                               context,
                               'feature',
-                              arguments: UserInfo(
+                              arguments: User(
+                                  uid: '',
                                   name: args.name,
                                   profileImage: args.profileImage,
                                   age: args.age,
