@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MultiSelectscreen extends StatefulWidget {
   const MultiSelectscreen({super.key});
@@ -207,25 +208,42 @@ class _MultiSelectscreenState extends State<MultiSelectscreen> {
                         final uid = newUser.user!.uid.toString();
                         print(uid);
 
-                        if (newUser.user != null) {
-                          Navigator.pushNamed(
-                            context,
-                            'welcome',
-                            arguments: User(
-                                uid: uid,
-                                name: args.name,
-                                profileImage: args.profileImage,
-                                age: args.age,
-                                number: args.number,
-                                school: args.school,
-                                grade: args.grade,
-                                group: args.group,
-                                eyes: args.eyes,
-                                mbti: args.mbti,
-                                hobby: _hobby,
-                                style: _styleList),
-                          );
-                        }
+                        final userRef =
+                            FirebaseFirestore.instance.collection('users');
+                        await userRef.doc(uid).set({
+                          'uid': uid,
+                          "name": args.name,
+                          "profileImage": args.profileImage,
+                          'age': args.age,
+                          'number': args.number,
+                          'school': args.school,
+                          'grade': args.grade,
+                          'group': args.group,
+                          'eyes': args.eyes,
+                          'mbti': args.mbti,
+                          'hobby': _hobby,
+                          "style": _styleList,
+                        });
+
+                        // if (newUser.user != null) {
+                        //   Navigator.pushNamed(
+                        //     context,
+                        //     'welcome',
+                        //     arguments: User(
+                        //         uid: uid,
+                        //         name: args.name,
+                        //         profileImage: args.profileImage,
+                        //         age: args.age,
+                        //         number: args.number,
+                        //         school: args.school,
+                        //         grade: args.grade,
+                        //         group: args.group,
+                        //         eyes: args.eyes,
+                        //         mbti: args.mbti,
+                        //         hobby: _hobby,
+                        //         style: _styleList),
+                        //   );
+                        // }
                       }),
                 ),
               ),

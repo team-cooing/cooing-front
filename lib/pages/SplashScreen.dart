@@ -25,41 +25,39 @@ class _SplashScreenState extends State<SplashScreen> {
     _routePage();
   }
 
-  _routePage() async {
+  Future<void> _routePage() async {
     String initialRoute = 'home';
 
-    // 발급된 토큰 존재.
-    if (await kakao.AuthApi.instance.hasToken()) {
-      // 존재하는 토큰이 유효한 것인가?
-      try {
-        kakao.AccessTokenInfo tokenInfo =
-            await kakao.UserApi.instance.accessTokenInfo();
-        print(
-            '토큰 유효성 체크 성공 회원정보 : ${tokenInfo.id} / 만료시간 : ${tokenInfo.expiresIn}');
+    try {
+      final hasToken = await kakao.AuthApi.instance.hasToken();
+      if (hasToken) {
+        final tokenInfo = await kakao.UserApi.instance.accessTokenInfo();
+        final user = await kakao.UserApi.instance.me();
+
+        final email = user.kakaoAccount?.email ?? '';
+        final uid = user.id.toString();
+
+        await firebase.FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: email,
+          password: uid,
+        );
+
         initialRoute = 'tab';
+        print('기기내 카카오 토큰으로 로그인 성공');
       }
-      // 발급받은 적은 있는데 현재 토큰이 유효하지 않다면 이유 확인
-      // 과거에 회원가입은 했었다는 것임.
-      catch (error) {
-        // 만료된 토큰인지
-        if (error is kakao.KakaoException && error.isInvalidTokenError()) {
-          print('토큰 만료 $error');
-          initialRoute = 'token';
-        }
-        // 조회가 실패된 토큰인지 : 계정 삭제 등? 회원가입 필요?
-        else {
-          print('토큰 정보 조회 실패 $error');
-          initialRoute = 'home';
-        }
-      }
-    }
-    // 발급된 토큰 없음.
-    else {
-      print('발급된 토큰 없음');
+    } on kakao.KakaoAuthException catch (e) {
       initialRoute = 'home';
+      print('카카오 로그인 실패: ${e.toString()}');
+    } on firebase.FirebaseAuthException catch (e) {
+      initialRoute = 'home';
+      print('파이어베이스 로그인 실패: ${e.toString()}');
+    } catch (e) {
+      initialRoute = 'home';
+      print('알 수 없는 에러: ${e.toString()}');
     }
+
     await Future.delayed(Duration(seconds: 4));
-    return Navigator.pushReplacementNamed(context, initialRoute);
+    Navigator.pushReplacementNamed(context, initialRoute);
   }
 
   Widget build(BuildContext context) {
