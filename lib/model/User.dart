@@ -35,6 +35,40 @@ class User {
     required this.style,
     // required this.questionInfos
   });
+
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
+      uid: json['uid'],
+      name: json['name'],
+      profileImage: json['profileImage'],
+      age: json['age'],
+      number: json['number'],
+      school: json['school'],
+      grade: json['grade'],
+      group: json['group'],
+      eyes: json['eyes'],
+      mbti: json['mbti'],
+      hobby: json['hobby'],
+      style: List<String>.from(json['style']),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'uid': uid,
+      'name': name,
+      'profileImage': profileImage,
+      'age': age,
+      'number': number,
+      'school': school,
+      'grade': grade,
+      'group': group,
+      'eyes': eyes,
+      'mbti': mbti,
+      'hobby': hobby,
+      'style': style,
+    };
+  }
 }
 
 

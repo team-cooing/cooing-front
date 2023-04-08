@@ -268,7 +268,8 @@ packages:
     dependency: "direct main"
     description:
       name: grouped_list
-      url: "https://pub.dartlang.org"
+      sha256: "8e77847066a0b7a68b9bc7984462deb05386e173a2998778e316761a9982a451"
+      url: "https://pub.dev"
     source: hosted
     version: "3.7.1"
   http:
@@ -391,6 +392,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.3"
+  nested:
+    dependency: transitive
+    description:
+      name: nested
+      sha256: "03bac4c528c64c95c722ec99280375a6f2fc708eec17c7b3f07253b626cd2a20"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   path:
     dependency: transitive
     description:
@@ -479,6 +488,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.2.4"
+  provider:
+    dependency: "direct main"
+    description:
+      name: provider
+      sha256: cdbe7530b12ecd9eb455bdaa2fcb8d4dad22e80b8afb4798b41479d5ce26847f
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.0.5"
   share_plus:
     dependency: "direct main"
     description:
@@ -496,7 +513,7 @@ packages:
     source: hosted
     version: "3.2.0"
   shared_preferences:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: shared_preferences
       sha256: "78528fd87d0d08ffd3e69551173c026e8eacc7b7079c82eb6a77413957b7e394"

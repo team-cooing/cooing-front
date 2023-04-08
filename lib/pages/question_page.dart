@@ -1,8 +1,10 @@
+import 'package:cooing_front/providers/UserProvider.dart';
 import 'package:flutter/material.dart';
 import "dart:math";
 import "dart:async";
 import 'package:cooing_front/widgets/link.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 class QuestionPage extends StatefulWidget {
   const QuestionPage({super.key});
@@ -141,7 +143,6 @@ class _QuestionPageState extends State<QuestionPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-
     return Scaffold(
       body: SingleChildScrollView(child: _askBody()),
     );
@@ -182,13 +183,20 @@ class _QuestionPageState extends State<QuestionPage>
                   ))
             ]),
             const Padding(padding: EdgeInsets.all(15.0)),
-            const SizedBox(
-              width: 80.0,
-              height: 80.0,
-              child: CircleAvatar(
-                backgroundImage: AssetImage('images/sohee.jpg'),
-              ),
-            ),
+            Consumer<UserDataProvider>(builder: (context, provider, child) {
+              final userData = provider.userData;
+              if (userData == null) {
+                return const CircularProgressIndicator();
+              } else {
+                return SizedBox(
+                  width: 80.0,
+                  height: 80.0,
+                  child: CircleAvatar(
+                    backgroundImage: NetworkImage(userData.profileImage),
+                  ),
+                );
+              }
+            }),
             const Padding(padding: EdgeInsets.all(20.0)),
             Text(
               askText,

@@ -1,3 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cooing_front/model/User.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:flutter/material.dart';
 import 'package:cooing_front/pages/question_page.dart';
 import 'package:cooing_front/pages/message_page.dart';
