@@ -196,54 +196,64 @@ class _MultiSelectscreenState extends State<MultiSelectscreen> {
                           if (style[i].selected) {
                             _styleList.add(style[i].name);
                           }
+
+                          for (int i = 0; i < hobby.length; i++) {
+                            if (hobby[i].selected) {
+                              _hobby = hobby[i].title;
+                            }
+                          }
+                          print(_styleList);
+
+                          kakao.User user = await kakao.UserApi.instance.me();
+                          final newUser = await _authentication
+                              .createUserWithEmailAndPassword(
+                            email: user.kakaoAccount!.email.toString(),
+                            password: user.id.toString(),
+                          );
+                          final uid = newUser.user!.uid.toString();
+                          print(uid);
+
+                          final userRef =
+                              FirebaseFirestore.instance.collection('users');
+                          await userRef.doc(uid).set({
+                            'uid': uid,
+                            "name": args.name,
+                            "profileImage": args.profileImage,
+                            'gender': args.gender,
+                            'age': args.age,
+                            'number': args.number,
+                            'school': args.school,
+                            'schoolCode': args.schoolCode,
+                            'grade': args.grade,
+                            'group': args.group,
+                            'eyes': args.eyes,
+                            'mbti': args.mbti,
+                            'hobby': _hobby,
+                            "style": _styleList,
+                          });
+
+                          if (newUser.user != null) {
+                            Navigator.pushNamed(
+                              context,
+                              'welcome',
+                              arguments: User(
+                                  uid: uid,
+                                  name: args.name,
+                                  profileImage: args.profileImage,
+                                  gender: args.gender,
+                                  age: args.age,
+                                  number: args.number,
+                                  school: args.school,
+                                  schoolCode: args.schoolCode,
+                                  grade: args.grade,
+                                  group: args.group,
+                                  eyes: args.eyes,
+                                  mbti: args.mbti,
+                                  hobby: _hobby,
+                                  style: _styleList),
+                            );
+                          }
                         }
-                        print(_styleList);
-
-                        kakao.User user = await kakao.UserApi.instance.me();
-                        final newUser = await _authentication
-                            .createUserWithEmailAndPassword(
-                          email: user.kakaoAccount!.email.toString(),
-                          password: user.id.toString(),
-                        );
-                        final uid = newUser.user!.uid.toString();
-                        print(uid);
-
-                        final userRef =
-                            FirebaseFirestore.instance.collection('users');
-                        await userRef.doc(uid).set({
-                          'uid': uid,
-                          "name": args.name,
-                          "profileImage": args.profileImage,
-                          'age': args.age,
-                          'number': args.number,
-                          'school': args.school,
-                          'grade': args.grade,
-                          'group': args.group,
-                          'eyes': args.eyes,
-                          'mbti': args.mbti,
-                          'hobby': _hobby,
-                          "style": _styleList,
-                        });
-
-                        // if (newUser.user != null) {
-                        //   Navigator.pushNamed(
-                        //     context,
-                        //     'welcome',
-                        //     arguments: User(
-                        //         uid: uid,
-                        //         name: args.name,
-                        //         profileImage: args.profileImage,
-                        //         age: args.age,
-                        //         number: args.number,
-                        //         school: args.school,
-                        //         grade: args.grade,
-                        //         group: args.group,
-                        //         eyes: args.eyes,
-                        //         mbti: args.mbti,
-                        //         hobby: _hobby,
-                        //         style: _styleList),
-                        //   );
-                        // }
                       }),
                 ),
               ),
@@ -268,7 +278,6 @@ class _MultiSelectscreenState extends State<MultiSelectscreen> {
                           for (int i = 0; i < hobby.length; i++) {
                             hobby[i].selected = i == k;
                           }
-                          _hobby = hobby[k].title;
                         });
                       },
                       child: Container(

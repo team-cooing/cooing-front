@@ -1,4 +1,6 @@
+import 'package:cooing_front/pages/answer_detail_page.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:grouped_list/grouped_list.dart';
 
 class MessagePage extends StatefulWidget {
@@ -196,72 +198,80 @@ class _MessagePageState extends State<MessagePage> {
               itemBuilder: ((context, element) {
                 return Padding(
                     padding: EdgeInsets.symmetric(horizontal: 5),
-                    child: Card(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(20),
-                              topRight: Radius.circular(20),
-                              bottomRight: Radius.circular(20))),
-                      elevation: 0,
-                      margin: EdgeInsets.symmetric(
-                          horizontal: 15.0, vertical: 10.0),
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: Container(
-                          padding: EdgeInsets.only(
-                              left: 25.0, right: 25, top: 30, bottom: 30),
-                          decoration: BoxDecoration(
-                              color: Color(0xffF2F3F3),
+                    child: GestureDetector(
+                        onTap: () {
+                          Get.to(() => AnswerDetailPage());
+                        },
+                        child: Card(
+                          shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.only(
                                   topLeft: Radius.circular(20),
                                   topRight: Radius.circular(20),
                                   bottomRight: Radius.circular(20))),
-                          child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
+                          elevation: 0,
+                          margin: EdgeInsets.symmetric(
+                              horizontal: 15.0, vertical: 10.0),
+                          child: SizedBox(
+                            width: double.infinity,
+                            child: Container(
+                              padding: EdgeInsets.only(
+                                  left: 25.0, right: 25, top: 30, bottom: 30),
+                              decoration: BoxDecoration(
+                                  color: Color(0xffF2F3F3),
+                                  borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(20),
+                                      topRight: Radius.circular(20),
+                                      bottomRight: Radius.circular(20))),
+                              child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Row(
+                                    Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
-                                        whatIcon(element['isFemale'],
-                                            element['isChecked']),
-                                        Padding(
-                                            padding:
-                                                EdgeInsets.only(right: 20.0)),
-                                        element['isFemale']
-                                            ? Text(
-                                                '청순한 여학생',
-                                                style: TextStyle(
-                                                    fontSize: 16,
-                                                    color: Color(0xff333D4B),
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              )
-                                            : Text(
-                                                '훈훈한 남학생',
-                                                style: TextStyle(
-                                                    fontSize: 16,
-                                                    color: Color(0xff333D4B),
-                                                    fontWeight:
-                                                        FontWeight.bold),
+                                        Row(
+                                          children: [
+                                            whatIcon(element['isFemale'],
+                                                element['isChecked']),
+                                            Padding(
+                                                padding: EdgeInsets.only(
+                                                    right: 20.0)),
+                                            element['isFemale']
+                                                ? Text(
+                                                    '청순한 여학생',
+                                                    style: TextStyle(
+                                                        fontSize: 16,
+                                                        color:
+                                                            Color(0xff333D4B),
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  )
+                                                : Text(
+                                                    '훈훈한 남학생',
+                                                    style: TextStyle(
+                                                        fontSize: 16,
+                                                        color:
+                                                            Color(0xff333D4B),
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                            Text(
+                                              '으로부터',
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                color: Color(0xff333D4B),
                                               ),
-                                        Text(
-                                          '으로부터',
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            color: Color(0xff333D4B),
-                                          ),
-                                        ),
+                                            ),
+                                          ],
+                                        )
                                       ],
-                                    )
-                                  ],
-                                ),
-                                answerTimeText(element['answer_time'])
-                              ]),
-                        ),
-                      ),
-                    ));
+                                    ),
+                                    answerTimeText(element['answer_time'])
+                                  ]),
+                            ),
+                          ),
+                        )));
               }),
             )));
   }

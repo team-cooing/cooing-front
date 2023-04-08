@@ -46,6 +46,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       initialRoute: SplashScreen.routeName,
+      // initialRoute: 'feature',
       routes: {
         SplashScreen.routeName: (context) => SplashScreen(),
         'home': (context) => const LoginScreen(),

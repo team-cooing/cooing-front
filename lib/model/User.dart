@@ -2,12 +2,12 @@ class User {
   String uid;
   String name;
   String profileImage;
-  late int gender; // 0:남자 1:여자
+  int gender; // 0:남자 1:여자
   String number;
   String age; //int
   String birthday = '2000-02-24';
   String school;
-  late String schoolCode;
+  String schoolCode;
   int grade;
   int group;
   int eyes; // 0:무쌍 1:유쌍
@@ -23,10 +23,11 @@ class User {
     required this.uid,
     required this.name,
     required this.profileImage,
+    required this.gender,
     required this.number,
     required this.age,
     required this.school,
-    // required this.schoolCode,
+    required this.schoolCode,
     required this.grade,
     required this.group,
     required this.eyes,
@@ -41,9 +42,11 @@ class User {
       uid: json['uid'],
       name: json['name'],
       profileImage: json['profileImage'],
+      gender: json['gender'],
       age: json['age'],
       number: json['number'],
       school: json['school'],
+      schoolCode: json['schoolCode'],
       grade: json['grade'],
       group: json['group'],
       eyes: json['eyes'],
@@ -58,9 +61,11 @@ class User {
       'uid': uid,
       'name': name,
       'profileImage': profileImage,
+      'gender': gender,
       'age': age,
       'number': number,
       'school': school,
+      'schoolCode': schoolCode,
       'grade': grade,
       'group': group,
       'eyes': eyes,

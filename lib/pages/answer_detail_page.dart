@@ -1,4 +1,6 @@
+import 'package:cooing_front/pages/HintPage.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class AnswerDetailPage extends StatefulWidget {
   const AnswerDetailPage({super.key});
@@ -9,11 +11,16 @@ class AnswerDetailPage extends StatefulWidget {
 
 class _AnswerDetailPageState extends State<AnswerDetailPage> {
   String askText = '내 첫인상은 어땠어?';
-  bool? isAnonymous = false;
+  bool? isAnonymous = true;
   int maxLength = 100;
   String textValue =
       "너는 \n처음 봤을 때 왠\n지 다가가기 어려웠는데\n막상 이ㅎㅎ야기하고 나니까 \n좋았던 것 같아.\n생각보다 착해!ㅋzzzzzzzzzzzz\nㅋ\nㅋ\nㅋ\nㅋ\nㅋ";
-
+// return Scaffold(
+//       appBar: AppBar(
+//         backgroundColor: Colors.white,
+//         leading: BackButton(color: Color.fromRGBO(51, 61, 75, 1)),
+//         elevation: 0,
+//       ),
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,14 +28,7 @@ class _AnswerDetailPageState extends State<AnswerDetailPage> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0.0,
-        leading: IconButton(
-          icon: const Icon(Icons.navigate_before_rounded),
-          iconSize: 30,
-          color: Colors.black54,
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
+        leading: BackButton(color: Color.fromRGBO(51, 61, 75, 1)),
         actions: [
           IconButton(
               onPressed: () {
@@ -42,7 +42,10 @@ class _AnswerDetailPageState extends State<AnswerDetailPage> {
           )
         ],
       ),
-      body: SafeArea(child: SingleChildScrollView(child: _answerBody())),
+      body: SafeArea(
+        child: Container(child: _answerBody()),
+      ),
+      // bottomNavigationBar: bottomBtns(isAnonymous));
     );
   }
 
@@ -65,7 +68,7 @@ class _AnswerDetailPageState extends State<AnswerDetailPage> {
               )
             ],
           ),
-          const Padding(padding: EdgeInsets.all(10.0)),
+          const Padding(padding: EdgeInsets.all(20.0)),
           fromMsgTxt(isAnonymous),
           _answerDetailCard(),
           bottomBtns(isAnonymous)
@@ -145,11 +148,13 @@ class _AnswerDetailPageState extends State<AnswerDetailPage> {
   }
 
   Widget bottomBtns(bool? isAnony) {
+    Spacer();
     var checkFromBtn = SizedBox(
       width: double.infinity,
+      height: 50,
       child: ElevatedButton(
           onPressed: () {
-            print('Clicked : <누가보냈는지확인하기>');
+            Get.to(() => HintScreen());
           },
           style: OutlinedButton.styleFrom(
             foregroundColor: Colors.white,
@@ -160,12 +165,13 @@ class _AnswerDetailPageState extends State<AnswerDetailPage> {
           child: const Text(
             "누가 보냈는지 확인하기",
             style: TextStyle(
-                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
           )),
     );
 
     var replyBtn = SizedBox(
       width: double.infinity,
+      height: 50,
       child: ElevatedButton(
           onPressed: () {
             print("Clicked : <답장하기>");
@@ -179,7 +185,7 @@ class _AnswerDetailPageState extends State<AnswerDetailPage> {
           child: const Text(
             "답장하기",
             style: TextStyle(
-                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
           )),
     );
 

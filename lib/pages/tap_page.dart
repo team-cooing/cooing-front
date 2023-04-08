@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cooing_front/model/User.dart';
+import 'package:cooing_front/pages/SettingScreen.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:flutter/material.dart';
 import 'package:cooing_front/pages/question_page.dart';
@@ -72,7 +73,7 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
             QuestionPage(),
             FeedPage(),
             MessagePage(),
-            Tab(icon: Icon(Icons.directions_boat))
+            SettingScreen(),
           ]),
         ));
   }

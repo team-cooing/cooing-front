@@ -1,4 +1,6 @@
+import 'package:cooing_front/pages/answer_page.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class FeedPage extends StatefulWidget {
   const FeedPage({super.key});
@@ -56,11 +58,15 @@ class _FeedPageState extends State<FeedPage> {
     } else if (candy == 0) {
       btnText = '답변하기';
     }
-    return Text(
-      btnText,
-      style: TextStyle(
-          fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
-    );
+    return GestureDetector(
+        onTap: () {
+          Get.to(() => AnswerPage());
+        },
+        child: Text(
+          btnText,
+          style: TextStyle(
+              fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
+        ));
   }
 
   @override
@@ -164,8 +170,8 @@ class _FeedPageState extends State<FeedPage> {
                                       child: ElevatedButton(
                                           onPressed: null,
                                           style: OutlinedButton.styleFrom(
-                                            padding: EdgeInsets.zero,
                                             foregroundColor: Colors.white,
+                                            shadowColor: Colors.transparent,
                                             backgroundColor:
                                                 Color.fromRGBO(151, 84, 251, 1),
                                             shape: RoundedRectangleBorder(
