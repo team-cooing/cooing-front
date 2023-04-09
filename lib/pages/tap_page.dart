@@ -1,7 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cooing_front/model/User.dart';
 import 'package:cooing_front/pages/SettingScreen.dart';
-import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:flutter/material.dart';
 import 'package:cooing_front/pages/question_page.dart';
 import 'package:cooing_front/pages/message_page.dart';
@@ -54,6 +51,7 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
         length: myTabs.length,
         child: Scaffold(
           appBar: AppBar(
+            automaticallyImplyLeading: false,
             backgroundColor: const Color(0xffFFFFFF),
             flexibleSpace: Column(
               mainAxisAlignment: MainAxisAlignment.end,
