@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:cooing_front/firebase_options.dart';
 import 'package:cooing_front/pages/CandyScreen.dart';
 import 'package:cooing_front/pages/ClassScreen.dart';
@@ -10,11 +8,10 @@ import 'package:cooing_front/pages/SchoolScreen.dart';
 import 'package:cooing_front/pages/SignUpScreen.dart';
 import 'package:cooing_front/pages/SplashScreen.dart';
 import 'package:cooing_front/pages/WelcomeScreen.dart';
-import 'package:cooing_front/pages/main_page.dart';
+import 'package:cooing_front/pages/answer_detail_page.dart';
 import 'package:cooing_front/pages/question_page.dart';
 import 'package:cooing_front/pages/tap_page.dart';
 import 'package:cooing_front/providers/UserProvider.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cooing_front/pages/FeatureScreen.dart';
 import 'package:cooing_front/pages/MultiSelectscreen.dart';
@@ -45,7 +42,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      initialRoute: SplashScreen.routeName,
+      initialRoute: '_working',
       // initialRoute: 'feature',
       routes: {
         SplashScreen.routeName: (context) => SplashScreen(),
@@ -61,7 +58,7 @@ class MyApp extends StatelessWidget {
         'hint': (context) => const HintScreen(),
         'candy': (context) => const CandyScreen(),
         'question': (context) => const QuestionPage(),
-        '_working': (context) => const MainPage(),
+        '_working': (context) => const AnswerDetailPage(),
       },
     );
   }

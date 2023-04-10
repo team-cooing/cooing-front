@@ -1,6 +1,7 @@
 import 'package:cooing_front/pages/HintPage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AnswerDetailPage extends StatefulWidget {
   const AnswerDetailPage({super.key});
@@ -15,12 +16,7 @@ class _AnswerDetailPageState extends State<AnswerDetailPage> {
   int maxLength = 100;
   String textValue =
       "너는 \n처음 봤을 때 왠\n지 다가가기 어려웠는데\n막상 이ㅎㅎ야기하고 나니까 \n좋았던 것 같아.\n생각보다 착해!ㅋzzzzzzzzzzzz\nㅋ\nㅋ\nㅋ\nㅋ\nㅋ";
-// return Scaffold(
-//       appBar: AppBar(
-//         backgroundColor: Colors.white,
-//         leading: BackButton(color: Color.fromRGBO(51, 61, 75, 1)),
-//         elevation: 0,
-//       ),
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,8 +27,15 @@ class _AnswerDetailPageState extends State<AnswerDetailPage> {
         leading: BackButton(color: Color.fromRGBO(51, 61, 75, 1)),
         actions: [
           IconButton(
-              onPressed: () {
-                print("Clicked the Warning");
+              onPressed: () async {
+                final reportUrl = Uri.parse('https://pf.kakao.com/_kexoDxj');
+
+                if (await canLaunchUrl(reportUrl)) {
+                  launchUrl(reportUrl);
+                } else {
+                  // ignore: avoid_print
+                  print("Can't launch $reportUrl");
+                }
               },
               icon: Icon(Icons.warning_rounded),
               iconSize: 30,

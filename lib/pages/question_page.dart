@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import "dart:math";
 import "dart:async";
 import 'package:cooing_front/widgets/link.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class QuestionPage extends StatefulWidget {
@@ -44,7 +43,7 @@ class _QuestionPageState extends State<QuestionPage>
   //link
   final DynamicLink _link = DynamicLink();
   final String _userId = 'id';
-  String _userUri = '';
+  final String _userUri = '';
 
   //타이머 관련
   String timeAttack = '';
