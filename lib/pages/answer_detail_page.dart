@@ -11,7 +11,7 @@ class AnswerDetailPage extends StatefulWidget {
 
 class _AnswerDetailPageState extends State<AnswerDetailPage> {
   String askText = '내 첫인상은 어땠어?';
-  bool? isAnonymous = true;
+  bool? isAnonymous = false;
   int maxLength = 100;
   String textValue =
       "너는 \n처음 봤을 때 왠\n지 다가가기 어려웠는데\n막상 이ㅎㅎ야기하고 나니까 \n좋았던 것 같아.\n생각보다 착해!ㅋzzzzzzzzzzzz\nㅋ\nㅋ\nㅋ\nㅋ\nㅋ";
@@ -43,7 +43,11 @@ class _AnswerDetailPageState extends State<AnswerDetailPage> {
         ],
       ),
       body: SafeArea(
-        child: Container(child: _answerBody()),
+        child: Column(children: [
+          _answerBody(),
+          Spacer(),
+          bottomBtns(isAnonymous),
+        ]),
       ),
       // bottomNavigationBar: bottomBtns(isAnonymous));
     );
@@ -71,7 +75,6 @@ class _AnswerDetailPageState extends State<AnswerDetailPage> {
           const Padding(padding: EdgeInsets.all(20.0)),
           fromMsgTxt(isAnonymous),
           _answerDetailCard(),
-          bottomBtns(isAnonymous)
         ])),
       ]),
     );
@@ -149,9 +152,8 @@ class _AnswerDetailPageState extends State<AnswerDetailPage> {
 
   Widget bottomBtns(bool? isAnony) {
     Spacer();
-    var checkFromBtn = SizedBox(
+    var fromWhoButton = SizedBox(
       width: double.infinity,
-      height: 50,
       child: ElevatedButton(
           onPressed: () {
             Get.to(() => HintScreen());
@@ -194,13 +196,13 @@ class _AnswerDetailPageState extends State<AnswerDetailPage> {
           child: Padding(
               padding: EdgeInsets.only(
                 bottom: MediaQuery.of(context).systemGestureInsets.bottom + 20,
-                left: 15,
-                right: 15,
+                left: 20,
+                right: 20,
               ),
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    checkFromBtn,
+                    fromWhoButton,
                     Padding(padding: EdgeInsets.all(5)),
                     replyBtn
                   ])));
@@ -210,8 +212,8 @@ class _AnswerDetailPageState extends State<AnswerDetailPage> {
         child: Padding(
             padding: EdgeInsets.only(
               bottom: MediaQuery.of(context).systemGestureInsets.bottom + 20,
-              left: 15,
-              right: 15,
+              left: 20,
+              right: 20,
             ),
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
