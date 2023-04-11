@@ -41,9 +41,9 @@ class _QuestionPageState extends State<QuestionPage>
   bool _openshareCard = false;
 
   //link
-  final DynamicLink _link = DynamicLink();
-  final String _userId = 'id';
-  final String _userUri = '';
+  // final DynamicLink _link = DynamicLink();
+  // final String _userId = 'id';
+  // final String _userUri = '';
 
   //타이머 관련
   String timeAttack = '';
