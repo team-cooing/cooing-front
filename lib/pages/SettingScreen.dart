@@ -4,6 +4,7 @@ import 'package:cooing_front/pages/SchoolScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'CandyScreen.dart';
 
@@ -22,19 +23,19 @@ class _SettingScreenState extends State<SettingScreen> {
     },
     {
       'title': '질문을 공유하는 방법',
-      'link': '',
+      'link': 'https://we-cooing.notion.site/e802f6eaf1594ff6bd01dbd5ddcc3396',
     },
     {
       'title': '문의 및 피드백',
-      'link': '',
+      'link': 'https://pf.kakao.com/_kexoDxj',
     },
     {
       'title': '이용약관',
-      'link': '',
+      'link': 'https://we-cooing.notion.site/9a8b8ef68b964b5881c57ce50657854d',
     },
     {
       'title': '개인정보처리방침',
-      'link': '',
+      'link': 'https://we-cooing.notion.site/909def3b7b194ac48fabe0f142f60176',
     },
     {
       'title': '로그아웃',
@@ -128,16 +129,29 @@ class _SettingScreenState extends State<SettingScreen> {
                     shrinkWrap: true,
                     itemBuilder: ((context, index) {
                       return Padding(
-                        padding: EdgeInsets.only(
-                            left: 25.0, bottom: 20.0, top: 20.0),
-                        child: Text(
-                          "${settingElements[index]['title']}",
-                          style: TextStyle(
-                              fontSize: 16,
-                              color: Color(0xff333D4B),
-                              fontWeight: FontWeight.bold),
-                        ),
-                      );
+                          padding: EdgeInsets.only(
+                              left: 25.0, bottom: 20.0, top: 20.0),
+                          child: GestureDetector(
+                            child: Text(
+                              "${settingElements[index]['title']}",
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  color: Color(0xff333D4B),
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            onTap: () async {
+                              final reportUrl = Uri.parse(
+                                  "${settingElements[index]['link']}");
+                              print("${settingElements[index]['title']}");
+
+                              if (await canLaunchUrl(reportUrl)) {
+                                launchUrl(reportUrl);
+                              } else {
+                                // ignore: avoid_print
+                                print("Can't launch $reportUrl");
+                              }
+                            },
+                          ));
                     })),
               ],
             ),
