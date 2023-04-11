@@ -9,9 +9,39 @@ class Question {
   String url;
   bool isValidity; // 열려있냐 닫혀있냐? 0:닫힘 1: 열림
 
-  Question({required this.id, required this.ownerProfileImage, required this.ownerName, required this.owner,
-      required this.content, required this.receiveTime, required this.openTime, required this.url, required this.isValidity});
+  Question(
+      {required this.id,
+      required this.ownerProfileImage,
+      required this.ownerName,
+      required this.owner,
+      required this.content,
+      required this.receiveTime,
+      required this.openTime,
+      required this.url,
+      required this.isValidity});
 
-
-
+  factory Question.fromJson(Map<String, dynamic> json) {
+    return Question(
+        id: json['id'],
+        ownerProfileImage: json['ownerProfileImage'],
+        ownerName: json['ownerName'],
+        owner: json['owner'],
+        content: json['content'],
+        receiveTime: json['receiveTime'],
+        openTime: json['openTime'],
+        url: json['url'],
+        isValidity: json['isValidity']);
+  }
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'ownerProfileImage': ownerProfileImage,
+      'ownerName': ownerName,
+      'content': content,
+      'receiveTime': receiveTime,
+      'openTime': openTime,
+      'url': url,
+      'isValidity': isValidity
+    };
+  }
 }

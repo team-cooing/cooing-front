@@ -2,7 +2,6 @@ import 'package:cooing_front/providers/UserProvider.dart';
 import 'package:flutter/material.dart';
 import "dart:math";
 import "dart:async";
-import 'package:cooing_front/widgets/link.dart';
 import 'package:provider/provider.dart';
 
 class QuestionPage extends StatefulWidget {
@@ -17,7 +16,6 @@ class _QuestionPageState extends State<QuestionPage>
   @override
   bool get wantKeepAlive => true;
 
-  double cardHeight = 273.0;
   double askClosedMentSize = 0.0;
 
   late String askText = '똑똑똑! 오늘의 질문이 도착했어요.';
@@ -40,10 +38,6 @@ class _QuestionPageState extends State<QuestionPage>
   //shareCard
   bool _openshareCard = false;
 
-  //link
-  // final DynamicLink _link = DynamicLink();
-  // final String _userId = 'id';
-  // final String _userUri = '';
 
   //타이머 관련
   String timeAttack = '';
@@ -59,7 +53,6 @@ class _QuestionPageState extends State<QuestionPage>
         case '질문 받기':
           //질문
           var question = questionList[_random.nextInt(questionList.length)];
-          cardHeight = 305.0;
           askText = question;
           askButtonText = getAnswer;
           timeAttackSize = 12.0;
