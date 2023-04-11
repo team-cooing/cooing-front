@@ -46,7 +46,7 @@ class _FeedPageState extends State<FeedPage> {
         SizedBox(
             width: 14.0,
             height: 14.0,
-            child: Image(image: AssetImage('images/candy1.png'))),
+            child: Image(image: AssetImage('images/icon_candy.png'))),
         Text(
           '  $btnText',
           style: TextStyle(
@@ -58,145 +58,133 @@ class _FeedPageState extends State<FeedPage> {
     } else if (candy == 0) {
       btnText = '답변하기';
     }
-    return SizedBox(
-        width: 50.0,
-        child: GestureDetector(
-            onTap: () {
-              Get.to(() => AnswerPage());
-            },
-            child: Text(
-              btnText,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            )));
+    return GestureDetector(
+        onTap: () {
+          Get.to(() => AnswerPage());
+        },
+        child: Text(
+          btnText,
+          style: TextStyle(
+              fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
+        ));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(20.0),
-        child: AppBar(
-          elevation: 0.0,
-          backgroundColor: Colors.transparent,
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(20.0),
+          child: AppBar(
+            elevation: 0.0,
+            backgroundColor: Colors.transparent,
+          ),
         ),
-      ),
-      body: ScrollConfiguration(
-        behavior: ScrollBehavior().copyWith(overscroll: false),
-        child: ListView.builder(
-            itemCount: feedElements.length,
-            itemBuilder: ((context, index) {
-              return Padding(
-                padding: EdgeInsets.symmetric(horizontal: 5),
-                child: Card(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(20),
-                          topRight: Radius.circular(20),
-                          bottomRight: Radius.circular(20))),
-                  elevation: 0,
-                  margin:
-                      EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: Container(
-                      padding: EdgeInsets.all(25.0),
-                      decoration: BoxDecoration(
-                          color: Color(0xffF2F3F3),
-                          borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(20),
-                              topRight: Radius.circular(20),
-                              bottomRight: Radius.circular(20))),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.max,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    SizedBox(
-                                      width: 42.0,
-                                      height: 42.0,
-                                      child: CircleAvatar(
-                                        backgroundImage:
-                                            AssetImage('images/sohee.jpg'),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.only(right: 14.0),
-                                    ),
-                                    Expanded(
-                                      child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              "${feedElements[index]['user_name']}",
-                                              maxLines: 2,
-                                              softWrap: true,
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                color: Color(0xff333D4B),
-                                              ),
+        body: ScrollConfiguration(
+          behavior: ScrollBehavior().copyWith(overscroll: false),
+          child: ListView.builder(
+              itemCount: feedElements.length,
+              itemBuilder: ((context, index) {
+                return Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 5),
+                    child: Card(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(20),
+                                topRight: Radius.circular(20),
+                                bottomRight: Radius.circular(20))),
+                        elevation: 0,
+                        margin: EdgeInsets.symmetric(
+                            horizontal: 15.0, vertical: 10.0),
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: Container(
+                            padding: EdgeInsets.all(25.0),
+                            decoration: BoxDecoration(
+                                color: Color(0xffF2F3F3),
+                                borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(20),
+                                    topRight: Radius.circular(20),
+                                    bottomRight: Radius.circular(20))),
+                            child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          SizedBox(
+                                            width: 42.0,
+                                            height: 42.0,
+                                            child: CircleAvatar(
+                                              backgroundImage: AssetImage(
+                                                  'images/sohee.jpg'),
                                             ),
-                                            Padding(
-                                              padding: EdgeInsets.all(3),
-                                            ),
-                                            Flexible(
-                                              child: Text(
-                                                "${feedElements[index]['question']}",
-                                                softWrap: true,
-                                                style: TextStyle(
-                                                  fontSize: 14,
-                                                  color: Color(0xff333D4B),
-                                                  fontWeight: FontWeight.bold,
+                                          ),
+                                          Padding(
+                                              padding:
+                                                  EdgeInsets.only(right: 14.0)),
+                                          Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  "${feedElements[index]['user_name']}",
+                                                  softWrap: true,
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Color(0xff333D4B),
+                                                  ),
                                                 ),
-                                              ),
-                                            ),
-                                          ]),
-                                    ),
-                                  ],
-                                )
-                              ],
-                            ),
+                                                Padding(
+                                                  padding: EdgeInsets.all(3),
+                                                ),
+                                                Flexible(
+                                                  child: Text(
+                                                    "${feedElements[index]['question']}",
+                                                    overflow:
+                                                        TextOverflow.visible,
+                                                    softWrap: true,
+                                                    style: TextStyle(
+                                                      fontSize: 14,
+                                                      color: Color(0xff333D4B),
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ])
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                  Container(
+                                      alignment: Alignment.center,
+                                      child: ElevatedButton(
+                                          onPressed: null,
+                                          style: OutlinedButton.styleFrom(
+                                            foregroundColor: Colors.white,
+                                            shadowColor: Colors.transparent,
+                                            backgroundColor:
+                                                Color.fromRGBO(151, 84, 251, 1),
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        10.0)),
+                                          ),
+                                          child: feedButton(
+                                              feedElements[index]['candy'])))
+                                ]),
                           ),
-                          Container(
-                            width: 75,
-                            alignment: Alignment.center,
-                            child: ElevatedButton(
-                                onPressed: null,
-                                style: OutlinedButton.styleFrom(
-                                  foregroundColor: Colors.white,
-                                  shadowColor: Colors.transparent,
-                                  backgroundColor:
-                                      Color.fromRGBO(151, 84, 251, 1),
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(10.0)),
-                                ),
-                                child:
-                                    feedButton(feedElements[index]['candy'])),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            })),
-      ),
-    );
+                        )));
+              })),
+        ));
   }
 }
