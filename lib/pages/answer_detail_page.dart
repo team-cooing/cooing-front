@@ -12,7 +12,7 @@ class AnswerDetailPage extends StatefulWidget {
 
 class _AnswerDetailPageState extends State<AnswerDetailPage> {
   String askText = '내 첫인상은 어땠어?';
-  bool? isAnonymous = false;
+  bool? isAnonymous = true;
   int maxLength = 100;
   String textValue =
       "너는 \n처음 봤을 때 왠\n지 다가가기 어려웠는데\n막상 이ㅎㅎ야기하고 나니까 \n좋았던 것 같아.\n생각보다 착해!ㅋzzzzzzzzzzzz\nㅋ\nㅋ\nㅋ\nㅋ\nㅋ";
@@ -157,6 +157,7 @@ class _AnswerDetailPageState extends State<AnswerDetailPage> {
     Spacer();
     var fromWhoButton = SizedBox(
       width: double.infinity,
+      height: 50,
       child: ElevatedButton(
           onPressed: () {
             Get.to(() => HintScreen());
