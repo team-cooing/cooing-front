@@ -4,6 +4,7 @@ class Question {
   String ownerName;
   String owner;
   String content;
+  int contentId;
   String receiveTime;
   String openTime;
   String url;
@@ -15,6 +16,7 @@ class Question {
       required this.ownerName,
       required this.owner,
       required this.content,
+      required this.contentId,
       required this.receiveTime,
       required this.openTime,
       required this.url,
@@ -27,8 +29,9 @@ class Question {
         ownerName: json['ownerName'],
         owner: json['owner'],
         content: json['content'],
-        receiveTime: json['receiveTime'],
-        openTime: json['openTime'],
+        contentId: json['contentId'],
+        receiveTime: json['receiveTime'], //답변받기 누른시간
+        openTime: json['openTime'], //질문받기 누른 시간
         url: json['url'],
         isValidity: json['isValidity']);
   }
@@ -38,6 +41,7 @@ class Question {
       'ownerProfileImage': ownerProfileImage,
       'ownerName': ownerName,
       'content': content,
+      'contentId' : contentId,
       'receiveTime': receiveTime,
       'openTime': openTime,
       'url': url,

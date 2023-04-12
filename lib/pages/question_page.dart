@@ -1,6 +1,10 @@
 import 'package:cooing_front/providers/UserProvider.dart';
+import 'package:cooing_front/model/Question.dart';
+import 'package:cooing_front/model/question_list.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import "dart:math";
+
 import "dart:async";
 import 'package:provider/provider.dart';
 
@@ -17,14 +21,15 @@ class _QuestionPageState extends State<QuestionPage>
   bool get wantKeepAlive => true;
 
   double askClosedMentSize = 0.0;
+  Object? questionContent = '똑똑똑! 오늘의 질문이 도착했어요.';
+  Object? questionId;
 
-  late String askText = '똑똑똑! 오늘의 질문이 도착했어요.';
+  //버튼 text
   String getAsk = '질문 받기';
   String getAnswer = '답변 받기';
   String closeAsk = '질문 닫기';
-  var questionList = ['내 첫인상은 어땠어?', '내 mbti는 무엇인 것 같아?', '나랑 닮은 동물은 뭐야?'];
-  final _random = Random();
 
+  final _random = Random();
   String askClosedMent = '';
   final List<Color> _colors = <Color>[
     Colors.white,
@@ -36,8 +41,7 @@ class _QuestionPageState extends State<QuestionPage>
   late Color buttonColor = _colors[0];
 
   //shareCard
-  bool _openshareCard = false;
-
+  final bool _openshareCard = false;
 
   //타이머 관련
   String timeAttack = '';
@@ -47,37 +51,77 @@ class _QuestionPageState extends State<QuestionPage>
   Duration _countdown = Duration.zero;
   bool _isRunning = false;
 
+// 새 Question 객체 생성
+  Question newQuestion = Question(
+    id: '',
+    ownerProfileImage: '',
+    ownerName: '',
+    owner: '',
+    content: '',
+    contentId: 0,
+    receiveTime: '',
+    openTime: '',
+    url: '',
+    isValidity: false,
+  );
+// Firebase Firestore 컬렉션 참조
+  CollectionReference questionCollectionRef =
+      FirebaseFirestore.instance.collection('questions');
+
+  DocumentReference? questionReference;
+// Question 객체를 Firestore 문서로 변환하는 함수
+  Map<String, dynamic> _questionToFirestoreDocument(Question question) {
+    return question.toJson();
+  }
+
+// Firestore에 새로운 Question 객체를 추가하는 함수
+  Future<void> addQuestion(Question question, String id) async {
+    final document = _questionToFirestoreDocument(question);
+    await questionCollectionRef.add(document);
+  }
+
   changeAskCard() {
     setState(() {
       switch (askButtonText) {
         case '질문 받기':
           //질문
-          var question = questionList[_random.nextInt(questionList.length)];
-          askText = question;
+          var randomQuestion =
+              questionList[_random.nextInt(questionList.length)];
+          questionContent = randomQuestion['question'];
+          questionId = randomQuestion['id'];
+
+          newQuestion.content = questionContent.toString();
+          newQuestion.contentId = questionId as int;
+
           askButtonText = getAnswer;
           timeAttackSize = 12.0;
-          _startTimer();
+          _startTimer(); //openTime
+
+          questionReference = questionCollectionRef.doc(newQuestion.id);
+          addQuestion(newQuestion, newQuestion.id);
+
           break;
         case '답변 받기':
-          DateTime nowDate = DateTime.now();
-          print('$nowDate');
-          DateTime closeDate = nowDate.add(const Duration(hours: 24));
+          DateTime receiveTime = DateTime.now();
+// 업데이트할 데이터 생성
+          final Map<String, dynamic> data = {
+            'receiveTime': receiveTime.toString(),
+          };
+          DateTime closeDate = receiveTime.add(const Duration(hours: 24));
           timetextColor = _colors[2];
           askButtonText = closeAsk;
           buttonColor = _colors[1];
           askClosedMent =
               '해당 질문은 ${closeDate.day}일 ${closeDate.hour}시 ${closeDate.minute}분부터 닫을 수 있습니다.';
           askClosedMentSize = 10.0;
-          _openshareCard = true;
-
+          questionReference?.set(data, SetOptions(merge: true));
           break;
 
         case '질문 닫기':
           var question = questionList[_random.nextInt(questionList.length)];
-          askText = question;
+          // questionContent = question;
           askClosedMent = '새로운 질문이 도착했어요!';
           buttonColor = _colors[0];
-
           timeAttackSize = 0.0;
           _resetTimer();
           break;
@@ -86,9 +130,13 @@ class _QuestionPageState extends State<QuestionPage>
   }
 
   void _startTimer() {
-    final now = DateTime.now();
-    final endOfDay = DateTime(now.year, now.month, now.day + 1);
-    final remainingSeconds = endOfDay.difference(now).inSeconds;
+    final openTime = DateTime.now();
+    newQuestion.openTime = openTime.toString();
+    newQuestion.id = openTime.toString();
+
+    print(openTime);
+    final endOfDay = DateTime(openTime.year, openTime.month, openTime.day + 1);
+    final remainingSeconds = endOfDay.difference(openTime).inSeconds;
     setState(() {
       _countdown = Duration(seconds: remainingSeconds);
       _isRunning = true;
@@ -135,6 +183,7 @@ class _QuestionPageState extends State<QuestionPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+
     return Scaffold(
       body: SingleChildScrollView(child: _askBody()),
     );
@@ -180,6 +229,10 @@ class _QuestionPageState extends State<QuestionPage>
               if (userData == null) {
                 return const CircularProgressIndicator();
               } else {
+                newQuestion.owner = userData.uid;
+                newQuestion.ownerName = userData.name;
+                newQuestion.ownerProfileImage = userData.profileImage;
+
                 return SizedBox(
                   width: 80.0,
                   height: 80.0,
@@ -191,7 +244,7 @@ class _QuestionPageState extends State<QuestionPage>
             }),
             const Padding(padding: EdgeInsets.all(20.0)),
             Text(
-              askText,
+              questionContent.toString(),
               textAlign: TextAlign.left,
               style: const TextStyle(
                   fontWeight: FontWeight.bold,
