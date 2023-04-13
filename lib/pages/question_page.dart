@@ -41,7 +41,7 @@ class _QuestionPageState extends State<QuestionPage>
   late Color buttonColor = _colors[0];
 
   //shareCard
-  final bool _openshareCard = false;
+  bool _openshareCard = false;
 
   //타이머 관련
   String timeAttack = '';
@@ -68,16 +68,23 @@ class _QuestionPageState extends State<QuestionPage>
   CollectionReference questionCollectionRef =
       FirebaseFirestore.instance.collection('questions');
 
-  DocumentReference? questionReference;
+  DocumentReference? questionDocRef;
 // Question 객체를 Firestore 문서로 변환하는 함수
   Map<String, dynamic> _questionToFirestoreDocument(Question question) {
     return question.toJson();
   }
 
 // Firestore에 새로운 Question 객체를 추가하는 함수
-  Future<void> addQuestion(Question question, String id) async {
+  Future<void> addNewQuestion(
+      DocumentReference? documentRef, Question question, String id) async {
     final document = _questionToFirestoreDocument(question);
-    await questionCollectionRef.add(document);
+    await documentRef?.set(document);
+  }
+
+  Future<void> updateQuestion(
+      String section, var updateStr, DocumentReference? docReference) async {
+    Map<String, dynamic> data = {section: updateStr};
+    await docReference?.update(data);
   }
 
   changeAskCard() {
@@ -96,17 +103,18 @@ class _QuestionPageState extends State<QuestionPage>
           askButtonText = getAnswer;
           timeAttackSize = 12.0;
           _startTimer(); //openTime
+          questionDocRef = questionCollectionRef.doc(newQuestion.id);
 
-          questionReference = questionCollectionRef.doc(newQuestion.id);
-          addQuestion(newQuestion, newQuestion.id);
+          addNewQuestion(questionDocRef, newQuestion, newQuestion.id);
 
           break;
         case '답변 받기':
           DateTime receiveTime = DateTime.now();
-// 업데이트할 데이터 생성
-          final Map<String, dynamic> data = {
-            'receiveTime': receiveTime.toString(),
-          };
+          // 업데이트할 데이터 생성
+          newQuestion.receiveTime = receiveTime.toString();
+          updateQuestion(
+              'receiveTime', newQuestion.receiveTime, questionDocRef);
+
           DateTime closeDate = receiveTime.add(const Duration(hours: 24));
           timetextColor = _colors[2];
           askButtonText = closeAsk;
@@ -114,12 +122,12 @@ class _QuestionPageState extends State<QuestionPage>
           askClosedMent =
               '해당 질문은 ${closeDate.day}일 ${closeDate.hour}시 ${closeDate.minute}분부터 닫을 수 있습니다.';
           askClosedMentSize = 10.0;
-          questionReference?.set(data, SetOptions(merge: true));
+          _openshareCard = true;
           break;
 
         case '질문 닫기':
-          var question = questionList[_random.nextInt(questionList.length)];
-          // questionContent = question;
+          // var question = questionList[_random.nextInt(questionList.length)];
+          // updateQuestion('content', question, questionDocRef);
           askClosedMent = '새로운 질문이 도착했어요!';
           buttonColor = _colors[0];
           timeAttackSize = 0.0;
