@@ -129,7 +129,7 @@ Widget shareCard(bool open) {
                             borderRadius: BorderRadius.circular(10.0)),
                       ),
                       child: const Text(
-                        "복사",
+                        "공유",
                         style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.bold,
