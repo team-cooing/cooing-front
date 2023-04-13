@@ -1,10 +1,10 @@
 import 'package:cooing_front/providers/UserProvider.dart';
 import 'package:cooing_front/model/Question.dart';
 import 'package:cooing_front/model/question_list.dart';
+import 'package:cooing_front/widgets/share_card.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import "dart:math";
-
 import "dart:async";
 import 'package:provider/provider.dart';
 
@@ -20,17 +20,14 @@ class _QuestionPageState extends State<QuestionPage>
   @override
   bool get wantKeepAlive => true;
 
-  double askClosedMentSize = 0.0;
-  Object? questionContent = '똑똑똑! 오늘의 질문이 도착했어요.';
   Object? questionId;
+  Map<String, Object> randomQ = {"id": -1, "question": ""};
 
   //버튼 text
   String getAsk = '질문 받기';
-  String getAnswer = '답변 받기';
-  String closeAsk = '질문 닫기';
+  bool isButtonEnabled = true;
 
-  final _random = Random();
-  String askClosedMent = '';
+  String btnBottomMent = '';
   final List<Color> _colors = <Color>[
     Colors.white,
     const Color(0xffe0cbfe),
@@ -38,19 +35,15 @@ class _QuestionPageState extends State<QuestionPage>
   ];
 
   late String askButtonText = getAsk;
-  late Color buttonColor = _colors[0];
 
   //shareCard
   bool _openshareCard = false;
 
   //타이머 관련
-  String timeAttack = '';
-  double timeAttackSize = 0.0;
-  late Color timetextColor = _colors[0];
   Timer? _timer;
   Duration _countdown = Duration.zero;
-  bool _isRunning = false;
-
+  bool _isRunning = false; //타이머 isRunning
+  DateTime closeDate = DateTime.now();
 // 새 Question 객체 생성
   Question newQuestion = Question(
     id: '',
@@ -64,6 +57,14 @@ class _QuestionPageState extends State<QuestionPage>
     url: '',
     isValidity: false,
   );
+
+  //임시 questioned List
+  List<Map<String, Object>> questionedList = [
+    {"id": 0, "question": "나를 장난감에 비유한다면?"},
+    {"id": 1, "question": "나를 아이스크림에 비유한다면?"},
+    {"id": 2, "question": "나를 영화 장르에 비유한다면?"},
+    {"id": 3, "question": "나를 과자에 비유한다면?"},
+  ];
 // Firebase Firestore 컬렉션 참조
   CollectionReference questionCollectionRef =
       FirebaseFirestore.instance.collection('questions');
@@ -76,7 +77,7 @@ class _QuestionPageState extends State<QuestionPage>
 
 // Firestore에 새로운 Question 객체를 추가하는 함수
   Future<void> addNewQuestion(
-      DocumentReference? documentRef, Question question, String id) async {
+      DocumentReference? documentRef, Question question) async {
     final document = _questionToFirestoreDocument(question);
     await documentRef?.set(document);
   }
@@ -87,51 +88,60 @@ class _QuestionPageState extends State<QuestionPage>
     await docReference?.update(data);
   }
 
+  Map<String, Object> filterQuestion(questioned) {
+    List<Map<String, Object>> filteredQuestions =
+        questionList.where((q) => !questionedList.contains(q)).toList();
+    Map<String, Object> randomQuestion =
+        filteredQuestions[Random().nextInt(filteredQuestions.length)];
+
+    questioned.add(randomQuestion);
+    return randomQuestion;
+  }
+
   changeAskCard() {
     setState(() {
       switch (askButtonText) {
         case '질문 받기':
+          _openshareCard = false;
           //질문
-          var randomQuestion =
-              questionList[_random.nextInt(questionList.length)];
-          questionContent = randomQuestion['question'];
-          questionId = randomQuestion['id'];
+          randomQ = filterQuestion(questionedList);
+          newQuestion.content = randomQ['question'].toString();
+          newQuestion.contentId = randomQ['id'] as int;
+          newQuestion.isValidity = true;
 
-          newQuestion.content = questionContent.toString();
-          newQuestion.contentId = questionId as int;
-
-          askButtonText = getAnswer;
-          timeAttackSize = 12.0;
           _startTimer(); //openTime
-          questionDocRef = questionCollectionRef.doc(newQuestion.id);
+          questionDocRef = questionCollectionRef
+              .doc(newQuestion.id); //title이 id인 firebase document reference 생성
+          addNewQuestion(questionDocRef, newQuestion);
 
-          addNewQuestion(questionDocRef, newQuestion, newQuestion.id);
-
+          askButtonText = '답변 받기';
           break;
+
         case '답변 받기':
+          _openshareCard = true; //아래에 share card 생성
+          _resetTimer();
+
+          String url = 'www.kookmin.ac.kr/12345'; //임시 url
           DateTime receiveTime = DateTime.now();
-          // 업데이트할 데이터 생성
           newQuestion.receiveTime = receiveTime.toString();
           updateQuestion(
               'receiveTime', newQuestion.receiveTime, questionDocRef);
+          updateQuestion('url', url, questionDocRef);
 
-          DateTime closeDate = receiveTime.add(const Duration(hours: 24));
-          timetextColor = _colors[2];
-          askButtonText = closeAsk;
-          buttonColor = _colors[1];
-          askClosedMent =
+          closeDate = receiveTime.add(const Duration(hours: 24));
+          btnBottomMent =
               '해당 질문은 ${closeDate.day}일 ${closeDate.hour}시 ${closeDate.minute}분부터 닫을 수 있습니다.';
-          askClosedMentSize = 10.0;
-          _openshareCard = true;
+          isButtonEnabled = false;
+          askButtonText = '질문 닫기';
+
           break;
 
         case '질문 닫기':
-          // var question = questionList[_random.nextInt(questionList.length)];
-          // updateQuestion('content', question, questionDocRef);
-          askClosedMent = '새로운 질문이 도착했어요!';
-          buttonColor = _colors[0];
-          timeAttackSize = 0.0;
-          _resetTimer();
+          if (DateTime.now().isAfter(closeDate)) {
+            isButtonEnabled = true;
+            askButtonText = '질문 받기';
+          }
+
           break;
       }
     });
@@ -142,7 +152,6 @@ class _QuestionPageState extends State<QuestionPage>
     newQuestion.openTime = openTime.toString();
     newQuestion.id = openTime.toString();
 
-    print(openTime);
     final endOfDay = DateTime(openTime.year, openTime.month, openTime.day + 1);
     final remainingSeconds = endOfDay.difference(openTime).inSeconds;
     setState(() {
@@ -154,6 +163,10 @@ class _QuestionPageState extends State<QuestionPage>
         if (_countdown.inSeconds == 0) {
           _timer?.cancel();
           _isRunning = false;
+          if (_openshareCard == false) {
+            askButtonText = '질문 받기';
+            questionCollectionRef.doc(newQuestion.id).delete();
+          }
         } else {
           _countdown = Duration(seconds: _countdown.inSeconds - 1);
         }
@@ -204,7 +217,7 @@ class _QuestionPageState extends State<QuestionPage>
             child: Center(
                 child: Column(children: <Widget>[
           pupleBox(),
-          shareCard(),
+          shareCard(_openshareCard),
         ]))));
   }
 
@@ -213,6 +226,10 @@ class _QuestionPageState extends State<QuestionPage>
   }
 
   Widget pupleBox() {
+    // Update button state
+    setState(() {
+      isButtonEnabled = isButtonEnabled;
+    });
     String remainTimer = _formatDuration(_countdown);
     return SizedBox(
       width: double.infinity,
@@ -226,10 +243,9 @@ class _QuestionPageState extends State<QuestionPage>
               const Padding(padding: EdgeInsets.only(left: 25.0)),
               Text(remainTimer,
                   style: TextStyle(
-                    color: Colors.white,
-                    backgroundColor: _colors[2],
-                    fontSize: timeAttackSize,
-                  ))
+                      color: Colors.white,
+                      backgroundColor: _colors[2],
+                      fontSize: _isRunning ? 12 : 0))
             ]),
             const Padding(padding: EdgeInsets.all(15.0)),
             Consumer<UserDataProvider>(builder: (context, provider, child) {
@@ -252,7 +268,9 @@ class _QuestionPageState extends State<QuestionPage>
             }),
             const Padding(padding: EdgeInsets.all(20.0)),
             Text(
-              questionContent.toString(),
+              newQuestion.isValidity
+                  ? newQuestion.content
+                  : '똑똑똑! 오늘의 질문이 도착했어요.',
               textAlign: TextAlign.left,
               style: const TextStyle(
                   fontWeight: FontWeight.bold,
@@ -262,11 +280,11 @@ class _QuestionPageState extends State<QuestionPage>
             Container(
               padding: EdgeInsets.all(25.0),
               child: OutlinedButton(
-                onPressed: () => changeAskCard(),
+                onPressed: isButtonEnabled ? () => changeAskCard() : null,
                 style: OutlinedButton.styleFrom(
                   padding: EdgeInsets.symmetric(horizontal: 40, vertical: 10),
                   foregroundColor: const Color(0xff9754FB),
-                  backgroundColor: buttonColor,
+                  backgroundColor: isButtonEnabled ? _colors[0] : _colors[1],
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
@@ -279,159 +297,14 @@ class _QuestionPageState extends State<QuestionPage>
               ),
             ),
             Text(
-              askClosedMent,
-              style:
-                  TextStyle(color: Colors.white, fontSize: askClosedMentSize),
+              btnBottomMent,
+              style: TextStyle(
+                  color: Colors.white, fontSize: _openshareCard ? 10 : 0),
             ),
             const Padding(padding: EdgeInsets.all(9.0)),
           ],
         ),
       ),
     );
-  }
-
-  Widget shareCard() {
-    if (_openshareCard == true) {
-      return (Column(children: <Widget>[
-        Container(
-          padding: const EdgeInsets.only(top: 20),
-          child: SizedBox(
-            width: double.infinity,
-            height: 90.0,
-            child: Container(
-              padding: EdgeInsets.all(25.0),
-              decoration: BoxDecoration(
-                  color: Color(0xffF2F3F3),
-                  borderRadius: BorderRadius.circular(20)),
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Row(
-                          children: [
-                            SizedBox(
-                                width: 25.0,
-                                height: 25.0,
-                                child: Image(
-                                    image: AssetImage(
-                                        'images/icon_copyLink.png'))),
-                            Padding(padding: EdgeInsets.only(right: 10.0)),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "1단계",
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Color(0xff333D4B),
-                                  ),
-                                ),
-                                Text(
-                                  "링크 복사하기",
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      color: Color(0xff333D4B),
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ],
-                            )
-                          ],
-                        )
-                      ],
-                    ),
-                    ElevatedButton(
-                        onPressed: () {},
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          shadowColor: Colors.transparent,
-                          backgroundColor: Color.fromRGBO(151, 84, 251, 1),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.0)),
-                        ),
-                        child: const Text(
-                          "복사",
-                          style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white),
-                        ))
-                  ]),
-            ),
-          ),
-        ),
-        Container(
-          padding: const EdgeInsets.only(top: 20),
-          child: SizedBox(
-            width: double.infinity,
-            height: 90.0,
-            child: Container(
-              padding: EdgeInsets.all(25.0),
-              decoration: BoxDecoration(
-                  color: Color(0xffF2F3F3),
-                  borderRadius: BorderRadius.circular(20)),
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Row(
-                          children: [
-                            SizedBox(
-                                width: 25.0,
-                                height: 25.0,
-                                child: Image(
-                                    image: AssetImage(
-                                        'images/icon_instagram.png'))),
-                            Padding(padding: EdgeInsets.only(right: 10.0)),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "2단계",
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Color(0xff333D4B),
-                                  ),
-                                ),
-                                Text(
-                                  "친구들에게 공유",
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      color: Color(0xff333D4B),
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ],
-                            )
-                          ],
-                        )
-                      ],
-                    ),
-                    ElevatedButton(
-                        onPressed: () {},
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          shadowColor: Colors.transparent,
-                          backgroundColor: Color.fromRGBO(151, 84, 251, 1),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.0)),
-                        ),
-                        child: const Text(
-                          "복사",
-                          style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white),
-                        ))
-                  ]),
-            ),
-          ),
-        ),
-      ]));
-    } else {
-      return const Padding(padding: EdgeInsets.all(3.0));
-    }
   }
 }
