@@ -43,6 +43,7 @@ class _QuestionPageState extends State<QuestionPage>
   Timer? _timer;
   Duration _countdown = Duration.zero;
   bool _isRunning = false; //타이머 isRunning
+  DateTime receiveTime = DateTime.now();
   DateTime closeDate = DateTime.now();
 // 새 Question 객체 생성
   Question newQuestion = Question(
@@ -122,13 +123,14 @@ class _QuestionPageState extends State<QuestionPage>
           _resetTimer();
 
           String url = 'www.kookmin.ac.kr/12345'; //임시 url
-          DateTime receiveTime = DateTime.now();
+          receiveTime = DateTime.now();
+          closeDate = receiveTime.add(const Duration(hours: 24));
+
           newQuestion.receiveTime = receiveTime.toString();
           updateQuestion(
               'receiveTime', newQuestion.receiveTime, questionDocRef);
           updateQuestion('url', url, questionDocRef);
 
-          closeDate = receiveTime.add(const Duration(hours: 24));
           btnBottomMent =
               '해당 질문은 ${closeDate.day}일 ${closeDate.hour}시 ${closeDate.minute}분부터 닫을 수 있습니다.';
           isButtonEnabled = false;
