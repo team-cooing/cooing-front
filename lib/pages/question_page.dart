@@ -45,6 +45,7 @@ class _QuestionPageState extends State<QuestionPage>
   bool _isRunning = false; //타이머 isRunning
   DateTime receiveTime = DateTime.now();
   DateTime closeDate = DateTime.now();
+
 // 새 Question 객체 생성
   Question newQuestion = Question(
     id: '',
@@ -66,10 +67,11 @@ class _QuestionPageState extends State<QuestionPage>
     {"id": 2, "question": "나를 영화 장르에 비유한다면?"},
     {"id": 3, "question": "나를 과자에 비유한다면?"},
   ];
+
 // Firebase Firestore 컬렉션 참조
   CollectionReference questionCollectionRef =
       FirebaseFirestore.instance.collection('questions');
-
+// 'questions'  의 document reference 초기화
   DocumentReference? questionDocRef;
 // Question 객체를 Firestore 문서로 변환하는 함수
   Map<String, dynamic> _questionToFirestoreDocument(Question question) {
@@ -83,12 +85,14 @@ class _QuestionPageState extends State<QuestionPage>
     await documentRef?.set(document);
   }
 
+  //FireStore에 이미 있는 question 값 업데이트
   Future<void> updateQuestion(
       String section, var updateStr, DocumentReference? docReference) async {
     Map<String, dynamic> data = {section: updateStr};
     await docReference?.update(data);
   }
 
+  //이미 받았던 질문 필터링해서 새로운 <질문id,질문string> 리턴
   Map<String, Object> filterQuestion(questioned) {
     List<Map<String, Object>> filteredQuestions =
         questionList.where((q) => !questionedList.contains(q)).toList();
@@ -135,7 +139,6 @@ class _QuestionPageState extends State<QuestionPage>
               '해당 질문은 ${closeDate.day}일 ${closeDate.hour}시 ${closeDate.minute}분부터 닫을 수 있습니다.';
           isButtonEnabled = false;
           askButtonText = '질문 닫기';
-
           break;
 
         case '질문 닫기':
@@ -143,7 +146,6 @@ class _QuestionPageState extends State<QuestionPage>
             isButtonEnabled = true;
             askButtonText = '질문 받기';
           }
-
           break;
       }
     });
