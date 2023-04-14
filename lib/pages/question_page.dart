@@ -1,12 +1,9 @@
-import 'package:cooing_front/providers/UserProvider.dart';
-import 'package:cooing_front/model/Question.dart';
-import 'package:cooing_front/model/question_list.dart';
+import 'package:cooing_front/widgets/firebase_method.dart';
 import 'package:cooing_front/widgets/share_card.dart';
+import 'package:cooing_front/model/Question.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import "dart:math";
 import "dart:async";
-import 'package:provider/provider.dart';
 
 class QuestionPage extends StatefulWidget {
   const QuestionPage({super.key});
@@ -18,10 +15,21 @@ class QuestionPage extends StatefulWidget {
 class _QuestionPageState extends State<QuestionPage>
     with AutomaticKeepAliveClientMixin {
   @override
+  void initState() {
+    super.initState();
+
+    getDocument(questionDocRef, currentQuestionId).then((value) {
+      setState(() {
+        newQuestion = value;
+      });
+    });
+  }
+
+  @override
   bool get wantKeepAlive => true;
 
   Object? questionId;
-  Map<String, Object> randomQ = {"id": -1, "question": ""};
+  Map<String, dynamic> randomQ = {"id": -1, "question": ""};
 
   //버튼 text
   String getAsk = '질문 받기';
@@ -37,17 +45,30 @@ class _QuestionPageState extends State<QuestionPage>
   late String askButtonText = getAsk;
 
   //shareCard
-  bool _openshareCard = false;
+  bool openShareCard = false;
 
   //타이머 관련
   Timer? _timer;
   Duration _countdown = Duration.zero;
   bool _isRunning = false; //타이머 isRunning
-  DateTime receiveTime = DateTime.now();
-  DateTime closeDate = DateTime.now();
+  DateTime receiveTime = DateTime.now(); //초기화
+  DateTime closeDate = DateTime.now(); //초기화
+  //임시 questionInfos
+  List<List<dynamic>> questionInfos = [
+    [36, '2023-04-13 14:35:19.810501'],
+    [59, '2023-04-13 14:49:24.000983']
+  ];
 
-// 새 Question 객체 생성
-  Question newQuestion = Question(
+  late List<dynamic> currentQuestion = questionInfos.last;
+  late String currentQuestionId = currentQuestion[1];
+
+// Firebase Firestore 컬렉션 참조
+  CollectionReference questionCollectionRef =
+      FirebaseFirestore.instance.collection('questions');
+// 'questions'  의 document reference 초기화
+  late DocumentReference questionDocRef =
+      FirebaseFirestore.instance.collection('questions').doc(currentQuestionId);
+  late Question newQuestion = Question(
     id: '',
     ownerProfileImage: '',
     ownerName: '',
@@ -59,57 +80,38 @@ class _QuestionPageState extends State<QuestionPage>
     url: '',
     isValidity: false,
   );
-
-  //임시 questioned List
-  List<Map<String, Object>> questionedList = [
-    {"id": 0, "question": "나를 장난감에 비유한다면?"},
-    {"id": 1, "question": "나를 아이스크림에 비유한다면?"},
-    {"id": 2, "question": "나를 영화 장르에 비유한다면?"},
-    {"id": 3, "question": "나를 과자에 비유한다면?"},
-  ];
-
-// Firebase Firestore 컬렉션 참조
-  CollectionReference questionCollectionRef =
-      FirebaseFirestore.instance.collection('questions');
-// 'questions'  의 document reference 초기화
-  DocumentReference? questionDocRef;
-// Question 객체를 Firestore 문서로 변환하는 함수
-  Map<String, dynamic> _questionToFirestoreDocument(Question question) {
-    return question.toJson();
+  beforeOpen() {
+    openShareCard = false;
+    askButtonText = '질문 받기';
   }
 
-// Firestore에 새로운 Question 객체를 추가하는 함수
-  Future<void> addNewQuestion(
-      DocumentReference? documentRef, Question question) async {
-    final document = _questionToFirestoreDocument(question);
-    await documentRef?.set(document);
+//질문 받, 답장x
+  openButNotReceive() {
+    askButtonText = '답변 받기';
+    openShareCard = true; //아래에 share card 생성
   }
 
-  //FireStore에 이미 있는 question 값 업데이트
-  Future<void> updateQuestion(
-      String section, var updateStr, DocumentReference? docReference) async {
-    Map<String, dynamic> data = {section: updateStr};
-    await docReference?.update(data);
+//답장o 닫는시간x
+  receiveButNotClose() {
+    askButtonText = '질문 닫기';
+    isButtonEnabled = false;
+    openShareCard = true; //아래에 share card 생성
   }
 
-  //이미 받았던 질문 필터링해서 새로운 <질문id,질문string> 리턴
-  Map<String, Object> filterQuestion(questioned) {
-    List<Map<String, Object>> filteredQuestions =
-        questionList.where((q) => !questionedList.contains(q)).toList();
-    Map<String, Object> randomQuestion =
-        filteredQuestions[Random().nextInt(filteredQuestions.length)];
-
-    questioned.add(randomQuestion);
-    return randomQuestion;
+//답장o 닫는시간지남
+  receiveAndClose() {
+    isButtonEnabled = true;
+    askButtonText = '질문 받기';
+    openShareCard = true; //아래에 share card 생성
   }
 
   changeAskCard() {
     setState(() {
       switch (askButtonText) {
         case '질문 받기':
-          _openshareCard = false;
+          beforeOpen();
           //질문
-          randomQ = filterQuestion(questionedList);
+          randomQ = filterQuestion(questionInfos);
           newQuestion.content = randomQ['question'].toString();
           newQuestion.contentId = randomQ['id'] as int;
           newQuestion.isValidity = true;
@@ -119,17 +121,15 @@ class _QuestionPageState extends State<QuestionPage>
               .doc(newQuestion.id); //title이 id인 firebase document reference 생성
           addNewQuestion(questionDocRef, newQuestion);
 
-          askButtonText = '답변 받기';
           break;
 
         case '답변 받기':
-          _openshareCard = true; //아래에 share card 생성
+          openButNotReceive();
           _resetTimer();
 
           String url = 'www.kookmin.ac.kr/12345'; //임시 url
           receiveTime = DateTime.now();
           closeDate = receiveTime.add(const Duration(hours: 24));
-
           newQuestion.receiveTime = receiveTime.toString();
           updateQuestion(
               'receiveTime', newQuestion.receiveTime, questionDocRef);
@@ -137,14 +137,12 @@ class _QuestionPageState extends State<QuestionPage>
 
           btnBottomMent =
               '해당 질문은 ${closeDate.day}일 ${closeDate.hour}시 ${closeDate.minute}분부터 닫을 수 있습니다.';
-          isButtonEnabled = false;
-          askButtonText = '질문 닫기';
           break;
 
         case '질문 닫기':
           if (DateTime.now().isAfter(closeDate)) {
-            isButtonEnabled = true;
-            askButtonText = '질문 받기';
+            receiveAndClose();
+            updateQuestion('isValidity', false, questionDocRef);
           }
           break;
       }
@@ -152,10 +150,13 @@ class _QuestionPageState extends State<QuestionPage>
   }
 
   void _startTimer() {
-    final openTime = DateTime.now();
-    newQuestion.openTime = openTime.toString();
-    newQuestion.id = openTime.toString();
+    if (newQuestion.openTime == "") {
+      final openTime = DateTime.now();
+      newQuestion.openTime = openTime.toString();
+      newQuestion.id = openTime.toString();
+    }
 
+    DateTime openTime = newQuestion.openTime as DateTime;
     final endOfDay = DateTime(openTime.year, openTime.month, openTime.day + 1);
     final remainingSeconds = endOfDay.difference(openTime).inSeconds;
     setState(() {
@@ -167,7 +168,7 @@ class _QuestionPageState extends State<QuestionPage>
         if (_countdown.inSeconds == 0) {
           _timer?.cancel();
           _isRunning = false;
-          if (_openshareCard == false) {
+          if (openShareCard == false) {
             askButtonText = '질문 받기';
             questionCollectionRef.doc(newQuestion.id).delete();
           }
@@ -221,7 +222,7 @@ class _QuestionPageState extends State<QuestionPage>
             child: Center(
                 child: Column(children: <Widget>[
           pupleBox(),
-          shareCard(_openshareCard),
+          shareCard(openShareCard),
         ]))));
   }
 
@@ -230,11 +231,40 @@ class _QuestionPageState extends State<QuestionPage>
   }
 
   Widget pupleBox() {
+    if (newQuestion.isValidity == false) {
+      if (newQuestion.openTime == "") {
+        //질문 open 안한 상태
+        beforeOpen();
+      } else if (newQuestion.receiveTime == "") {
+        //질문 받았으나 답변받기 안누른 상태
+        openButNotReceive();
+        _isRunning = true;
+      }
+    } else {
+      //답변받기 누른 상태
+      //closeTime 전이면
+      receiveButNotClose();
+      DateTime rcvTime = DateTime.parse(newQuestion.receiveTime);
+      closeDate = rcvTime.add(const Duration(hours: 24));
+      btnBottomMent =
+          '해당 질문은 ${closeDate.day}일 ${closeDate.hour}시 ${closeDate.minute}분부터 닫을 수 있습니다.';
+
+      if (DateTime.now().isAfter(closeDate)) {
+        setState(() {
+          print(DateTime.now());
+          receiveAndClose();
+          updateQuestion('isValidity', false, questionDocRef);
+        });
+      }
+    }
+
     // Update button state
     setState(() {
       isButtonEnabled = isButtonEnabled;
     });
+
     String remainTimer = _formatDuration(_countdown);
+
     return SizedBox(
       width: double.infinity,
       child: Card(
@@ -252,24 +282,13 @@ class _QuestionPageState extends State<QuestionPage>
                       fontSize: _isRunning ? 12 : 0))
             ]),
             const Padding(padding: EdgeInsets.all(15.0)),
-            Consumer<UserDataProvider>(builder: (context, provider, child) {
-              final userData = provider.userData;
-              if (userData == null) {
-                return const CircularProgressIndicator();
-              } else {
-                newQuestion.owner = userData.uid;
-                newQuestion.ownerName = userData.name;
-                newQuestion.ownerProfileImage = userData.profileImage;
-
-                return SizedBox(
-                  width: 80.0,
-                  height: 80.0,
-                  child: CircleAvatar(
-                    backgroundImage: NetworkImage(userData.profileImage),
-                  ),
-                );
-              }
-            }),
+            SizedBox(
+              width: 80.0,
+              height: 80.0,
+              child: CircleAvatar(
+                backgroundImage: NetworkImage(newQuestion.ownerProfileImage),
+              ),
+            ),
             const Padding(padding: EdgeInsets.all(20.0)),
             Text(
               newQuestion.isValidity
@@ -303,7 +322,7 @@ class _QuestionPageState extends State<QuestionPage>
             Text(
               btnBottomMent,
               style: TextStyle(
-                  color: Colors.white, fontSize: _openshareCard ? 10 : 0),
+                  color: Colors.white, fontSize: openShareCard ? 10 : 0),
             ),
             const Padding(padding: EdgeInsets.all(9.0)),
           ],

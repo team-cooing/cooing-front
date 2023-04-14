@@ -41,7 +41,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      initialRoute: '_working',
+      initialRoute: SplashScreen.routeName,
       // initialRoute: 'feature',
       routes: {
         SplashScreen.routeName: (context) => SplashScreen(),
