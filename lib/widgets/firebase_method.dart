@@ -51,13 +51,16 @@ Future<void> updateQuestion(
 
 //이미 받았던 질문 필터링해서 새로운 <질문id,질문string> 리턴
 Map<String, dynamic> filterQuestion(List questionInfos) {
-
- List<Map<String, dynamic>> filteredQuestions = [
-  for (var info in questionInfos)
-    if (questionList.any((question) => question["id"] == info[0]))
-      info,
-];
-  Map<String, dynamic> randomQuestion = filteredQuestions[Random().nextInt(filteredQuestions.length)];
-
+  Map<String, dynamic> randomQuestion;
+  if (questionInfos.isEmpty) {
+    randomQuestion = questionList[Random().nextInt(questionList.length)];
+  } else {
+    List<Map<String, dynamic>> filteredQuestions = [
+      for (var info in questionInfos)
+        if (questionList.any((question) => question["id"] == info[0])) info,
+    ];
+    randomQuestion =
+        filteredQuestions[Random().nextInt(filteredQuestions.length)];
+  }
   return randomQuestion;
 }
