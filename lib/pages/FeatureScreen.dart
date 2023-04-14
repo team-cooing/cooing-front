@@ -463,7 +463,7 @@ class _FeatureScreenState extends State<FeatureScreen> {
                                                   i++) {
                                                 _eyes[i] = i == index;
                                               }
-                                              eyes = index + 1;
+                                              eyes = index;
                                               print(eyes);
                                               title = 1;
                                               visibleMbti = true;
@@ -535,7 +535,8 @@ class _FeatureScreenState extends State<FeatureScreen> {
                                   for (int i = 0; i < _gender.length; i++) {
                                     _gender[i] = i == index;
                                   }
-                                  gender = index + 1;
+                                  gender = index;
+
                                   print(gender);
                                   title = 2;
                                   visibleEyes = true;

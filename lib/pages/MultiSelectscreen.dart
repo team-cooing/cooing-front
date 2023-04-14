@@ -5,6 +5,8 @@ import 'package:cooing_front/model/firebase_auth_remote_data_source.dart';
 import 'package:cooing_front/pages/FeatureScreen.dart';
 import 'package:cooing_front/pages/SchoolScreen.dart';
 import 'package:cooing_front/pages/WelcomeScreen.dart';
+import 'package:cooing_front/providers/UserProvider.dart';
+import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -21,8 +23,12 @@ class MultiSelectscreen extends StatefulWidget {
 
 class _MultiSelectscreenState extends State<MultiSelectscreen> {
   final _authentication = firebase.FirebaseAuth.instance;
+  List<String> _styleList = [];
   List<Style> style = new List.empty(growable: true);
   List<Hobby> hobby = new List.empty(growable: true);
+
+  List<Style> femaleStyle = new List.empty(growable: true);
+  List<Style> maleStyle = new List.empty(growable: true);
 
   final List<String> _textList = [
     '좋아하는 취미는?',
@@ -34,42 +40,44 @@ class _MultiSelectscreenState extends State<MultiSelectscreen> {
   bool _style = false;
   bool button = false;
   bool selectAll = false;
-
   String _hobby = '';
-  List<String> _styleList = [];
-  List<String> _maleList = [
-    '귀여운',
-    '잘생긴',
-    '어른스러운',
-    '상냥한',
-    '훈훈한',
-    '댕댕이 같은',
-    '애교 많은',
-    '배려 있는',
-    '듬직한',
-    '매너 있는',
-    '순진한',
-    '호감형인'
-  ];
-  List<String> _femaleList = [
-    '귀여운',
-    '예쁜',
-    '해맑은',
-    '상큼한',
-    '사랑스러운',
-    '훈훈한',
-    '다정한',
-    '청순한',
-    '애교 많은',
-    '마음 여린',
-    '순진한',
-    '호감형인'
-  ];
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    // _userDataProvider = UserDataProvider();
+    // _loadData();
+
+    // if (_gender == 0) {
+    maleStyle.add(Style('귀여운', false));
+    maleStyle.add(Style('잘생긴', false));
+    maleStyle.add(Style('어른스러운', false));
+    maleStyle.add(Style('상냥한', false));
+    maleStyle.add(Style('훈훈한', false));
+    maleStyle.add(Style('댕댕이 같은', false));
+    maleStyle.add(Style('애교 많은', false));
+    maleStyle.add(Style("배려 있는", false));
+    maleStyle.add(Style("듬직한", false));
+    maleStyle.add(Style("매너 있는", false));
+    maleStyle.add(Style("순진한", false));
+    maleStyle.add(Style("호감형인", false));
+    // }
+    // if (_gender == 1) {
+    femaleStyle.add(Style('귀여운', false));
+    femaleStyle.add(Style('예쁜', false));
+    femaleStyle.add(Style('해맑은', false));
+    femaleStyle.add(Style('상큼한', false));
+    femaleStyle.add(Style('사랑스러운', false));
+    femaleStyle.add(Style('훈훈한', false));
+    femaleStyle.add(Style('다정한', false));
+    femaleStyle.add(Style("청순한", false));
+    femaleStyle.add(Style("애교 많은", false));
+    femaleStyle.add(Style("마음 여린", false));
+    femaleStyle.add(Style("순진한", false));
+    femaleStyle.add(Style("호감형인", false));
+    // }
+
     hobby.add(Hobby('영화', '\u{1F37F}', false));
     hobby.add(Hobby('운동', '\u{26BD}', false));
     hobby.add(Hobby('카페', '\u{2615}', false));
@@ -82,24 +90,45 @@ class _MultiSelectscreenState extends State<MultiSelectscreen> {
     hobby.add(Hobby("토크", '\u{1F5E3}', false));
     hobby.add(Hobby("책", '\u{1F4DA}', false));
     hobby.add(Hobby("게임", '\u{1F3AE}', false));
-
-    style.add(Style('귀여운', false));
-    style.add(Style('예쁜', false));
-    style.add(Style('해맑은', false));
-    style.add(Style('상큼한', false));
-    style.add(Style('사랑스러운', false));
-    style.add(Style('훈훈한', false));
-    style.add(Style('다정한', false));
-    style.add(Style("청순한", false));
-    style.add(Style("애교 많은", false));
-    style.add(Style("마음 여린", false));
-    style.add(Style("순진한", false));
-    style.add(Style("호감형인", false));
   }
 
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as User;
+    if (args.gender == 0) {
+      style = maleStyle;
+    }
+    if (args.gender == 1) {
+      style = femaleStyle;
+    }
+    // if (args.gender == 0) {
+    //   style.add(Style('귀여운', false));
+    //   style.add(Style('잘생긴', false));
+    //   style.add(Style('어른스러운', false));
+    //   style.add(Style('상냥한', false));
+    //   style.add(Style('훈훈한', false));
+    //   style.add(Style('댕댕이 같은', false));
+    //   style.add(Style('애교 많은', false));
+    //   style.add(Style("배려 있는", false));
+    //   style.add(Style("듬직한", false));
+    //   style.add(Style("매너 있는", false));
+    //   style.add(Style("순진한", false));
+    //   style.add(Style("호감형인", false));
+    // }
+    // if (args.gender == 1) {
+    //   style.add(Style('귀여운', false));
+    //   style.add(Style('예쁜', false));
+    //   style.add(Style('해맑은', false));
+    //   style.add(Style('상큼한', false));
+    //   style.add(Style('사랑스러운', false));
+    //   style.add(Style('훈훈한', false));
+    //   style.add(Style('다정한', false));
+    //   style.add(Style("청순한", false));
+    //   style.add(Style("애교 많은", false));
+    //   style.add(Style("마음 여린", false));
+    //   style.add(Style("순진한", false));
+    //   style.add(Style("호감형인", false));
+    // }
 
     return Scaffold(
         appBar: AppBar(

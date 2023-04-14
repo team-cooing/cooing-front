@@ -183,6 +183,7 @@ class _AgreeScreenState extends State<AgreeScreen> {
                               'birthday': args.birthday,
                               'school': args.school,
                               'schoolCode': args.schoolCode,
+                              'schoolOrg': args.schoolOrg,
                               'grade': args.grade,
                               'group': args.group,
                               'eyes': args.eyes,

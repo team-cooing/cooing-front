@@ -46,7 +46,8 @@ class UserDataProvider with ChangeNotifier {
             isSubscribe: data['isSubscribe'],
             candyCount: data['candyCount'],
             questionInfos: List<List>.from(data['questionInfos']),
-            answeredQuestions: List<String>.from(data['answeredQuestions']),
+            answeredQuestions:
+                List<String>.from(data['answeredQuestions'] ?? []),
             serviceNeedsAgreement: data['serviceNeedsAgreement'],
             privacyNeedsAgreement: data['privacyNeedsAgreement']);
         _isDataLoaded = true;
