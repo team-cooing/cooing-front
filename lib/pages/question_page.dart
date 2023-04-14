@@ -4,6 +4,8 @@ import 'package:cooing_front/model/Question.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import "dart:async";
+import 'package:cooing_front/providers/UserProvider.dart';
+import 'package:provider/provider.dart';
 
 class QuestionPage extends StatefulWidget {
   const QuestionPage({super.key});
@@ -17,12 +19,6 @@ class _QuestionPageState extends State<QuestionPage>
   @override
   void initState() {
     super.initState();
-
-    getDocument(questionDocRef, currentQuestionId).then((value) {
-      setState(() {
-        newQuestion = value;
-      });
-    });
   }
 
   @override
@@ -34,8 +30,9 @@ class _QuestionPageState extends State<QuestionPage>
   //버튼 text
   String getAsk = '질문 받기';
   bool isButtonEnabled = true;
-
+  bool isViewContent = false;
   String btnBottomMent = '';
+  String viewContentText = '';
   final List<Color> _colors = <Color>[
     Colors.white,
     const Color(0xffe0cbfe),
@@ -55,19 +52,16 @@ class _QuestionPageState extends State<QuestionPage>
   DateTime closeDate = DateTime.now(); //초기화
   //임시 questionInfos
   List<List<dynamic>> questionInfos = [
-    [36, '2023-04-13 14:35:19.810501'],
-    [59, '2023-04-13 14:49:24.000983']
+    [44, '2023-04-14 11:33:36.920692']
   ];
-
-  late List<dynamic> currentQuestion = questionInfos.last;
-  late String currentQuestionId = currentQuestion[1];
+  late List<dynamic> currentQuestion;
+  late String currentQuestionId;
 
 // Firebase Firestore 컬렉션 참조
   CollectionReference questionCollectionRef =
       FirebaseFirestore.instance.collection('questions');
 // 'questions'  의 document reference 초기화
-  late DocumentReference questionDocRef =
-      FirebaseFirestore.instance.collection('questions').doc(currentQuestionId);
+  late DocumentReference questionDocRef;
   late Question newQuestion = Question(
     id: '',
     ownerProfileImage: '',
@@ -80,28 +74,27 @@ class _QuestionPageState extends State<QuestionPage>
     url: '',
     isValidity: false,
   );
-  beforeOpen() {
-    openShareCard = false;
-    askButtonText = '질문 받기';
-  }
 
-//질문 받, 답장x
+  //open 하기 전인 상태에서 버튼 눌렀을 때(질문 받기 누른 후), 변화
+
+//질문 받, 답장x 인 상태에서 버튼 눌렀을 때(답장받기 누른 후), 변화
   openButNotReceive() {
-    askButtonText = '답변 받기';
+    askButtonText = '질문 닫기'; //버튼 text는 질문닫기로 변경
     openShareCard = true; //아래에 share card 생성
+    isButtonEnabled = false;
   }
 
-//답장o 닫는시간x
+//답장o 닫는시간x (closeTime 지나기 전)
   receiveButNotClose() {
     askButtonText = '질문 닫기';
     isButtonEnabled = false;
     openShareCard = true; //아래에 share card 생성
   }
 
-//답장o 닫는시간지남
+//답장o 닫는시간지남(closeTime 지난 후)
   receiveAndClose() {
     isButtonEnabled = true;
-    askButtonText = '질문 받기';
+    askButtonText = '질문 닫기';
     openShareCard = true; //아래에 share card 생성
   }
 
@@ -109,23 +102,26 @@ class _QuestionPageState extends State<QuestionPage>
     setState(() {
       switch (askButtonText) {
         case '질문 받기':
-          beforeOpen();
+          openShareCard = false;
           //질문
+          isViewContent = true;
           randomQ = filterQuestion(questionInfos);
           newQuestion.content = randomQ['question'].toString();
           newQuestion.contentId = randomQ['id'] as int;
-          newQuestion.isValidity = true;
-
+          print(newQuestion.content);
+          viewContentText = newQuestion.content;
           _startTimer(); //openTime
           questionDocRef = questionCollectionRef
               .doc(newQuestion.id); //title이 id인 firebase document reference 생성
           addNewQuestion(questionDocRef, newQuestion);
+          askButtonText = '답변 받기'; //버튼 text는 답변받기로 변경
 
           break;
 
         case '답변 받기':
           openButNotReceive();
           _resetTimer();
+          newQuestion.isValidity = true;
 
           String url = 'www.kookmin.ac.kr/12345'; //임시 url
           receiveTime = DateTime.now();
@@ -134,15 +130,20 @@ class _QuestionPageState extends State<QuestionPage>
           updateQuestion(
               'receiveTime', newQuestion.receiveTime, questionDocRef);
           updateQuestion('url', url, questionDocRef);
+          updateQuestion('isValidity', true, questionDocRef);
 
           btnBottomMent =
               '해당 질문은 ${closeDate.day}일 ${closeDate.hour}시 ${closeDate.minute}분부터 닫을 수 있습니다.';
+          askButtonText = '질문 닫기'; //버튼 text는 답변받기로 변경
+
           break;
 
         case '질문 닫기':
           if (DateTime.now().isAfter(closeDate)) {
             receiveAndClose();
+
             updateQuestion('isValidity', false, questionDocRef);
+            askButtonText = '질문 받기'; //버튼 text는 답변받기로 변경
           }
           break;
       }
@@ -155,8 +156,8 @@ class _QuestionPageState extends State<QuestionPage>
       newQuestion.openTime = openTime.toString();
       newQuestion.id = openTime.toString();
     }
-
-    DateTime openTime = newQuestion.openTime as DateTime;
+    print(newQuestion.openTime);
+    DateTime openTime = DateTime.parse(newQuestion.openTime);
     final endOfDay = DateTime(openTime.year, openTime.month, openTime.day + 1);
     final remainingSeconds = endOfDay.difference(openTime).inSeconds;
     setState(() {
@@ -209,7 +210,23 @@ class _QuestionPageState extends State<QuestionPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    try {
+      if (questionInfos.isNotEmpty) {
+        currentQuestion = questionInfos.last;
+        currentQuestionId = currentQuestion[1];
+        questionDocRef = FirebaseFirestore.instance
+            .collection('questions')
+            .doc(currentQuestionId);
 
+        getDocument(questionDocRef, currentQuestionId).then((value) {
+          setState(() {
+            newQuestion = value;
+          });
+        });
+      }
+    } catch (e) {
+      print('에러');
+    }
     return Scaffold(
       body: SingleChildScrollView(child: _askBody()),
     );
@@ -231,19 +248,25 @@ class _QuestionPageState extends State<QuestionPage>
   }
 
   Widget pupleBox() {
+    print(newQuestion);
     if (newQuestion.isValidity == false) {
       if (newQuestion.openTime == "") {
         //질문 open 안한 상태
-        beforeOpen();
       } else if (newQuestion.receiveTime == "") {
         //질문 받았으나 답변받기 안누른 상태
-        openButNotReceive();
-        _isRunning = true;
+        _isRunning = true; //timer
+        isViewContent = true;
+        viewContentText = newQuestion.content;
+        askButtonText = '답변 받기';
       }
     } else {
       //답변받기 누른 상태
       //closeTime 전이면
-      receiveButNotClose();
+      isViewContent = true;
+      viewContentText = newQuestion.content;
+      askButtonText = '질문 닫기';
+      isButtonEnabled = false;
+      openShareCard = true;
       DateTime rcvTime = DateTime.parse(newQuestion.receiveTime);
       closeDate = rcvTime.add(const Duration(hours: 24));
       btnBottomMent =
@@ -253,6 +276,8 @@ class _QuestionPageState extends State<QuestionPage>
         setState(() {
           print(DateTime.now());
           receiveAndClose();
+          isButtonEnabled = true;
+
           updateQuestion('isValidity', false, questionDocRef);
         });
       }
@@ -282,18 +307,27 @@ class _QuestionPageState extends State<QuestionPage>
                       fontSize: _isRunning ? 12 : 0))
             ]),
             const Padding(padding: EdgeInsets.all(15.0)),
-            SizedBox(
-              width: 80.0,
-              height: 80.0,
-              child: CircleAvatar(
-                backgroundImage: NetworkImage(newQuestion.ownerProfileImage),
-              ),
-            ),
+            Consumer<UserDataProvider>(builder: (context, provider, child) {
+              final userData = provider.userData;
+              if (userData == null) {
+                return const CircularProgressIndicator();
+              } else {
+                newQuestion.owner = userData.uid;
+                newQuestion.ownerName = userData.name;
+                newQuestion.ownerProfileImage = userData.profileImage;
+                questionInfos = [];
+                return SizedBox(
+                  width: 80.0,
+                  height: 80.0,
+                  child: CircleAvatar(
+                    backgroundImage: NetworkImage(userData.profileImage),
+                  ),
+                );
+              }
+            }),
             const Padding(padding: EdgeInsets.all(20.0)),
             Text(
-              newQuestion.isValidity
-                  ? newQuestion.content
-                  : '똑똑똑! 오늘의 질문이 도착했어요.',
+              isViewContent ? viewContentText : '똑똑똑! 오늘의 질문이 도착했어요.',
               textAlign: TextAlign.left,
               style: const TextStyle(
                   fontWeight: FontWeight.bold,
