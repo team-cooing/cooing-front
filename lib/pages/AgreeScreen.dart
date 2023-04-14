@@ -4,6 +4,9 @@ import 'package:cooing_front/pages/SchoolScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
+import 'package:firebase_auth/firebase_auth.dart' as firebase;
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AgreeScreen extends StatefulWidget {
   const AgreeScreen({super.key});
@@ -16,6 +19,7 @@ class _AgreeScreenState extends State<AgreeScreen> {
   FocusNode _gradeFocus = FocusNode();
   FocusNode _groupFocus = FocusNode();
   final List<bool> check = <bool>[true, true];
+  final _authentication = firebase.FirebaseAuth.instance;
 
   bool grade = false;
   bool group = false;
@@ -155,7 +159,75 @@ class _AgreeScreenState extends State<AgreeScreen> {
                     child: const Text('모두 동의하기',
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 15)),
-                    onPressed: check[0] & check[1] ? () {} : null,
+                    onPressed: check[0] & check[1]
+                        ? () async {
+                            kakao.User user = await kakao.UserApi.instance.me();
+                            final newUser = await _authentication
+                                .createUserWithEmailAndPassword(
+                              email: user.kakaoAccount!.email.toString(),
+                              password: user.id.toString(),
+                            );
+                            final uid = newUser.user!.uid.toString();
+                            print(uid);
+
+                            final userRef =
+                                FirebaseFirestore.instance.collection('users');
+
+                            await userRef.doc(uid).set({
+                              'uid': uid,
+                              "name": args.name,
+                              "profileImage": args.profileImage,
+                              'gender': args.gender,
+                              'age': args.age,
+                              'number': args.number,
+                              'birthday': args.birthday,
+                              'school': args.school,
+                              'schoolCode': args.schoolCode,
+                              'grade': args.grade,
+                              'group': args.group,
+                              'eyes': args.eyes,
+                              'mbti': args.mbti,
+                              'hobby': args.hobby,
+                              "style": args.style,
+                              'isSubscribe': args.isSubscribe,
+                              'candyCount': args.candyCount,
+                              'questionInfos': args.questionInfos,
+                              'serviceNeedsAgreement': check[0],
+                              'privacyNeedsAgreement': check[1]
+                            });
+
+                            if (newUser.user != null) {
+                              Navigator.pushNamed(
+                                context,
+                                'welcome',
+                                arguments: User(
+                                  uid: args.uid,
+                                  name: args.name,
+                                  profileImage: args.profileImage,
+                                  gender: args.gender,
+                                  number: args.number,
+                                  age: args.age,
+                                  birthday: args.birthday,
+                                  school: args.school,
+                                  schoolCode: args.schoolCode,
+                                  schoolOrg: args.schoolOrg,
+                                  grade: args.grade,
+                                  group: args.group,
+                                  eyes: args.eyes,
+                                  mbti: args.mbti,
+                                  hobby: args.hobby,
+                                  style: args.style,
+                                  isSubscribe: args.isSubscribe,
+                                  candyCount: args.candyCount,
+                                  questionInfos: args.questionInfos,
+                                  answeredQuestions: args.answeredQuestions,
+                                  serviceNeedsAgreement: check[0],
+                                  privacyNeedsAgreement: check[1],
+                                ),
+                              );
+                            }
+                          }
+                        : null,
                   ))
             ]),
           ),

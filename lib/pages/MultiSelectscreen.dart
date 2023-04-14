@@ -232,55 +232,34 @@ class _MultiSelectscreenState extends State<MultiSelectscreen> {
                           }
                           print(_styleList);
 
-                          kakao.User user = await kakao.UserApi.instance.me();
-                          final newUser = await _authentication
-                              .createUserWithEmailAndPassword(
-                            email: user.kakaoAccount!.email.toString(),
-                            password: user.id.toString(),
+                          Navigator.pushNamed(
+                            context,
+                            'agree',
+                            arguments: User(
+                              uid: args.uid,
+                              name: args.name,
+                              profileImage: args.profileImage,
+                              gender: args.gender,
+                              number: args.number,
+                              age: args.age,
+                              birthday: args.birthday,
+                              school: args.school,
+                              schoolCode: args.schoolCode,
+                              schoolOrg: args.schoolOrg,
+                              grade: args.grade,
+                              group: args.group,
+                              eyes: args.eyes,
+                              mbti: args.mbti,
+                              hobby: _hobby,
+                              style: _styleList,
+                              isSubscribe: args.isSubscribe,
+                              candyCount: args.candyCount,
+                              questionInfos: args.questionInfos,
+                              answeredQuestions: args.answeredQuestions,
+                              serviceNeedsAgreement: args.serviceNeedsAgreement,
+                              privacyNeedsAgreement: args.privacyNeedsAgreement,
+                            ),
                           );
-                          final uid = newUser.user!.uid.toString();
-                          print(uid);
-
-                          final userRef =
-                              FirebaseFirestore.instance.collection('users');
-                          await userRef.doc(uid).set({
-                            'uid': uid,
-                            "name": args.name,
-                            "profileImage": args.profileImage,
-                            'gender': args.gender,
-                            'age': args.age,
-                            'number': args.number,
-                            'school': args.school,
-                            'schoolCode': args.schoolCode,
-                            'grade': args.grade,
-                            'group': args.group,
-                            'eyes': args.eyes,
-                            'mbti': args.mbti,
-                            'hobby': _hobby,
-                            "style": _styleList,
-                          });
-
-                          if (newUser.user != null) {
-                            Navigator.pushNamed(
-                              context,
-                              'welcome',
-                              arguments: User(
-                                  uid: uid,
-                                  name: args.name,
-                                  profileImage: args.profileImage,
-                                  gender: args.gender,
-                                  age: args.age,
-                                  number: args.number,
-                                  school: args.school,
-                                  schoolCode: args.schoolCode,
-                                  grade: args.grade,
-                                  group: args.group,
-                                  eyes: args.eyes,
-                                  mbti: args.mbti,
-                                  hobby: _hobby,
-                                  style: _styleList),
-                            );
-                          }
                         }
                       }),
                 ),

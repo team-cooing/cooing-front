@@ -43,8 +43,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      // initialRoute: SplashScreen.routeName,
-      initialRoute: 'agree',
+      initialRoute: SplashScreen.routeName,
+      // initialRoute: 'agree',
       routes: {
         SplashScreen.routeName: (context) => SplashScreen(),
         'home': (context) => const LoginScreen(),
