@@ -17,7 +17,9 @@ class User {
   late bool IsSubscribe;
   late int candyCount;
   late List<List>
-      questionInfos; // QuestionId_Info = [[ContentID, QuestionID], ... ]
+      questionInfos; // QuestionId_Info = [[ContentID, QuestionID], ... ];
+  // late bool serviceNeedsAgreement;
+  // late bool privacyNeedsAgreement;
 
   User({
     required this.uid,

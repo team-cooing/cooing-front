@@ -37,6 +37,34 @@ class _MultiSelectscreenState extends State<MultiSelectscreen> {
 
   String _hobby = '';
   List<String> _styleList = [];
+  List<String> _maleList = [
+    '귀여운',
+    '잘생긴',
+    '어른스러운',
+    '상냥한',
+    '훈훈한',
+    '댕댕이 같은',
+    '애교 많은',
+    '배려 있는',
+    '듬직한',
+    '매너 있는',
+    '순진한',
+    '호감형인'
+  ];
+  List<String> _femaleList = [
+    '귀여운',
+    '예쁜',
+    '해맑은',
+    '상큼한',
+    '사랑스러운',
+    '훈훈한',
+    '다정한',
+    '청순한',
+    '애교 많은',
+    '마음 여린',
+    '순진한',
+    '호감형인'
+  ];
 
   @override
   void initState() {
