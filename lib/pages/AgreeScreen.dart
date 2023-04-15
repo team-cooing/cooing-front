@@ -160,73 +160,35 @@ class _AgreeScreenState extends State<AgreeScreen> {
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 15)),
                     onPressed: check[0] & check[1]
-                        ? () async {
-                            kakao.User user = await kakao.UserApi.instance.me();
-                            final newUser = await _authentication
-                                .createUserWithEmailAndPassword(
-                              email: user.kakaoAccount!.email.toString(),
-                              password: user.id.toString(),
+                        ? () {
+                            Navigator.pushNamed(
+                              context,
+                              'welcome',
+                              arguments: User(
+                                uid: args.uid,
+                                name: args.name,
+                                profileImage: args.profileImage,
+                                gender: args.gender,
+                                number: args.number,
+                                age: args.age,
+                                birthday: args.birthday,
+                                school: args.school,
+                                schoolCode: args.schoolCode,
+                                schoolOrg: args.schoolOrg,
+                                grade: args.grade,
+                                group: args.group,
+                                eyes: args.eyes,
+                                mbti: args.mbti,
+                                hobby: args.hobby,
+                                style: args.style,
+                                isSubscribe: args.isSubscribe,
+                                candyCount: args.candyCount,
+                                questionInfos: args.questionInfos,
+                                answeredQuestions: args.answeredQuestions,
+                                serviceNeedsAgreement: check[0],
+                                privacyNeedsAgreement: check[1],
+                              ),
                             );
-                            final uid = newUser.user!.uid.toString();
-                            print(uid);
-
-                            final userRef =
-                                FirebaseFirestore.instance.collection('users');
-
-                            await userRef.doc(uid).set({
-                              'uid': uid,
-                              "name": args.name,
-                              "profileImage": args.profileImage,
-                              'gender': args.gender,
-                              'age': args.age,
-                              'number': args.number,
-                              'birthday': args.birthday,
-                              'school': args.school,
-                              'schoolCode': args.schoolCode,
-                              'schoolOrg': args.schoolOrg,
-                              'grade': args.grade,
-                              'group': args.group,
-                              'eyes': args.eyes,
-                              'mbti': args.mbti,
-                              'hobby': args.hobby,
-                              "style": args.style,
-                              'isSubscribe': args.isSubscribe,
-                              'candyCount': args.candyCount,
-                              'questionInfos': args.questionInfos,
-                              'serviceNeedsAgreement': check[0],
-                              'privacyNeedsAgreement': check[1]
-                            });
-
-                            if (newUser.user != null) {
-                              Navigator.pushNamed(
-                                context,
-                                'welcome',
-                                arguments: User(
-                                  uid: args.uid,
-                                  name: args.name,
-                                  profileImage: args.profileImage,
-                                  gender: args.gender,
-                                  number: args.number,
-                                  age: args.age,
-                                  birthday: args.birthday,
-                                  school: args.school,
-                                  schoolCode: args.schoolCode,
-                                  schoolOrg: args.schoolOrg,
-                                  grade: args.grade,
-                                  group: args.group,
-                                  eyes: args.eyes,
-                                  mbti: args.mbti,
-                                  hobby: args.hobby,
-                                  style: args.style,
-                                  isSubscribe: args.isSubscribe,
-                                  candyCount: args.candyCount,
-                                  questionInfos: args.questionInfos,
-                                  answeredQuestions: args.answeredQuestions,
-                                  serviceNeedsAgreement: check[0],
-                                  privacyNeedsAgreement: check[1],
-                                ),
-                              );
-                            }
                           }
                         : null,
                   ))
