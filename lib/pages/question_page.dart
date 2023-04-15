@@ -4,7 +4,6 @@ import 'package:cooing_front/model/Question.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import "dart:async";
-import 'package:cooing_front/widgets/link.dart';
 import 'package:cooing_front/providers/UserProvider.dart';
 import 'package:provider/provider.dart';
 
@@ -29,7 +28,6 @@ class _QuestionPageState extends State<QuestionPage>
   Map<String, dynamic> randomQ = {"id": -1, "question": ""};
 
   //버튼 text
-  String getAsk = '질문 받기';
   bool isButtonEnabled = true;
   bool isViewContent = false;
   String btnBottomMent = '';
@@ -40,7 +38,7 @@ class _QuestionPageState extends State<QuestionPage>
     const Color(0xff9754FB)
   ];
 
-  late String askButtonText = getAsk;
+  late String askButtonText = '질문 받기';
 
   //shareCard
   bool openShareCard = false;
@@ -52,17 +50,19 @@ class _QuestionPageState extends State<QuestionPage>
   DateTime receiveTime = DateTime.now(); //초기화
   DateTime closeDate = DateTime.now(); //초기화
   //임시 questionInfos
-  List<List<dynamic>> questionInfos = [
-    [44, '2023-04-14 11:33:36.920692']
-  ];
+  late List<List<dynamic>> questionInfos;
+
   late List<dynamic> currentQuestion;
   late String currentQuestionId;
 
 // Firebase Firestore 컬렉션 참조
   CollectionReference questionCollectionRef =
       FirebaseFirestore.instance.collection('questions');
+  CollectionReference userCollectionRef =
+      FirebaseFirestore.instance.collection('users');
 // 'questions'  의 document reference 초기화
   late DocumentReference questionDocRef;
+  late DocumentReference userDocRef;
   late Question newQuestion = Question(
     id: '',
     ownerProfileImage: '',
@@ -76,13 +76,26 @@ class _QuestionPageState extends State<QuestionPage>
     isValidity: false,
   );
 
-  //open 하기 전인 상태에서 버튼 눌렀을 때(질문 받기 누른 후), 변화
+  //open 하기 전인 상태
+  initialState() {
+    openShareCard = false;
+    askButtonText = '질문 받기';
+    isViewContent = false; //"똑똑똑 질문이 도착했어요~"
+    isButtonEnabled = true;
+  }
 
-//질문 받, 답장x 인 상태에서 버튼 눌렀을 때(답장받기 누른 후), 변화
+  openState() {
+    //openShareCard = false 유지
+    //isButtonEnabled = true 유지
+    isViewContent = true; //
+    askButtonText = '답변 받기';
+  }
+
+//
   openButNotReceive() {
-    askButtonText = '질문 닫기'; //버튼 text는 질문닫기로 변경
-    openShareCard = true; //아래에 share card 생성
-    isButtonEnabled = false;
+    askButtonText = '답변 받기'; //버튼 text는 질문닫기로 변경
+    openShareCard = false; //아래에 share card 생성
+    isButtonEnabled = true;
   }
 
 //답장o 닫는시간x (closeTime 지나기 전)
@@ -96,6 +109,7 @@ class _QuestionPageState extends State<QuestionPage>
   receiveAndClose() {
     isButtonEnabled = true;
     askButtonText = '질문 닫기';
+    btnBottomMent = '새로운 질문이 도착했어요';
     openShareCard = true; //아래에 share card 생성
   }
 
@@ -103,24 +117,22 @@ class _QuestionPageState extends State<QuestionPage>
     setState(() {
       switch (askButtonText) {
         case '질문 받기':
-          openShareCard = false;
           //질문
-          isViewContent = true;
+          openState();
           randomQ = filterQuestion(questionInfos);
           newQuestion.content = randomQ['question'].toString();
           newQuestion.contentId = randomQ['id'] as int;
-          print(newQuestion.content);
           viewContentText = newQuestion.content;
           _startTimer(); //openTime
           questionDocRef = questionCollectionRef
               .doc(newQuestion.id); //title이 id인 firebase document reference 생성
           addNewQuestion(questionDocRef, newQuestion);
-          askButtonText = '답변 받기'; //버튼 text는 답변받기로 변경
-
+          questionInfos.add([newQuestion.contentId, newQuestion.id]);
+          updateQuestion('questionInfos', questionInfos, userDocRef);
           break;
 
         case '답변 받기':
-          openButNotReceive();
+          receiveButNotClose();
           _resetTimer();
           newQuestion.isValidity = true;
 
@@ -135,7 +147,6 @@ class _QuestionPageState extends State<QuestionPage>
 
           btnBottomMent =
               '해당 질문은 ${closeDate.day}일 ${closeDate.hour}시 ${closeDate.minute}분부터 닫을 수 있습니다.';
-          askButtonText = '질문 닫기'; //버튼 text는 답변받기로 변경
 
           break;
 
@@ -211,6 +222,15 @@ class _QuestionPageState extends State<QuestionPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+
+    // final userProvider = Provider.of<UserDataProvider>(context, listen: true);
+    // print(userProvider.userData);
+    // newQuestion.owner = userData.uid;
+    // newQuestion.ownerName = userData.name;
+    // newQuestion.ownerProfileImage = userData.profileImage;
+    // questionInfos = userData.questionInfos;
+    // userDocRef = userCollectionRef.doc(userData.uid);
+
     try {
       if (questionInfos.isNotEmpty) {
         currentQuestion = questionInfos.last;
@@ -253,34 +273,30 @@ class _QuestionPageState extends State<QuestionPage>
     if (newQuestion.isValidity == false) {
       if (newQuestion.openTime == "") {
         //질문 open 안한 상태
+        initialState();
       } else if (newQuestion.receiveTime == "") {
         //질문 받았으나 답변받기 안누른 상태
         _isRunning = true; //timer
-        isViewContent = true;
+        openButNotReceive();
         viewContentText = newQuestion.content;
-        askButtonText = '답변 받기';
       }
     } else {
       //답변받기 누른 상태
       //closeTime 전이면
       isViewContent = true;
       viewContentText = newQuestion.content;
-      askButtonText = '질문 닫기';
-      isButtonEnabled = false;
-      openShareCard = true;
-      DateTime rcvTime = DateTime.parse(newQuestion.receiveTime);
-      closeDate = rcvTime.add(const Duration(hours: 24));
-      btnBottomMent =
-          '해당 질문은 ${closeDate.day}일 ${closeDate.hour}시 ${closeDate.minute}분부터 닫을 수 있습니다.';
-
       if (DateTime.now().isAfter(closeDate)) {
         setState(() {
           print(DateTime.now());
           receiveAndClose();
-          isButtonEnabled = true;
-
           updateQuestion('isValidity', false, questionDocRef);
         });
+      } else {
+        receiveButNotClose();
+        DateTime rcvTime = DateTime.parse(newQuestion.receiveTime);
+        closeDate = rcvTime.add(const Duration(hours: 24));
+        btnBottomMent =
+            '해당 질문은 ${closeDate.day}일 ${closeDate.hour}시 ${closeDate.minute}분부터 닫을 수 있습니다.';
       }
     }
 
@@ -316,12 +332,18 @@ class _QuestionPageState extends State<QuestionPage>
                 newQuestion.owner = userData.uid;
                 newQuestion.ownerName = userData.name;
                 newQuestion.ownerProfileImage = userData.profileImage;
-                questionInfos = [];
+                questionInfos = userData.questionInfos;
+                userDocRef = userCollectionRef.doc(userData.uid);
+                print(newQuestion.owner);
+                print('11111');
+                print(userData.questionInfos);
+
                 return SizedBox(
                   width: 80.0,
                   height: 80.0,
                   child: CircleAvatar(
-                    backgroundImage: NetworkImage(userData.profileImage),
+                    backgroundImage:
+                        NetworkImage(newQuestion.ownerProfileImage),
                   ),
                 );
               }

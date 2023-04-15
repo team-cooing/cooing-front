@@ -44,7 +44,7 @@ Future<void> addNewQuestion(
 
 //FireStore에 이미 있는 question 값 업데이트
 Future<void> updateQuestion(
-    String section, var updateStr, DocumentReference? docReference) async {
+    String section, dynamic updateStr, DocumentReference? docReference) async {
   Map<String, dynamic> data = {section: updateStr};
   await docReference?.update(data);
 }
