@@ -463,7 +463,7 @@ class _FeatureScreenState extends State<FeatureScreen> {
                                                   i++) {
                                                 _eyes[i] = i == index;
                                               }
-                                              eyes = index + 1;
+                                              eyes = index;
                                               print(eyes);
                                               title = 1;
                                               visibleMbti = true;
@@ -535,7 +535,8 @@ class _FeatureScreenState extends State<FeatureScreen> {
                                   for (int i = 0; i < _gender.length; i++) {
                                     _gender[i] = i == index;
                                   }
-                                  gender = index + 1;
+                                  gender = index;
+
                                   print(gender);
                                   title = 2;
                                   visibleEyes = true;
@@ -587,20 +588,29 @@ class _FeatureScreenState extends State<FeatureScreen> {
                           context,
                           'select',
                           arguments: User(
-                              uid: '',
-                              name: args.name,
-                              profileImage: args.profileImage,
-                              gender: gender,
-                              age: args.age,
-                              number: args.number,
-                              school: args.school,
-                              schoolCode: args.schoolCode,
-                              grade: args.grade,
-                              group: args.group,
-                              eyes: eyes,
-                              mbti: _mbti.join(''),
-                              hobby: '',
-                              style: []),
+                            uid: args.uid,
+                            name: args.name,
+                            profileImage: args.profileImage,
+                            gender: gender,
+                            number: args.number,
+                            age: args.age,
+                            birthday: args.birthday,
+                            school: args.school,
+                            schoolCode: args.schoolCode,
+                            schoolOrg: args.schoolOrg,
+                            grade: args.grade,
+                            group: args.group,
+                            eyes: eyes,
+                            mbti: _mbti.join(''),
+                            hobby: args.hobby,
+                            style: args.style,
+                            isSubscribe: args.isSubscribe,
+                            candyCount: args.candyCount,
+                            questionInfos: args.questionInfos,
+                            answeredQuestions: args.answeredQuestions,
+                            serviceNeedsAgreement: args.serviceNeedsAgreement,
+                            privacyNeedsAgreement: args.privacyNeedsAgreement,
+                          ),
                         );
                       }),
                 ),

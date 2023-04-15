@@ -1,4 +1,5 @@
 import 'package:cooing_front/firebase_options.dart';
+import 'package:cooing_front/pages/AgreeScreen.dart';
 import 'package:cooing_front/pages/CandyScreen.dart';
 import 'package:cooing_front/pages/ClassScreen.dart';
 import 'package:cooing_front/pages/HintPage.dart';
@@ -8,7 +9,6 @@ import 'package:cooing_front/pages/SchoolScreen.dart';
 import 'package:cooing_front/pages/SignUpScreen.dart';
 import 'package:cooing_front/pages/SplashScreen.dart';
 import 'package:cooing_front/pages/WelcomeScreen.dart';
-import 'package:cooing_front/pages/answer_detail_page.dart';
 import 'package:cooing_front/pages/question_page.dart';
 import 'package:cooing_front/pages/tap_page.dart';
 import 'package:cooing_front/providers/UserProvider.dart';
@@ -43,7 +43,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       initialRoute: SplashScreen.routeName,
-      // initialRoute: 'feature',
+      // initialRoute: 'agree',
       routes: {
         SplashScreen.routeName: (context) => SplashScreen(),
         'home': (context) => const LoginScreen(),
@@ -53,12 +53,13 @@ class MyApp extends StatelessWidget {
         'class': (context) => const ClassScreen(),
         'feature': (context) => const FeatureScreen(),
         'select': (context) => const MultiSelectscreen(),
+        'agree': (context) => const AgreeScreen(),
         'welcome': (context) => const WelcomeScreen(),
         'tab': (context) => const TabPage(),
         'hint': (context) => const HintScreen(),
         'candy': (context) => const CandyScreen(),
         'question': (context) => const QuestionPage(),
-        '_working': (context) => const AnswerDetailPage(),
+        '_working': (context) => const TabPage(),
       },
     );
   }

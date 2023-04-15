@@ -2,6 +2,7 @@ import 'package:cooing_front/model/User.dart';
 import 'package:cooing_front/pages/SchoolScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -161,20 +162,31 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               context,
                               'school',
                               arguments: User(
-                                  uid: '',
-                                  name: args.name,
-                                  profileImage: args.profileImage,
-                                  gender: args.gender,
-                                  age: _age,
-                                  number: _number,
-                                  school: '',
-                                  schoolCode: args.schoolCode,
-                                  grade: 0,
-                                  group: 0,
-                                  eyes: 0,
-                                  mbti: '',
-                                  hobby: '',
-                                  style: []),
+                                uid: args.uid,
+                                name: args.name,
+                                profileImage: args.profileImage,
+                                gender: args.gender,
+                                number: _number,
+                                age: _age,
+                                birthday: args.birthday,
+                                school: args.school,
+                                schoolCode: args.schoolCode,
+                                schoolOrg: args.schoolOrg,
+                                grade: args.grade,
+                                group: args.group,
+                                eyes: args.eyes,
+                                mbti: args.mbti,
+                                hobby: args.hobby,
+                                style: args.style,
+                                isSubscribe: args.isSubscribe,
+                                candyCount: args.candyCount,
+                                questionInfos: args.questionInfos,
+                                answeredQuestions: args.answeredQuestions,
+                                serviceNeedsAgreement:
+                                    args.serviceNeedsAgreement,
+                                privacyNeedsAgreement:
+                                    args.privacyNeedsAgreement,
+                              ),
                             );
                           }
                         },

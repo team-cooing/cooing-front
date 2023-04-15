@@ -4,6 +4,7 @@ import 'package:cooing_front/model/Question.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import "dart:async";
+import 'package:cooing_front/widgets/link.dart';
 import 'package:cooing_front/providers/UserProvider.dart';
 import 'package:provider/provider.dart';
 
