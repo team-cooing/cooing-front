@@ -9,7 +9,6 @@ import 'package:cooing_front/pages/SchoolScreen.dart';
 import 'package:cooing_front/pages/SignUpScreen.dart';
 import 'package:cooing_front/pages/SplashScreen.dart';
 import 'package:cooing_front/pages/WelcomeScreen.dart';
-import 'package:cooing_front/pages/answer_detail_page.dart';
 import 'package:cooing_front/pages/question_page.dart';
 import 'package:cooing_front/pages/tap_page.dart';
 import 'package:cooing_front/providers/UserProvider.dart';
@@ -60,7 +59,7 @@ class MyApp extends StatelessWidget {
         'hint': (context) => const HintScreen(),
         'candy': (context) => const CandyScreen(),
         'question': (context) => const QuestionPage(),
-        '_working': (context) => const AnswerDetailPage(),
+        '_working': (context) => const TabPage(),
       },
     );
   }
