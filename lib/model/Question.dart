@@ -41,7 +41,7 @@ class Question {
       'ownerProfileImage': ownerProfileImage,
       'ownerName': ownerName,
       'content': content,
-      'contentId' : contentId,
+      'contentId': contentId,
       'receiveTime': receiveTime,
       'openTime': openTime,
       'url': url,
