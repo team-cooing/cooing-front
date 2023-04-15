@@ -3,6 +3,7 @@ import 'package:cooing_front/model/question_list.dart';
 import 'package:cooing_front/model/Question.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import "dart:math";
+import 'package:shared_preferences/shared_preferences.dart';
 
 Map<String, dynamic> _questionToFirestoreDocument(Question question) {
   return question.toJson();
@@ -63,4 +64,10 @@ Map<String, dynamic> filterQuestion(List questionInfos) {
         filteredQuestions[Random().nextInt(filteredQuestions.length)];
   }
   return randomQuestion;
+}
+
+Future<SharedPreferences> AsyncPrefsOperation() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  print(prefs);
+  return prefs;
 }

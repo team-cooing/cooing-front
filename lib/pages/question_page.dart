@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import "dart:async";
 import 'package:cooing_front/providers/UserProvider.dart';
 import 'package:provider/provider.dart';
+import 'dart:convert';
 
 class QuestionPage extends StatefulWidget {
   const QuestionPage({super.key});
@@ -23,6 +24,7 @@ class _QuestionPageState extends State<QuestionPage>
 
   @override
   bool get wantKeepAlive => true;
+  // UserDataProvider userDataProvider = UserDataProvider();
 
   Object? questionId;
   Map<String, dynamic> randomQ = {"id": -1, "question": ""};
@@ -42,7 +44,7 @@ class _QuestionPageState extends State<QuestionPage>
 
   //shareCard
   bool openShareCard = false;
-
+  late String userDataJson;
   //타이머 관련
   Timer? _timer;
   Duration _countdown = Duration.zero;
@@ -50,7 +52,7 @@ class _QuestionPageState extends State<QuestionPage>
   DateTime receiveTime = DateTime.now(); //초기화
   DateTime closeDate = DateTime.now(); //초기화
   //임시 questionInfos
-  late List<List<dynamic>> questionInfos;
+  List<Map<String, dynamic>> newQuestionInfos = [];
 
   late List<dynamic> currentQuestion;
   late String currentQuestionId;
@@ -119,7 +121,7 @@ class _QuestionPageState extends State<QuestionPage>
         case '질문 받기':
           //질문
           openState();
-          randomQ = filterQuestion(questionInfos);
+          randomQ = filterQuestion(newQuestionInfos);
           newQuestion.content = randomQ['question'].toString();
           newQuestion.contentId = randomQ['id'] as int;
           viewContentText = newQuestion.content;
@@ -127,8 +129,19 @@ class _QuestionPageState extends State<QuestionPage>
           questionDocRef = questionCollectionRef
               .doc(newQuestion.id); //title이 id인 firebase document reference 생성
           addNewQuestion(questionDocRef, newQuestion);
-          questionInfos.add([newQuestion.contentId, newQuestion.id]);
-          updateQuestion('questionInfos', questionInfos, userDocRef);
+          newQuestionInfos.add({
+            'contentId': newQuestion.contentId,
+            'questionId': newQuestion.id
+          });
+          userDocRef.update({
+            'questionInfos': newQuestionInfos
+          }); //파이어베이스 user - questionInfos 업데이트
+          final userProvider =
+              Provider.of<UserDataProvider>(context, listen: false);
+
+          userProvider.updateQuestionInfos(
+              newQuestionInfos); //기기 쿠키 user - questionInfos 업데이트
+
           break;
 
         case '답변 받기':
@@ -222,19 +235,25 @@ class _QuestionPageState extends State<QuestionPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-
-    // final userProvider = Provider.of<UserDataProvider>(context, listen: true);
-    // print(userProvider.userData);
-    // newQuestion.owner = userData.uid;
-    // newQuestion.ownerName = userData.name;
-    // newQuestion.ownerProfileImage = userData.profileImage;
-    // questionInfos = userData.questionInfos;
-    // userDocRef = userCollectionRef.doc(userData.uid);
-
     try {
-      if (questionInfos.isNotEmpty) {
-        currentQuestion = questionInfos.last;
-        currentQuestionId = currentQuestion[1];
+      final userProvider =
+          Provider.of<UserDataProvider>(context, listen: false);
+      print("프로파이더");
+      AsyncPrefsOperation().then((prefs) {
+        String userDataJson = prefs.getString('userData') ?? '';
+        print(userDataJson);
+        final userData = json.decode(userDataJson);
+
+        final List<dynamic> questionInfos = userData['questionInfos'] ?? [];
+        final List<Map<String, dynamic>> newQuestionInfos =
+            questionInfos.cast<Map<String, dynamic>>().toList();
+        Map<String, dynamic> lastQuestionInfo =
+            newQuestionInfos[newQuestionInfos.length - 1];
+        print("///ss");
+
+        print(newQuestionInfos);
+        String currentQuestion = lastQuestionInfo['contentId'].toString();
+        String currentQuestionId = lastQuestionInfo['questionId'].toString();
         questionDocRef = FirebaseFirestore.instance
             .collection('questions')
             .doc(currentQuestionId);
@@ -244,10 +263,16 @@ class _QuestionPageState extends State<QuestionPage>
             newQuestion = value;
           });
         });
-      }
+      });
     } catch (e) {
-      print('에러');
+      print("e");
     }
+    // newQuestion.owner = userData.uid;
+    // newQuestion.ownerName = userData.name;
+    // newQuestion.ownerProfileImage = userData.profileImage;
+    // questionInfos = userData.questionInfos;
+    // userDocRef = userCollectionRef.doc(userData.uid);
+
     return Scaffold(
       body: SingleChildScrollView(child: _askBody()),
     );
@@ -332,11 +357,8 @@ class _QuestionPageState extends State<QuestionPage>
                 newQuestion.owner = userData.uid;
                 newQuestion.ownerName = userData.name;
                 newQuestion.ownerProfileImage = userData.profileImage;
-                questionInfos = userData.questionInfos;
+                newQuestionInfos = userData.questionInfos;
                 userDocRef = userCollectionRef.doc(userData.uid);
-                print(newQuestion.owner);
-                print('11111');
-                print(userData.questionInfos);
 
                 return SizedBox(
                   width: 80.0,
