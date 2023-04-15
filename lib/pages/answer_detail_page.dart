@@ -22,7 +22,7 @@ class _AnswerDetailPageState extends State<AnswerDetailPage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Color.fromARGB(0, 87, 56, 56),
         elevation: 0.0,
         leading: BackButton(color: Color.fromRGBO(51, 61, 75, 1)),
         actions: [

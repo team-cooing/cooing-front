@@ -1,4 +1,5 @@
 import 'package:cooing_front/firebase_options.dart';
+import 'package:cooing_front/pages/AgreeScreen.dart';
 import 'package:cooing_front/pages/CandyScreen.dart';
 import 'package:cooing_front/pages/ClassScreen.dart';
 import 'package:cooing_front/pages/HintPage.dart';
@@ -42,7 +43,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       initialRoute: SplashScreen.routeName,
-      // initialRoute: 'feature',
+      // initialRoute: 'agree',
       routes: {
         SplashScreen.routeName: (context) => SplashScreen(),
         'home': (context) => const LoginScreen(),
@@ -52,6 +53,7 @@ class MyApp extends StatelessWidget {
         'class': (context) => const ClassScreen(),
         'feature': (context) => const FeatureScreen(),
         'select': (context) => const MultiSelectscreen(),
+        'agree': (context) => const AgreeScreen(),
         'welcome': (context) => const WelcomeScreen(),
         'tab': (context) => const TabPage(),
         'hint': (context) => const HintScreen(),
