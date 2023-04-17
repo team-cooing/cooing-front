@@ -1,4 +1,5 @@
 // Question 객체를 Firestore 문서로 변환하는 함수
+import 'package:cooing_front/model/User.dart';
 import 'package:cooing_front/model/question_list.dart';
 import 'package:cooing_front/model/Question.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -7,6 +8,44 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 Map<String, dynamic> _questionToFirestoreDocument(Question question) {
   return question.toJson();
+}
+
+Future<User> getUserDocument(DocumentReference docRef, String id) async {
+  DocumentSnapshot doc = await docRef.get();
+  User user;
+  if (doc.exists) {
+    // 문서가 존재합니다.
+    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+    // 필요한 작업 수행
+    user = User.fromJson(data);
+  } else {
+    user = User(
+        birthday: '',
+        uid: '',
+        name: '',
+        profileImage: '',
+        gender: 0,
+        number: '',
+        age: '',
+        school: '',
+        schoolCode: '',
+        schoolOrg: '',
+        grade: 0,
+        group: 0,
+        eyes: 0,
+        mbti: '',
+        hobby: '',
+        style: [],
+        isSubscribe: false,
+        candyCount: 0,
+        questionInfos: [],
+        answeredQuestions: [],
+        serviceNeedsAgreement: false,
+        privacyNeedsAgreement: false);
+  }
+
+    return user;
+
 }
 
 Future<Question> getDocument(DocumentReference docRef, String id) async {

@@ -3,13 +3,16 @@ import 'package:cooing_front/widgets/share_card.dart';
 import 'package:cooing_front/model/Question.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import "dart:async";
 import 'package:cooing_front/providers/UserProvider.dart';
+import 'package:cooing_front/model/User.dart';
 import 'package:provider/provider.dart';
+import "dart:async";
 import 'dart:convert';
 
 class QuestionPage extends StatefulWidget {
-  const QuestionPage({super.key});
+  final String uid;
+
+  QuestionPage({this.uid = '', Key? key}) : super(key: key);
 
   @override
   _QuestionPageState createState() => _QuestionPageState();
@@ -17,9 +20,100 @@ class QuestionPage extends StatefulWidget {
 
 class _QuestionPageState extends State<QuestionPage>
     with AutomaticKeepAliveClientMixin {
+  UserDataProvider? _userDataProvider;
+  User? _userData;
+  late Question newQuestion;
+
   @override
   void initState() {
     super.initState();
+    String uid = widget.uid;
+    newQuestion = Question(
+      id: '',
+      ownerProfileImage: '',
+      ownerName: '',
+      owner: '',
+      content: '',
+      contentId: 0,
+      receiveTime: '',
+      openTime: '',
+      url: '',
+      isValidity: false,
+    );
+    userCollectionRef = FirebaseFirestore.instance.collection('users');
+    contentCollectionRef = FirebaseFirestore.instance.collection('contents');
+    // final userDataJson = userProvider.loadData();
+
+    _userData = Provider.of<UserDataProvider>(context, listen: false).userData;
+
+    print(_userData?.questionInfos);
+
+    Future<User> getUserData() async {
+      final prefs = await AsyncPrefsOperation();
+      print(2222222222222);
+
+      final userDataJson = prefs.getString('userData');
+      if (userDataJson != null) {
+        print("쿠키 에서 UserData 로드");
+        print(userDataJson);
+        Map<String, dynamic> userDataMap =
+            json.decode(userDataJson); //z쿠키가 있ㅇㅡ면 쿠키 리턴
+        return User.fromJson(userDataMap);
+      } else {
+        // Handle missing data
+        print('No user data found in shared preferences');
+        userDocRef = userCollectionRef.doc(uid);
+        print("firebase 에서 UserData 로드");
+        return await getUserDocument(userDocRef, uid); //쿠키없으면 파베에서 유저 데이터 리턴
+      }
+    }
+
+    try {
+      late User userData;
+
+      getUserData().then((data) {
+        userData = data;
+        newQuestion.owner = userData.uid;
+        newQuestion.ownerName = userData.name;
+        newQuestion.ownerProfileImage = userData.profileImage;
+        userDocRef = userCollectionRef.doc(newQuestion.owner);
+        print("newQuestion 에 제대로 들어갔을까");
+        print(newQuestion.ownerProfileImage);
+
+        final questionInfos = userData.questionInfos;
+        print(questionInfos);
+        if (questionInfos.isEmpty) {
+          print(11111111111111);
+          print(newQuestion.ownerProfileImage);
+        } else {
+          final lastQuestionInfo = questionInfos.last;
+          final currentContentId = lastQuestionInfo['contentId']?.toString();
+          print(currentContentId);
+          final currentQuestionId = lastQuestionInfo['questionId']?.toString();
+          if (currentContentId != null && currentQuestionId != null) {
+            questionDocRef = contentCollectionRef
+                .doc(currentContentId)
+                .collection('questions')
+                .doc(currentQuestionId);
+            print(currentQuestionId);
+
+            getDocument(questionDocRef, currentQuestionId).then((value) {
+              setState(() {
+                newQuestion = value;
+                print(444444444444);
+                print(newQuestion.content);
+              });
+            });
+          }
+        }
+      });
+    } on FormatException catch (e) {
+      // Handle JSON decoding error
+      print('Error decoding user data: $e');
+    } catch (e) {
+      // Handle other errors
+      print('Error loading user data: $e');
+    }
   }
 
   @override
@@ -51,57 +145,57 @@ class _QuestionPageState extends State<QuestionPage>
   bool _isRunning = false; //타이머 isRunning
   DateTime receiveTime = DateTime.now(); //초기화
   DateTime closeDate = DateTime.now(); //초기화
+
   //임시 questionInfos
   List<Map<String, dynamic>> newQuestionInfos = [];
 
-  late List<dynamic> currentQuestion;
-  late String currentQuestionId;
+  late List<dynamic> currentContentId;
+  late String currentContentIdId;
 
-// Firebase Firestore 컬렉션 참조
-  CollectionReference questionCollectionRef =
-      FirebaseFirestore.instance.collection('questions');
-  CollectionReference userCollectionRef =
-      FirebaseFirestore.instance.collection('users');
+  late CollectionReference contentCollectionRef;
+  late CollectionReference userCollectionRef;
+
 // 'questions'  의 document reference 초기화
   late DocumentReference questionDocRef;
   late DocumentReference userDocRef;
-  late Question newQuestion = Question(
-    id: '',
-    ownerProfileImage: '',
-    ownerName: '',
-    owner: '',
-    content: '',
-    contentId: 0,
-    receiveTime: '',
-    openTime: '',
-    url: '',
-    isValidity: false,
-  );
+// Firebase Firestore 인스턴스 생성
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+// "content_id" 문서의 "questions" 콜렉션에서 "question_id" 문서를 가져옵니다.
+
+// "question_id" 문서를 만듭니다.
+  void createQuestionDocument(String contentId, String questionId) {
+    firestore
+        .collection('Contents')
+        .doc(contentId)
+        .collection('questions')
+        .doc(questionId)
+        .set({});
+  }
 
   //open 하기 전인 상태
   initialState() {
+    print("initialState");
+
     openShareCard = false;
     askButtonText = '질문 받기';
     isViewContent = false; //"똑똑똑 질문이 도착했어요~"
     isButtonEnabled = true;
-  }
-
-  openState() {
-    //openShareCard = false 유지
-    //isButtonEnabled = true 유지
-    isViewContent = true; //
-    askButtonText = '답변 받기';
+    print(newQuestion);
   }
 
 //
   openButNotReceive() {
+    print("openButNotReceive");
     askButtonText = '답변 받기'; //버튼 text는 질문닫기로 변경
+    isViewContent = true;
     openShareCard = false; //아래에 share card 생성
     isButtonEnabled = true;
   }
 
 //답장o 닫는시간x (closeTime 지나기 전)
   receiveButNotClose() {
+    print("receiveButNotClose");
+
     askButtonText = '질문 닫기';
     isButtonEnabled = false;
     openShareCard = true; //아래에 share card 생성
@@ -109,6 +203,8 @@ class _QuestionPageState extends State<QuestionPage>
 
 //답장o 닫는시간지남(closeTime 지난 후)
   receiveAndClose() {
+    print("receiveAndClose");
+
     isButtonEnabled = true;
     askButtonText = '질문 닫기';
     btnBottomMent = '새로운 질문이 도착했어요';
@@ -120,13 +216,15 @@ class _QuestionPageState extends State<QuestionPage>
       switch (askButtonText) {
         case '질문 받기':
           //질문
-          openState();
+          openButNotReceive();
           randomQ = filterQuestion(newQuestionInfos);
           newQuestion.content = randomQ['question'].toString();
           newQuestion.contentId = randomQ['id'] as int;
           viewContentText = newQuestion.content;
           _startTimer(); //openTime
-          questionDocRef = questionCollectionRef
+          questionDocRef = contentCollectionRef
+              .doc(newQuestion.contentId.toString())
+              .collection('questions')
               .doc(newQuestion.id); //title이 id인 firebase document reference 생성
           addNewQuestion(questionDocRef, newQuestion);
           newQuestionInfos.add({
@@ -196,7 +294,11 @@ class _QuestionPageState extends State<QuestionPage>
           _isRunning = false;
           if (openShareCard == false) {
             askButtonText = '질문 받기';
-            questionCollectionRef.doc(newQuestion.id).delete();
+            contentCollectionRef
+                .doc(newQuestion.contentId.toString())
+                .collection('questions')
+                .doc(newQuestion.id)
+                .delete();
           }
         } else {
           _countdown = Duration(seconds: _countdown.inSeconds - 1);
@@ -235,43 +337,6 @@ class _QuestionPageState extends State<QuestionPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    try {
-      final userProvider =
-          Provider.of<UserDataProvider>(context, listen: false);
-      print("프로파이더");
-      AsyncPrefsOperation().then((prefs) {
-        String userDataJson = prefs.getString('userData') ?? '';
-        print(userDataJson);
-        final userData = json.decode(userDataJson);
-
-        final List<dynamic> questionInfos = userData['questionInfos'] ?? [];
-        final List<Map<String, dynamic>> newQuestionInfos =
-            questionInfos.cast<Map<String, dynamic>>().toList();
-        Map<String, dynamic> lastQuestionInfo =
-            newQuestionInfos[newQuestionInfos.length - 1];
-        print("///ss");
-
-        print(newQuestionInfos);
-        String currentQuestion = lastQuestionInfo['contentId'].toString();
-        String currentQuestionId = lastQuestionInfo['questionId'].toString();
-        questionDocRef = FirebaseFirestore.instance
-            .collection('questions')
-            .doc(currentQuestionId);
-
-        getDocument(questionDocRef, currentQuestionId).then((value) {
-          setState(() {
-            newQuestion = value;
-          });
-        });
-      });
-    } catch (e) {
-      print("e");
-    }
-    // newQuestion.owner = userData.uid;
-    // newQuestion.ownerName = userData.name;
-    // newQuestion.ownerProfileImage = userData.profileImage;
-    // questionInfos = userData.questionInfos;
-    // userDocRef = userCollectionRef.doc(userData.uid);
 
     return Scaffold(
       body: SingleChildScrollView(child: _askBody()),
@@ -294,41 +359,46 @@ class _QuestionPageState extends State<QuestionPage>
   }
 
   Widget pupleBox() {
-    print(newQuestion);
-    if (newQuestion.isValidity == false) {
-      if (newQuestion.openTime == "") {
-        //질문 open 안한 상태
-        initialState();
-      } else if (newQuestion.receiveTime == "") {
-        //질문 받았으나 답변받기 안누른 상태
-        _isRunning = true; //timer
-        openButNotReceive();
+    setState(() {
+      newQuestion = newQuestion;
+      print(newQuestion.receiveTime);
+      if (newQuestion.isValidity == false) {
+        if (newQuestion.openTime == "") {
+          //질문 open 안한 상태
+          initialState();
+        } else if (newQuestion.receiveTime == "") {
+          //질문 받았으나 답변받기 안누른 상태
+          _isRunning = true; //timer
+          _startTimer(); //openTime
+          openButNotReceive();
+          viewContentText = newQuestion.content;
+          print(newQuestion);
+        }
+      } else if (newQuestion.isValidity == true) {
+        //답변받기 누른 상태
+        //closeTime 전이면
+        isViewContent = true;
         viewContentText = newQuestion.content;
-      }
-    } else {
-      //답변받기 누른 상태
-      //closeTime 전이면
-      isViewContent = true;
-      viewContentText = newQuestion.content;
-      if (DateTime.now().isAfter(closeDate)) {
-        setState(() {
-          print(DateTime.now());
-          receiveAndClose();
-          updateQuestion('isValidity', false, questionDocRef);
-        });
-      } else {
-        receiveButNotClose();
+        print("newQuestion.receiveTime : $newQuestion.recieveTime");
         DateTime rcvTime = DateTime.parse(newQuestion.receiveTime);
         closeDate = rcvTime.add(const Duration(hours: 24));
-        btnBottomMent =
-            '해당 질문은 ${closeDate.day}일 ${closeDate.hour}시 ${closeDate.minute}분부터 닫을 수 있습니다.';
+
+        if (DateTime.now().isAfter(closeDate)) {
+          receiveAndClose();
+          updateQuestion('isValidity', false, questionDocRef);
+        } else {
+          receiveButNotClose();
+          btnBottomMent =
+              '해당 질문은 ${closeDate.day}일 ${closeDate.hour}시 ${closeDate.minute}분부터 닫을 수 있습니다.';
+        }
       }
-    }
+    });
 
     // Update button state
     setState(() {
       isButtonEnabled = isButtonEnabled;
     });
+    // Update button state
 
     String remainTimer = _formatDuration(_countdown);
 
@@ -349,27 +419,14 @@ class _QuestionPageState extends State<QuestionPage>
                       fontSize: _isRunning ? 12 : 0))
             ]),
             const Padding(padding: EdgeInsets.all(15.0)),
-            Consumer<UserDataProvider>(builder: (context, provider, child) {
-              final userData = provider.userData;
-              if (userData == null) {
-                return const CircularProgressIndicator();
-              } else {
-                newQuestion.owner = userData.uid;
-                newQuestion.ownerName = userData.name;
-                newQuestion.ownerProfileImage = userData.profileImage;
-                newQuestionInfos = userData.questionInfos;
-                userDocRef = userCollectionRef.doc(userData.uid);
-
-                return SizedBox(
-                  width: 80.0,
-                  height: 80.0,
-                  child: CircleAvatar(
-                    backgroundImage:
-                        NetworkImage(newQuestion.ownerProfileImage),
+            SizedBox(
+              width: 80.0,
+              height: 80.0,
+              child: CircleAvatar(
+                  backgroundImage: NetworkImage(newQuestion.ownerProfileImage)
+                  // : CircularProgressIndicator(),
                   ),
-                );
-              }
-            }),
+            ),
             const Padding(padding: EdgeInsets.all(20.0)),
             Text(
               isViewContent ? viewContentText : '똑똑똑! 오늘의 질문이 도착했어요.',
