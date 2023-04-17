@@ -13,13 +13,13 @@ class UserDataProvider with ChangeNotifier {
     _loadUserDataFromCookie();
   }
 
-void updateQuestionInfos(List<Map<String, dynamic>> questionInfos) {
-  if (_userData != null) {
-    _userData!.updateQuestionInfos(questionInfos);
-    _saveUserDataToCookie(_userData!);
-    notifyListeners();
+  void updateQuestionInfos(List<Map<String, dynamic>> questionInfos) {
+    if (_userData != null) {
+      _userData!.updateQuestionInfos(questionInfos);
+      _saveUserDataToCookie(_userData!);
+      notifyListeners();
+    }
   }
-}
 
   Future<void> loadData() async {
     if (_isDataLoaded) {
@@ -53,7 +53,8 @@ void updateQuestionInfos(List<Map<String, dynamic>> questionInfos) {
             style: List<String>.from(data['style']),
             isSubscribe: data['isSubscribe'],
             candyCount: data['candyCount'],
-            questionInfos: List<Map<String, dynamic>>.from(data['questionInfos']),
+            questionInfos:
+                List<Map<String, dynamic>>.from(data['questionInfos']),
             answeredQuestions:
                 List<String>.from(data['answeredQuestions'] ?? []),
             serviceNeedsAgreement: data['serviceNeedsAgreement'],
