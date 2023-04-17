@@ -27,6 +27,7 @@ class _QuestionPageState extends State<QuestionPage>
   User? _userData;
   late Question newQuestion;
   late final String schoolCode;
+
   @override
   void initState() {
     super.initState();
@@ -87,13 +88,12 @@ class _QuestionPageState extends State<QuestionPage>
         print("newQuestion 에 제대로 들어갔을까");
         print(newQuestion.ownerProfileImage);
 
-        final questionInfos = userData.questionInfos;
-        print(questionInfos);
-        if (questionInfos.isEmpty) {
+        final newQuestionInfos = userData.questionInfos;
+        if (newQuestionInfos.isEmpty) {
           print("userData - questionInfos is Empty");
           print(newQuestion.ownerProfileImage);
         } else {
-          final lastQuestionInfo = questionInfos.last;
+          final lastQuestionInfo = newQuestionInfos.last;
           final String? currentContentId =
               lastQuestionInfo['contentId']?.toString();
           final String? currentQuestionId = lastQuestionInfo['questionId'];
@@ -105,8 +105,11 @@ class _QuestionPageState extends State<QuestionPage>
 
             getDocument(questionDocRef, currentQuestionId).then((value) {
               setState(() {
+                print("value.contentId : ${value.contentId}");
+                print("value.questionId : ${value.id}");
+                print("value.receiveTime : ${value.receiveTime}");
+                print("value : $value");
                 newQuestion = value;
-                print(newQuestion.content);
               });
             });
           }
@@ -148,12 +151,14 @@ class _QuestionPageState extends State<QuestionPage>
   Timer? _timer;
   Duration _countdown = Duration.zero;
   bool _isRunning = false; //타이머 isRunning
-  late final DateTime receiveTime; //초기화
-  late final DateTime closeDate; //초기화
+  late DateTime receiveTime; //초기화
+  late String receiveTimeText;
+  late DateTime closeDate; //초기화
+  late String closeDateText;
 
   //임시 questionInfos
   late List<Map<String, dynamic>> newQuestionInfos = [];
-
+  late Map<String, dynamic> questionInfoList = {};
   late String currentContentId;
 
 // 'questions'  의 document reference 초기화
@@ -214,10 +219,12 @@ class _QuestionPageState extends State<QuestionPage>
       switch (askButtonText) {
         case '질문 받기':
           //질문
+          newQuestion = initQuestion(newQuestion);
           openButNotReceive();
           randomQ = filterQuestion(newQuestionInfos);
           newQuestion.content = randomQ['question'].toString();
           newQuestion.id = DateTime.now().toString();
+          newQuestion.receiveTime = '';
           print(newQuestion.contentId);
           newQuestion.contentId = randomQ['id'];
           viewContentText = newQuestion.content;
@@ -232,8 +239,9 @@ class _QuestionPageState extends State<QuestionPage>
             'contentId': newQuestion.contentId.toString(),
             'questionId': newQuestion.id
           });
-          print("$newQuestion.contentId ---- $newQuestion.content");
-          print("$newQuestion.receiveTime ---- receiveTime");
+          print("${newQuestion.contentId} ---- ${newQuestion.content}");
+          print(
+              "239 라인 newQuestion.receiveTime ---- ${newQuestion.receiveTime} ");
 
           userDocRef.update({
             'questionInfos': newQuestionInfos
@@ -256,11 +264,12 @@ class _QuestionPageState extends State<QuestionPage>
           receiveTime = DateTime.now();
           closeDate = receiveTime.add(const Duration(hours: 24));
           newQuestion.receiveTime = receiveTime.toString();
+          print('262라인 case 문 안에 ${newQuestion.receiveTime}');
           updateQuestion(
               'receiveTime', newQuestion.receiveTime, questionDocRef);
           updateQuestion('url', url, questionDocRef);
           updateQuestion('isValidity', true, questionDocRef);
-          print('들어갔니?000 $newQuestion.receiveTime');
+          print('267 라인 ${newQuestion.receiveTime}');
 
           btnBottomMent =
               '해당 질문은 ${closeDate.day}일 ${closeDate.hour}시 ${closeDate.minute}분부터 닫을 수 있습니다.';
@@ -273,6 +282,7 @@ class _QuestionPageState extends State<QuestionPage>
             updateQuestion('isValidity', false, questionDocRef);
             deleteQuestionFromFeed(schoolCode, newQuestion.id);
             askButtonText = '질문 받기'; //버튼 text는 답변받기로 변경
+            initState();
           }
           break;
       }
@@ -282,7 +292,6 @@ class _QuestionPageState extends State<QuestionPage>
   void _startTimer() {
     if (newQuestion.openTime == "") {
       final openTime = DateTime.now();
-      print("ddddddd$DateTime.now()");
       newQuestion.openTime = openTime.toString();
       newQuestion.id = openTime.toString();
       // print(1144$openTime.toString());
@@ -301,11 +310,11 @@ class _QuestionPageState extends State<QuestionPage>
           _isRunning = false;
           if (openShareCard == false) {
             askButtonText = '질문 받기';
-            contentCollectionRef
-                .doc(newQuestion.contentId.toString())
-                .collection('questions')
-                .doc(newQuestion.id)
-                .delete();
+            // contentCollectionRef
+            //     .doc(newQuestion.contentId.toString())
+            //     .collection('questions')
+            //     .doc(newQuestion.id)
+            //     .delete();
           }
         } else {
           _countdown = Duration(seconds: _countdown.inSeconds - 1);
@@ -386,9 +395,9 @@ class _QuestionPageState extends State<QuestionPage>
         //closeTime 전이면
         isViewContent = true;
         viewContentText = newQuestion.content;
-        print("newQuestion.receiveTime : $newQuestion.recieveTime");
         DateTime rcvTime = DateTime.parse(newQuestion.receiveTime);
-        final closeDate = rcvTime.add(const Duration(hours: 24));
+        closeDate = rcvTime.add(const Duration(hours: 24));
+        print('setState 문 안에 $rcvTime.toString()');
 
         if (DateTime.now().isAfter(closeDate)) {
           print("답변받기& after close");
@@ -429,13 +438,16 @@ class _QuestionPageState extends State<QuestionPage>
                       fontSize: _isRunning ? 12 : 0))
             ]),
             const Padding(padding: EdgeInsets.all(15.0)),
-            SizedBox(
-              width: 80.0,
-              height: 80.0,
-              child: CircleAvatar(
-                  backgroundImage: NetworkImage(newQuestion.ownerProfileImage)
-                  // : CircularProgressIndicator(),
-                  ),
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                image: DecorationImage(
+                  fit: BoxFit.cover,
+                  image: NetworkImage(newQuestion.ownerProfileImage),
+                ),
+              ),
             ),
             const Padding(padding: EdgeInsets.all(20.0)),
             Text(

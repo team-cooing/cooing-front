@@ -1,4 +1,3 @@
-
 class Question {
   String id; // 마이크로세컨드까지 보낸 시간으로 사용
   String ownerProfileImage;
@@ -36,6 +35,7 @@ class Question {
         url: json['url'],
         isValidity: json['isValidity']);
   }
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -50,7 +50,5 @@ class Question {
     };
   }
 
-
-
-
+ 
 }

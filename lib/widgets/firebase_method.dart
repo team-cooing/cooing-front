@@ -10,6 +10,17 @@ Map<String, dynamic> _questionToFirestoreDocument(Question question) {
   return question.toJson();
 }
 
+Question initQuestion(Question question) {
+  question.content = '';
+  question.contentId = 0;
+  question.receiveTime = '';
+  question.openTime = '';
+  question.url = '';
+  question.isValidity = false;
+
+  return question;
+}
+
 Future<void> addQuestionToFeed(
     String schoolCode, String questionId, Question data) async {
   final docRef = FirebaseFirestore.instance
