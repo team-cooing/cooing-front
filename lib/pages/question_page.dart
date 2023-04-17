@@ -20,10 +20,13 @@ class QuestionPage extends StatefulWidget {
 
 class _QuestionPageState extends State<QuestionPage>
     with AutomaticKeepAliveClientMixin {
+  late CollectionReference contentCollectionRef;
+  late CollectionReference userCollectionRef;
+  // late CollectionReference schoolCollectionRef;
   UserDataProvider? _userDataProvider;
   User? _userData;
   late Question newQuestion;
-
+  late final String schoolCode;
   @override
   void initState() {
     super.initState();
@@ -42,6 +45,7 @@ class _QuestionPageState extends State<QuestionPage>
     );
     userCollectionRef = FirebaseFirestore.instance.collection('users');
     contentCollectionRef = FirebaseFirestore.instance.collection('contents');
+    // schoolCollectionRef = FirebaseFirestore.instance.collection('schools');
     // final userDataJson = userProvider.loadData();
 
     _userData = Provider.of<UserDataProvider>(context, listen: false).userData;
@@ -63,6 +67,7 @@ class _QuestionPageState extends State<QuestionPage>
         // Handle missing data
         print('No user data found in shared preferences');
         userDocRef = userCollectionRef.doc(uid);
+        print("uid : $uid");
         print("firebase 에서 UserData 로드");
         return await getUserDocument(userDocRef, uid); //쿠키없으면 파베에서 유저 데이터 리턴
       }
@@ -76,31 +81,31 @@ class _QuestionPageState extends State<QuestionPage>
         newQuestion.owner = userData.uid;
         newQuestion.ownerName = userData.name;
         newQuestion.ownerProfileImage = userData.profileImage;
+        schoolCode = userData.schoolCode;
         userDocRef = userCollectionRef.doc(newQuestion.owner);
+
         print("newQuestion 에 제대로 들어갔을까");
         print(newQuestion.ownerProfileImage);
 
         final questionInfos = userData.questionInfos;
         print(questionInfos);
         if (questionInfos.isEmpty) {
-          print(11111111111111);
+          print("userData - questionInfos is Empty");
           print(newQuestion.ownerProfileImage);
         } else {
           final lastQuestionInfo = questionInfos.last;
-          final currentContentId = lastQuestionInfo['contentId']?.toString();
-          print(currentContentId);
-          final currentQuestionId = lastQuestionInfo['questionId']?.toString();
+          final String? currentContentId =
+              lastQuestionInfo['contentId']?.toString();
+          final String? currentQuestionId = lastQuestionInfo['questionId'];
           if (currentContentId != null && currentQuestionId != null) {
             questionDocRef = contentCollectionRef
                 .doc(currentContentId)
                 .collection('questions')
                 .doc(currentQuestionId);
-            print(currentQuestionId);
 
             getDocument(questionDocRef, currentQuestionId).then((value) {
               setState(() {
                 newQuestion = value;
-                print(444444444444);
                 print(newQuestion.content);
               });
             });
@@ -143,17 +148,13 @@ class _QuestionPageState extends State<QuestionPage>
   Timer? _timer;
   Duration _countdown = Duration.zero;
   bool _isRunning = false; //타이머 isRunning
-  DateTime receiveTime = DateTime.now(); //초기화
-  DateTime closeDate = DateTime.now(); //초기화
+  late final DateTime receiveTime; //초기화
+  late final DateTime closeDate; //초기화
 
   //임시 questionInfos
-  List<Map<String, dynamic>> newQuestionInfos = [];
+  late List<Map<String, dynamic>> newQuestionInfos = [];
 
-  late List<dynamic> currentContentId;
-  late String currentContentIdId;
-
-  late CollectionReference contentCollectionRef;
-  late CollectionReference userCollectionRef;
+  late String currentContentId;
 
 // 'questions'  의 document reference 초기화
   late DocumentReference questionDocRef;
@@ -175,12 +176,10 @@ class _QuestionPageState extends State<QuestionPage>
   //open 하기 전인 상태
   initialState() {
     print("initialState");
-
     openShareCard = false;
     askButtonText = '질문 받기';
     isViewContent = false; //"똑똑똑 질문이 도착했어요~"
     isButtonEnabled = true;
-    print(newQuestion);
   }
 
 //
@@ -195,7 +194,6 @@ class _QuestionPageState extends State<QuestionPage>
 //답장o 닫는시간x (closeTime 지나기 전)
   receiveButNotClose() {
     print("receiveButNotClose");
-
     askButtonText = '질문 닫기';
     isButtonEnabled = false;
     openShareCard = true; //아래에 share card 생성
@@ -219,7 +217,9 @@ class _QuestionPageState extends State<QuestionPage>
           openButNotReceive();
           randomQ = filterQuestion(newQuestionInfos);
           newQuestion.content = randomQ['question'].toString();
-          newQuestion.contentId = randomQ['id'] as int;
+          newQuestion.id = DateTime.now().toString();
+          print(newQuestion.contentId);
+          newQuestion.contentId = randomQ['id'];
           viewContentText = newQuestion.content;
           _startTimer(); //openTime
           questionDocRef = contentCollectionRef
@@ -227,10 +227,14 @@ class _QuestionPageState extends State<QuestionPage>
               .collection('questions')
               .doc(newQuestion.id); //title이 id인 firebase document reference 생성
           addNewQuestion(questionDocRef, newQuestion);
+          addQuestionToFeed(schoolCode, newQuestion.id, newQuestion);
           newQuestionInfos.add({
-            'contentId': newQuestion.contentId,
+            'contentId': newQuestion.contentId.toString(),
             'questionId': newQuestion.id
           });
+          print("$newQuestion.contentId ---- $newQuestion.content");
+          print("$newQuestion.receiveTime ---- receiveTime");
+
           userDocRef.update({
             'questionInfos': newQuestionInfos
           }); //파이어베이스 user - questionInfos 업데이트
@@ -243,6 +247,7 @@ class _QuestionPageState extends State<QuestionPage>
           break;
 
         case '답변 받기':
+          print('들어갔니?000');
           receiveButNotClose();
           _resetTimer();
           newQuestion.isValidity = true;
@@ -255,6 +260,7 @@ class _QuestionPageState extends State<QuestionPage>
               'receiveTime', newQuestion.receiveTime, questionDocRef);
           updateQuestion('url', url, questionDocRef);
           updateQuestion('isValidity', true, questionDocRef);
+          print('들어갔니?000 $newQuestion.receiveTime');
 
           btnBottomMent =
               '해당 질문은 ${closeDate.day}일 ${closeDate.hour}시 ${closeDate.minute}분부터 닫을 수 있습니다.';
@@ -264,8 +270,8 @@ class _QuestionPageState extends State<QuestionPage>
         case '질문 닫기':
           if (DateTime.now().isAfter(closeDate)) {
             receiveAndClose();
-
             updateQuestion('isValidity', false, questionDocRef);
+            deleteQuestionFromFeed(schoolCode, newQuestion.id);
             askButtonText = '질문 받기'; //버튼 text는 답변받기로 변경
           }
           break;
@@ -276,10 +282,11 @@ class _QuestionPageState extends State<QuestionPage>
   void _startTimer() {
     if (newQuestion.openTime == "") {
       final openTime = DateTime.now();
+      print("ddddddd$DateTime.now()");
       newQuestion.openTime = openTime.toString();
       newQuestion.id = openTime.toString();
+      // print(1144$openTime.toString());
     }
-    print(newQuestion.openTime);
     DateTime openTime = DateTime.parse(newQuestion.openTime);
     final endOfDay = DateTime(openTime.year, openTime.month, openTime.day + 1);
     final remainingSeconds = endOfDay.difference(openTime).inSeconds;
@@ -361,7 +368,7 @@ class _QuestionPageState extends State<QuestionPage>
   Widget pupleBox() {
     setState(() {
       newQuestion = newQuestion;
-      print(newQuestion.receiveTime);
+      print(newQuestion.ownerProfileImage);
       if (newQuestion.isValidity == false) {
         if (newQuestion.openTime == "") {
           //질문 open 안한 상태
@@ -381,12 +388,15 @@ class _QuestionPageState extends State<QuestionPage>
         viewContentText = newQuestion.content;
         print("newQuestion.receiveTime : $newQuestion.recieveTime");
         DateTime rcvTime = DateTime.parse(newQuestion.receiveTime);
-        closeDate = rcvTime.add(const Duration(hours: 24));
+        final closeDate = rcvTime.add(const Duration(hours: 24));
 
         if (DateTime.now().isAfter(closeDate)) {
+          print("답변받기& after close");
           receiveAndClose();
-          updateQuestion('isValidity', false, questionDocRef);
+          deleteQuestionFromFeed(schoolCode, newQuestion.id);
+          // updateQuestion('isValidity', false, questionDocRef);
         } else {
+          print("답변받기& before close");
           receiveButNotClose();
           btnBottomMent =
               '해당 질문은 ${closeDate.day}일 ${closeDate.hour}시 ${closeDate.minute}분부터 닫을 수 있습니다.';
