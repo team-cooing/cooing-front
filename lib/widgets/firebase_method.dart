@@ -10,6 +10,28 @@ Map<String, dynamic> _questionToFirestoreDocument(Question question) {
   return question.toJson();
 }
 
+Future<void> addQuestionToFeed(
+    String schoolCode, String questionId, Question data) async {
+  final docRef = FirebaseFirestore.instance
+      .collection('schools')
+      .doc(schoolCode)
+      .collection('feed')
+      .doc(questionId);
+
+  await docRef.set(_questionToFirestoreDocument(data));
+}
+
+Future<void> deleteQuestionFromFeed(
+    String schoolCode, String questionId) async {
+  final docRef = FirebaseFirestore.instance
+      .collection('schools')
+      .doc(schoolCode)
+      .collection('feed')
+      .doc(questionId);
+
+  await docRef.delete();
+}
+
 Future<User> getUserDocument(DocumentReference docRef, String id) async {
   DocumentSnapshot doc = await docRef.get();
   User user;
@@ -44,8 +66,7 @@ Future<User> getUserDocument(DocumentReference docRef, String id) async {
         privacyNeedsAgreement: false);
   }
 
-    return user;
-
+  return user;
 }
 
 Future<Question> getDocument(DocumentReference docRef, String id) async {
@@ -97,7 +118,9 @@ Map<String, dynamic> filterQuestion(List questionInfos) {
   } else {
     List<Map<String, dynamic>> filteredQuestions = [
       for (var info in questionInfos)
-        if (questionList.any((question) => question["id"] == info[0])) info,
+        if (questionList
+            .any((question) => question["id"].toString() == info[0]))
+          info,
     ];
     randomQuestion =
         filteredQuestions[Random().nextInt(filteredQuestions.length)];
