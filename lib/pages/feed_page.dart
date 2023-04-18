@@ -1,43 +1,63 @@
 import 'package:cooing_front/pages/answer_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cooing_front/pages/answer_page.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class FeedPage extends StatefulWidget {
-  const FeedPage({super.key});
+  const FeedPage({Key? key}) : super(key: key);
+
   @override
   State<FeedPage> createState() => _FeedPageState();
 }
 
 class _FeedPageState extends State<FeedPage> {
-  int candy = 0;
-  final List feedElements = [
-    {
-      'user_name': '쿠잉 복권',
-      'question': '오늘도 쿠잉이 캔디 쏜다~!',
-      'question_time': '2023-04-04 09:30:11',
-      'candy': -1
-    },
-    {
-      'user_name': '신혜은',
-      'question': '"내 첫인상은 어땠어?"',
-      'question_time': '2023-04-04 10:30:11',
-      'candy': 20
-    },
-    {
-      'user_name': '백소현',
-      'question': '"요즘 내 성격은 어떤 것 같아?"',
-      'question_time': '2023-04-04 15:30:11',
-      'candy': 0
-    },
-    {
-      'user_name': '박길현',
-      'question': '"만약, 지금의 기억을 가지고 과거로 돌아가면 어떨 것 같아?"',
-      'question_time': '2023-04-04 19:30:11',
-      'candy': 4
-    },
-  ];
+  final int _limit = 10; // 한 번에 가져올 문서 수
+  late List<QueryDocumentSnapshot> _documents = [];
+  late DocumentSnapshot<Object?>? _lastDocument;
+  final CollectionReference _collectionReference =
+      FirebaseFirestore.instance.collection('schools/7041275/feed/');
 
-  Widget feedButton(int candy) {
+  @override
+  void initState() {
+    super.initState();
+
+    _getDocuments();
+  }
+
+  // 초기 데이터를 가져오는 get함수
+  Future<List<QueryDocumentSnapshot<Object?>>> _getDocuments() async {
+    var snapshot;
+    if (_documents.isEmpty) {
+      snapshot = await _collectionReference
+          .orderBy('id', descending: true)
+          .limit(_limit)
+          .get();
+    } else {
+      snapshot = await _collectionReference
+          .orderBy('id', descending: true) // id 필드를 기준으로 내림차순으로 정렬합니다.
+          .startAfter([_lastDocument?['id']]) // 마지막 문서의 id 값을 가져옵니다.
+          .limit(_limit)
+          .get();
+    }
+
+    _documents = [..._documents, ...snapshot.docs];
+    _lastDocument = snapshot.docs.last;
+
+    for (var i in snapshot.docs) {
+      print((i.data().toString()));
+    }
+
+    setState(() {});
+
+    return snapshot.docs;
+  }
+
+  Widget feedButton(int candy, String questionId, String questionContent,
+      String profileImage) {
     String btnText = '';
 
     if (candy > 0) {
@@ -61,8 +81,11 @@ class _FeedPageState extends State<FeedPage> {
     return SizedBox(
         width: 50.0,
         child: GestureDetector(
+            //questionId, questionContent, profileImage 넘겨야함
+
             onTap: () {
-              Get.to(() => AnswerPage());
+              Get.to(() => AnswerPage(),
+                  arguments: [questionId, questionContent, profileImage]);
             },
             child: Text(
               btnText,
@@ -78,104 +101,126 @@ class _FeedPageState extends State<FeedPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(20.0),
-        child: AppBar(
-          elevation: 0.0,
-          backgroundColor: Colors.transparent,
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(20.0),
+          child: AppBar(
+            elevation: 0.0,
+            backgroundColor: Colors.transparent,
+          ),
         ),
-      ),
-      body: ScrollConfiguration(
-        behavior: ScrollBehavior().copyWith(overscroll: false),
-        child: ListView.builder(
-            itemCount: feedElements.length,
-            itemBuilder: ((context, index) {
-              return Padding(
-                padding: EdgeInsets.symmetric(horizontal: 5),
-                child: Card(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(20),
-                          topRight: Radius.circular(20),
-                          bottomRight: Radius.circular(20))),
-                  elevation: 0,
-                  margin:
-                      EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: Container(
-                      padding: EdgeInsets.all(25.0),
-                      decoration: BoxDecoration(
-                          color: Color(0xffF2F3F3),
-                          borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(20),
-                              topRight: Radius.circular(20),
-                              bottomRight: Radius.circular(20))),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.max,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    SizedBox(
-                                      width: 42.0,
-                                      height: 42.0,
-                                      child: CircleAvatar(
-                                        backgroundImage:
-                                            AssetImage('images/sohee.jpg'),
+        body: NotificationListener<ScrollEndNotification>(
+          onNotification: (notification) {
+            if (notification.metrics.extentAfter == 0) {
+              _getDocuments();
+            }
+            return true;
+          },
+          child: ScrollConfiguration(
+            behavior:
+                ScrollConfiguration.of(context).copyWith(scrollbars: false),
+            child: ListView.builder(
+              itemCount: _documents.length,
+              itemBuilder: (BuildContext context, int index) {
+                // if (index == _documents.length) {
+                //   return ElevatedButton(
+                //     onPressed: _loadMoreDocuments,
+                //     child: Text('Load more'),
+                //   );
+                // }
+
+                Map<String, dynamic> data =
+                    _documents[index].data()! as Map<String, dynamic>;
+
+                if (index == _documents.length - 1) {
+                  _lastDocument = _documents[index];
+                }
+
+                return Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 5),
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(20),
+                            topRight: Radius.circular(20),
+                            bottomRight: Radius.circular(20))),
+                    elevation: 0,
+                    margin:
+                        EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: Container(
+                        padding: EdgeInsets.all(25.0),
+                        decoration: BoxDecoration(
+                            color: Color(0xffF2F3F3),
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(20),
+                                topRight: Radius.circular(20),
+                                bottomRight: Radius.circular(20))),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      SizedBox(
+                                        width: 42.0,
+                                        height: 42.0,
+                                        child: CircleAvatar(
+                                          backgroundImage: NetworkImage(
+                                              data['profileImage']),
+                                        ),
                                       ),
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.only(right: 14.0),
-                                    ),
-                                    Expanded(
-                                      child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              "${feedElements[index]['user_name']}",
-                                              maxLines: 2,
-                                              softWrap: true,
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                color: Color(0xff333D4B),
-                                              ),
-                                            ),
-                                            Padding(
-                                              padding: EdgeInsets.all(3),
-                                            ),
-                                            Flexible(
-                                              child: Text(
-                                                "${feedElements[index]['question']}",
+                                      Padding(
+                                        padding: EdgeInsets.only(right: 14.0),
+                                      ),
+                                      Expanded(
+                                        child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                data['name'] ?? '',
+                                                maxLines: 2,
                                                 softWrap: true,
                                                 style: TextStyle(
-                                                  fontSize: 14,
+                                                  fontSize: 12,
                                                   color: Color(0xff333D4B),
-                                                  fontWeight: FontWeight.bold,
                                                 ),
                                               ),
-                                            ),
-                                          ]),
-                                    ),
-                                  ],
-                                )
-                              ],
+                                              Padding(
+                                                padding: EdgeInsets.all(3),
+                                              ),
+                                              Flexible(
+                                                child: Text(
+                                                  data['questionContent'] ?? '',
+                                                  softWrap: true,
+                                                  style: TextStyle(
+                                                    fontSize: 14,
+                                                    color: Color(0xff333D4B),
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ),
+                                            ]),
+                                      ),
+                                    ],
+                                  )
+                                ],
+                              ),
                             ),
-                          ),
-                          Container(
-                            width: 75,
-                            alignment: Alignment.center,
-                            child: ElevatedButton(
+                            Container(
+                              width: 75,
+                              alignment: Alignment.center,
+                              child: ElevatedButton(
                                 onPressed: null,
                                 style: OutlinedButton.styleFrom(
                                   foregroundColor: Colors.white,
@@ -186,17 +231,20 @@ class _FeedPageState extends State<FeedPage> {
                                       borderRadius:
                                           BorderRadius.circular(10.0)),
                                 ),
-                                child:
-                                    feedButton(feedElements[index]['candy'])),
-                          ),
-                        ],
+                                //questionId, questionContent, profileImage 넘겨야함
+                                child: feedButton(0, data['questionContent'],
+                                    data['questionId'], data['profileImage']),
+                              ),
+                            )
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-              );
-            })),
-      ),
-    );
+                );
+              },
+            ),
+          ),
+        ));
   }
 }
