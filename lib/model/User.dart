@@ -17,7 +17,7 @@ class User {
   List style;
   bool isSubscribe;
   int candyCount;
-  List<List> questionInfos;
+  List<Map<String, dynamic>> questionInfos;
   List<String> answeredQuestions;
   bool serviceNeedsAgreement;
   bool privacyNeedsAgreement;
@@ -69,7 +69,7 @@ class User {
         isSubscribe: json['isSubscribe'],
         candyCount: json['candyCount'],
         questionInfos: json['questionInfos'] != null
-            ? List<List<dynamic>>.from(json['questionInfos'])
+            ? List<Map<String, dynamic>>.from(json['questionInfos'])
             : [],
         answeredQuestions: json['answeredQuestions'] != null
             ? List<String>.from(json['answeredQuestions'])
@@ -102,6 +102,10 @@ class User {
       'serviceNeedsAgreement': serviceNeedsAgreement,
       'privacyNeedsAgreement': privacyNeedsAgreement,
     };
+  }
+
+  void updateQuestionInfos(List<Map<String, dynamic>> questionInfos) {
+    this.questionInfos = questionInfos;
   }
 }
 

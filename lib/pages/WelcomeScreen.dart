@@ -65,7 +65,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         'privacyNeedsAgreement': args.privacyNeedsAgreement,
       });
 
-      Get.to(TabPage());
+      Get.to(TabPage(), arguments: uid);
     } catch (e) {
       print(e);
     }
