@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cooing_front/pages/question_page.dart';
 import 'package:cooing_front/pages/message_page.dart';
 import 'package:cooing_front/pages/feed_page.dart';
+import 'package:get/get.dart';
 
 class TabPage extends StatefulWidget {
   const TabPage({super.key});
@@ -47,6 +48,8 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final uid = Get.arguments;
+
     return DefaultTabController(
         length: myTabs.length,
         child: Scaffold(
@@ -67,8 +70,8 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
               ],
             ),
           ),
-          body: TabBarView(controller: _tabController, children: const [
-            QuestionPage(),
+          body: TabBarView(controller: _tabController, children: [
+            QuestionPage(uid: uid),
             FeedPage(),
             MessagePage(),
             SettingScreen(),

@@ -35,6 +35,7 @@ class Question {
         url: json['url'],
         isValidity: json['isValidity']);
   }
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -48,4 +49,6 @@ class Question {
       'isValidity': isValidity
     };
   }
+
+ 
 }

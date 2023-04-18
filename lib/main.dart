@@ -58,7 +58,7 @@ class MyApp extends StatelessWidget {
         'tab': (context) => const TabPage(),
         'hint': (context) => const HintScreen(),
         'candy': (context) => const CandyScreen(),
-        'question': (context) => const QuestionPage(),
+        'question': (context) => QuestionPage(),
         '_working': (context) => const TabPage(),
       },
     );

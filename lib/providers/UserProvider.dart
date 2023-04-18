@@ -6,11 +6,19 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
 class UserDataProvider with ChangeNotifier {
-  User? _userData = null;
+  User? _userData;
   bool _isDataLoaded = false;
 
   UserDataProvider() {
     _loadUserDataFromCookie();
+  }
+
+  void updateQuestionInfos(List<Map<String, dynamic>> questionInfos) {
+    if (_userData != null) {
+      _userData!.updateQuestionInfos(questionInfos);
+      _saveUserDataToCookie(_userData!);
+      notifyListeners();
+    }
   }
 
   Future<void> loadData() async {
@@ -45,7 +53,8 @@ class UserDataProvider with ChangeNotifier {
             style: List<String>.from(data['style']),
             isSubscribe: data['isSubscribe'],
             candyCount: data['candyCount'],
-            questionInfos: List<List>.from(data['questionInfos']),
+            questionInfos:
+                List<Map<String, dynamic>>.from(data['questionInfos']),
             answeredQuestions:
                 List<String>.from(data['answeredQuestions'] ?? []),
             serviceNeedsAgreement: data['serviceNeedsAgreement'],
