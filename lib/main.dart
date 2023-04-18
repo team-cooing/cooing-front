@@ -11,6 +11,7 @@ import 'package:cooing_front/pages/SplashScreen.dart';
 import 'package:cooing_front/pages/WelcomeScreen.dart';
 import 'package:cooing_front/pages/question_page.dart';
 import 'package:cooing_front/pages/tap_page.dart';
+import 'package:cooing_front/providers/FeedProvider.dart';
 import 'package:cooing_front/providers/UserProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:cooing_front/pages/FeatureScreen.dart';
@@ -27,23 +28,26 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => UserDataProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => UserDataProvider()),
+        // ChangeNotifierProvider<SchoolFeedProvider>(
+        //   create: (_) => SchoolFeedProvider(),
+        //   lazy: false,
+        // ),
+      ],
       child: MyApp(),
     ),
   );
 }
 
-String _initialRoute = 'home';
-
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key});
 
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
       initialRoute: SplashScreen.routeName,
-      // initialRoute: 'agree',
       routes: {
         SplashScreen.routeName: (context) => SplashScreen(),
         'home': (context) => const LoginScreen(),
