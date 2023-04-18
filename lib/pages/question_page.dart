@@ -26,6 +26,7 @@ class _QuestionPageState extends State<QuestionPage>
   UserDataProvider? _userDataProvider;
   User? _userData;
   late Question newQuestion;
+  late List<Map<String, dynamic>> newQuestionInfos;
   late final String schoolCode;
 
   @override
@@ -82,13 +83,16 @@ class _QuestionPageState extends State<QuestionPage>
         newQuestion.owner = userData.uid;
         newQuestion.ownerName = userData.name;
         newQuestion.ownerProfileImage = userData.profileImage;
-        schoolCode = userData.schoolCode;
+        newQuestionInfos = userData.questionInfos;
+
+        // schoolCode = userData.schoolCode;
+        schoolCode = '7041275';
+        print("스쿨코드는 7041275이다 강제로 맞춰놓았다. 까먹을까봐 출력해놓는다 나중에 고쳐라 신혜은아");
         userDocRef = userCollectionRef.doc(newQuestion.owner);
 
         print("newQuestion 에 제대로 들어갔을까");
         print(newQuestion.ownerProfileImage);
 
-        final newQuestionInfos = userData.questionInfos;
         if (newQuestionInfos.isEmpty) {
           print("userData - questionInfos is Empty");
           print(newQuestion.ownerProfileImage);
@@ -157,7 +161,6 @@ class _QuestionPageState extends State<QuestionPage>
   late String closeDateText;
 
   //임시 questionInfos
-  late List<Map<String, dynamic>> newQuestionInfos = [];
   late Map<String, dynamic> questionInfoList = {};
   late String currentContentId;
 
@@ -234,7 +237,6 @@ class _QuestionPageState extends State<QuestionPage>
               .collection('questions')
               .doc(newQuestion.id); //title이 id인 firebase document reference 생성
           addNewQuestion(questionDocRef, newQuestion);
-          addQuestionToFeed(schoolCode, newQuestion.id, newQuestion);
           newQuestionInfos.add({
             'contentId': newQuestion.contentId.toString(),
             'questionId': newQuestion.id
@@ -269,6 +271,7 @@ class _QuestionPageState extends State<QuestionPage>
               'receiveTime', newQuestion.receiveTime, questionDocRef);
           updateQuestion('url', url, questionDocRef);
           updateQuestion('isValidity', true, questionDocRef);
+          addQuestionToFeed(schoolCode, newQuestion); //피드 추가
           print('267 라인 ${newQuestion.receiveTime}');
 
           btnBottomMent =
@@ -377,7 +380,6 @@ class _QuestionPageState extends State<QuestionPage>
   Widget pupleBox() {
     setState(() {
       newQuestion = newQuestion;
-      print(newQuestion.ownerProfileImage);
       if (newQuestion.isValidity == false) {
         if (newQuestion.openTime == "") {
           //질문 open 안한 상태
@@ -403,6 +405,7 @@ class _QuestionPageState extends State<QuestionPage>
           print("답변받기& after close");
           receiveAndClose();
           deleteQuestionFromFeed(schoolCode, newQuestion.id);
+          initialState();
           // updateQuestion('isValidity', false, questionDocRef);
         } else {
           print("답변받기& before close");
@@ -438,17 +441,19 @@ class _QuestionPageState extends State<QuestionPage>
                       fontSize: _isRunning ? 12 : 0))
             ]),
             const Padding(padding: EdgeInsets.all(15.0)),
-            Container(
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                image: DecorationImage(
-                  fit: BoxFit.cover,
-                  image: NetworkImage(newQuestion.ownerProfileImage),
-                ),
-              ),
-            ),
+            newQuestion.ownerProfileImage.isEmpty
+                ? const CircularProgressIndicator()
+                : Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      image: DecorationImage(
+                        fit: BoxFit.cover,
+                        image: NetworkImage(newQuestion.ownerProfileImage),
+                      ),
+                    ),
+                  ),
             const Padding(padding: EdgeInsets.all(20.0)),
             Text(
               isViewContent ? viewContentText : '똑똑똑! 오늘의 질문이 도착했어요.',

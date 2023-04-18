@@ -1,4 +1,5 @@
 // Question 객체를 Firestore 문서로 변환하는 함수
+
 import 'package:cooing_front/model/User.dart';
 import 'package:cooing_front/model/question_list.dart';
 import 'package:cooing_front/model/Question.dart';
@@ -21,15 +22,26 @@ Question initQuestion(Question question) {
   return question;
 }
 
-Future<void> addQuestionToFeed(
-    String schoolCode, String questionId, Question data) async {
+Future<void> addQuestionToFeed(String schoolCode, Question question) async {
   final docRef = FirebaseFirestore.instance
       .collection('schools')
       .doc(schoolCode)
       .collection('feed')
-      .doc(questionId);
+      .doc(question.id);
+  print("schooldCode : $schoolCode , question.id : ${question.id}");
+  final Map<String, dynamic> feedQuestion = {
+    'contentId': question.contentId,
+    'id': question.contentId,
+    'name': question.ownerName,
+    'profileImage': question.ownerProfileImage,
+    'questionContent': question.content,
+    'questionId': question.id,
+    'schoolCode': schoolCode
 
-  await docRef.set(_questionToFirestoreDocument(data));
+    // include other properties here...
+  };
+
+  await docRef.set(feedQuestion);
 }
 
 Future<void> deleteQuestionFromFeed(
