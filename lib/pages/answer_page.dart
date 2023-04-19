@@ -1,12 +1,21 @@
+import 'dart:convert';
+
+import 'package:cooing_front/model/User.dart';
+import 'package:cooing_front/providers/UserProvider.dart';
+import 'package:cooing_front/widgets/firebase_method.dart';
 import 'package:flutter/material.dart';
 import 'package:cooing_front/pages/answer_complete_page.dart';
 import 'package:get/get.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
+import 'package:cooing_front/model/hint.dart';
 
 class AnswerPage extends StatefulWidget {
-  const AnswerPage({super.key});
+  final String uid;
+
+  AnswerPage({this.uid = '', Key? key}) : super(key: key);
 
   @override
   _AnswerPageState createState() => _AnswerPageState();
@@ -15,46 +24,57 @@ class AnswerPage extends StatefulWidget {
 class _AnswerPageState extends State<AnswerPage> {
   var questionList = ['내 첫인상은 어땠어?', '내 mbti는 무엇인 것 같아?', '나랑 닮은 동물은 뭐야?'];
   String askText = Get.arguments[0];
+  String questionId = Get.arguments[1];
   String profileImage = Get.arguments[2];
+  String name = Get.arguments[3];
+
   bool? _checkSecret = false;
+  late DocumentReference userDocRef;
+
   int maxLength = 100;
   String textValue = "";
+  late DateTime id;
+  UserDataProvider? _userDataProvider;
+  User? _userData;
+  late CollectionReference contentCollectionRef;
+  late CollectionReference userCollectionRef;
+  late List<String> hintList;
+  @override
+  void initState() {
+    super.initState();
+    _userData = Provider.of<UserDataProvider>(context, listen: false).userData;
+    hintList = generateHint(_userData!);
+  }
+
   final TextEditingController _textController = TextEditingController();
 
   final _authentication = firebase.FirebaseAuth.instance;
 
-  // Future<void> _uploadUserToFirebase() async {
-  //   try {
-  //     final args = ModalRoute.of(context)!.settings.arguments as User;
-  //     final user = await kakao.UserApi.instance.me();
-  //     final newUser = await _authentication.createUserWithEmailAndPassword(
-  //         email: user.kakaoAccount!.email.toString(),
-  //         password: user.id.toString());
+  Future<void> _uploadUserToFirebase() async {
+    try {
+      final uid = _userData!.uid;
 
-  //     final uid = newUser.user!.uid.toString();
-  //     print(uid);
+      final userRef = FirebaseFirestore.instance.collection('answers');
 
-  //     final userRef = FirebaseFirestore.instance.collection('users');
+      await userRef.doc(uid).set({
+        'id': DateTime.now().toString(), // 마이크로세컨드까지 보낸 시간으로 사용
+        'time': DateTime.now().toString(),
+        'owner': _userData!.uid,
+        'ownerGender': _userData!.gender,
+        'content': textValue,
+        'questionId': questionId,
+        'isAnonymous': _checkSecret,
+        'nickname': _checkSecret! ? '훈훈한 닉네임' : '',
+        'hint': hintList,
+        'isOpenedHint': [false, false, false], //bool List
+        'isOpened': false,
+      });
 
-  //     await userRef.doc(uid).set({
-  //       'id': '', // 마이크로세컨드까지 보낸 시간으로 사용
-  //       'time': '',
-  //       'owner': '',
-  //       'ownerGender': '',
-  //       'content': '',
-  //       'questionId': '',
-  //       'isAnonymous': '',
-  //       'nickname': '',
-  //       'hint': '',
-  //       'isOpenedHint': '', //bool List
-  //       'isOpened': false,
-  //     });
-
-  //     Get.to(AnswerCompleteScreen());
-  //   } catch (e) {
-  //     print(e);
-  //   }
-  // }
+      Get.to(() => AnswerCompleteScreen(), arguments: name);
+    } catch (e) {
+      print(e);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -220,11 +240,8 @@ class _AnswerPageState extends State<AnswerPage> {
         child:
             Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const AnswerCompleteScreen()));
+              onPressed: () async {
+                await _uploadUserToFirebase();
               },
               style: OutlinedButton.styleFrom(
                 fixedSize: Size.fromHeight(50),
