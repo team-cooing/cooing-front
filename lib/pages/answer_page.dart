@@ -52,13 +52,13 @@ class _AnswerPageState extends State<AnswerPage> {
 
   Future<void> _uploadUserToFirebase() async {
     try {
-      final uid = _userData!.uid;
+      final id = DateTime.now().toString();
 
       final userRef = FirebaseFirestore.instance.collection('answers');
 
-      await userRef.doc(uid).set({
-        'id': DateTime.now().toString(), // 마이크로세컨드까지 보낸 시간으로 사용
-        'time': DateTime.now().toString(),
+      await userRef.doc(id).set({
+        'id': id, // 마이크로세컨드까지 보낸 시간으로 사용
+        'time': id,
         'owner': _userData!.uid,
         'ownerGender': _userData!.gender,
         'content': textValue,
