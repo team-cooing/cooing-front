@@ -95,7 +95,6 @@ class _QuestionPageState extends State<QuestionPage>
 
         if (newQuestionInfos.isEmpty) {
           print("userData - questionInfos is Empty");
-          print(newQuestion.ownerProfileImage);
         } else {
           final lastQuestionInfo = newQuestionInfos.last;
           final String? currentContentId =
@@ -218,78 +217,77 @@ class _QuestionPageState extends State<QuestionPage>
   }
 
   changeAskCard() {
-    setState(() {
-      switch (askButtonText) {
-        case '질문 받기':
-          //질문
-          newQuestion = initQuestion(newQuestion);
-          openButNotReceive();
-          randomQ = filterQuestion(newQuestionInfos);
-          newQuestion.content = randomQ['question'].toString();
-          newQuestion.id = DateTime.now().toString();
-          newQuestion.receiveTime = '';
-          print(newQuestion.contentId);
-          newQuestion.contentId = randomQ['id'];
-          viewContentText = newQuestion.content;
-          _startTimer(); //openTime
-          questionDocRef = contentCollectionRef
-              .doc(newQuestion.contentId.toString())
-              .collection('questions')
-              .doc(newQuestion.id); //title이 id인 firebase document reference 생성
-          addNewQuestion(questionDocRef, newQuestion);
-          newQuestionInfos.add({
-            'contentId': newQuestion.contentId.toString(),
-            'questionId': newQuestion.id
-          });
-          print("${newQuestion.contentId} ---- ${newQuestion.content}");
-          print(
-              "239 라인 newQuestion.receiveTime ---- ${newQuestion.receiveTime} ");
+    // setState(() {
+    switch (askButtonText) {
+      case '질문 받기':
+        //질문
+        newQuestion = initQuestion(newQuestion);
+        openButNotReceive();
+        randomQ = filterQuestion(newQuestionInfos);
+        print("빠져나왓니?");
+        newQuestion.content = randomQ['question'].toString();
+        newQuestion.id = DateTime.now().toString();
+        print(newQuestion.contentId);
+        newQuestion.contentId = randomQ['id'];
+        viewContentText = newQuestion.content;
+        _startTimer(); //openTime
+        questionDocRef = contentCollectionRef
+            .doc(newQuestion.contentId.toString())
+            .collection('questions')
+            .doc(newQuestion.id); //title이 id인 firebase document reference 생성
+        addNewQuestion(questionDocRef, newQuestion);
+        newQuestionInfos.add({
+          'contentId': newQuestion.contentId.toString(),
+          'questionId': newQuestion.id
+        });
+        print("${newQuestion.contentId} ---- ${newQuestion.content}");
+        print(
+            "239 라인 newQuestion.receiveTime ---- ${newQuestion.receiveTime} ");
 
-          userDocRef.update({
-            'questionInfos': newQuestionInfos
-          }); //파이어베이스 user - questionInfos 업데이트
-          final userProvider =
-              Provider.of<UserDataProvider>(context, listen: false);
+        userDocRef.update({
+          'questionInfos': newQuestionInfos
+        }); //파이어베이스 user - questionInfos 업데이트
+        final userProvider =
+            Provider.of<UserDataProvider>(context, listen: false);
 
-          userProvider.updateQuestionInfos(
-              newQuestionInfos); //기기 쿠키 user - questionInfos 업데이트
+        userProvider.updateQuestionInfos(
+            newQuestionInfos); //기기 쿠키 user - questionInfos 업데이트
 
-          break;
+        break;
 
-        case '답변 받기':
-          print('들어갔니?000');
-          receiveButNotClose();
-          _resetTimer();
-          newQuestion.isValidity = true;
+      case '답변 받기':
+        print('들어갔니?000');
+        receiveButNotClose();
+        _resetTimer();
+        newQuestion.isValidity = true;
 
-          String url = 'www.kookmin.ac.kr/12345'; //임시 url
-          receiveTime = DateTime.now();
-          closeDate = receiveTime.add(const Duration(hours: 24));
-          newQuestion.receiveTime = receiveTime.toString();
-          print('262라인 case 문 안에 ${newQuestion.receiveTime}');
-          updateQuestion(
-              'receiveTime', newQuestion.receiveTime, questionDocRef);
-          updateQuestion('url', url, questionDocRef);
-          updateQuestion('isValidity', true, questionDocRef);
-          addQuestionToFeed(schoolCode, newQuestion); //피드 추가
-          print('267 라인 ${newQuestion.receiveTime}');
+        String url = 'www.kookmin.ac.kr/12345'; //임시 url
+        receiveTime = DateTime.now();
+        closeDate = receiveTime.add(const Duration(hours: 24));
+        newQuestion.receiveTime = receiveTime.toString();
+        print('262라인 case 문 안에 ${newQuestion.receiveTime}');
+        updateQuestion('receiveTime', newQuestion.receiveTime, questionDocRef);
+        updateQuestion('url', url, questionDocRef);
+        updateQuestion('isValidity', true, questionDocRef);
+        addQuestionToFeed(schoolCode, newQuestion); //피드 추가
+        print('267 라인 ${newQuestion.receiveTime}');
 
-          btnBottomMent =
-              '해당 질문은 ${closeDate.day}일 ${closeDate.hour}시 ${closeDate.minute}분부터 닫을 수 있습니다.';
+        btnBottomMent =
+            '해당 질문은 ${closeDate.day}일 ${closeDate.hour}시 ${closeDate.minute}분부터 닫을 수 있습니다.';
 
-          break;
+        break;
 
-        case '질문 닫기':
-          if (DateTime.now().isAfter(closeDate)) {
-            receiveAndClose();
-            updateQuestion('isValidity', false, questionDocRef);
-            deleteQuestionFromFeed(schoolCode, newQuestion.id);
-            askButtonText = '질문 받기'; //버튼 text는 답변받기로 변경
-            initState();
-          }
-          break;
-      }
-    });
+      case '질문 닫기':
+        if (DateTime.now().isAfter(closeDate)) {
+          receiveAndClose();
+          updateQuestion('isValidity', false, questionDocRef);
+          deleteQuestionFromFeed(schoolCode, newQuestion.id);
+          askButtonText = '질문 받기'; //버튼 text는 답변받기로 변경
+          initState();
+        }
+        break;
+    }
+    // });
   }
 
   void _startTimer() {
@@ -378,43 +376,40 @@ class _QuestionPageState extends State<QuestionPage>
   }
 
   Widget pupleBox() {
-    setState(() {
-      newQuestion = newQuestion;
-      if (newQuestion.isValidity == false) {
-        if (newQuestion.openTime == "") {
-          //질문 open 안한 상태
-          initialState();
-        } else if (newQuestion.receiveTime == "") {
-          //질문 받았으나 답변받기 안누른 상태
-          _isRunning = true; //timer
-          _startTimer(); //openTime
-          openButNotReceive();
-          viewContentText = newQuestion.content;
-          print(newQuestion);
-        }
-      } else if (newQuestion.isValidity == true) {
-        //답변받기 누른 상태
-        //closeTime 전이면
-        isViewContent = true;
+    if (newQuestion.isValidity == false) {
+      if (newQuestion.openTime == "") {
+        //질문 open 안한 상태
+        initialState();
+      } else if (newQuestion.receiveTime == "") {
+        //질문 받았으나 답변받기 안누른 상태
+        _isRunning = true; //timer
+        _startTimer(); //openTime
+        openButNotReceive();
         viewContentText = newQuestion.content;
-        DateTime rcvTime = DateTime.parse(newQuestion.receiveTime);
-        closeDate = rcvTime.add(const Duration(hours: 24));
-        print('setState 문 안에 $rcvTime.toString()');
-
-        if (DateTime.now().isAfter(closeDate)) {
-          print("답변받기& after close");
-          receiveAndClose();
-          deleteQuestionFromFeed(schoolCode, newQuestion.id);
-          initialState();
-          // updateQuestion('isValidity', false, questionDocRef);
-        } else {
-          print("답변받기& before close");
-          receiveButNotClose();
-          btnBottomMent =
-              '해당 질문은 ${closeDate.day}일 ${closeDate.hour}시 ${closeDate.minute}분부터 닫을 수 있습니다.';
-        }
+        print(newQuestion);
       }
-    });
+    } else if (newQuestion.isValidity == true) {
+      //답변받기 누른 상태
+      //closeTime 전이면
+      isViewContent = true;
+      viewContentText = newQuestion.content;
+      DateTime rcvTime = DateTime.parse(newQuestion.receiveTime);
+      closeDate = rcvTime.add(const Duration(hours: 24));
+      print('setState 문 안에 $rcvTime');
+
+      if (DateTime.now().isAfter(closeDate)) {
+        print("답변받기& after close");
+        receiveAndClose();
+        deleteQuestionFromFeed(schoolCode, newQuestion.id);
+        initialState();
+        // updateQuestion('isValidity', false, questionDocRef);
+      } else {
+        print("답변받기& before close");
+        receiveButNotClose();
+        btnBottomMent =
+            '해당 질문은 ${closeDate.day}일 ${closeDate.hour}시 ${closeDate.minute}분부터 닫을 수 있습니다.';
+      }
+    }
 
     // Update button state
     setState(() {

@@ -134,21 +134,24 @@ Future<void> updateQuestion(
 }
 
 //이미 받았던 질문 필터링해서 새로운 <질문id,질문string> 리턴
-Map<String, dynamic> filterQuestion(List questionInfos) {
+Map<String, dynamic> filterQuestion(List<Map<String, dynamic>> questionInfos) {
   Map<String, dynamic> randomQuestion;
+  print("filterQuestion ) questionInfos = $questionInfos");
   if (questionInfos.isEmpty) {
-    randomQuestion = questionList[Random().nextInt(questionList.length)];
-  } else {
-    List<Map<String, dynamic>> filteredQuestions = [
-      for (var info in questionInfos)
-        if (questionList
-            .any((question) => question["id"].toString() == info[0]))
-          info,
-    ];
-    randomQuestion =
-        filteredQuestions[Random().nextInt(filteredQuestions.length)];
-  }
-  return randomQuestion;
+    return questionList[Random().nextInt(questionList.length)];
+  } // questionInfos 에 있는 질문 id 를 추출합니다.
+  Set<int> receivedIds =
+      questionInfos.map((info) => int.parse(info['contentId'])).toSet();
+  // questionList 에서 중복되지 않은 질문 id 를 추출합니다.
+  List<int> availableIds = questionList
+      .map((question) => question['id'])
+      .where((id) => !receivedIds.contains(id))
+      .cast<int>() // cast to list of int
+      .toList();
+
+  int randomId =
+      availableIds.cast<int>().toList()[Random().nextInt(availableIds.length)];
+  return questionList.firstWhere((question) => question['id'] == randomId);
 }
 
 Future<SharedPreferences> AsyncPrefsOperation() async {
