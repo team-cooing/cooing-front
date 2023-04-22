@@ -68,7 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
       firebase.UserCredential userCredential = await firebase
           .FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: uid);
-      Get.to(TabPage());
+      Get.offAll(TabPage(), arguments: userCredential.user!.uid);
       print('파이어베이스 로그인 성공');
     } on firebase.FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {

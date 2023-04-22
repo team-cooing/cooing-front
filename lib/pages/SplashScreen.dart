@@ -30,6 +30,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> _routePage() async {
     String initialRoute = 'home';
+    String newUserUid = '';
     String uid = '';
 
     try {
@@ -41,10 +42,12 @@ class _SplashScreenState extends State<SplashScreen> {
         final email = user.kakaoAccount?.email ?? '';
         uid = user.id.toString();
 
-        await firebase.FirebaseAuth.instance.signInWithEmailAndPassword(
+        final newUser = await firebase.FirebaseAuth.instance.signInWithEmailAndPassword(
           email: email,
           password: uid,
         );
+
+        newUserUid = newUser.user!.uid;
 
         initialRoute = 'tab';
         print('기기내 카카오 토큰으로 로그인 성공');
@@ -62,7 +65,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
     await Future.delayed(Duration(seconds: 4));
     if(initialRoute=='tab'){
-      Get.offAll(TabPage(), arguments: uid);
+      Get.offAll(TabPage(), arguments: newUserUid);
     }else{
       Navigator.pushReplacementNamed(context, initialRoute);
     }
