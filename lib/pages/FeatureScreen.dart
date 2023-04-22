@@ -1,7 +1,6 @@
 import 'package:cooing_front/model/User.dart';
 import 'package:cooing_front/pages/MultiSelectscreen.dart';
 import 'package:flutter/material.dart';
-import 'package:customtogglebuttons/customtogglebuttons.dart';
 
 class FeatureScreen extends StatefulWidget {
   const FeatureScreen({super.key});
