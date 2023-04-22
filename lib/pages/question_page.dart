@@ -117,6 +117,10 @@ class _QuestionPageState extends State<QuestionPage>
             });
           }
         }
+
+        setState(() {
+
+        });
       });
     } on FormatException catch (e) {
       // Handle JSON decoding error
