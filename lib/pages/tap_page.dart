@@ -49,6 +49,7 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final uid = Get.arguments;
+    print(uid);
 
     return DefaultTabController(
         length: myTabs.length,
