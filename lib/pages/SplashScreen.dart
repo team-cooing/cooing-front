@@ -4,8 +4,11 @@ import 'package:cooing_front/model/User.dart';
 
 import 'package:cooing_front/pages/SignUpScreen.dart';
 import 'package:cooing_front/model/Login_platform.dart';
+import 'package:cooing_front/pages/tap_page.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:http/http.dart' as http;
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
 // import 'package:parameters/';
@@ -27,6 +30,8 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> _routePage() async {
     String initialRoute = 'home';
+    String newUserUid = '';
+    String uid = '';
 
     try {
       final hasToken = await kakao.AuthApi.instance.hasToken();
@@ -35,12 +40,14 @@ class _SplashScreenState extends State<SplashScreen> {
         final user = await kakao.UserApi.instance.me();
 
         final email = user.kakaoAccount?.email ?? '';
-        final uid = user.id.toString();
+        uid = user.id.toString();
 
-        await firebase.FirebaseAuth.instance.signInWithEmailAndPassword(
+        final newUser = await firebase.FirebaseAuth.instance.signInWithEmailAndPassword(
           email: email,
           password: uid,
         );
+
+        newUserUid = newUser.user!.uid;
 
         initialRoute = 'tab';
         print('기기내 카카오 토큰으로 로그인 성공');
@@ -57,7 +64,12 @@ class _SplashScreenState extends State<SplashScreen> {
     }
 
     await Future.delayed(Duration(seconds: 4));
-    Navigator.pushReplacementNamed(context, initialRoute);
+    if(initialRoute=='tab'){
+      Get.offAll(TabPage(), arguments: newUserUid);
+    }else{
+      Navigator.pushReplacementNamed(context, initialRoute);
+    }
+
   }
 
   Widget build(BuildContext context) {

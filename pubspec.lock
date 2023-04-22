@@ -106,13 +106,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.5"
-  customtogglebuttons:
-    dependency: "direct main"
-    description:
-      name: customtogglebuttons
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.5"
   dio:
     dependency: transitive
     description:
@@ -239,7 +232,7 @@ packages:
       name: grouped_list
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.7.1"
+    version: "5.1.2"
   http:
     dependency: "direct main"
     description:
@@ -545,7 +538,7 @@ packages:
       name: test_api
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.4.13"
+    version: "0.4.14"
   toggle_switch:
     dependency: "direct main"
     description:
