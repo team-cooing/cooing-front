@@ -20,9 +20,13 @@ class QuestionPage extends StatefulWidget {
 
 class _QuestionPageState extends State<QuestionPage>
     with AutomaticKeepAliveClientMixin {
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
   late CollectionReference contentCollectionRef;
   late CollectionReference userCollectionRef;
-  // late CollectionReference schoolCollectionRef;
+  late DocumentReference
+      questionDocRef; // 'questions'  의 document reference 초기화
+  late DocumentReference userDocRef;
   UserDataProvider? _userDataProvider;
   User? _userData;
   late Question newQuestion;
@@ -45,8 +49,8 @@ class _QuestionPageState extends State<QuestionPage>
       url: '',
       isValidity: false,
     );
-    userCollectionRef = FirebaseFirestore.instance.collection('users');
-    contentCollectionRef = FirebaseFirestore.instance.collection('contents');
+    userCollectionRef = firestore.collection('users');
+    contentCollectionRef = firestore.collection('contents');
     // schoolCollectionRef = FirebaseFirestore.instance.collection('schools');
     // final userDataJson = userProvider.loadData();
 
@@ -118,9 +122,7 @@ class _QuestionPageState extends State<QuestionPage>
           }
         }
 
-        setState(() {
-
-        });
+        setState(() {});
       });
     } on FormatException catch (e) {
       // Handle JSON decoding error
@@ -166,13 +168,6 @@ class _QuestionPageState extends State<QuestionPage>
   //임시 questionInfos
   late Map<String, dynamic> questionInfoList = {};
   late String currentContentId;
-
-// 'questions'  의 document reference 초기화
-  late DocumentReference questionDocRef;
-  late DocumentReference userDocRef;
-// Firebase Firestore 인스턴스 생성
-  final FirebaseFirestore firestore = FirebaseFirestore.instance;
-// "content_id" 문서의 "questions" 콜렉션에서 "question_id" 문서를 가져옵니다.
 
 // "question_id" 문서를 만듭니다.
   void createQuestionDocument(String contentId, String questionId) {
@@ -282,13 +277,14 @@ class _QuestionPageState extends State<QuestionPage>
         break;
 
       case '질문 닫기':
-        if (DateTime.now().isAfter(closeDate)) {
-          receiveAndClose();
-          updateQuestion('isValidity', false, questionDocRef);
-          deleteQuestionFromFeed(schoolCode, newQuestion.id);
-          askButtonText = '질문 받기'; //버튼 text는 답변받기로 변경
-          initState();
-        }
+        // if (DateTime.now().isAfter(closeDate)) {
+        //   receiveAndClose();
+        //   updateQuestion('isValidity', false, questionDocRef);
+        //   deleteQuestionFromFeed(schoolCode, newQuestion.id);
+        //   askButtonText = '질문 받기'; //버튼 text는 답변받기로 변경
+        // }
+        deleteQuestionFromFeed(schoolCode, newQuestion.id);
+        initialState();
         break;
     }
     // });
@@ -315,11 +311,6 @@ class _QuestionPageState extends State<QuestionPage>
           _isRunning = false;
           if (openShareCard == false) {
             askButtonText = '질문 받기';
-            // contentCollectionRef
-            //     .doc(newQuestion.contentId.toString())
-            //     .collection('questions')
-            //     .doc(newQuestion.id)
-            //     .delete();
           }
         } else {
           _countdown = Duration(seconds: _countdown.inSeconds - 1);
@@ -399,14 +390,11 @@ class _QuestionPageState extends State<QuestionPage>
       viewContentText = newQuestion.content;
       DateTime rcvTime = DateTime.parse(newQuestion.receiveTime);
       closeDate = rcvTime.add(const Duration(hours: 24));
-      print('setState 문 안에 $rcvTime');
 
       if (DateTime.now().isAfter(closeDate)) {
         print("답변받기& after close");
         receiveAndClose();
-        deleteQuestionFromFeed(schoolCode, newQuestion.id);
-        initialState();
-        // updateQuestion('isValidity', false, questionDocRef);
+        updateQuestion('isValidity', false, questionDocRef);
       } else {
         print("답변받기& before close");
         receiveButNotClose();
@@ -416,9 +404,9 @@ class _QuestionPageState extends State<QuestionPage>
     }
 
     // Update button state
-    setState(() {
-      isButtonEnabled = isButtonEnabled;
-    });
+    // setState(() {
+    //   isButtonEnabled = isButtonEnabled;
+    // });
     // Update button state
 
     String remainTimer = _formatDuration(_countdown);

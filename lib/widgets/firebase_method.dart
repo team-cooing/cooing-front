@@ -3,6 +3,7 @@
 import 'package:cooing_front/model/User.dart';
 import 'package:cooing_front/model/question_list.dart';
 import 'package:cooing_front/model/Question.dart';
+import 'package:cooing_front/model/Answer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import "dart:math";
 import 'package:shared_preferences/shared_preferences.dart';
@@ -119,6 +120,37 @@ Future<Question> getDocument(DocumentReference docRef, String id) async {
   return question;
 }
 
+Future<Answer> getAnsDocument(
+    CollectionReference collectionReference, String id) async {
+  DocumentReference docRef = collectionReference.doc(id);
+
+  DocumentSnapshot doc = await docRef.get();
+  Answer answer;
+  if (doc.exists) {
+    // 문서가 존재합니다.
+    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+    // 필요한 작업 수행
+    answer = Answer.fromJson(data);
+  } else {
+    answer = Answer(
+      id: '', // 마이크로세컨드까지 보낸 시간으로 사용
+      time: '',
+      owner: '',
+      ownerGender: false,
+      content: '',
+      questionId: '',
+      isAnonymous: false,
+      nickname: '',
+      hint: [],
+      isOpenedHint: [], //bool List
+      isOpened: false,
+    );
+    // 문서가 존재하지 않습니다.
+  }
+
+  return answer;
+}
+
 // Firestore에 새로운 Question 객체를 추가하는 함수
 Future<void> addNewQuestion(
     DocumentReference? documentRef, Question question) async {
@@ -158,4 +190,49 @@ Future<SharedPreferences> AsyncPrefsOperation() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   print(prefs);
   return prefs;
+}
+
+Future<List<dynamic>> getAnswersByQuestionIds(
+    List<Map<String, dynamic>> questionInfos,
+    CollectionReference<Map<String, dynamic>> answerCollection) async {
+  List<dynamic> answerMapList = [];
+  Map<String, dynamic> answerMap = {};
+
+  for (int i = 0; i < questionInfos.length; i++) {
+    String currentQuestionId = questionInfos[i]['questionId'];
+    // print("questionInfos.length : $i");
+    // print("currentQuestionId : $currentQuestionId");
+    Future<List<Answer>> answerList =
+        getAnswerDocument(answerCollection, currentQuestionId);
+        
+    answerList.then((value) {
+      answerMap = {'questionId': currentQuestionId, 'answerList': value};
+      print("answerList : $value");
+      answerMapList.add(answerMap);
+      print("answerMap : $answerMap");
+    });
+  }
+  // print("in getAnswerByQuestionIds() : questionInfos = $questionInfos");
+
+  print(answerMapList);
+  return answerMapList;
+}
+
+Future<List<Answer>> getAnswerDocument(
+    CollectionReference<Map<String, dynamic>> answerCollection,
+    String questionId) async {
+  QuerySnapshot<Map<String, dynamic>> querySnapshot =
+      await answerCollection.where('questionId', isEqualTo: questionId).get();
+  List<Answer> ansDocNamesList = [];
+  late DocumentReference ansDoc;
+  for (QueryDocumentSnapshot<Map<String, dynamic>> doc in querySnapshot.docs) {
+    Future<Answer> ansDoc = getAnsDocument(answerCollection, doc.id);
+    ansDoc.then((value) {
+      ansDocNamesList.add(value);
+    });
+  }
+
+  // print("in getAnswerDocument() : answerDocumentNames - $answerDocumentNames");
+
+  return ansDocNamesList;
 }
