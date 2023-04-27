@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'dart:convert';
 import 'package:cooing_front/model/User.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
+import 'package:cooing_front/model/question_list.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:cooing_front/widgets/firebase_method.dart';
 
@@ -29,7 +29,8 @@ class _MessagePageState extends State<MessagePage> {
   late DocumentReference contentDocRef;
   late DocumentReference userDocRef;
   late List<Map<String, dynamic>> msgcontentInfos;
-  late List<dynamic> questionAnswerMapList;
+  late Map<String, dynamic> questionAnswerMapList;
+  late List<Map<String, dynamic>> groupList = [];
   @override
   void initState() {
     super.initState();
@@ -65,13 +66,33 @@ class _MessagePageState extends State<MessagePage> {
 
       getUserData().then((data) {
         userData = data;
-        List<Map<String, dynamic>> msgcontentInfos = userData.questionInfos;
+        msgcontentInfos = userData.questionInfos;
         if (msgcontentInfos.isEmpty) {
           print("userData - contentInfos is Empty");
         } else {
           getAnswersByQuestionIds(msgcontentInfos, answerCollectionRef)
               .then((value) {
             questionAnswerMapList = value;
+
+            print("33333");
+            questionAnswerMapList.forEach((key, value) {
+              print("44444");
+              print("key : $key value : $value");
+
+              Map<String, dynamic> groupMap = {
+                'contentId': key,
+                // 'content': questionList.elementAt(int.parse(key))['question']
+                //     as String,
+                'answers': value
+              };
+              groupList.add(groupMap);
+              print("####groupList: $groupList");
+            });
+
+            setState(() {
+              // 화면을 다시 그립니다.
+              groupList = groupList;
+            });
           });
         }
       });
@@ -84,103 +105,14 @@ class _MessagePageState extends State<MessagePage> {
     }
   }
 
-  final List msg_questionInfos = [
-    // {
-    //   'contentId': '1',
-    //   'contentId': '2023-04-19 19:42:54.201421',
-    // },
-    {
-      'contentId': '1', //contentInfos Index
-      'content': '내 첫인상은 어땠어?', //content
-      'isFemale': false, //owner - UserData
-      'isChecked': false, //Answer
-      'answer_time': '2020-10-31 10:30:11' //
-    },
-    {
-      'contentId': '1',
-      'content': '내 첫인상은 어땠어?',
-      'isFemale': false,
-      'isChecked': true,
-      'answer_time': '2020-10-31 09:30:11'
-    },
-    {
-      'contentId': '2',
-      'content': '내 MBTI는 무슨 유형 같아?',
-      'isFemale': true,
-      'isChecked': true,
-      'answer_time': '2023-03-01 10:30:11'
-    },
-    {
-      'contentId': '2',
-      'content': '내 MBTI는 무슨 유형 같아?',
-      'isFemale': true,
-      'isChecked': false,
-      'answer_time': '2023-03-01 14:30:11'
-    },
-    {
-      'contentId': '2',
-      'content': '내 MBTI는 무슨 유형 같아?',
-      'isFemale': false,
-      'isChecked': false,
-      'answer_time': '2023-03-01 19:30:11'
-    },
-    {
-      'contentId': '2',
-      'content': '내 MBTI는 무슨 유형 같아?',
-      'isFemale': true,
-      'isChecked': true,
-      'answer_time': '2023-03-01 21:30:11'
-    },
-    {
-      'contentId': '3',
-      'content': '내가 제일 잘하는 과목은 뭘까?',
-      'isFemale': true,
-      'isChecked': false,
-      'answer_time': '2023-04-05 10:30:11'
-    },
-    {
-      'contentId': '3',
-      'content': '내가 제일 잘하는 과목은 뭘까?',
-      'isFemale': false,
-      'isChecked': true,
-      'answer_time': '2023-04-05 16:30:11'
-    },
-    {
-      'contentId': '3',
-      'content': '내가 제일 잘하는 과목은 뭘까?',
-      'isFemale': true,
-      'isChecked': false,
-      'answer_time': '2023-04-05 19:30:11'
-    },
-    {
-      'contentId': '3',
-      'content': '내가 제일 잘하는 과목은 뭘까?',
-      'isFemale': true,
-      'isChecked': true,
-      'answer_time': '2023-04-05 22:30:11'
-    },
-    {
-      'contentId': '3',
-      'content': '내가 제일 잘하는 과목은 뭘까?',
-      'isFemale': false,
-      'isChecked': false,
-      'answer_time': '2023-04-05 23:58:11'
-    },
-  ];
-  final Map contentList = {
-    '1': '내 첫인상은 어땠어?',
-    '2': '내 MBTI는 무슨 유형 같아?',
-    '3': '내가 제일 잘하는 과목은 뭘까?'
-  };
-
-  Widget whatIcon(bool isFemale, bool isChecked) {
+  Widget whatIcon(bool gender, bool isChecked) {
     return Stack(
       clipBehavior: Clip.none,
       children: [
         SizedBox(
             width: 25.0,
             height: 25.0,
-            child: isFemale
+            child: gender
                 ? Image(image: AssetImage('images/icon_msg_girl.png'))
                 : Image(image: AssetImage('images/icon_msg_boy.png'))),
         Positioned(
@@ -231,115 +163,159 @@ class _MessagePageState extends State<MessagePage> {
     return Scaffold(
         body: ScrollConfiguration(
             behavior: ScrollBehavior().copyWith(overscroll: false),
-            child: GroupedListView<dynamic, String>(
-              elements: msg_questionInfos,
-              groupBy: (element) => element['contentId'],
+            child: GroupedListView<dynamic, int>(
+              elements: groupList,
+              groupBy: (element) => groupList.indexOf(element),
               groupComparator: (value1, value2) => value2.compareTo(value1),
-              itemComparator: ((element1, element2) =>
-                  element2['answer_time'].compareTo(element1['answer_time'])),
               order: GroupedListOrder.ASC,
               groupSeparatorBuilder: (
-                String value,
-              ) =>
-                  Padding(
-                      padding: const EdgeInsets.only(
-                          left: 20.0, top: 30, bottom: 15),
-                      child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 5),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                '# $value번째 질문',
-                                textAlign: TextAlign.left,
-                                style: TextStyle(fontSize: 14),
-                              ),
-                              Padding(padding: EdgeInsets.all(3)),
-                              Text(
-                                '"${contentList[value]}"',
-                                textAlign: TextAlign.left,
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ))),
-              itemBuilder: ((context, element) {
+                int value,
+              ) {
                 return Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 5),
-                    child: GestureDetector(
-                        onTap: () {
-                          Get.to(() => AnswerDetailPage());
-                        },
-                        child: Card(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(20),
-                                  topRight: Radius.circular(20),
-                                  bottomRight: Radius.circular(20))),
-                          elevation: 0,
-                          margin: EdgeInsets.symmetric(
-                              horizontal: 15.0, vertical: 10.0),
-                          child: SizedBox(
-                            width: double.infinity,
-                            child: Container(
-                              padding: EdgeInsets.only(
-                                  left: 25.0, right: 25, top: 30, bottom: 30),
-                              decoration: BoxDecoration(
-                                  color: Color(0xffF2F3F3),
+                    padding:
+                        const EdgeInsets.only(left: 20.0, top: 30, bottom: 15),
+                    child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 5),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '# ${value + 1}번째 질문',
+                              textAlign: TextAlign.left,
+                              style: TextStyle(fontSize: 14),
+                            ),
+                            Padding(padding: EdgeInsets.all(3)),
+                            Text(
+                              '"${questionList.elementAt(int.parse(groupList[value]['contentId']))['question'] as String}"',
+                              textAlign: TextAlign.left,
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        )));
+              },
+              itemBuilder: ((context, element) {
+                List<Map<String, dynamic>> answers = element['answers'];
+                if (answers.isEmpty) {
+                  return Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 5),
+                      child: GestureDetector(
+                          onTap: () {
+                            Get.to(() => AnswerDetailPage());
+                          },
+                          child: Card(
+                              shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.only(
                                       topLeft: Radius.circular(20),
                                       topRight: Radius.circular(20),
                                       bottomRight: Radius.circular(20))),
-                              child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            whatIcon(element['isFemale'],
-                                                element['isChecked']),
-                                            Padding(
-                                                padding: EdgeInsets.only(
-                                                    right: 20.0)),
-                                            element['isFemale']
-                                                ? Text(
-                                                    '청순한 여학생',
-                                                    style: TextStyle(
-                                                        fontSize: 16,
-                                                        color:
-                                                            Color(0xff333D4B),
-                                                        fontWeight:
-                                                            FontWeight.bold),
-                                                  )
-                                                : Text(
-                                                    '훈훈한 남학생',
-                                                    style: TextStyle(
-                                                        fontSize: 16,
-                                                        color:
-                                                            Color(0xff333D4B),
-                                                        fontWeight:
-                                                            FontWeight.bold),
-                                                  ),
-                                            Text(
-                                              '으로부터',
-                                              style: TextStyle(
-                                                fontSize: 16,
-                                                color: Color(0xff333D4B),
+                              elevation: 0,
+                              margin: EdgeInsets.symmetric(
+                                  horizontal: 15.0, vertical: 10.0),
+                              child: SizedBox(
+                                  width: double.infinity,
+                                  child: Container(
+                                      padding: EdgeInsets.only(
+                                          left: 25.0,
+                                          right: 25,
+                                          top: 5,
+                                          bottom: 5),
+                                      decoration: BoxDecoration(
+                                          color: Color(0xffF2F3F3),
+                                          borderRadius: BorderRadius.only(
+                                              topLeft: Radius.circular(20),
+                                              topRight: Radius.circular(20),
+                                              bottomRight:
+                                                  Radius.circular(20))),
+                                      child: Center(
+                                          child: Text(
+                                        '이 질문에 대한 답변이 없습니다.',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: Color(0xff333D4B),
+                                        ),
+                                      )))))));
+                }
+
+                return Column(
+                    children: answers.map((answer) {
+                  return Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 5),
+                      child: GestureDetector(
+                          onTap: () {
+                            Get.to(() => AnswerDetailPage());
+                          },
+                          child: Card(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(20),
+                                    topRight: Radius.circular(20),
+                                    bottomRight: Radius.circular(20))),
+                            elevation: 0,
+                            margin: EdgeInsets.symmetric(
+                                horizontal: 15.0, vertical: 10.0),
+                            child: SizedBox(
+                              width: double.infinity,
+                              child: Container(
+                                padding: EdgeInsets.only(
+                                    left: 25.0, right: 25, top: 30, bottom: 30),
+                                decoration: BoxDecoration(
+                                    color: Color(0xffF2F3F3),
+                                    borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(20),
+                                        topRight: Radius.circular(20),
+                                        bottomRight: Radius.circular(20))),
+                                child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              whatIcon(answer['gender'],
+                                                  answer['isOpened']),
+                                              Padding(
+                                                  padding: EdgeInsets.only(
+                                                      right: 20.0)),
+                                              answer['gender']
+                                                  ? Text(
+                                                      '청순한 여학생',
+                                                      style: TextStyle(
+                                                          fontSize: 16,
+                                                          color:
+                                                              Color(0xff333D4B),
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                    )
+                                                  : Text(
+                                                      '훈훈한 남학생',
+                                                      style: TextStyle(
+                                                          fontSize: 16,
+                                                          color:
+                                                              Color(0xff333D4B),
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                    ),
+                                              Text(
+                                                '으로부터',
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                  color: Color(0xff333D4B),
+                                                ),
                                               ),
-                                            ),
-                                          ],
-                                        )
-                                      ],
-                                    ),
-                                    answerTimeText(element['answer_time'])
-                                  ]),
+                                            ],
+                                          )
+                                        ],
+                                      ),
+                                      answerTimeText(answer['time'])
+                                    ]),
+                              ),
                             ),
-                          ),
-                        )));
+                          )));
+                }).toList());
               }),
             )));
   }

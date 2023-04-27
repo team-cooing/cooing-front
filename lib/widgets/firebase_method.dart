@@ -120,37 +120,6 @@ Future<Question> getDocument(DocumentReference docRef, String id) async {
   return question;
 }
 
-Future<Answer> getAnsDocument(
-    CollectionReference collectionReference, String id) async {
-  DocumentReference docRef = collectionReference.doc(id);
-
-  DocumentSnapshot doc = await docRef.get();
-  Answer answer;
-  if (doc.exists) {
-    // 문서가 존재합니다.
-    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-    // 필요한 작업 수행
-    answer = Answer.fromJson(data);
-  } else {
-    answer = Answer(
-      id: '', // 마이크로세컨드까지 보낸 시간으로 사용
-      time: '',
-      owner: '',
-      ownerGender: false,
-      content: '',
-      questionId: '',
-      isAnonymous: false,
-      nickname: '',
-      hint: [],
-      isOpenedHint: [], //bool List
-      isOpened: false,
-    );
-    // 문서가 존재하지 않습니다.
-  }
-
-  return answer;
-}
-
 // Firestore에 새로운 Question 객체를 추가하는 함수
 Future<void> addNewQuestion(
     DocumentReference? documentRef, Question question) async {
@@ -192,47 +161,81 @@ Future<SharedPreferences> AsyncPrefsOperation() async {
   return prefs;
 }
 
-Future<List<dynamic>> getAnswersByQuestionIds(
+Future<Map<String, dynamic>> getAnswersByQuestionIds(
     List<Map<String, dynamic>> questionInfos,
     CollectionReference<Map<String, dynamic>> answerCollection) async {
-  List<dynamic> answerMapList = [];
-  Map<String, dynamic> answerMap = {};
-
+  Map<String, dynamic> answerMapList = {};
+  String currentQuestionId;
+  String currentContentId;
   for (int i = 0; i < questionInfos.length; i++) {
-    String currentQuestionId = questionInfos[i]['questionId'];
-    // print("questionInfos.length : $i");
-    // print("currentQuestionId : $currentQuestionId");
-    Future<List<Answer>> answerList =
-        getAnswerDocument(answerCollection, currentQuestionId);
-        
-    answerList.then((value) {
-      answerMap = {'questionId': currentQuestionId, 'answerList': value};
-      print("answerList : $value");
-      answerMapList.add(answerMap);
-      print("answerMap : $answerMap");
-    });
-  }
-  // print("in getAnswerByQuestionIds() : questionInfos = $questionInfos");
+    currentQuestionId = questionInfos[i]['questionId'];
+    currentContentId = questionInfos[i]['contentId'];
 
-  print(answerMapList);
+    List<Map<String, dynamic>> currentAnswers =
+        await getAnswerDocuments(answerCollection, currentQuestionId);
+    currentAnswers.sort((a, b) => b['time'].compareTo(a['time']));
+
+    answerMapList[currentContentId] = currentAnswers;
+  }
+
+  print("answerMapList: $answerMapList");
+
   return answerMapList;
 }
 
-Future<List<Answer>> getAnswerDocument(
+Future<List<Map<String, dynamic>>> getAnswerDocuments(
     CollectionReference<Map<String, dynamic>> answerCollection,
     String questionId) async {
-  QuerySnapshot<Map<String, dynamic>> querySnapshot =
+  QuerySnapshot querySnapshot =
       await answerCollection.where('questionId', isEqualTo: questionId).get();
-  List<Answer> ansDocNamesList = [];
-  late DocumentReference ansDoc;
-  for (QueryDocumentSnapshot<Map<String, dynamic>> doc in querySnapshot.docs) {
-    Future<Answer> ansDoc = getAnsDocument(answerCollection, doc.id);
-    ansDoc.then((value) {
-      ansDocNamesList.add(value);
-    });
+  List<Map<String, dynamic>> answerInformList = [];
+
+  for (DocumentSnapshot document in querySnapshot.docs) {
+    Answer answer = await getAnsDoc(answerCollection, document.id);
+    print(answer);
+    Map<String, dynamic> inform = {
+      // 'questionId': answer.questionId,
+      'isOpened': answer.isOpened,
+      'gender': answer.ownerGender,
+      'time': answer.time,
+      'nickname': answer.nickname
+    };
+
+    answerInformList.add(inform);
+  }
+  print("answerInformList : $answerInformList");
+  return answerInformList;
+}
+
+Future<Answer> getAnsDoc(
+    CollectionReference collectionReference, String id) async {
+  DocumentReference docRef = collectionReference.doc(id);
+  DocumentSnapshot doc = await docRef.get();
+  Answer answer;
+
+  if (doc.exists) {
+    // 문서가 존재합니다.
+    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+    // 필요한 작업 수행
+    answer = Answer.fromJson(data);
+    print("in getAnsDocument() : answer = $answer");
+  } else {
+    answer = Answer(
+      id: '', // 마이크로세컨드까지 보낸 시간으로 사용
+      time: '',
+      owner: '',
+      ownerGender: false,
+      content: '',
+      questionId: '',
+      isAnonymous: false,
+      nickname: '',
+      hint: [],
+      isOpenedHint: [], //bool List
+      isOpened: false,
+    );
+
+    // 문서가 존재하지 않습니다.
   }
 
-  // print("in getAnswerDocument() : answerDocumentNames - $answerDocumentNames");
-
-  return ansDocNamesList;
+  return answer;
 }

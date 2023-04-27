@@ -283,6 +283,7 @@ class _QuestionPageState extends State<QuestionPage>
         //   deleteQuestionFromFeed(schoolCode, newQuestion.id);
         //   askButtonText = '질문 받기'; //버튼 text는 답변받기로 변경
         // }
+        updateQuestion('isValidity', false, questionDocRef);
         deleteQuestionFromFeed(schoolCode, newQuestion.id);
         initialState();
         break;
@@ -394,7 +395,7 @@ class _QuestionPageState extends State<QuestionPage>
       if (DateTime.now().isAfter(closeDate)) {
         print("답변받기& after close");
         receiveAndClose();
-        updateQuestion('isValidity', false, questionDocRef);
+        // updateQuestion('isValidity', false, questionDocRef);
       } else {
         print("답변받기& before close");
         receiveButNotClose();
