@@ -1,5 +1,5 @@
-import 'package:cooing_front/model/User.dart';
-import 'package:cooing_front/pages/MultiSelectscreen.dart';
+import 'package:cooing_front/model/response/User.dart';
+import 'package:cooing_front/pages/login/MultiSelectscreen.dart';
 import 'package:flutter/material.dart';
 
 class FeatureScreen extends StatefulWidget {

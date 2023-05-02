@@ -1,4 +1,4 @@
-import 'package:cooing_front/model/User.dart';
+import 'package:cooing_front/model/response/User.dart';
 import 'package:flutter/material.dart';
 
 class CandyScreen extends StatefulWidget {

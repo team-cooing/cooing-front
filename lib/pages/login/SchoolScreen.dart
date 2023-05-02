@@ -1,8 +1,8 @@
-import 'package:cooing_front/model/User.dart';
-import 'package:cooing_front/pages/ClassScreen.dart';
+import 'package:cooing_front/model/response/User.dart';
+import 'package:cooing_front/pages/login/ClassScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:cooing_front/model/Schools.dart';
+import 'package:cooing_front/model/response/Schools.dart';
 import 'package:cooing_front/providers/schools_providers.dart';
 
 class SchoolScreen extends StatefulWidget {

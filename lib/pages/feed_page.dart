@@ -1,14 +1,13 @@
-import 'package:cooing_front/pages/answer_page.dart';
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cooing_front/model/response/User.dart';
 import 'package:cooing_front/pages/answer_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class FeedPage extends StatefulWidget {
-  const FeedPage({Key? key}) : super(key: key);
+  final User user;
+
+  const FeedPage({required this.user, super.key});
 
   @override
   State<FeedPage> createState() => _FeedPageState();

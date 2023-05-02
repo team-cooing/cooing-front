@@ -108,33 +108,3 @@ class User {
     this.questionInfos = questionInfos;
   }
 }
-
-
-
-
-// class Answer {
-//   String id; // 마이크로세컨드까지 보낸 시간으로 사용
-//   String time;
-//   String owner;
-//   int ownerGender;
-//   String content;
-//   String questionId;
-//   bool isAnonymous;
-//   String nickname;
-//   List hint;
-//   List isOpenedHint; //bool List
-//   bool isOpened;
-
-//   Answer(
-//       this.id,
-//       this.time,
-//       this.owner,
-//       this.ownerGender,
-//       this.content,
-//       this.questionId,
-//       this.isAnonymous,
-//       this.nickname,
-//       this.hint,
-//       this.isOpenedHint,
-//       this.isOpened);
-// }

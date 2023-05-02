@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:cooing_front/model/User.dart';
+import 'package:cooing_front/model/response/User.dart';
 import 'package:cooing_front/model/firebase_auth_remote_data_source.dart';
-import 'package:cooing_front/pages/FeatureScreen.dart';
-import 'package:cooing_front/pages/SchoolScreen.dart';
+import 'package:cooing_front/pages/login/FeatureScreen.dart';
+import 'package:cooing_front/pages/login/SchoolScreen.dart';
 import 'package:cooing_front/pages/WelcomeScreen.dart';
 import 'package:cooing_front/providers/UserProvider.dart';
 import 'package:provider/provider.dart';

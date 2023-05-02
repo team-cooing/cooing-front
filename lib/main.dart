@@ -1,21 +1,21 @@
 import 'package:cooing_front/firebase_options.dart';
-import 'package:cooing_front/pages/AgreeScreen.dart';
+import 'package:cooing_front/pages/login/AgreeScreen.dart';
 import 'package:cooing_front/pages/CandyScreen.dart';
-import 'package:cooing_front/pages/ClassScreen.dart';
+import 'package:cooing_front/pages/login/ClassScreen.dart';
 import 'package:cooing_front/pages/HintPage.dart';
-import 'package:cooing_front/pages/TokenLoginScreen.dart';
-import 'package:cooing_front/pages/LoginScreen.dart';
-import 'package:cooing_front/pages/SchoolScreen.dart';
-import 'package:cooing_front/pages/SignUpScreen.dart';
-import 'package:cooing_front/pages/SplashScreen.dart';
+import 'package:cooing_front/pages/login/TokenLoginScreen.dart';
+import 'package:cooing_front/pages/login/LoginScreen.dart';
+import 'package:cooing_front/pages/login/SchoolScreen.dart';
+import 'package:cooing_front/pages/login/SignUpScreen.dart';
+import 'package:cooing_front/pages/login/SplashScreen.dart';
 import 'package:cooing_front/pages/WelcomeScreen.dart';
 import 'package:cooing_front/pages/question_page.dart';
-import 'package:cooing_front/pages/tap_page.dart';
+import 'package:cooing_front/pages/tab_page.dart';
 import 'package:cooing_front/providers/FeedProvider.dart';
 import 'package:cooing_front/providers/UserProvider.dart';
 import 'package:flutter/material.dart';
-import 'package:cooing_front/pages/FeatureScreen.dart';
-import 'package:cooing_front/pages/MultiSelectscreen.dart';
+import 'package:cooing_front/pages/login/FeatureScreen.dart';
+import 'package:cooing_front/pages/login/MultiSelectscreen.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
 import 'package:firebase_core/firebase_core.dart';
@@ -62,7 +62,6 @@ class MyApp extends StatelessWidget {
         'tab': (context) => const TabPage(),
         'hint': (context) => const HintScreen(),
         'candy': (context) => const CandyScreen(),
-        'question': (context) => QuestionPage(),
         '_working': (context) => const TabPage(),
       },
     );

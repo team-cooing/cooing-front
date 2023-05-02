@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:cooing_front/model/Schools.dart';
+import 'package:cooing_front/model/response/Schools.dart';
 import 'package:http/http.dart' as http;
 
 class SchoolsProviders {
