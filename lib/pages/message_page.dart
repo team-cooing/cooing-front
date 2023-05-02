@@ -82,7 +82,7 @@ class _MessagePageState extends State<MessagePage> {
               Map<String, dynamic> groupMap = {
                 'contentId': key,
                 // 'content': questionList.elementAt(int.parse(key))['question']
-                //     as String,
+                //     as String,-
                 'answers': value
               };
               groupList.add(groupMap);
