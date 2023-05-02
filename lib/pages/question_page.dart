@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:cooing_front/model/question_list.dart';
+import 'package:cooing_front/model/data/question_list.dart';
 import 'package:cooing_front/widgets/firebase_method.dart';
 import 'package:cooing_front/model/response/Question.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

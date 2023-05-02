@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cooing_front/model/question_list.dart';
+import 'package:cooing_front/model/data/question_list.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:cooing_front/widgets/firebase_method.dart';
 

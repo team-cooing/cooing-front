@@ -8,8 +8,7 @@ import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
-import 'package:cooing_front/model/hint.dart';
-
+import '../model/util/hint.dart';
 import '../model/response/User.dart';
 
 class AnswerPage extends StatefulWidget {

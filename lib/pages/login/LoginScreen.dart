@@ -5,7 +5,7 @@ import 'package:cooing_front/pages/tab_page.dart';
 import 'package:get/get.dart';
 
 import 'package:cooing_front/pages/login/SignUpScreen.dart';
-import 'package:cooing_front/model/Login_platform.dart';
+import 'package:cooing_front/model/util/Login_platform.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;

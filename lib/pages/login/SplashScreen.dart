@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:cooing_front/model/response/User.dart';
 
 import 'package:cooing_front/pages/login/SignUpScreen.dart';
-import 'package:cooing_front/model/Login_platform.dart';
+import 'package:cooing_front/model/util/Login_platform.dart';
 import 'package:cooing_front/pages/tab_page.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:flutter/material.dart';

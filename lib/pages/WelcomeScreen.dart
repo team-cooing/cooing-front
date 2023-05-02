@@ -3,7 +3,7 @@ import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cooing_front/model/response/User.dart';
-import 'package:cooing_front/model/hint.dart';
+import 'package:cooing_front/model/util/hint.dart';
 import 'package:cooing_front/pages/question_page.dart';
 import 'package:cooing_front/pages/tab_page.dart';
 import 'package:flutter/material.dart';
