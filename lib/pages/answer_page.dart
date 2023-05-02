@@ -11,6 +11,9 @@ import '../model/response/User.dart';
 class AnswerPage extends StatefulWidget {
   final User user;
   const AnswerPage({required this.user, super.key});
+  // final String uid;
+
+  // const AnswerPage({required this.uid, super.key});
 
   @override
   State<AnswerPage> createState() => _AnswerPageState();
@@ -48,25 +51,41 @@ class _AnswerPageState extends State<AnswerPage> {
   Future<void> _uploadUserToFirebase() async {
     try {
       String uid = widget.user.uid;
-
+      String newId;
       final userAnswerRef = FirebaseFirestore.instance
           .collection('answers')
           .doc(uid)
           .collection('answers');
-      int documentCount = await userAnswerRef.get().then((querySnapshot) {
-        return querySnapshot.docs.length;
-      });
-      final id = '#${documentCount + 1}_${DateTime.now().toString()}';
 
-      await userAnswerRef.doc(id).set({
+      final QuerySnapshot snapshot = await userAnswerRef
+          .orderBy('createdAt', descending: true) // createdAt 필드를 기준으로 내림차순 정렬
+          .limit(1) // 가장 마지막 document 하나만 가져오기
+          .get();
+
+      if (snapshot.docs.isNotEmpty) {
+        final lastDocument = snapshot.docs.last;
+        final String lastId = lastDocument.id; // 가장 최근 document의 ID
+        final int lastNumber =
+            int.tryParse(lastId.split('_')[0].substring(1)) ??
+                0; // 가장 최근 document의 번호
+
+        // 새 document의 ID 생성
+        newId =
+            '#${(lastNumber + 1).toString().padLeft(6, '0')}_${DateTime.now().toString()}';
+      } else {
+        print('No documents found in collection');
+        newId = '#000001_${DateTime.now().toString()}';
+      }
+
+      await userAnswerRef.doc(newId).set({
         'id': id, // 마이크로세컨드까지 보낸 시간으로 사용
         'time': id,
         'owner': _userData!.uid,
         'ownerGender': _userData!.gender,
-        'content': textValue,
         'questionId': questionId,
+        'content': textValue,
         'isAnonymous': _checkSecret,
-        'nickname': _checkSecret! ? '훈훈한 닉네임' : '',
+        'nickname': _checkSecret! ? '닉네임' : _userData!.name,
         'hint': hintList,
         'isOpenedHint': [false, false, false], //bool List
         'isOpened': false,
