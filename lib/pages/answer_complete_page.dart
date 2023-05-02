@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cooing_front/pages/main_page.dart';
+import 'package:get/get.dart';
 
 class AnswerCompleteScreen extends StatefulWidget {
   const AnswerCompleteScreen({Key? key}) : super(key: key);
@@ -9,19 +10,18 @@ class AnswerCompleteScreen extends StatefulWidget {
 }
 
 class AnswerCompleteScreenState extends State<AnswerCompleteScreen> {
+  String owner = Get.arguments;
   @override
   Widget build(BuildContext context) {
-    var owner = '박보영';
-
     return Scaffold(
       backgroundColor: Color(0xFFffffff),
       body: SizedBox(
           width: double.infinity,
-          child: Column(children: [Expanded(child: mainView(owner)), okBtn()])),
+          child: Column(children: [Expanded(child: mainView()), okBtn()])),
     );
   }
 
-  Widget mainView(String owner) {
+  Widget mainView() {
     return Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,

@@ -56,7 +56,7 @@ class _FeedPageState extends State<FeedPage> {
   }
 
   Widget feedButton(int candy, String questionId, String questionContent,
-      String profileImage) {
+      String profileImage, String name) {
     String btnText = '';
 
     if (candy > 0) {
@@ -84,7 +84,7 @@ class _FeedPageState extends State<FeedPage> {
 
             onTap: () {
               Get.to(() => AnswerPage(),
-                  arguments: [questionId, questionContent, profileImage]);
+                  arguments: [questionId, questionContent, profileImage, name]);
             },
             child: Text(
               btnText,
@@ -231,8 +231,12 @@ class _FeedPageState extends State<FeedPage> {
                                           BorderRadius.circular(10.0)),
                                 ),
                                 //questionId, questionContent, profileImage 넘겨야함
-                                child: feedButton(0, data['questionContent'],
-                                    data['questionId'], data['profileImage']),
+                                child: feedButton(
+                                    0,
+                                    data['questionContent'],
+                                    data['questionId'],
+                                    data['profileImage'],
+                                    data['name']),
                               ),
                             )
                           ],
