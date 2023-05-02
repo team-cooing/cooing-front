@@ -1,7 +1,5 @@
 import 'package:cooing_front/model/response/User.dart';
-import 'package:cooing_front/pages/answer_page.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class FeedPage extends StatefulWidget {
@@ -29,7 +27,7 @@ class _FeedPageState extends State<FeedPage> {
 
   // 초기 데이터를 가져오는 get함수
   Future<List<QueryDocumentSnapshot<Object?>>> _getDocuments() async {
-    var snapshot;
+    QuerySnapshot<Object?> snapshot;
     if (_documents.isEmpty) {
       snapshot = await _collectionReference
           .orderBy('id', descending: true)
@@ -83,8 +81,8 @@ class _FeedPageState extends State<FeedPage> {
             //questionId, questionContent, profileImage 넘겨야함
 
             onTap: () {
-              Get.to(() => AnswerPage(),
-                  arguments: [questionId, questionContent, profileImage, name]);
+              // Get.to(() => AnswerPage(),
+              // arguments: [questionId, questionContent, profileImage, name])
             },
             child: Text(
               btnText,

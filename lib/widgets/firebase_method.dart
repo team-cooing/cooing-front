@@ -202,6 +202,7 @@ Future<List<Map<String, dynamic>>> getAnswerDocuments(
       'isOpened': answer.isOpened,
       'gender': answer.ownerGender,
       'time': answer.time,
+      'isAnonymous' : answer.isAnonymous,
       'nickname': answer.nickname
     };
 

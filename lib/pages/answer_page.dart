@@ -1,10 +1,7 @@
-import 'dart:convert';
 import 'package:cooing_front/providers/UserProvider.dart';
-import 'package:cooing_front/widgets/firebase_method.dart';
 import 'package:flutter/material.dart';
 import 'package:cooing_front/pages/answer_complete_page.dart';
 import 'package:get/get.dart';
-import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
@@ -12,12 +9,11 @@ import '../model/util/hint.dart';
 import '../model/response/User.dart';
 
 class AnswerPage extends StatefulWidget {
-  final String uid;
-
-  AnswerPage({this.uid = '', Key? key}) : super(key: key);
+  final User user;
+  const AnswerPage({required this.user, super.key});
 
   @override
-  _AnswerPageState createState() => _AnswerPageState();
+  State<AnswerPage> createState() => _AnswerPageState();
 }
 
 class _AnswerPageState extends State<AnswerPage> {
@@ -51,11 +47,18 @@ class _AnswerPageState extends State<AnswerPage> {
 
   Future<void> _uploadUserToFirebase() async {
     try {
-      final id = DateTime.now().toString();
+      String uid = widget.user.uid;
 
-      final userRef = FirebaseFirestore.instance.collection('answers');
+      final userAnswerRef = FirebaseFirestore.instance
+          .collection('answers')
+          .doc(uid)
+          .collection('answers');
+      int documentCount = await userAnswerRef.get().then((querySnapshot) {
+        return querySnapshot.docs.length;
+      });
+      final id = '#${documentCount + 1}_${DateTime.now().toString()}';
 
-      await userRef.doc(id).set({
+      await userAnswerRef.doc(id).set({
         'id': id, // 마이크로세컨드까지 보낸 시간으로 사용
         'time': id,
         'owner': _userData!.uid,
