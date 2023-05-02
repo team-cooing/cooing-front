@@ -20,6 +20,8 @@ class QuestionPage extends StatefulWidget {
 
 class _QuestionPageState extends State<QuestionPage>
     with AutomaticKeepAliveClientMixin {
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
   late CollectionReference contentCollectionRef;
   late Question newQuestion;
   late List<Map<String, dynamic>> newQuestionInfos;
@@ -40,6 +42,7 @@ class _QuestionPageState extends State<QuestionPage>
     }
 
     // 랜덤으로 새로 받을 질문 선택
+
 
 
     contentCollectionRef = FirebaseFirestore.instance.collection('contents');
@@ -135,13 +138,6 @@ class _QuestionPageState extends State<QuestionPage>
   //임시 questionInfos
   late Map<String, dynamic> questionInfoList = {};
   late String currentContentId;
-
-// 'questions'  의 document reference 초기화
-  late DocumentReference questionDocRef;
-  late DocumentReference userDocRef;
-// Firebase Firestore 인스턴스 생성
-  final FirebaseFirestore firestore = FirebaseFirestore.instance;
-// "content_id" 문서의 "questions" 콜렉션에서 "question_id" 문서를 가져옵니다.
 
 // "question_id" 문서를 만듭니다.
   void createQuestionDocument(String contentId, String questionId) {
@@ -251,13 +247,15 @@ class _QuestionPageState extends State<QuestionPage>
         break;
 
       case '질문 닫기':
-        if (DateTime.now().isAfter(closeDate)) {
-          receiveAndClose();
-          updateQuestion('isValidity', false, questionDocRef);
-          deleteQuestionFromFeed(schoolCode, newQuestion.id);
-          askButtonText = '질문 받기'; //버튼 text는 답변받기로 변경
-          initState();
-        }
+        // if (DateTime.now().isAfter(closeDate)) {
+        //   receiveAndClose();
+        //   updateQuestion('isValidity', false, questionDocRef);
+        //   deleteQuestionFromFeed(schoolCode, newQuestion.id);
+        //   askButtonText = '질문 받기'; //버튼 text는 답변받기로 변경
+        // }
+        updateQuestion('isValidity', false, questionDocRef);
+        deleteQuestionFromFeed(schoolCode, newQuestion.id);
+        initialState();
         break;
     }
     // });
@@ -284,11 +282,6 @@ class _QuestionPageState extends State<QuestionPage>
           _isRunning = false;
           if (openShareCard == false) {
             askButtonText = '질문 받기';
-            // contentCollectionRef
-            //     .doc(newQuestion.contentId.toString())
-            //     .collection('questions')
-            //     .doc(newQuestion.id)
-            //     .delete();
           }
         } else {
           _countdown = Duration(seconds: _countdown.inSeconds - 1);

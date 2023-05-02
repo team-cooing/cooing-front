@@ -162,3 +162,82 @@ Future<SharedPreferences> AsyncPrefsOperation() async {
   print(prefs);
   return prefs;
 }
+
+Future<Map<String, dynamic>> getAnswersByQuestionIds(
+    List<Map<String, dynamic>> questionInfos,
+    CollectionReference<Map<String, dynamic>> answerCollection) async {
+  Map<String, dynamic> answerMapList = {};
+  String currentQuestionId;
+  String currentContentId;
+  for (int i = 0; i < questionInfos.length; i++) {
+    currentQuestionId = questionInfos[i]['questionId'];
+    currentContentId = questionInfos[i]['contentId'];
+
+    List<Map<String, dynamic>> currentAnswers =
+        await getAnswerDocuments(answerCollection, currentQuestionId);
+    currentAnswers.sort((a, b) => b['time'].compareTo(a['time']));
+
+    answerMapList[currentContentId] = currentAnswers;
+  }
+
+  print("answerMapList: $answerMapList");
+
+  return answerMapList;
+}
+
+Future<List<Map<String, dynamic>>> getAnswerDocuments(
+    CollectionReference<Map<String, dynamic>> answerCollection,
+    String questionId) async {
+  QuerySnapshot querySnapshot =
+      await answerCollection.where('questionId', isEqualTo: questionId).get();
+  List<Map<String, dynamic>> answerInformList = [];
+
+  for (DocumentSnapshot document in querySnapshot.docs) {
+    Answer answer = await getAnsDoc(answerCollection, document.id);
+    print(answer);
+    Map<String, dynamic> inform = {
+      // 'questionId': answer.questionId,
+      'isOpened': answer.isOpened,
+      'gender': answer.ownerGender,
+      'time': answer.time,
+      'nickname': answer.nickname
+    };
+
+    answerInformList.add(inform);
+  }
+  print("answerInformList : $answerInformList");
+  return answerInformList;
+}
+
+Future<Answer> getAnsDoc(
+    CollectionReference collectionReference, String id) async {
+  DocumentReference docRef = collectionReference.doc(id);
+  DocumentSnapshot doc = await docRef.get();
+  Answer answer;
+
+  if (doc.exists) {
+    // 문서가 존재합니다.
+    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+    // 필요한 작업 수행
+    answer = Answer.fromJson(data);
+    print("in getAnsDocument() : answer = $answer");
+  } else {
+    answer = Answer(
+      id: '', // 마이크로세컨드까지 보낸 시간으로 사용
+      time: '',
+      owner: '',
+      ownerGender: false,
+      content: '',
+      questionId: '',
+      isAnonymous: false,
+      nickname: '',
+      hint: [],
+      isOpenedHint: [], //bool List
+      isOpened: false,
+    );
+
+    // 문서가 존재하지 않습니다.
+  }
+
+  return answer;
+}
