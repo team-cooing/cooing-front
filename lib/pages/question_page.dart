@@ -200,11 +200,11 @@ class _QuestionPageState extends State<QuestionPage>
         newQuestion.contentId = randomQ['id'];
         viewContentText = newQuestion.content;
         _startTimer(); //openTime
-        questionDocRef = contentCollectionRef
-            .doc(newQuestion.contentId.toString())
-            .collection('questions')
-            .doc(newQuestion.id); //title이 id인 firebase document reference 생성
-        addNewQuestion(questionDocRef, newQuestion);
+        // questionDocRef = contentCollectionRef
+        //     .doc(newQuestion.contentId.toString())
+        //     .collection('questions')
+        //     .doc(newQuestion.id); //title이 id인 firebase document reference 생성
+        // addNewQuestion(questionDocRef, newQuestion);
         newQuestionInfos.add({
           'contentId': newQuestion.contentId.toString(),
           'questionId': newQuestion.id
@@ -213,9 +213,9 @@ class _QuestionPageState extends State<QuestionPage>
         print(
             "239 라인 newQuestion.receiveTime ---- ${newQuestion.receiveTime} ");
 
-        userDocRef.update({
-          'questionInfos': newQuestionInfos
-        }); //파이어베이스 user - questionInfos 업데이트
+        // userDocRef.update({
+        //   'questionInfos': newQuestionInfos
+        // }); //파이어베이스 user - questionInfos 업데이트
         final userProvider =
             Provider.of<UserDataProvider>(context, listen: false);
 
@@ -235,9 +235,9 @@ class _QuestionPageState extends State<QuestionPage>
         closeDate = receiveTime.add(const Duration(hours: 24));
         newQuestion.receiveTime = receiveTime.toString();
         print('262라인 case 문 안에 ${newQuestion.receiveTime}');
-        updateQuestion('receiveTime', newQuestion.receiveTime, questionDocRef);
-        updateQuestion('url', url, questionDocRef);
-        updateQuestion('isValidity', true, questionDocRef);
+        // updateQuestion('receiveTime', newQuestion.receiveTime, questionDocRef);
+        // updateQuestion('url', url, questionDocRef);
+        // updateQuestion('isValidity', true, questionDocRef);
         addQuestionToFeed(schoolCode, newQuestion); //피드 추가
         print('267 라인 ${newQuestion.receiveTime}');
 
@@ -253,7 +253,7 @@ class _QuestionPageState extends State<QuestionPage>
         //   deleteQuestionFromFeed(schoolCode, newQuestion.id);
         //   askButtonText = '질문 받기'; //버튼 text는 답변받기로 변경
         // }
-        updateQuestion('isValidity', false, questionDocRef);
+        // updateQuestion('isValidity', false, questionDocRef);
         deleteQuestionFromFeed(schoolCode, newQuestion.id);
         initialState();
         break;

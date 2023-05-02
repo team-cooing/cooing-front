@@ -1,6 +1,4 @@
 import 'dart:convert';
-
-import 'package:cooing_front/model/User.dart';
 import 'package:cooing_front/providers/UserProvider.dart';
 import 'package:cooing_front/widgets/firebase_method.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +9,8 @@ import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:cooing_front/model/hint.dart';
+
+import '../model/response/User.dart';
 
 class AnswerPage extends StatefulWidget {
   final String uid;

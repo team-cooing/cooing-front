@@ -7,6 +7,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import "dart:math";
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../model/response/answer.dart';
+
 Map<String, dynamic> _questionToFirestoreDocument(Question question) {
   return question.toJson();
 }

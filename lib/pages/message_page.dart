@@ -3,7 +3,6 @@ import 'package:cooing_front/pages/answer_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:convert';
-import 'package:cooing_front/model/User.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cooing_front/model/question_list.dart';
 import 'package:grouped_list/grouped_list.dart';
@@ -36,7 +35,7 @@ class _MessagePageState extends State<MessagePage> {
   void initState() {
     super.initState();
 
-    String uid = widget.uid;
+    String uid = widget.user.uid;
     userCollectionRef = firestore.collection('users');
     contentCollectionRef = firestore.collection('contents');
     answerCollectionRef = firestore.collection('answers');
@@ -187,7 +186,7 @@ class _MessagePageState extends State<MessagePage> {
                             ),
                             Padding(padding: EdgeInsets.all(3)),
                             Text(
-                              '"${questionList.elementAt(int.parse(groupList[value]['contentId']))['question'] as String}"',
+                              '"${QuestionList.questionList.elementAt(int.parse(groupList[value]['contentId']))['question'] as String}"',
                               textAlign: TextAlign.left,
                               style: TextStyle(
                                   fontSize: 20, fontWeight: FontWeight.bold),
