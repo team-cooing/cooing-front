@@ -1,30 +1,26 @@
+import 'dart:math';
+
+import 'package:cooing_front/model/question_list.dart';
 import 'package:cooing_front/widgets/firebase_method.dart';
-import 'package:cooing_front/widgets/share_card.dart';
-import 'package:cooing_front/model/Question.dart';
+import 'package:cooing_front/model/response/Question.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:cooing_front/providers/UserProvider.dart';
-import 'package:cooing_front/model/User.dart';
+import 'package:cooing_front/model/response/User.dart';
 import 'package:provider/provider.dart';
 import "dart:async";
-import 'dart:convert';
 
 class QuestionPage extends StatefulWidget {
-  final String uid;
-
-  QuestionPage({this.uid = '', Key? key}) : super(key: key);
+  final User user;
+  const QuestionPage({required this.user, super.key});
 
   @override
-  _QuestionPageState createState() => _QuestionPageState();
+  State<QuestionPage> createState() => _QuestionPageState();
 }
 
 class _QuestionPageState extends State<QuestionPage>
     with AutomaticKeepAliveClientMixin {
   late CollectionReference contentCollectionRef;
-  late CollectionReference userCollectionRef;
-  // late CollectionReference schoolCollectionRef;
-  UserDataProvider? _userDataProvider;
-  User? _userData;
   late Question newQuestion;
   late List<Map<String, dynamic>> newQuestionInfos;
   late final String schoolCode;
@@ -32,96 +28,69 @@ class _QuestionPageState extends State<QuestionPage>
   @override
   void initState() {
     super.initState();
-    String uid = widget.uid;
-    newQuestion = Question(
-      id: '',
-      ownerProfileImage: '',
-      ownerName: '',
-      owner: '',
-      content: '',
-      contentId: 0,
-      receiveTime: '',
-      openTime: '',
-      url: '',
-      isValidity: false,
-    );
-    userCollectionRef = FirebaseFirestore.instance.collection('users');
-    contentCollectionRef = FirebaseFirestore.instance.collection('contents');
-    // schoolCollectionRef = FirebaseFirestore.instance.collection('schools');
-    // final userDataJson = userProvider.loadData();
 
-    _userData = Provider.of<UserDataProvider>(context, listen: false).userData;
+    // 모든 질문 가져오기
+    List<Map<String, dynamic>> questions = QuestionList.getQuestionLists();
 
-    print(_userData?.questionInfos);
+    // 유저가 받은 질문들은 삭제하기
+    List<int> contentIds = widget.user.questionInfos.map<int>((e) => int.parse(e['contentId'])).toList();
+    print(contentIds);
 
-    Future<User> getUserData() async {
-      final prefs = await AsyncPrefsOperation();
-      print(2222222222222);
-
-      final userDataJson = prefs.getString('userData');
-      if (userDataJson != null) {
-        print("쿠키 에서 UserData 로드");
-        print(userDataJson);
-        Map<String, dynamic> userDataMap =
-            json.decode(userDataJson); //z쿠키가 있ㅇㅡ면 쿠키 리턴
-        return User.fromJson(userDataMap);
-      } else {
-        // Handle missing data
-        print('No user data found in shared preferences');
-        userDocRef = userCollectionRef.doc(uid);
-        print("uid : $uid");
-        print("firebase 에서 UserData 로드");
-        return await getUserDocument(userDocRef, uid); //쿠키없으면 파베에서 유저 데이터 리턴
-      }
+    for(var questionInfo in widget.user.questionInfos){
     }
+
+    // 랜덤으로 새로 받을 질문 선택
+
+
+    contentCollectionRef = FirebaseFirestore.instance.collection('contents');
 
     try {
       late User userData;
 
-      getUserData().then((data) {
-        userData = data;
-        newQuestion.owner = userData.uid;
-        newQuestion.ownerName = userData.name;
-        newQuestion.ownerProfileImage = userData.profileImage;
-        newQuestionInfos = userData.questionInfos;
-
-        // schoolCode = userData.schoolCode;
-        schoolCode = '7041275';
-        print("스쿨코드는 7041275이다 강제로 맞춰놓았다. 까먹을까봐 출력해놓는다 나중에 고쳐라 신혜은아");
-        userDocRef = userCollectionRef.doc(newQuestion.owner);
-
-        print("newQuestion 에 제대로 들어갔을까");
-        print(newQuestion.ownerProfileImage);
-
-        if (newQuestionInfos.isEmpty) {
-          print("userData - questionInfos is Empty");
-        } else {
-          final lastQuestionInfo = newQuestionInfos.last;
-          final String? currentContentId =
-              lastQuestionInfo['contentId']?.toString();
-          final String? currentQuestionId = lastQuestionInfo['questionId'];
-          if (currentContentId != null && currentQuestionId != null) {
-            questionDocRef = contentCollectionRef
-                .doc(currentContentId)
-                .collection('questions')
-                .doc(currentQuestionId);
-
-            getDocument(questionDocRef, currentQuestionId).then((value) {
-              setState(() {
-                print("value.contentId : ${value.contentId}");
-                print("value.questionId : ${value.id}");
-                print("value.receiveTime : ${value.receiveTime}");
-                print("value : $value");
-                newQuestion = value;
-              });
-            });
-          }
-        }
-
-        setState(() {
-
-        });
-      });
+      // getUserData().then((data) {
+      //   userData = data;
+      //   newQuestion.owner = userData.uid;
+      //   newQuestion.ownerName = userData.name;
+      //   newQuestion.ownerProfileImage = userData.profileImage;
+      //   newQuestionInfos = userData.questionInfos;
+      //
+      //   // schoolCode = userData.schoolCode;
+      //   schoolCode = '7041275';
+      //   print("스쿨코드는 7041275이다 강제로 맞춰놓았다. 까먹을까봐 출력해놓는다 나중에 고쳐라 신혜은아");
+      //   userDocRef = userCollectionRef.doc(newQuestion.owner);
+      //
+      //   print("newQuestion 에 제대로 들어갔을까");
+      //   print(newQuestion.ownerProfileImage);
+      //
+      //   if (newQuestionInfos.isEmpty) {
+      //     print("userData - questionInfos is Empty");
+      //   } else {
+      //     final lastQuestionInfo = newQuestionInfos.last;
+      //     final String? currentContentId =
+      //         lastQuestionInfo['contentId']?.toString();
+      //     final String? currentQuestionId = lastQuestionInfo['questionId'];
+      //     if (currentContentId != null && currentQuestionId != null) {
+      //       questionDocRef = contentCollectionRef
+      //           .doc(currentContentId)
+      //           .collection('questions')
+      //           .doc(currentQuestionId);
+      //
+      //       getDocument(questionDocRef, currentQuestionId).then((value) {
+      //         setState(() {
+      //           print("value.contentId : ${value.contentId}");
+      //           print("value.questionId : ${value.id}");
+      //           print("value.receiveTime : ${value.receiveTime}");
+      //           print("value : $value");
+      //           newQuestion = value;
+      //         });
+      //       });
+      //     }
+      //   }
+      //
+      //   setState(() {
+      //
+      //   });
+      // });
     } on FormatException catch (e) {
       // Handle JSON decoding error
       print('Error decoding user data: $e');
@@ -360,136 +329,137 @@ class _QuestionPageState extends State<QuestionPage>
     super.build(context);
 
     return Scaffold(
-      body: SingleChildScrollView(child: _askBody()),
+      // body: SingleChildScrollView(child: _askBody()),
+      body: SingleChildScrollView(child: SizedBox()),
     );
   }
 
-  Widget _askBody() {
-    return Padding(
-        padding: const EdgeInsets.all(25.0),
-        child: SafeArea(
-            child: Center(
-                child: Column(children: <Widget>[
-          pupleBox(),
-          shareCard(openShareCard),
-        ]))));
-  }
+  // Widget _askBody() {
+  //   return Padding(
+  //       padding: const EdgeInsets.all(25.0),
+  //       child: SafeArea(
+  //           child: Center(
+  //               child: Column(children: <Widget>[
+  //         pupleBox(),
+  //         shareCard(openShareCard),
+  //       ]))));
+  // }
 
   Widget padding(double num) {
     return Padding(padding: EdgeInsets.all(num));
   }
 
-  Widget pupleBox() {
-    if (newQuestion.isValidity == false) {
-      if (newQuestion.openTime == "") {
-        //질문 open 안한 상태
-        initialState();
-      } else if (newQuestion.receiveTime == "") {
-        //질문 받았으나 답변받기 안누른 상태
-        _isRunning = true; //timer
-        _startTimer(); //openTime
-        openButNotReceive();
-        viewContentText = newQuestion.content;
-        print(newQuestion);
-      }
-    } else if (newQuestion.isValidity == true) {
-      //답변받기 누른 상태
-      //closeTime 전이면
-      isViewContent = true;
-      viewContentText = newQuestion.content;
-      DateTime rcvTime = DateTime.parse(newQuestion.receiveTime);
-      closeDate = rcvTime.add(const Duration(hours: 24));
-      print('setState 문 안에 $rcvTime');
-
-      if (DateTime.now().isAfter(closeDate)) {
-        print("답변받기& after close");
-        receiveAndClose();
-        deleteQuestionFromFeed(schoolCode, newQuestion.id);
-        initialState();
-        // updateQuestion('isValidity', false, questionDocRef);
-      } else {
-        print("답변받기& before close");
-        receiveButNotClose();
-        btnBottomMent =
-            '해당 질문은 ${closeDate.day}일 ${closeDate.hour}시 ${closeDate.minute}분부터 닫을 수 있습니다.';
-      }
-    }
-
-    // Update button state
-    setState(() {
-      isButtonEnabled = isButtonEnabled;
-    });
-    // Update button state
-
-    String remainTimer = _formatDuration(_countdown);
-
-    return SizedBox(
-      width: double.infinity,
-      child: Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-        color: const Color(0xff9754FB),
-        child: Column(
-          children: <Widget>[
-            padding(5),
-            Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-              const Padding(padding: EdgeInsets.only(left: 25.0)),
-              Text(remainTimer,
-                  style: TextStyle(
-                      color: Colors.white,
-                      backgroundColor: _colors[2],
-                      fontSize: _isRunning ? 12 : 0))
-            ]),
-            const Padding(padding: EdgeInsets.all(15.0)),
-            newQuestion.ownerProfileImage.isEmpty
-                ? const CircularProgressIndicator()
-                : Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      image: DecorationImage(
-                        fit: BoxFit.cover,
-                        image: NetworkImage(newQuestion.ownerProfileImage),
-                      ),
-                    ),
-                  ),
-            const Padding(padding: EdgeInsets.all(20.0)),
-            Text(
-              isViewContent ? viewContentText : '똑똑똑! 오늘의 질문이 도착했어요.',
-              textAlign: TextAlign.left,
-              style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  color: Colors.white),
-            ),
-            Container(
-              padding: EdgeInsets.all(25.0),
-              child: OutlinedButton(
-                onPressed: isButtonEnabled ? () => changeAskCard() : null,
-                style: OutlinedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 10),
-                  foregroundColor: const Color(0xff9754FB),
-                  backgroundColor: isButtonEnabled ? _colors[0] : _colors[1],
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                ),
-                child: Text(
-                  askButtonText,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 16),
-                ),
-              ),
-            ),
-            Text(
-              btnBottomMent,
-              style: TextStyle(
-                  color: Colors.white, fontSize: openShareCard ? 10 : 0),
-            ),
-            const Padding(padding: EdgeInsets.all(9.0)),
-          ],
-        ),
-      ),
-    );
-  }
+  // Widget pupleBox() {
+  //   if (newQuestion.isValidity == false) {
+  //     if (newQuestion.openTime == "") {
+  //       //질문 open 안한 상태
+  //       initialState();
+  //     } else if (newQuestion.receiveTime == "") {
+  //       //질문 받았으나 답변받기 안누른 상태
+  //       _isRunning = true; //timer
+  //       _startTimer(); //openTime
+  //       openButNotReceive();
+  //       viewContentText = newQuestion.content;
+  //       print(newQuestion);
+  //     }
+  //   } else if (newQuestion.isValidity == true) {
+  //     //답변받기 누른 상태
+  //     //closeTime 전이면
+  //     isViewContent = true;
+  //     viewContentText = newQuestion.content;
+  //     DateTime rcvTime = DateTime.parse(newQuestion.receiveTime);
+  //     closeDate = rcvTime.add(const Duration(hours: 24));
+  //     print('setState 문 안에 $rcvTime');
+  //
+  //     if (DateTime.now().isAfter(closeDate)) {
+  //       print("답변받기& after close");
+  //       receiveAndClose();
+  //       deleteQuestionFromFeed(schoolCode, newQuestion.id);
+  //       initialState();
+  //       // updateQuestion('isValidity', false, questionDocRef);
+  //     } else {
+  //       print("답변받기& before close");
+  //       receiveButNotClose();
+  //       btnBottomMent =
+  //           '해당 질문은 ${closeDate.day}일 ${closeDate.hour}시 ${closeDate.minute}분부터 닫을 수 있습니다.';
+  //     }
+  //   }
+  //
+  //   // Update button state
+  //   setState(() {
+  //     isButtonEnabled = isButtonEnabled;
+  //   });
+  //   // Update button state
+  //
+  //   String remainTimer = _formatDuration(_countdown);
+  //
+  //   return SizedBox(
+  //     width: double.infinity,
+  //     child: Card(
+  //       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+  //       color: const Color(0xff9754FB),
+  //       child: Column(
+  //         children: <Widget>[
+  //           padding(5),
+  //           Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+  //             const Padding(padding: EdgeInsets.only(left: 25.0)),
+  //             Text(remainTimer,
+  //                 style: TextStyle(
+  //                     color: Colors.white,
+  //                     backgroundColor: _colors[2],
+  //                     fontSize: _isRunning ? 12 : 0))
+  //           ]),
+  //           const Padding(padding: EdgeInsets.all(15.0)),
+  //           newQuestion.ownerProfileImage.isEmpty
+  //               ? const CircularProgressIndicator()
+  //               : Container(
+  //                   width: 80,
+  //                   height: 80,
+  //                   decoration: BoxDecoration(
+  //                     shape: BoxShape.circle,
+  //                     image: DecorationImage(
+  //                       fit: BoxFit.cover,
+  //                       image: NetworkImage(newQuestion.ownerProfileImage),
+  //                     ),
+  //                   ),
+  //                 ),
+  //           const Padding(padding: EdgeInsets.all(20.0)),
+  //           Text(
+  //             isViewContent ? viewContentText : '똑똑똑! 오늘의 질문이 도착했어요.',
+  //             textAlign: TextAlign.left,
+  //             style: const TextStyle(
+  //                 fontWeight: FontWeight.bold,
+  //                 fontSize: 16,
+  //                 color: Colors.white),
+  //           ),
+  //           Container(
+  //             padding: EdgeInsets.all(25.0),
+  //             child: OutlinedButton(
+  //               onPressed: isButtonEnabled ? () => changeAskCard() : null,
+  //               style: OutlinedButton.styleFrom(
+  //                 padding: EdgeInsets.symmetric(horizontal: 40, vertical: 10),
+  //                 foregroundColor: const Color(0xff9754FB),
+  //                 backgroundColor: isButtonEnabled ? _colors[0] : _colors[1],
+  //                 shape: RoundedRectangleBorder(
+  //                   borderRadius: BorderRadius.circular(30),
+  //                 ),
+  //               ),
+  //               child: Text(
+  //                 askButtonText,
+  //                 style: const TextStyle(
+  //                     fontWeight: FontWeight.bold, fontSize: 16),
+  //               ),
+  //             ),
+  //           ),
+  //           Text(
+  //             btnBottomMent,
+  //             style: TextStyle(
+  //                 color: Colors.white, fontSize: openShareCard ? 10 : 0),
+  //           ),
+  //           const Padding(padding: EdgeInsets.all(9.0)),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 }

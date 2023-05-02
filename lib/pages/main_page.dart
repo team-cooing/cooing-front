@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cooing_front/pages/tap_page.dart';
+import 'package:cooing_front/pages/tab_page.dart';
 import 'package:cooing_front/widgets/link.dart';
 
 class MainPage extends StatefulWidget {
