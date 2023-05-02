@@ -1,9 +1,13 @@
+import 'package:cooing_front/model/response/User.dart';
 import 'package:cooing_front/pages/SettingScreen.dart';
+import 'package:cooing_front/pages/login/LoginScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:cooing_front/pages/question_page.dart';
 import 'package:cooing_front/pages/message_page.dart';
 import 'package:cooing_front/pages/feed_page.dart';
 import 'package:get/get.dart';
+import 'package:cooing_front/model/response/response.dart' as response;
+import 'package:cooing_front/model/config/palette.dart';
 
 class TabPage extends StatefulWidget {
   const TabPage({super.key});
@@ -13,9 +17,12 @@ class TabPage extends StatefulWidget {
 }
 
 class TabPageState extends State<TabPage> with TickerProviderStateMixin {
+  late String uid = '';
+  late User? user;
   late TabController _tabController;
+  bool isLoading = true;
 
-  static const List<Tab> myTabs = <Tab>[
+  List<Tab> myTabs = <Tab>[
     Tab(text: '질문'),
     Tab(text: '피드'),
     Tab(text: '메시지'),
@@ -29,6 +36,13 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
     super.initState();
     _tabController =
         TabController(length: myTabs.length, vsync: this, initialIndex: 0);
+
+    // 1. 인자로 전달 받은 uid 가져오기
+    uid = Get.arguments.toString();
+    print('TabPage: $uid');
+
+    // 2. Firebase에서 User Data 가져오기
+    getUserFromFirebase();
   }
 
   @override
@@ -37,21 +51,9 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  final int _selectedPageIndex = 0;
-
-  final List _pages = [
-    const Text('질문'),
-    const Text('피드'),
-    const Text('메시지'),
-    const Text('설정')
-  ];
-
   @override
   Widget build(BuildContext context) {
-    final uid = Get.arguments;
-    print(uid);
-
-    return DefaultTabController(
+    return isLoading? loadingView() : DefaultTabController(
         length: myTabs.length,
         child: Scaffold(
           appBar: AppBar(
@@ -72,11 +74,43 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
             ),
           ),
           body: TabBarView(controller: _tabController, children: [
-            QuestionPage(uid: uid),
-            FeedPage(),
-            MessagePage(),
-            SettingScreen(),
+            QuestionPage(user: user!,),
+            FeedPage(user: user!),
+            MessagePage(user: user!),
+            SettingScreen(user: user!),
           ]),
         ));
+  }
+
+  Widget loadingView(){
+    return Scaffold(
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Expanded(
+            child: Center(
+              child: CircularProgressIndicator(
+                color: Palette.mainPurple,
+              )
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  getUserFromFirebase() async{
+    // Firebase DB에서 User 읽기
+    user = await response.Response.readUser(uid);
+
+    // 만약, 유저가 있다면
+    if(user!=null){
+      setState(() {
+        isLoading = false;
+      });
+    }else{
+      // 로그인 페이지로 이동
+      Get.offAll(LoginScreen());
+    }
   }
 }

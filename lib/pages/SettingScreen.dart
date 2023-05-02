@@ -1,6 +1,6 @@
-import 'package:cooing_front/model/User.dart';
-import 'package:cooing_front/pages/FeatureScreen.dart';
-import 'package:cooing_front/pages/SchoolScreen.dart';
+import 'package:cooing_front/model/response/User.dart';
+import 'package:cooing_front/pages/login/FeatureScreen.dart';
+import 'package:cooing_front/pages/login/SchoolScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -9,7 +9,9 @@ import 'package:url_launcher/url_launcher.dart';
 import 'CandyScreen.dart';
 
 class SettingScreen extends StatefulWidget {
-  const SettingScreen({super.key});
+  final User user;
+
+  const SettingScreen({required this.user, super.key});
 
   @override
   _SettingScreenState createState() => _SettingScreenState();

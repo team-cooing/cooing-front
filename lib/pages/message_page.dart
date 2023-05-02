@@ -1,3 +1,4 @@
+import 'package:cooing_front/model/response/User.dart';
 import 'package:cooing_front/pages/answer_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -9,8 +10,8 @@ import 'package:grouped_list/grouped_list.dart';
 import 'package:cooing_front/widgets/firebase_method.dart';
 
 class MessagePage extends StatefulWidget {
-  final String uid;
-  MessagePage({this.uid = '', Key? key}) : super(key: key);
+  final User user;
+  const MessagePage({required this.user, super.key});
 
   @override
   State<MessagePage> createState() => _MessagePageState();

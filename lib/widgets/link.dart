@@ -47,7 +47,7 @@ class DynamicLink {
       switch (link) {
         case 'AnswerPage':
           Get.offAll(
-            () => const AnswerPage(),
+            () => AnswerPage(),
           );
           break;
       }

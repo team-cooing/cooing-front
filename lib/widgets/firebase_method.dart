@@ -1,9 +1,8 @@
 // Question 객체를 Firestore 문서로 변환하는 함수
 
-import 'package:cooing_front/model/User.dart';
+import 'package:cooing_front/model/response/User.dart';
 import 'package:cooing_front/model/question_list.dart';
-import 'package:cooing_front/model/Question.dart';
-import 'package:cooing_front/model/Answer.dart';
+import 'package:cooing_front/model/response/Question.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import "dart:math";
 import 'package:shared_preferences/shared_preferences.dart';
@@ -134,17 +133,20 @@ Future<void> updateQuestion(
   await docReference?.update(data);
 }
 
+// TODO: 이미 받았던 질문 필터링 물어보기
+// TODO: 답변 - availableIds ->  availableId
+
 //이미 받았던 질문 필터링해서 새로운 <질문id,질문string> 리턴
 Map<String, dynamic> filterQuestion(List<Map<String, dynamic>> questionInfos) {
   Map<String, dynamic> randomQuestion;
   print("filterQuestion ) questionInfos = $questionInfos");
   if (questionInfos.isEmpty) {
-    return questionList[Random().nextInt(questionList.length)];
+    return QuestionList.questionList[Random().nextInt(QuestionList.questionList.length)];
   } // questionInfos 에 있는 질문 id 를 추출합니다.
   Set<int> receivedIds =
       questionInfos.map((info) => int.parse(info['contentId'])).toSet();
   // questionList 에서 중복되지 않은 질문 id 를 추출합니다.
-  List<int> availableIds = questionList
+  List<int> availableIds = QuestionList.questionList
       .map((question) => question['id'])
       .where((id) => !receivedIds.contains(id))
       .cast<int>() // cast to list of int
@@ -152,7 +154,7 @@ Map<String, dynamic> filterQuestion(List<Map<String, dynamic>> questionInfos) {
 
   int randomId =
       availableIds.cast<int>().toList()[Random().nextInt(availableIds.length)];
-  return questionList.firstWhere((question) => question['id'] == randomId);
+  return QuestionList.questionList.firstWhere((question) => question['id'] == randomId);
 }
 
 Future<SharedPreferences> AsyncPrefsOperation() async {

@@ -1,5 +1,5 @@
-import 'package:cooing_front/model/User.dart';
-import 'package:cooing_front/pages/SchoolScreen.dart';
+import 'package:cooing_front/model/response/User.dart';
+import 'package:cooing_front/pages/login/SchoolScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';

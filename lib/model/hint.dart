@@ -1,5 +1,5 @@
 import 'dart:math';
-import 'package:cooing_front/model/User.dart';
+import 'package:cooing_front/model/response/User.dart';
 import 'package:flutter/material.dart';
 
 List<String> generateHint(User user) {
@@ -13,7 +13,7 @@ List<String> generateHint(User user) {
 
   List hints = [
     // 첫번째 힌트: 이름 초성
-    "초성은 '${getConsonants(name)}'",
+    getConsonant(name),
     // 두번째 힌트: 이름의 첫 글자
     "이름 첫글자는 '${getFirstName(name)}'",
     // 세번째 힌트: 이름 받침 개수
@@ -35,6 +35,8 @@ List<String> generateHint(User user) {
     // 열한번째 힌트: 스타일
     '${getRandomStyle(user.style)} 스타일'
   ];
+
+  print(hints);
 
   final random = Random();
   List<String> selected = [];
@@ -157,13 +159,28 @@ List<List<String>> separateConsonantsAndVowels(String name) {
 }
 
 // 첫번째 힌트: 이름 초성을 반환하는 함수
-String getConsonants(String name) {
+String getConsonant(String name) {
   String result = '';
 
   final separatedName = separateConsonantsAndVowels(name);
-  for (var i in separatedName) {
-    result += i[0];
-  }
+
+  Random random = Random();
+  int randomIndex = random.nextInt(separatedName.length);
+  String randomChar = separatedName[randomIndex][0];
+
+  List<String> orderInKoreans = [
+    '첫번째',
+    '두번째',
+    '세번째',
+    '네번째',
+    '다섯번째',
+    '여섯번째',
+    '일곱번째',
+    '여덟번째',
+    '아홉번째',
+    '열번째'
+  ];
+  result += "${orderInKoreans[randomIndex]} 초성은 '$randomChar'";
 
   return result;
 }
