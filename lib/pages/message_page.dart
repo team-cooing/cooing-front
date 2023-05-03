@@ -7,6 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cooing_front/model/data/question_list.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:cooing_front/widgets/firebase_method.dart';
+import 'package:cooing_front/model/response/answer.dart';
 
 class MessagePage extends StatefulWidget {
   final User user;
@@ -31,18 +32,21 @@ class _MessagePageState extends State<MessagePage> {
   late List<Map<String, dynamic>> msgcontentInfos;
   late Map<String, dynamic> questionAnswerMapList;
   late List<Map<String, dynamic>> groupList = [];
+  late String uid;
+
   @override
   void initState() {
     super.initState();
 
-    String uid = widget.user.uid;
+    uid = widget.user.uid;
+
     userCollectionRef = firestore.collection('users');
     contentCollectionRef = firestore.collection('contents');
-    answerCollectionRef = firestore.collection('answers');
+    answerCollectionRef =
+        firestore.collection('answers').doc(uid).collection('answers');
 
     Future<User> getUserData() async {
       final prefs = await AsyncPrefsOperation();
-      print(2222222222222);
 
       final userDataJson = prefs.getString('userData');
       if (userDataJson != null) {
@@ -52,6 +56,11 @@ class _MessagePageState extends State<MessagePage> {
             json.decode(userDataJson); //z쿠키가 있ㅇㅡ면 쿠키 리턴
         return User.fromJson(userDataMap);
       } else {
+        final userAnswerRef = FirebaseFirestore.instance
+            .collection('answers')
+            .doc(uid)
+            .collection('answers');
+
         // Handle missing data
         print('No user data found in shared preferences');
         userDocRef = userCollectionRef.doc(uid);
@@ -73,10 +82,8 @@ class _MessagePageState extends State<MessagePage> {
           getAnswersByQuestionIds(msgcontentInfos, answerCollectionRef)
               .then((value) {
             questionAnswerMapList = value;
-
-            print("33333");
             questionAnswerMapList.forEach((key, value) {
-              print("44444");
+              // print("44444");
               print("key : $key value : $value");
 
               Map<String, dynamic> groupMap = {
@@ -86,12 +93,12 @@ class _MessagePageState extends State<MessagePage> {
                 'answers': value
               };
               groupList.add(groupMap);
-              print("####groupList: $groupList");
             });
 
             setState(() {
               // 화면을 다시 그립니다.
               groupList = groupList;
+              print("####groupList: $groupList");
             });
           });
         }
@@ -195,14 +202,12 @@ class _MessagePageState extends State<MessagePage> {
                         )));
               },
               itemBuilder: ((context, element) {
-                List<Map<String, dynamic>> answers = element['answers'];
+                String contentId = element['contentId'];
+                List<Answer> answers = element['answers'];
                 if (answers.isEmpty) {
                   return Padding(
                       padding: EdgeInsets.symmetric(horizontal: 5),
                       child: GestureDetector(
-                          onTap: () {
-                            Get.to(() => AnswerDetailPage());
-                          },
                           child: Card(
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.only(
@@ -218,8 +223,8 @@ class _MessagePageState extends State<MessagePage> {
                                       padding: EdgeInsets.only(
                                           left: 25.0,
                                           right: 25,
-                                          top: 5,
-                                          bottom: 5),
+                                          top: 30,
+                                          bottom: 30),
                                       decoration: BoxDecoration(
                                           color: Color(0xffF2F3F3),
                                           borderRadius: BorderRadius.only(
@@ -243,7 +248,11 @@ class _MessagePageState extends State<MessagePage> {
                       padding: EdgeInsets.symmetric(horizontal: 5),
                       child: GestureDetector(
                           onTap: () {
-                            Get.to(() => AnswerDetailPage());
+                            Get.to(() => AnswerDetailPage(
+                                  answerId: answer.id,
+                                  userId: uid,
+                                  contentId: contentId,
+                                ));
                           },
                           child: Card(
                             shape: RoundedRectangleBorder(
@@ -275,30 +284,19 @@ class _MessagePageState extends State<MessagePage> {
                                         children: [
                                           Row(
                                             children: [
-                                              whatIcon(answer['gender'],
-                                                  answer['isOpened']),
+                                              whatIcon(answer.ownerGender,
+                                                  answer.isOpened),
                                               Padding(
                                                   padding: EdgeInsets.only(
                                                       right: 20.0)),
-                                              answer['gender']
-                                                  ? Text(
-                                                      '청순한 여학생',
-                                                      style: TextStyle(
-                                                          fontSize: 16,
-                                                          color:
-                                                              Color(0xff333D4B),
-                                                          fontWeight:
-                                                              FontWeight.bold),
-                                                    )
-                                                  : Text(
-                                                      '훈훈한 남학생',
-                                                      style: TextStyle(
-                                                          fontSize: 16,
-                                                          color:
-                                                              Color(0xff333D4B),
-                                                          fontWeight:
-                                                              FontWeight.bold),
-                                                    ),
+                                              Text(
+                                                answer.nickname,
+                                                style: TextStyle(
+                                                    fontSize: 16,
+                                                    color: Color(0xff333D4B),
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
                                               Text(
                                                 '으로부터',
                                                 style: TextStyle(
@@ -310,7 +308,7 @@ class _MessagePageState extends State<MessagePage> {
                                           )
                                         ],
                                       ),
-                                      answerTimeText(answer['time'])
+                                      answerTimeText(answer.time)
                                     ]),
                               ),
                             ),

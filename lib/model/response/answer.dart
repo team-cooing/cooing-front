@@ -42,7 +42,7 @@ class Answer {
   Map<String, dynamic> toJson() {
     return {
       'id': id, // 마이크로세컨드까지 보낸 시간으로 사용
-      'time': id,
+      'time': time,
       'owner': owner,
       'ownerGender': ownerGender,
       'content': content,

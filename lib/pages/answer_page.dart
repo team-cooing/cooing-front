@@ -1,10 +1,7 @@
-import 'dart:convert';
 import 'package:cooing_front/providers/UserProvider.dart';
-import 'package:cooing_front/widgets/firebase_method.dart';
 import 'package:flutter/material.dart';
 import 'package:cooing_front/pages/answer_complete_page.dart';
 import 'package:get/get.dart';
-import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
@@ -12,12 +9,14 @@ import '../model/util/hint.dart';
 import '../model/response/User.dart';
 
 class AnswerPage extends StatefulWidget {
-  final String uid;
+  final User user;
+  const AnswerPage({required this.user, super.key});
+  // final String uid;
 
-  AnswerPage({this.uid = '', Key? key}) : super(key: key);
+  // const AnswerPage({required this.uid, super.key});
 
   @override
-  _AnswerPageState createState() => _AnswerPageState();
+  State<AnswerPage> createState() => _AnswerPageState();
 }
 
 class _AnswerPageState extends State<AnswerPage> {
@@ -51,19 +50,42 @@ class _AnswerPageState extends State<AnswerPage> {
 
   Future<void> _uploadUserToFirebase() async {
     try {
-      final id = DateTime.now().toString();
+      String uid = widget.user.uid;
+      String newId;
+      final userAnswerRef = FirebaseFirestore.instance
+          .collection('answers')
+          .doc(uid)
+          .collection('answers');
 
-      final userRef = FirebaseFirestore.instance.collection('answers');
+      final QuerySnapshot snapshot = await userAnswerRef
+          .orderBy('createdAt', descending: true) // createdAt 필드를 기준으로 내림차순 정렬
+          .limit(1) // 가장 마지막 document 하나만 가져오기
+          .get();
 
-      await userRef.doc(id).set({
+      if (snapshot.docs.isNotEmpty) {
+        final lastDocument = snapshot.docs.last;
+        final String lastId = lastDocument.id; // 가장 최근 document의 ID
+        final int lastNumber =
+            int.tryParse(lastId.split('_')[0].substring(1)) ??
+                0; // 가장 최근 document의 번호
+
+        // 새 document의 ID 생성
+        newId =
+            '#${(lastNumber + 1).toString().padLeft(6, '0')}_${DateTime.now().toString()}';
+      } else {
+        print('No documents found in collection');
+        newId = '#000001_${DateTime.now().toString()}';
+      }
+
+      await userAnswerRef.doc(newId).set({
         'id': id, // 마이크로세컨드까지 보낸 시간으로 사용
         'time': id,
         'owner': _userData!.uid,
         'ownerGender': _userData!.gender,
-        'content': textValue,
         'questionId': questionId,
+        'content': textValue,
         'isAnonymous': _checkSecret,
-        'nickname': _checkSecret! ? '훈훈한 닉네임' : '',
+        'nickname': _checkSecret! ? '닉네임' : _userData!.name,
         'hint': hintList,
         'isOpenedHint': [false, false, false], //bool List
         'isOpened': false,

@@ -1,7 +1,5 @@
 import 'package:uni_links/uni_links.dart';
-import 'package:cooing_front/pages/answer_page.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
-import 'package:get/get.dart';
 
 class DynamicLink {
   Future<bool> setup() async {
@@ -46,9 +44,9 @@ class DynamicLink {
 
       switch (link) {
         case 'AnswerPage':
-          Get.offAll(
-            () => AnswerPage(),
-          );
+          // Get.offAll(
+          //     // () => AnswerPage(),
+          //     );
           break;
       }
     }

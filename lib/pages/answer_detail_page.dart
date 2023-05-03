@@ -1,24 +1,81 @@
 import 'package:cooing_front/pages/HintPage.dart';
+import 'package:cooing_front/widgets/firebase_method.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cooing_front/model/response/answer.dart';
+import 'package:cooing_front/model/data/question_list.dart';
 
 class AnswerDetailPage extends StatefulWidget {
-  const AnswerDetailPage({super.key});
+  final String userId;
+  final String answerId;
+  final String contentId;
+
+  const AnswerDetailPage(
+      {required this.userId,
+      required this.answerId,
+      required this.contentId,
+      super.key});
 
   @override
   _AnswerDetailPageState createState() => _AnswerDetailPageState();
 }
 
 class _AnswerDetailPageState extends State<AnswerDetailPage> {
-  String askText = '내 첫인상은 어땠어?';
-  bool? isAnonymous = true;
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  late CollectionReference answerDocRef;
+  late CollectionReference questionDocRef;
+
+  late String userId;
+  late String answerId;
+  late String contentId;
+  late String questionContent;
+  Answer? answerData;
+  String imgUrl = '';
+  @override
+  void initState() {
+    super.initState();
+    userId = widget.userId;
+    answerId = widget.answerId;
+    contentId = widget.contentId;
+    answerData = null;
+    questionContent = QuestionList.questionList
+        .elementAt(int.parse(contentId))['question'] as String;
+    questionDocRef =
+        firestore.collection('contents').doc(contentId).collection('questions');
+    answerDocRef =
+        firestore.collection('answers').doc(userId).collection('answers');
+    try {
+      getAnsDoc(answerDocRef, answerId).then((value) {
+        setState(() {
+          answerData = value; // 데이터를 가져온 후에 상태를 업데이트함
+        });
+        print("inAnswerDetailCard: $answerData");
+        getDocument(questionDocRef.doc(value.questionId), value.questionId)
+            .then((value) {
+          imgUrl = value.ownerProfileImage;
+          setState(() {
+            imgUrl = imgUrl; // 데이터를 가져온 후에 상태를 업데이트함
+          });
+        });
+        if (answerData!.isOpened == false) {
+          updateDocument('isOpened', true, answerDocRef.doc(answerId));
+        }
+      });
+    } catch (e) {
+      print("Error loading answer data : $e");
+    }
+  }
+
   int maxLength = 100;
-  String textValue =
-      "너는 \n처음 봤을 때 왠\n지 다가가기 어려웠는데\n막상 이ㅎㅎ야기하고 나니까 \n좋았던 것 같아.\n생각보다 착해!ㅋzzzzzzzzzzzz\nㅋ\nㅋ\nㅋ\nㅋ\nㅋ";
 
   @override
   Widget build(BuildContext context) {
+    if (answerData == null) {
+      return Center(child: CircularProgressIndicator());
+    }
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -49,7 +106,7 @@ class _AnswerDetailPageState extends State<AnswerDetailPage> {
         child: Column(children: [
           _answerBody(),
           Spacer(),
-          bottomBtns(isAnonymous),
+          bottomBtns(answerData!.isAnonymous),
         ]),
       ),
       // bottomNavigationBar: bottomBtns(isAnonymous));
@@ -76,27 +133,15 @@ class _AnswerDetailPageState extends State<AnswerDetailPage> {
             ],
           ),
           const Padding(padding: EdgeInsets.all(20.0)),
-          fromMsgTxt(isAnonymous),
+          Center(
+            child: Text(
+              "${answerData!.nickname}이 보낸 메시지",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+          ),
           _answerDetailCard(),
         ])),
       ]),
-    );
-  }
-
-  Widget fromMsgTxt(bool? isAnony) {
-    var name = '';
-
-    if (isAnony == true) {
-      name = '훌륭한 남학생';
-    } else {
-      name = '박길현';
-    }
-
-    return Center(
-      child: Text(
-        "$name이 보낸 메시지",
-        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-      ),
     );
   }
 
@@ -112,16 +157,22 @@ class _AnswerDetailPageState extends State<AnswerDetailPage> {
               color: const Color(0xff9754FB),
               child: Column(children: <Widget>[
                 const Padding(padding: EdgeInsets.all(15.0)),
-                const SizedBox(
-                  width: 80.0,
-                  height: 80.0,
-                  child: CircleAvatar(
-                    backgroundImage: AssetImage('images/sohee.jpg'),
-                  ),
-                ),
+                imgUrl.isEmpty
+                    ? const CircularProgressIndicator()
+                    : Container(
+                        width: 80,
+                        height: 80,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          image: DecorationImage(
+                            fit: BoxFit.cover,
+                            image: NetworkImage(imgUrl),
+                          ),
+                        ),
+                      ),
                 const Padding(padding: EdgeInsets.all(10.0)),
                 Text(
-                  askText,
+                  questionContent,
                   style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -139,13 +190,13 @@ class _AnswerDetailPageState extends State<AnswerDetailPage> {
   Widget answerTxtView() {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 15),
+      padding: EdgeInsets.only(left: 15.0, right: 15.0, top: 30, bottom: 35),
       decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(color: Colors.white, width: 0)),
       child: Text(
-        textValue,
+        answerData!.content,
         style: TextStyle(
           color: Colors.black,
         ),
