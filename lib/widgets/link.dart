@@ -59,7 +59,7 @@ class DynamicLink {
       link: Uri.parse('$dynamicLinkPrefix / $screenName?id=$id'),
       uriPrefix: dynamicLinkPrefix,
       androidParameters: const AndroidParameters(
-        packageName: 'com.example.cooing_front',
+        packageName: 'com.midas.cooing',
         minimumVersion: 0,
       ),
       iosParameters: const IOSParameters(
