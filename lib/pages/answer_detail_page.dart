@@ -56,7 +56,8 @@ class _AnswerDetailPageState extends State<AnswerDetailPage> {
             .then((value) {
           imgUrl = value.ownerProfileImage;
           setState(() {
-            imgUrl = imgUrl; // 데이터를 가져온 후에 상태를 업데이트함
+            imgUrl = imgUrl;
+// 데이터를 가져온 후에 상태를 업데이트함
           });
         });
         if (answerData!.isOpened == false) {

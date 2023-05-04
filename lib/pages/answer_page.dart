@@ -10,8 +10,18 @@ import '../model/response/User.dart';
 
 class AnswerPage extends StatefulWidget {
   final User user;
-  const AnswerPage({required this.user, super.key});
-  // final String uid;
+  final questionId;
+  final questionContent;
+  final profileImage;
+  final name;
+  const AnswerPage({
+    required this.user,
+    required this.questionId,
+    required this.questionContent,
+    required this.profileImage,
+    required this.name,
+    Key? key,
+  }) : super(key: key); // final String uid;
 
   // const AnswerPage({required this.uid, super.key});
 
@@ -20,11 +30,24 @@ class AnswerPage extends StatefulWidget {
 }
 
 class _AnswerPageState extends State<AnswerPage> {
-  var questionList = ['내 첫인상은 어땠어?', '내 mbti는 무엇인 것 같아?', '나랑 닮은 동물은 뭐야?'];
-  String askText = Get.arguments[0];
-  String questionId = Get.arguments[1];
-  String profileImage = Get.arguments[2];
-  String name = Get.arguments[3];
+  // var questionList = ['내 첫인상은 어땠어?', '내 mbti는 무엇인 것 같아?', '나랑 닮은 동물은 뭐야?'];
+  late String askText;
+  late String questionId;
+  late String profileImage;
+  late String name;
+  late String uid;
+  @override
+  void initState() {
+    super.initState();
+    // _userData = Provider.of<UserDataProvider>(context, listen: false).userData;
+    hintList = generateHint(_userData!);
+    _userData = widget.user;
+    // uid = widget.user.uid;
+    askText = widget.questionContent;
+    profileImage = widget.profileImage;
+    name = widget.name;
+    questionId = widget.questionId;
+  }
 
   bool? _checkSecret = false;
   late DocumentReference userDocRef;
@@ -37,12 +60,6 @@ class _AnswerPageState extends State<AnswerPage> {
   late CollectionReference contentCollectionRef;
   late CollectionReference userCollectionRef;
   late List<String> hintList;
-  @override
-  void initState() {
-    super.initState();
-    _userData = Provider.of<UserDataProvider>(context, listen: false).userData;
-    hintList = generateHint(_userData!);
-  }
 
   final TextEditingController _textController = TextEditingController();
 
