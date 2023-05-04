@@ -1,5 +1,6 @@
 import 'package:cooing_front/model/response/User.dart';
 import 'package:flutter/material.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
 
 class CandyScreen extends StatefulWidget {
   const CandyScreen({Key? key}) : super(key: key);
@@ -9,9 +10,20 @@ class CandyScreen extends StatefulWidget {
 }
 
 class _CandyScreenState extends State<CandyScreen> {
+  // 인앱결제를 위한 초기화
+  final InAppPurchase _iap = InAppPurchase.instance;
+
   @override
   void initState() {
     super.initState();
+    _initialize();
+  }
+
+  Future<void> _initialize() async {
+    final bool available = await _iap.isAvailable();
+    if (available) {
+      await _iap.restorePurchases();
+    }
   }
 
   Widget build(BuildContext context) {
