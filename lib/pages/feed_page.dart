@@ -1,6 +1,7 @@
 import 'package:cooing_front/model/response/User.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cooing_front/widgets/answer_url.dart';
 
 class FeedPage extends StatefulWidget {
   final User user;
@@ -23,6 +24,11 @@ class _FeedPageState extends State<FeedPage> {
     super.initState();
 
     _getDocuments();
+  }
+
+  void _onAnswerButtonPressed(String questionId, String questionContent,
+      String profileImage, String name) {
+    createDynamicLink(context, questionId, questionContent, profileImage, name);
   }
 
   // 초기 데이터를 가져오는 get함수
@@ -81,6 +87,11 @@ class _FeedPageState extends State<FeedPage> {
             //questionId, questionContent, profileImage 넘겨야함
 
             onTap: () {
+              if (btnText == '답변하기') {
+                print("tap 답변하기버튼");
+                _onAnswerButtonPressed(
+                    questionId, questionContent, profileImage, name);
+              }
               // Get.to(() => AnswerPage(),
               // arguments: [questionId, questionContent, profileImage, name])
             },
