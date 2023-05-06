@@ -94,7 +94,7 @@ Future<User> getUserDocument(DocumentReference docRef, String id) async {
   return user;
 }
 
-Future<Question> getDocument(DocumentReference docRef, String id) async {
+Future<Question> getDocument(DocumentReference docRef) async {
   DocumentSnapshot doc = await docRef.get();
   Question question;
   if (doc.exists) {

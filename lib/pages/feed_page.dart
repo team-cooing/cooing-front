@@ -1,7 +1,8 @@
 import 'package:cooing_front/model/response/User.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cooing_front/widgets/answer_url.dart';
+import 'package:cooing_front/widgets/dynamic_link.dart';
+import 'package:flutter/services.dart';
 
 class FeedPage extends StatefulWidget {
   final User user;
@@ -18,17 +19,21 @@ class _FeedPageState extends State<FeedPage> {
   late DocumentSnapshot<Object?>? _lastDocument;
   final CollectionReference _collectionReference =
       FirebaseFirestore.instance.collection('schools/7041275/feed/');
+  late User userData;
 
   @override
   void initState() {
     super.initState();
-
+    userData = widget.user;
     _getDocuments();
   }
 
-  void _onAnswerButtonPressed(String questionId, String questionContent,
-      String profileImage, String name) {
-    createDynamicLink(context, questionId, questionContent, profileImage, name);
+  void _onAnswerButtonPressed(String questionId, String contentId) {
+    getShortLink(questionId, contentId).then((value) {
+      String url = value;
+      print(url);
+      Clipboard.setData(ClipboardData(text: url));
+    });
   }
 
   // 초기 데이터를 가져오는 get함수
@@ -60,7 +65,7 @@ class _FeedPageState extends State<FeedPage> {
   }
 
   Widget feedButton(int candy, String questionId, String questionContent,
-      String profileImage, String name) {
+      String profileImage, String name, String contentId) {
     String btnText = '';
 
     if (candy > 0) {
@@ -89,8 +94,7 @@ class _FeedPageState extends State<FeedPage> {
             onTap: () {
               if (btnText == '답변하기') {
                 print("tap 답변하기버튼");
-                _onAnswerButtonPressed(
-                    questionId, questionContent, profileImage, name);
+                _onAnswerButtonPressed(questionId, contentId);
               }
               // Get.to(() => AnswerPage(),
               // arguments: [questionId, questionContent, profileImage, name])
@@ -242,10 +246,11 @@ class _FeedPageState extends State<FeedPage> {
                                 //questionId, questionContent, profileImage 넘겨야함
                                 child: feedButton(
                                     0,
-                                    data['questionContent'],
                                     data['questionId'],
+                                    data['questionContent'],
                                     data['profileImage'],
-                                    data['name']),
+                                    data['name'],
+                                    data['contentId'].toString()),
                               ),
                             )
                           ],

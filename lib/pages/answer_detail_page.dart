@@ -52,8 +52,7 @@ class _AnswerDetailPageState extends State<AnswerDetailPage> {
           answerData = value; // 데이터를 가져온 후에 상태를 업데이트함
         });
         print("inAnswerDetailCard: $answerData");
-        getDocument(questionDocRef.doc(value.questionId), value.questionId)
-            .then((value) {
+        getDocument(questionDocRef.doc(value.questionId)).then((value) {
           imgUrl = value.ownerProfileImage;
           setState(() {
             imgUrl = imgUrl;

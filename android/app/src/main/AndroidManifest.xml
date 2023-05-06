@@ -4,7 +4,10 @@
             <!-- If your app opens https URLs -->
         <intent>
             <action android:name="android.intent.action.VIEW" />
-            <data android:scheme="https" />
+             <category android:name="android.intent.category.DEFAULT" />
+            <category android:name="android.intent.category.BROWSABLE" />
+
+            <data android:scheme="https" android:host="midascooing.page.link"/>
         </intent>
     </queries>
    <application

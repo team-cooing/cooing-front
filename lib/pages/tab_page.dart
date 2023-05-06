@@ -8,6 +8,7 @@ import 'package:cooing_front/pages/feed_page.dart';
 import 'package:get/get.dart';
 import 'package:cooing_front/model/response/response.dart' as response;
 import 'package:cooing_front/model/config/palette.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 
 class TabPage extends StatefulWidget {
   const TabPage({super.key});
@@ -113,4 +114,32 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
       Get.offAll(LoginScreen());
     }
   }
+
+  //   void initDynamicLinks() async {
+  //   FirebaseDynamicLinks.instance.onLink(
+  //       onSuccess: (PendingDynamicLinkData dynamicLink) async {
+  //         final Uri deepLink = dynamicLink?.link;
+        
+  //         print(deepLink);
+  //         print(deepLink.path);
+          
+  //         if (deepLink != null) {
+  //            // do something
+  //         }
+  //       },
+  //       onError: (OnLinkErrorException e) async {
+  //         print('onLinkError');
+  //         print(e.message);
+  //       }
+  //   );
+
+  //   final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.getInitialLink();
+  //   final Uri deepLink = data?.link;
+
+  //   print(deepLink);
+    
+  //   if (deepLink != null) {
+  //      // do something
+  //   }
+  // }
 }
