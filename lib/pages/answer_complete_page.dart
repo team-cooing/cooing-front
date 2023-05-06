@@ -10,7 +10,9 @@ class AnswerCompleteScreen extends StatefulWidget {
 }
 
 class AnswerCompleteScreenState extends State<AnswerCompleteScreen> {
-  String owner = Get.arguments;
+  String owner = Get.arguments['ownerName'];
+  String uid = Get.arguments['uid'];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,7 +65,6 @@ class AnswerCompleteScreenState extends State<AnswerCompleteScreen> {
                 children: [
                   ElevatedButton(
                       onPressed: () {
-                        String uid = Get.arguments['uid'];
                         Get.offAll(TabPage(), arguments: uid);
                       },
                       style: OutlinedButton.styleFrom(

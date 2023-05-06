@@ -28,11 +28,20 @@ class _FeedPageState extends State<FeedPage> {
     _getDocuments();
   }
 
-  void _onAnswerButtonPressed(String questionId, String contentId) {
-    getShortLink(questionId, contentId).then((value) {
+  void _onAnswerButtonPressed(
+      String questionId,
+      String contentId,
+      String content,
+      String ownerId,
+      String ownerName,
+      String ownerProfileImage) {
+    getShortLink(questionId, contentId, content, ownerId, ownerName,
+            ownerProfileImage)
+        .then((value) {
       String url = value;
-      print(url);
+      print("In feed_page : $url");
       Clipboard.setData(ClipboardData(text: url));
+      print("In feed_page : URL 클립보드 복사");
     });
   }
 
@@ -56,7 +65,7 @@ class _FeedPageState extends State<FeedPage> {
     _lastDocument = snapshot.docs.last;
 
     for (var i in snapshot.docs) {
-      print((i.data().toString()));
+      print((" ${i.data().toString()}"));
     }
 
     setState(() {});
@@ -64,8 +73,15 @@ class _FeedPageState extends State<FeedPage> {
     return snapshot.docs;
   }
 
-  Widget feedButton(int candy, String questionId, String questionContent,
-      String profileImage, String name, String contentId) {
+  Widget feedButton(
+    int candy,
+    String questionId,
+    String questionContent,
+    String contentId,
+    String ownerId,
+    String profileImage,
+    String name,
+  ) {
     String btnText = '';
 
     if (candy > 0) {
@@ -94,7 +110,8 @@ class _FeedPageState extends State<FeedPage> {
             onTap: () {
               if (btnText == '답변하기') {
                 print("tap 답변하기버튼");
-                _onAnswerButtonPressed(questionId, contentId);
+                _onAnswerButtonPressed(questionId, contentId, questionContent,
+                    ownerId, name, profileImage);
               }
               // Get.to(() => AnswerPage(),
               // arguments: [questionId, questionContent, profileImage, name])
@@ -245,12 +262,14 @@ class _FeedPageState extends State<FeedPage> {
                                 ),
                                 //questionId, questionContent, profileImage 넘겨야함
                                 child: feedButton(
-                                    0,
-                                    data['questionId'],
-                                    data['questionContent'],
-                                    data['profileImage'],
-                                    data['name'],
-                                    data['contentId'].toString()),
+                                  0,
+                                  data['questionId'], //questionId
+                                  data['contentId'].toString(),
+                                  data['questionContent'],
+                                  data['id'], //owner uid
+                                  data['profileImage'],
+                                  data['name'],
+                                ),
                               ),
                             )
                           ],

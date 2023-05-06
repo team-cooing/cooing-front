@@ -1,6 +1,6 @@
-import 'package:cooing_front/pages/answer_page.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:uni_links/uni_links.dart';
+import 'package:cooing_front/pages/answer_page.dart';
 import 'package:get/get.dart';
 
 class DynamicLink {
@@ -28,7 +28,7 @@ class DynamicLink {
 
       if (dynamicLinkData != null) {
         print("dynamicLinkData = $dynamicLinkData");
-        _redirectScreen(dynamicLinkData);
+        _redirectScreen(dynamicLinkData, uid);
 
         return true;
       }
@@ -38,45 +38,55 @@ class DynamicLink {
   }
 
   void _addListener(String uid) {
+    List urlData = [];
     FirebaseDynamicLinks.instance.onLink.listen((
       PendingDynamicLinkData dynamicLinkData,
     ) {
-      _redirectScreen(dynamicLinkData);
+      _redirectScreen(dynamicLinkData, uid);
     }).onError((error) {
       print("addListener : $error");
       // logger.e(error);
     });
   }
 
-  void _redirectScreen(PendingDynamicLinkData dynamicLinkData) {
-    print(333333333);
-    print(dynamicLinkData.link.path);
-    print(dynamicLinkData.link.queryParameters.containsKey('cid'));
+  void _redirectScreen(PendingDynamicLinkData dynamicLinkData, String uid) {
+    print("333333333::::: ${dynamicLinkData.link}");
     if (dynamicLinkData.link.queryParameters.containsKey('cid')) {
-      String? questionId = dynamicLinkData.link.path.split('/').last;
-      String? contentId = dynamicLinkData.link.queryParameters['cid']!;
-      print("_redirectScreen: questionId-$questionId, contentId-$contentId");
+      // String? questionId
+      String questionId =
+          dynamicLinkData.link.path.split('/').last; //questionId
+      String? contentId =
+          dynamicLinkData.link.queryParameters['cid']; //contentId
+      String? ownerId =
+          dynamicLinkData.link.queryParameters['ownerId']; //contentId
+      String? content =
+          dynamicLinkData.link.queryParameters['content']; //content
+      String? ownerName =
+          dynamicLinkData.link.queryParameters['ownerName']; //ownerName
+      String? ownerProfileImage =
+          dynamicLinkData.link.queryParameters['imgUrl']; //ownerProfileImg
 
-      if (questionId.isNotEmpty && contentId.isNotEmpty) {
-        print("qid : $questionId , cid : $contentId");
-        Get.offAll(() => AnswerPage(), arguments: {
-          // "uid": uid,
-          "questionId": questionId,
-          "contentId": contentId
-        });
-      } else {
-        print("qid : $questionId , cid : $contentId");
-      }
+      // print("_redirectScreen: questionId-$questionId, contentId-$contentId");
+      Get.offAll(() => AnswerPage(), arguments: {
+        "uid": uid,
+        "questionId": questionId,
+        "contentId": contentId,
+        "content": content,
+        "ownerId" : ownerId,
+        "ownerName": ownerName,
+        "ownerProfileImage": ownerProfileImage
+      });
     }
   }
 }
 
-Future<String> getShortLink(String questionId, String contentId) async {
+Future<String> getShortLink(String questionId, String contentId, String content,
+    String ownerId, String ownerName, String ownerProfileImage) async {
   String dynamicLinkPrefix = 'https://midascooing.page.link';
-  print("getShortLink() : questionId : $questionId , contentId : $contentId");
   final dynamicLinkParams = DynamicLinkParameters(
     uriPrefix: dynamicLinkPrefix,
-    link: Uri.parse('$dynamicLinkPrefix/$questionId?cid=$contentId'),
+    link: Uri.parse(
+        '$dynamicLinkPrefix/$questionId?cid=$contentId&content=$content&ownerId=$ownerId&ownerName=$ownerName&imgUrl=$ownerProfileImage'),
     androidParameters: const AndroidParameters(
       packageName: 'com.midas.cooing',
       minimumVersion: 0,
@@ -89,6 +99,5 @@ Future<String> getShortLink(String questionId, String contentId) async {
   final dynamicLink =
       await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
 
-  print("dynamicLink : ${dynamicLink.toString()}");
   return dynamicLink.shortUrl.toString();
 }

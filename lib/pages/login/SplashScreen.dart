@@ -46,8 +46,11 @@ class _SplashScreenState extends State<SplashScreen> {
 
         DynamicLink().setup(newUserUid).then((value) {
           if (value) {
-            print("value:::::::::::::::true");
+            print(value);
+
+            print("dynamic link 로 접속");
           } else {
+            print("dynamic link 로 접속하지 않음 ");
             initialRoute = 'tab';
           }
         });
