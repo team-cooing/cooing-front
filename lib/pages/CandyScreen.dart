@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cooing_front/model/response/User.dart';
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
@@ -11,19 +13,43 @@ class CandyScreen extends StatefulWidget {
 
 class _CandyScreenState extends State<CandyScreen> {
   // 인앱결제를 위한 초기화
-  final InAppPurchase _iap = InAppPurchase.instance;
+  final InAppPurchase _inAppPurchase = InAppPurchase.instance;
+  bool _available = false; // 인앱 결제가 가능한지 여부를 나타내는 변수
+  List<ProductDetails> _products = []; // 사용 가능한 상품 목록
+
+  Future<void> _loadProducts() async {
+    _available = await _inAppPurchase.isAvailable();
+    Set<String> ids = Set<String>.from([
+      "candy25",
+      "candy50",
+      "candy100",
+    ]);
+    if (_available) {
+      print(_available);
+      print(ids);
+      ProductDetailsResponse response =
+          await InAppPurchase.instance.queryProductDetails(ids);
+      print(response.productDetails.toString());
+      print(response.productDetails);
+      print(response.error);
+      setState(() {
+        this._products = response.productDetails;
+      });
+    }
+  }
 
   @override
   void initState() {
     super.initState();
-    _initialize();
+    Future(this._loadProducts);
+
+    // 인앱 결제 초기화
+    // 사용 가능한 상품 조회
   }
 
-  Future<void> _initialize() async {
-    final bool available = await _iap.isAvailable();
-    if (available) {
-      await _iap.restorePurchases();
-    }
+  void _buyProduct(ProductDetails product) {
+    final PurchaseParam purchaseParam = PurchaseParam(productDetails: product);
+    InAppPurchase.instance.buyNonConsumable(purchaseParam: purchaseParam);
   }
 
   Widget build(BuildContext context) {
@@ -95,7 +121,9 @@ class _CandyScreenState extends State<CandyScreen> {
                             ],
                           ),
                           ElevatedButton(
-                              onPressed: null,
+                              onPressed: () {
+                                _buyProduct(_products[0]);
+                              },
                               style: OutlinedButton.styleFrom(
                                 foregroundColor: Colors.white,
                                 backgroundColor:
