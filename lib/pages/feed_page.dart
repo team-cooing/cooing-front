@@ -76,11 +76,11 @@ class _FeedPageState extends State<FeedPage> {
   Widget feedButton(
     int candy,
     String questionId,
-    String questionContent,
     String contentId,
+    String questionContent,
     String ownerId,
-    String profileImage,
     String name,
+    String profileImage,
   ) {
     String btnText = '';
 
@@ -266,9 +266,9 @@ class _FeedPageState extends State<FeedPage> {
                                   data['questionId'], //questionId
                                   data['contentId'].toString(),
                                   data['questionContent'],
-                                  data['id'], //owner uid
-                                  data['profileImage'],
+                                  data['id'].toString(), //owner uid
                                   data['name'],
+                                  data['profileImage'],
                                 ),
                               ),
                             )
