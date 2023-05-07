@@ -1,13 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+
     package="com.midas.cooing">
     <queries>
             <!-- If your app opens https URLs -->
         <intent>
             <action android:name="android.intent.action.VIEW" />
-             <category android:name="android.intent.category.DEFAULT" />
-            <category android:name="android.intent.category.BROWSABLE" />
-
-            <data android:scheme="https" android:host="midascooing.page.link"/>
+            <data android:scheme="https" />
         </intent>
     </queries>
    <application
@@ -66,5 +65,16 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+
+     		<provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.com.shekarmudaliyar.social_share"
+            android:exported="false"
+            android:grantUriPermissions="true"
+            tools:replace="android:authorities">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/filepaths" />
+        </provider>
     </application>
 </manifest>

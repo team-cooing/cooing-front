@@ -115,31 +115,4 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
     }
   }
 
-  //   void initDynamicLinks() async {
-  //   FirebaseDynamicLinks.instance.onLink(
-  //       onSuccess: (PendingDynamicLinkData dynamicLink) async {
-  //         final Uri deepLink = dynamicLink?.link;
-        
-  //         print(deepLink);
-  //         print(deepLink.path);
-          
-  //         if (deepLink != null) {
-  //            // do something
-  //         }
-  //       },
-  //       onError: (OnLinkErrorException e) async {
-  //         print('onLinkError');
-  //         print(e.message);
-  //       }
-  //   );
-
-  //   final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.getInitialLink();
-  //   final Uri deepLink = data?.link;
-
-  //   print(deepLink);
-    
-  //   if (deepLink != null) {
-  //      // do something
-  //   }
-  // }
 }

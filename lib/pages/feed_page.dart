@@ -41,7 +41,9 @@ class _FeedPageState extends State<FeedPage> {
       String url = value;
       print("In feed_page : $url");
       Clipboard.setData(ClipboardData(text: url));
-      print("In feed_page : URL 클립보드 복사");
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('링크 복사완료!'),
+      ));
     });
   }
 
