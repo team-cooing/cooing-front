@@ -1,10 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:async';
-import 'package:screenshot/screenshot.dart';
 import 'package:social_share/social_share.dart';
 
 class ShareCard extends StatefulWidget {
@@ -41,30 +39,30 @@ class _ShareCardState extends State<ShareCard> {
     return file.path;
   }
 
-  Future<String?> pickImage() async {
-    final file = await ImagePicker().pickImage(
-      source: ImageSource.gallery,
-    );
-    var path = file?.path;
-    if (path == null) {
-      return null;
-    }
-    return file?.path;
-  }
+  // Future<String?> pickImage() async {
+  //   final file = await ImagePicker().pickImage(
+  //     source: ImageSource.gallery,
+  //   );
+  //   var path = file?.path;
+  //   if (path == null) {
+  //     return null;
+  //   }
+  //   return file?.path;
+  // }
 
-  Future<String?> screenshot() async {
-    var data = await screenshotController.capture();
-    if (data == null) {
-      return null;
-    }
-    final tempDir = await getTemporaryDirectory();
-    final assetPath = '${tempDir.path}/temp.png';
-    File file = await File(assetPath).create();
-    await file.writeAsBytes(data);
-    return file.path;
-  }
+  // Future<String?> screenshot() async {
+  //   var data = await screenshotController.capture();
+  //   if (data == null) {
+  //     return null;
+  //   }
+  //   final tempDir = await getTemporaryDirectory();
+  //   final assetPath = '${tempDir.path}/temp.png';
+  //   File file = await File(assetPath).create();
+  //   await file.writeAsBytes(data);
+  //   return file.path;
+  // }
 
-  ScreenshotController screenshotController = ScreenshotController();
+  // ScreenshotController screenshotController = ScreenshotController();
 
   @override
   Widget build(BuildContext context) {
@@ -192,7 +190,7 @@ class _ShareCardState extends State<ShareCard> {
                     ),
                     ElevatedButton(
                         onPressed: () async {
-                          var path = await pickImage();
+                          var path = await copyImage('sohee.jpg');
                           if (path == null) {
                             return;
                           }
@@ -203,7 +201,6 @@ class _ShareCardState extends State<ShareCard> {
                                   backgroundBottomColor: "#000000",
                                   attributionURL: "www.naver.com")
                               .then((data) {
-
                             print(data);
                           });
                         },
