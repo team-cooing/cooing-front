@@ -1,4 +1,3 @@
-import 'package:cooing_front/widgets/share_card.dart';
 import 'package:cooing_front/model/data/question_list.dart';
 import 'package:cooing_front/widgets/firebase_method.dart';
 import 'package:cooing_front/model/response/Question.dart';
@@ -321,7 +320,7 @@ class _QuestionPageState extends State<QuestionPage>
 
     return Scaffold(
       // body: SingleChildScrollView(child: _askBody()),
-      body: SingleChildScrollView(child: ShareCard()),
+      body: SingleChildScrollView(child: SizedBox()),
     );
   }
 

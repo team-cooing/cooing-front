@@ -156,6 +156,8 @@ Future<void> updateDocument(
     String section, dynamic updateStr, DocumentReference? docReference) async {
   Map<String, dynamic> data = {section: updateStr};
   await docReference?.update(data);
+
+  print("firebase $section 업데이트됨");
 }
 
 // TODO: 이미 받았던 질문 필터링 물어보기

@@ -15,7 +15,7 @@ class FeedPage extends StatefulWidget {
 
 class _FeedPageState extends State<FeedPage> {
   final int _limit = 10; // 한 번에 가져올 문서 수
-  late List<QueryDocumentSnapshot> _documents = [];
+  late final List<QueryDocumentSnapshot> _documents = [];
   late DocumentSnapshot<Object?>? _lastDocument;
   final CollectionReference _collectionReference =
       FirebaseFirestore.instance.collection('schools/7041275/feed/');
@@ -28,24 +28,7 @@ class _FeedPageState extends State<FeedPage> {
     _getDocuments();
   }
 
-  void _onAnswerButtonPressed(
-      String questionId,
-      String contentId,
-      String content,
-      String ownerId,
-      String ownerName,
-      String ownerProfileImage) {
-    getShortLink(questionId, contentId, content, ownerId, ownerName,
-            ownerProfileImage)
-        .then((value) {
-      String url = value;
-      print("In feed_page : $url");
-      Clipboard.setData(ClipboardData(text: url));
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('링크 복사완료!'),
-      ));
-    });
-  }
+
 
   // 초기 데이터를 가져오는 get함수
   Future<List<QueryDocumentSnapshot<Object?>>> _getDocuments() async {
@@ -58,13 +41,15 @@ class _FeedPageState extends State<FeedPage> {
     } else {
       snapshot = await _collectionReference
           .orderBy('id', descending: true) // id 필드를 기준으로 내림차순으로 정렬합니다.
-          .startAfter([_lastDocument?['id']]) // 마지막 문서의 id 값을 가져옵니다.
+          .startAfter([_lastDocument!['id']]) // 마지막 문서의 id 값을 가져옵니다.
           .limit(_limit)
           .get();
     }
 
-    _documents = [..._documents, ...snapshot.docs];
-    _lastDocument = snapshot.docs.last;
+    _documents.addAll(snapshot.docs);
+    if (_documents.isNotEmpty) {
+      _lastDocument = snapshot.docs.last;
+    }
 
     for (var i in snapshot.docs) {
       print((" ${i.data().toString()}"));
@@ -112,8 +97,7 @@ class _FeedPageState extends State<FeedPage> {
             onTap: () {
               if (btnText == '답변하기') {
                 print("tap 답변하기버튼");
-                _onAnswerButtonPressed(questionId, contentId, questionContent,
-                    ownerId, name, profileImage);
+               
               }
               // Get.to(() => AnswerPage(),
               // arguments: [questionId, questionContent, profileImage, name])
