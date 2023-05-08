@@ -1,8 +1,6 @@
 import 'package:cooing_front/model/response/User.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cooing_front/widgets/dynamic_link.dart';
-import 'package:flutter/services.dart';
 
 class FeedPage extends StatefulWidget {
   final User user;
@@ -15,20 +13,22 @@ class FeedPage extends StatefulWidget {
 
 class _FeedPageState extends State<FeedPage> {
   final int _limit = 10; // 한 번에 가져올 문서 수
-  late final List<QueryDocumentSnapshot> _documents = [];
+  late List<QueryDocumentSnapshot> _documents = [];
   late DocumentSnapshot<Object?>? _lastDocument;
   final CollectionReference _collectionReference =
       FirebaseFirestore.instance.collection('schools/7041275/feed/');
-  late User userData;
 
   @override
   void initState() {
     super.initState();
-    userData = widget.user;
+
     _getDocuments();
   }
 
-
+  void _onAnswerButtonPressed(String questionId, String questionContent,
+      String profileImage, String name) {
+    // createDynamicLink(context, questionId, questionContent, profileImage, name);
+  }
 
   // 초기 데이터를 가져오는 get함수
   Future<List<QueryDocumentSnapshot<Object?>>> _getDocuments() async {
@@ -41,18 +41,16 @@ class _FeedPageState extends State<FeedPage> {
     } else {
       snapshot = await _collectionReference
           .orderBy('id', descending: true) // id 필드를 기준으로 내림차순으로 정렬합니다.
-          .startAfter([_lastDocument!['id']]) // 마지막 문서의 id 값을 가져옵니다.
+          .startAfter([_lastDocument?['id']]) // 마지막 문서의 id 값을 가져옵니다.
           .limit(_limit)
           .get();
     }
 
-    _documents.addAll(snapshot.docs);
-    if (_documents.isNotEmpty) {
-      _lastDocument = snapshot.docs.last;
-    }
+    _documents = [..._documents, ...snapshot.docs];
+    _lastDocument = snapshot.docs.last;
 
     for (var i in snapshot.docs) {
-      print((" ${i.data().toString()}"));
+      print((i.data().toString()));
     }
 
     setState(() {});
@@ -60,15 +58,8 @@ class _FeedPageState extends State<FeedPage> {
     return snapshot.docs;
   }
 
-  Widget feedButton(
-    int candy,
-    String questionId,
-    String contentId,
-    String questionContent,
-    String ownerId,
-    String name,
-    String profileImage,
-  ) {
+  Widget feedButton(int candy, String questionId, String questionContent,
+      String profileImage, String name) {
     String btnText = '';
 
     if (candy > 0) {
@@ -97,7 +88,8 @@ class _FeedPageState extends State<FeedPage> {
             onTap: () {
               if (btnText == '답변하기') {
                 print("tap 답변하기버튼");
-               
+                // _onAnswerButtonPressed(
+                // questionId, questionContent, profileImage, name);
               }
               // Get.to(() => AnswerPage(),
               // arguments: [questionId, questionContent, profileImage, name])
@@ -248,14 +240,11 @@ class _FeedPageState extends State<FeedPage> {
                                 ),
                                 //questionId, questionContent, profileImage 넘겨야함
                                 child: feedButton(
-                                  0,
-                                  data['questionId'], //questionId
-                                  data['contentId'].toString(),
-                                  data['questionContent'],
-                                  data['id'].toString(), //owner uid
-                                  data['name'],
-                                  data['profileImage'],
-                                ),
+                                    0,
+                                    data['questionContent'],
+                                    data['questionId'],
+                                    data['profileImage'],
+                                    data['name']),
                               ),
                             )
                           ],
