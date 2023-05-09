@@ -112,6 +112,21 @@ class Response{
 
     return question;
   }
+  static Future<List<Question?>> readQuestionsInFeedWithLimit({required String schoolCode, required int limit}) async{
+    List<Question?> questions = [];
+    final docRef = db.collection("schools").doc(schoolCode).collection('feeds').orderBy('id', descending: true).limit(limit);
+    try{
+      QuerySnapshot snapshot = await docRef.get();
+      for(var i in snapshot.docs){
+        final data = i.data() as Map<String, dynamic>;
+        questions.add(Question.fromJson(data));
+      }
+    }catch(e){
+      print("Error getting document: $e");
+    }
+
+    return questions;
+  }
   static Future<void> updateQuestionInFeed({required Question newQuestion}) async{
     final docRef = db.collection("schools").doc(newQuestion.schoolCode).collection('feeds').doc(newQuestion.id);
     try{
