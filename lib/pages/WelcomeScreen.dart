@@ -61,6 +61,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         'isSubscribe': args.isSubscribe,
         'candyCount': args.candyCount,
         'questionInfos': args.questionInfos,
+        'answeredQuestions': args.answeredQuestions,
+        'currentQuestionId':args.currentQuestionId,
         'serviceNeedsAgreement': args.serviceNeedsAgreement,
         'privacyNeedsAgreement': args.privacyNeedsAgreement,
       });

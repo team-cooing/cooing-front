@@ -96,6 +96,7 @@ class _LoginScreenState extends State<LoginScreen> {
             candyCount: 0,
             questionInfos: [],
             answeredQuestions: [],
+            currentQuestionId: '',
             serviceNeedsAgreement: false,
             privacyNeedsAgreement: false,
           ),

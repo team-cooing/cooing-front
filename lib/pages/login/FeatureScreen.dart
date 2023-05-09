@@ -607,6 +607,7 @@ class _FeatureScreenState extends State<FeatureScreen> {
                             candyCount: args.candyCount,
                             questionInfos: args.questionInfos,
                             answeredQuestions: args.answeredQuestions,
+                            currentQuestionId: args.currentQuestionId,
                             serviceNeedsAgreement: args.serviceNeedsAgreement,
                             privacyNeedsAgreement: args.privacyNeedsAgreement,
                           ),

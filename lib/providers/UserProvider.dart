@@ -57,6 +57,7 @@ class UserDataProvider with ChangeNotifier {
                 List<Map<String, dynamic>>.from(data['questionInfos']),
             answeredQuestions:
                 List<String>.from(data['answeredQuestions'] ?? []),
+            currentQuestionId: data['currentQuestionId'],
             serviceNeedsAgreement: data['serviceNeedsAgreement'],
             privacyNeedsAgreement: data['privacyNeedsAgreement']);
         _isDataLoaded = true;

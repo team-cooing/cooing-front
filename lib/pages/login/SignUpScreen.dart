@@ -182,6 +182,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 candyCount: args.candyCount,
                                 questionInfos: args.questionInfos,
                                 answeredQuestions: args.answeredQuestions,
+                                currentQuestionId: args.currentQuestionId,
                                 serviceNeedsAgreement:
                                     args.serviceNeedsAgreement,
                                 privacyNeedsAgreement:

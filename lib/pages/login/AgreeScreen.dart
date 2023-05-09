@@ -185,6 +185,7 @@ class _AgreeScreenState extends State<AgreeScreen> {
                                 candyCount: args.candyCount,
                                 questionInfos: args.questionInfos,
                                 answeredQuestions: args.answeredQuestions,
+                                currentQuestionId: args.currentQuestionId,
                                 serviceNeedsAgreement: check[0],
                                 privacyNeedsAgreement: check[1],
                               ),

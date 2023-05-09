@@ -87,6 +87,7 @@ Future<User> getUserDocument(DocumentReference docRef, String id) async {
         candyCount: 0,
         questionInfos: [],
         answeredQuestions: [],
+        currentQuestionId: '',
         serviceNeedsAgreement: false,
         privacyNeedsAgreement: false);
   }

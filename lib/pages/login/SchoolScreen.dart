@@ -180,6 +180,7 @@ class _SchoolScreenState extends State<SchoolScreen> {
                                         questionInfos: args.questionInfos,
                                         answeredQuestions:
                                             args.answeredQuestions,
+                                        currentQuestionId: args.currentQuestionId,
                                         serviceNeedsAgreement:
                                             args.serviceNeedsAgreement,
                                         privacyNeedsAgreement:

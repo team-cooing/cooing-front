@@ -142,6 +142,7 @@ class _ClassScreenState extends State<ClassScreen> {
                                 candyCount: args.candyCount,
                                 questionInfos: args.questionInfos,
                                 answeredQuestions: args.answeredQuestions,
+                                currentQuestionId: args.currentQuestionId,
                                 serviceNeedsAgreement:
                                     args.serviceNeedsAgreement,
                                 privacyNeedsAgreement:
