@@ -5,6 +5,7 @@ class Answer {
   bool ownerGender;
   String content;
   String questionId;
+  String questionOwner;
   bool isAnonymous;
   String nickname;
   List hint;
@@ -18,6 +19,7 @@ class Answer {
         required this.ownerGender,
         required this.content,
         required this.questionId,
+        required this.questionOwner,
         required this.isAnonymous,
         required this.nickname,
         required this.hint,
@@ -32,6 +34,7 @@ class Answer {
         ownerGender: json['ownerGender'],
         content: json['content'],
         questionId: json['questionId'],
+        questionOwner: json['questionOwner'],
         isAnonymous: json['isAnonymous'],
         nickname: json['nickname'],
         hint: json['hint'],
@@ -47,6 +50,7 @@ class Answer {
       'ownerGender': ownerGender,
       'content': content,
       'questionId': questionId,
+      'questionOwner': questionOwner,
       'isAnonymous': isAnonymous,
       'nickname': nickname,
       'hint': hint,

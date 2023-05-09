@@ -101,7 +101,7 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
 
   getUserFromFirebase() async{
     // Firebase DB에서 User 읽기
-    user = await response.Response.readUser(uid);
+    user = await response.Response.readUser(userUid: uid);
 
     // 만약, 유저가 있다면
     if(user!=null){

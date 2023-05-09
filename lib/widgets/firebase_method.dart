@@ -15,7 +15,7 @@ Map<String, dynamic> _questionToFirestoreDocument(Question question) {
 
 Question initQuestion(Question question) {
   question.content = '';
-  question.contentId = 0;
+  question.contentId = '';
   question.receiveTime = '';
   question.openTime = '';
   question.url = '';
@@ -110,10 +110,11 @@ Future<Question> getDocument(DocumentReference docRef, String id) async {
       ownerName: '',
       owner: '',
       content: '',
-      contentId: 0,
+      contentId: '',
       receiveTime: '',
       openTime: '',
       url: '',
+      schoolCode: '',
       isValidity: false,
     );
     // 문서가 존재하지 않습니다.
@@ -230,6 +231,7 @@ Future<Answer> getAnsDoc(
       ownerGender: false,
       content: '',
       questionId: '',
+      questionOwner: '',
       isAnonymous: false,
       nickname: '',
       hint: [],
