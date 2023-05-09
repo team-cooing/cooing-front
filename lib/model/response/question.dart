@@ -44,6 +44,7 @@ class Question {
       'id': id,
       'ownerProfileImage': ownerProfileImage,
       'ownerName': ownerName,
+      'owner': owner,
       'content': content,
       'contentId': contentId,
       'receiveTime': receiveTime,
