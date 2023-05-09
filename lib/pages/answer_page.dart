@@ -6,7 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import '../model/util/hint.dart';
-import '../model/response/User.dart';
+import '../model/response/user.dart';
 
 class AnswerPage extends StatefulWidget {
   final User user;

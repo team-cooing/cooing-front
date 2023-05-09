@@ -1,8 +1,8 @@
 // Question 객체를 Firestore 문서로 변환하는 함수
 
-import 'package:cooing_front/model/response/User.dart';
+import 'package:cooing_front/model/response/user.dart';
 import 'package:cooing_front/model/data/question_list.dart';
-import 'package:cooing_front/model/response/Question.dart';
+import 'package:cooing_front/model/response/question.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import "dart:math";
 import 'package:shared_preferences/shared_preferences.dart';

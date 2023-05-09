@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:cooing_front/model/response/User.dart';
+import 'package:cooing_front/model/response/user.dart';
 
 import 'package:cooing_front/pages/login/SignUpScreen.dart';
 import 'package:cooing_front/model/util/Login_platform.dart';

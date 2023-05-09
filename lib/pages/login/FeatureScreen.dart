@@ -1,4 +1,4 @@
-import 'package:cooing_front/model/response/User.dart';
+import 'package:cooing_front/model/response/user.dart';
 import 'package:cooing_front/pages/login/MultiSelectscreen.dart';
 import 'package:flutter/material.dart';
 

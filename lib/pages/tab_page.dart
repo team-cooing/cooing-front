@@ -1,4 +1,4 @@
-import 'package:cooing_front/model/response/User.dart';
+import 'package:cooing_front/model/response/user.dart';
 import 'package:cooing_front/pages/SettingScreen.dart';
 import 'package:cooing_front/pages/login/LoginScreen.dart';
 import 'package:flutter/material.dart';
