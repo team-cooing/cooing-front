@@ -228,7 +228,7 @@ Future<Answer> getAnsDoc(
       id: '', // 마이크로세컨드까지 보낸 시간으로 사용
       time: '',
       owner: '',
-      ownerGender: false,
+      ownerGender: 0,
       content: '',
       questionId: '',
       questionOwner: '',

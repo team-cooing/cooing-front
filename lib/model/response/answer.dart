@@ -2,7 +2,7 @@ class Answer {
   String id; // 마이크로세컨드까지 보낸 시간으로 사용
   String time;
   String owner;
-  bool ownerGender;
+  int ownerGender;
   String content;
   String questionId;
   String questionOwner;

@@ -1,3 +1,4 @@
+import 'package:cooing_front/model/response/answer.dart';
 import 'package:cooing_front/model/response/question.dart';
 import 'package:cooing_front/model/response/user.dart';
 import 'package:cooing_front/pages/SettingScreen.dart';
@@ -22,6 +23,9 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
   late String uid = '';
   late User? user;
   late Question? currentQuestion;
+  late List<Question?> feedQuestions = [];
+  late List<Answer?> answers = [];
+
   bool isUserDataGetting = true;
   bool isLoading = true;
 
@@ -56,7 +60,7 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return isLoading? loadingView() : DefaultTabController(
+    return isLoading ? loadingView() : DefaultTabController(
         length: myTabs.length,
         child: Scaffold(
           appBar: AppBar(
@@ -85,16 +89,16 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
         ));
   }
 
-  Widget loadingView(){
+  Widget loadingView() {
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Expanded(
             child: Center(
-              child: CircularProgressIndicator(
-                color: Palette.mainPurple,
-              )
+                child: CircularProgressIndicator(
+                  color: Palette.mainPurple,
+                )
             ),
           ),
         ],
@@ -102,35 +106,33 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
     );
   }
 
-  getDataFromFirebase() async{
+  getDataFromFirebase() async {
     // 1. User 데이터 가져오기
     user = await getUserData();
 
     // 만약, 유저가 있다면
-    if(user!=null){
+    if (user != null) {
       // 2. Current Question 데이터 가져오기
       currentQuestion = await getCurrentQuestionData();
-
-      // TODO: 3. Feed Questions 데이터 가져오기
-
-    }else{
+      // 3. Feed Questions 데이터 가져오기
+      feedQuestions = await getFeedQuestionsInSetOfTen();
+      // 4. Answer 데이터 가져오기
+      answers = await getAnswersInSetOfTen();
+    } else {
       // 로그인 페이지로 이동
       Get.offAll(LoginScreen());
     }
-
-
   }
 
-  getUserData() async{
+  getUserData() async {
     // Firebase DB에서 User 읽기
     User? newUser = await response.Response.readUser(userUid: uid);
 
     return newUser;
   }
-
-  getCurrentQuestionData() async{
+  getCurrentQuestionData() async {
     // 만약, currentQuestionId가 있다면
-    if(user!.currentQuestionId.isNotEmpty){
+    if (user!.currentQuestionId.isNotEmpty) {
       String currentQuestionId = user!.currentQuestionId;
 
       // currentQuestionId = '#{contentId}_{questionId}'
@@ -142,11 +144,26 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
       String questionId = ids[1];
 
       // Firebase DB에서 Question 읽기
-      Question? newQuestion = await response.Response.readQuestion(contentId: contentId, questionId: questionId);
+      Question? newQuestion = await response.Response.readQuestion(
+          contentId: contentId, questionId: questionId);
 
       return newQuestion;
-    }else{
+    } else {
       return null;
     }
+  }
+  getFeedQuestionsInSetOfTen() async {
+    // Firevase DB에서 feedQuestion 10개 읽기
+    List<Question?> newFeedQuestions = await response.Response
+        .readQuestionsInFeedWithLimit(schoolCode: user!.schoolCode, limit: 10);
+
+    return newFeedQuestions;
+  }
+  getAnswersInSetOfTen() async {
+    // Firevase DB에서 feedQuestion 10개 읽기
+    List<Answer?> newAnswers = await response.Response
+        .readAnswersWithLimit(userId: user!.uid, limit: 10);
+
+    return newAnswers;
   }
 }

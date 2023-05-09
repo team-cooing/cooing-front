@@ -89,6 +89,7 @@ class Response{
   }
 
   // Feed Question
+  static String lastQuestionId = '';
   static Future<void> createQuestionInFeed({required Question newQuestion}) async {
     final docRef = db.collection("schools").doc(newQuestion.schoolCode).collection('feeds').doc(newQuestion.id);
     try{
@@ -114,14 +115,20 @@ class Response{
   }
   static Future<List<Question?>> readQuestionsInFeedWithLimit({required String schoolCode, required int limit}) async{
     List<Question?> questions = [];
-    final docRef = db.collection("schools").doc(schoolCode).collection('feeds').orderBy('id', descending: true).limit(limit);
     try{
-      QuerySnapshot snapshot = await docRef.get();
-      for(var i in snapshot.docs){
-        final data = i.data() as Map<String, dynamic>;
-        questions.add(Question.fromJson(data));
-      }
-    }catch(e){
+      final middleQuery = db.collection('schools').doc(schoolCode).collection('feeds').orderBy('id', descending: true);
+      final finalQuery = lastQuestionId.isNotEmpty? middleQuery.startAfter([lastQuestionId]).limit(limit) : middleQuery.limit(limit);
+      await finalQuery.get().then((documentSnapshots){
+
+        lastQuestionId = documentSnapshots.docs.last.data()['id'] as String;
+
+        for(var i in documentSnapshots.docs){
+          questions.add(Question.fromJson(i.data()));
+        }
+      });
+    }
+
+    catch(e){
       print("Error getting document: $e");
     }
 
@@ -145,6 +152,7 @@ class Response{
   }
 
   // Answer
+  static String lastAnswerId = '';
   static Future<void> createAnswer({required Answer newAnswer}) async {
     final docRef = db.collection("answers").doc(newAnswer.questionOwner).collection('answers').doc(newAnswer.id);
     try{
@@ -167,6 +175,27 @@ class Response{
     }
 
     return answer;
+  }
+  static Future<List<Answer?>> readAnswersWithLimit({required String userId, required int limit}) async{
+    List<Answer?> answers = [];
+    try{
+      final middleQuery = db.collection('answers').doc(userId).collection('answers').orderBy('time', descending: false);
+      final finalQuery = lastAnswerId.isNotEmpty? middleQuery.startAfter([lastAnswerId]).limit(limit) : middleQuery.limit(limit);
+      await finalQuery.get().then((documentSnapshots){
+
+        lastAnswerId = documentSnapshots.docs.last.data()['time'] as String;
+
+        for(var i in documentSnapshots.docs){
+          answers.add(Answer.fromJson(i.data()));
+        }
+      });
+    }
+
+    catch(e){
+      print("Error getting document: $e");
+    }
+
+    return answers;
   }
   static Future<void> updateAnswer({required Answer newAnswer}) async{
     final docRef = db.collection("answers").doc(newAnswer.questionOwner).collection('answers').doc(newAnswer.id);

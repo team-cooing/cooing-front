@@ -284,7 +284,7 @@ class _MessagePageState extends State<MessagePage> {
                                         children: [
                                           Row(
                                             children: [
-                                              whatIcon(answer.ownerGender,
+                                              whatIcon(answer.ownerGender==0,
                                                   answer.isOpened),
                                               Padding(
                                                   padding: EdgeInsets.only(
