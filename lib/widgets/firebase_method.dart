@@ -19,7 +19,7 @@ Question initQuestion(Question question) {
   question.receiveTime = '';
   question.openTime = '';
   question.url = '';
-  question.isValidity = false;
+  question.isOpen = false;
 
   return question;
 }
@@ -115,7 +115,7 @@ Future<Question> getDocument(DocumentReference docRef, String id) async {
       openTime: '',
       url: '',
       schoolCode: '',
-      isValidity: false,
+      isOpen: false,
     );
     // 문서가 존재하지 않습니다.
   }

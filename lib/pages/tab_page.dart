@@ -23,7 +23,7 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
   late String uid = '';
   late User? user;
   late Question? currentQuestion;
-  late List<Question?> feedQuestions = [];
+  late List<Question?> feed = [];
   late List<Answer?> answers = [];
 
   bool isUserDataGetting = true;
@@ -49,7 +49,7 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
     print('로그인 유저 UID: $uid');
 
     // 2. Firebase에서 Data 가져오기
-    getDataFromFirebase();
+    getInitialDataFromFirebase();
   }
 
   @override
@@ -81,7 +81,8 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
             ),
           ),
           body: TabBarView(controller: _tabController, children: [
-            QuestionPage(user: user!,),
+            // TODO: question page로 교체
+            QuestionPage(user: user!, currentQuestion: currentQuestion, feed: feed,),
             FeedPage(user: user!),
             MessagePage(user: user!),
             SettingScreen(user: user!),
@@ -106,7 +107,7 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
     );
   }
 
-  getDataFromFirebase() async {
+  getInitialDataFromFirebase() async {
     // 1. User 데이터 가져오기
     user = await getUserData();
 
@@ -115,9 +116,13 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
       // 2. Current Question 데이터 가져오기
       currentQuestion = await getCurrentQuestionData();
       // 3. Feed Questions 데이터 가져오기
-      feedQuestions = await getFeedQuestionsInSetOfTen();
+      feed = await getFeedQuestionsInSetOfTen();
       // 4. Answer 데이터 가져오기
       answers = await getAnswersInSetOfTen();
+
+      setState(() {
+        isLoading = false;
+      });
     } else {
       // 로그인 페이지로 이동
       Get.offAll(LoginScreen());

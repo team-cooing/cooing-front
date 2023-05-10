@@ -91,7 +91,7 @@ class Response{
   // Feed Question
   static String lastQuestionId = '';
   static Future<void> createQuestionInFeed({required Question newQuestion}) async {
-    final docRef = db.collection("schools").doc(newQuestion.schoolCode).collection('feeds').doc(newQuestion.id);
+    final docRef = db.collection("schools").doc(newQuestion.schoolCode).collection('feed').doc(newQuestion.id);
     try{
       await docRef.set(newQuestion.toJson());
     }catch(e){
@@ -100,7 +100,7 @@ class Response{
   }
   static Future<Question?> readQuestionInFeed({required String schoolCode, required String questionId}) async{
     Question? question;
-    final docRef = db.collection("schools").doc(schoolCode).collection('feeds').doc(questionId);
+    final docRef = db.collection("schools").doc(schoolCode).collection('feed').doc(questionId);
     try{
       await docRef.get().then(
               (DocumentSnapshot doc) {
@@ -116,7 +116,7 @@ class Response{
   static Future<List<Question?>> readQuestionsInFeedWithLimit({required String schoolCode, required int limit}) async{
     List<Question?> questions = [];
     try{
-      final middleQuery = db.collection('schools').doc(schoolCode).collection('feeds').orderBy('id', descending: true);
+      final middleQuery = db.collection('schools').doc(schoolCode).collection('feed').orderBy('id', descending: true);
       final finalQuery = lastQuestionId.isNotEmpty? middleQuery.startAfter([lastQuestionId]).limit(limit) : middleQuery.limit(limit);
       await finalQuery.get().then((documentSnapshots){
 
@@ -135,7 +135,7 @@ class Response{
     return questions;
   }
   static Future<void> updateQuestionInFeed({required Question newQuestion}) async{
-    final docRef = db.collection("schools").doc(newQuestion.schoolCode).collection('feeds').doc(newQuestion.id);
+    final docRef = db.collection("schools").doc(newQuestion.schoolCode).collection('feed').doc(newQuestion.id);
     try{
       await docRef.update(newQuestion.toJson());
     }catch(e){
@@ -143,7 +143,7 @@ class Response{
     }
   }
   static Future<void> deleteQuestionInFeed({required String schoolCode, required String questionId}) async{
-    final docRef = db.collection("schools").doc(schoolCode).collection('feeds').doc(questionId);
+    final docRef = db.collection("schools").doc(schoolCode).collection('feed').doc(questionId);
     try{
       await docRef.delete();
     }catch(e){
