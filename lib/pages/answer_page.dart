@@ -20,14 +20,7 @@ class AnswerPage extends StatefulWidget {
 
 class _AnswerPageState extends State<AnswerPage> {
   bool isLoading = true;
-
-  late String content;
-  late String questionId;
-  late String profileImage;
-  late String ownerName;
-  late String ownerId;
-  late String contentId;
-  late String ownerProfileImage;
+  late Question question;
 
   late String uid;
   late User _userData;
@@ -46,14 +39,8 @@ class _AnswerPageState extends State<AnswerPage> {
   @override
   void initState() {
     super.initState();
-    final arguments = Get.arguments;
-    uid = arguments["uid"] ?? "";
-    questionId = arguments["questionId"].replaceAll('%20', ' ') ?? "";
-    contentId = arguments["contentId"] ?? "";
-    ownerId = arguments["ownerId"] ?? "";
-    content = arguments["content"].replaceAll('%20', ' ') ?? "";
-    ownerName = arguments["ownerName"].replaceAll('%20', ' ') ?? "";
-    ownerProfileImage = arguments["ownerProfileImage"] ?? "";
+    uid = widget.user.uid;
+    question = widget.question;
 
     getUserData(uid).then((data) {
       _userData = data;
@@ -71,28 +58,17 @@ class _AnswerPageState extends State<AnswerPage> {
     });
   }
 
-  // Future<void> _loadQuestion() async {
-  //   final questionDoc = FirebaseFirestore.instance
-  //       .collection("contents")
-  //       .doc(contentId)
-  //       .collection("questions")
-  //       .doc(questionId);
-  //   final questionSnapshot = await getDocument(questionDoc);
-  //   setState(() {
-  //     viewQuestion = questionSnapshot;
-  //   });
-  // }
-
   Future<void> _uploadUserToFirebase(String ownerId) async {
+    String newAnswerId;
+
     try {
-      if (_userData != null) {
-        print("userData가 정상");
+      if (question.id.isNotEmpty) {
         timeId = DateTime.now().toString();
-        String newAnswerId;
         print("ownerId: $ownerId");
+
         final userAnswerRef = FirebaseFirestore.instance
             .collection('answers')
-            .doc(ownerId) //question 주인의 아이디에 답변 저장
+            .doc(ownerId) //question 주인 answer collection 가져오기
             .collection('answers');
 
         final QuerySnapshot snapshot = await userAnswerRef
@@ -102,19 +78,25 @@ class _AnswerPageState extends State<AnswerPage> {
             .get();
 
         if (snapshot.docs.isNotEmpty) {
-          final lastDocument = snapshot.docs.last;
-          final String lastId = lastDocument.id; // 가장 최근 document의 ID
-          final int lastNumber =
-              int.tryParse(lastId.split('_')[0].substring(1)) ??
-                  0; // 가장 최근 document의 번호
+          final String lastDocumentId = snapshot.docs.last.id; //가장 최근 answer Id
+
+          if (lastDocumentId.split('-').last != question.id) {
+            //가장 최근 답변이 이전 질문에 대한 답변일 때
+            newAnswerId = '#000001_${question.id}';
+          } else {
+            //현재 질문에 대한 답변일 때
+            final int lastNumber =
+                int.tryParse(lastDocumentId.split('_')[0].substring(1)) ??
+                    0; // 가장 최근 document의 번호
+            newAnswerId =
+                '#${(lastNumber + 1).toString().padLeft(6, '0')}_${question.id}';
+          }
 
           // 새 document의 ID 생성
-
-          newAnswerId =
-              '#${(lastNumber + 1).toString().padLeft(6, '0')}_$timeId';
         } else {
+          //answer 데이터가 아예 없을 때
           print('No documents found in answer collection');
-          newAnswerId = '#000001_$timeId';
+          newAnswerId = '#000001_${question.id}';
         }
 
         await userAnswerRef.doc(newAnswerId).set({
@@ -122,7 +104,7 @@ class _AnswerPageState extends State<AnswerPage> {
           'time': timeId,
           'owner': _userData.uid,
           'ownerGender': _userData.gender,
-          'questionId': questionId,
+          'questionId': question.id,
           'content': textValue,
           'isAnonymous': _checkSecret,
           'nickname': _checkSecret ? '닉네임' : _userData.name,
@@ -136,6 +118,25 @@ class _AnswerPageState extends State<AnswerPage> {
     } catch (e) {
       print(e);
     }
+  }
+
+  void emptyTextDialog() {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('입력된 답변이 없습니다.'),
+            content: Text('답변을 입력하세요.'),
+            actions: <Widget>[
+              OutlinedButton(
+                child: Text('확인'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        });
   }
 
   @override
@@ -215,18 +216,19 @@ class _AnswerPageState extends State<AnswerPage> {
               color: const Color(0xff9754FB),
               child: Column(children: <Widget>[
                 const Padding(padding: EdgeInsets.all(15.0)),
-                ownerProfileImage.isEmpty
+                question.ownerProfileImage.isEmpty
                     ? const CircularProgressIndicator()
                     : SizedBox(
                         width: 80.0,
                         height: 80.0,
                         child: CircleAvatar(
-                          backgroundImage: NetworkImage(ownerProfileImage),
+                          backgroundImage:
+                              NetworkImage(question.ownerProfileImage),
                         ),
                       ),
                 const Padding(padding: EdgeInsets.all(10.0)),
                 Text(
-                  content,
+                  question.content,
                   style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -320,9 +322,13 @@ class _AnswerPageState extends State<AnswerPage> {
             Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           ElevatedButton(
               onPressed: () async {
-                await _uploadUserToFirebase(ownerId);
-                Get.to(() => AnswerCompleteScreen(),
-                    arguments: {"ownerName": ownerName, "uid": uid});
+                if (textValue.isNotEmpty) {
+                  await _uploadUserToFirebase(question.id);
+                  Get.to(() => AnswerCompleteScreen(),
+                      arguments: {"ownerName": question.ownerName, "uid": uid});
+                } else {
+                  emptyTextDialog();
+                }
               },
               style: OutlinedButton.styleFrom(
                 fixedSize: Size.fromHeight(50),
