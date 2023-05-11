@@ -172,7 +172,7 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
   }
 
   getFeedQuestionsInSetOfTen() async {
-    // Firevase DB에서 feedQuestion 10개 읽기
+    // Firebase DB에서 feedQuestion 10개 읽기
     List<Question?> newFeedQuestions =
     await response.Response.readQuestionsInFeedWithLimit(
         schoolCode: user!.schoolCode, limit: 10);
@@ -183,9 +183,13 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
     int minAnswersNum = 999;
 
     for (var question in newFeedQuestions) {
-
       // 만약, 질문이 있다면
       if (question != null) {
+        // 만약, 이미 답변한 질문이라면
+        if(user!.answeredQuestions.contains(question.id)){
+          continue;
+        }
+
         // 만약, '가장 적은 질문을 가진 question'이 없다면
         if (questionIdWithMinAnswersNum.isEmpty) {
           questionIdWithMinAnswersNum = question.id;

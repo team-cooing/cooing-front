@@ -28,6 +28,7 @@ class _FeedPageState extends State<FeedPage> {
   late User user;
   List<Question?> feed = [];
   late String bonusQuestionId;
+  late BuildContext pageContext;
 
   @override
   void initState() {
@@ -41,6 +42,8 @@ class _FeedPageState extends State<FeedPage> {
 
   @override
   Widget build(BuildContext context) {
+    pageContext = context;
+
     return Scaffold(body: _buildFeedPage());
   }
 
@@ -130,7 +133,6 @@ class _FeedPageState extends State<FeedPage> {
   }
 
   Widget feedItem(int index) {
-
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 5),
       child: Card(
@@ -144,8 +146,9 @@ class _FeedPageState extends State<FeedPage> {
             left: 15,
             right: 15,
             top: (index == 0 &&
-                        !DateTime.now().isAfter(DateTime.parse(
-                            user.recentDailyBonusReceiveDate).add(Duration(hours: 24)))) ||
+                        !DateTime.now().isAfter(
+                            DateTime.parse(user.recentDailyBonusReceiveDate)
+                                .add(Duration(hours: 24)))) ||
                     index == -1
                 ? 30
                 : 10,
@@ -226,22 +229,7 @@ class _FeedPageState extends State<FeedPage> {
                     ],
                   ),
                 ),
-                Container(
-                    width: 75,
-                    alignment: Alignment.center,
-                    child: ElevatedButton(
-                      onPressed: null,
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        shadowColor: Colors.transparent,
-                        backgroundColor: Color.fromRGBO(151, 84, 251, 1),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0)),
-                      ),
-                      child: index == -1
-                          ? lotteryButton()
-                          : feedButton(feed[index]!),
-                    ))
+                index == -1 ? lotteryButton() : feedButton(feed[index]!),
               ],
             ),
           ),
@@ -251,35 +239,46 @@ class _FeedPageState extends State<FeedPage> {
   }
 
   Widget lotteryButton() {
-    return SizedBox(
-        width: 50.0,
-        child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: () async {
-              int candyNum = Random().nextInt(3) + 1;
+    return GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () async {
+          int candyNum = Random().nextInt(3) + 1;
 
-              // 복권 페이지로 이동
-              await Navigator.of(context).push(MaterialPageRoute(
-                  builder: (BuildContext context) => LotteryPage(
-                        candyNum: candyNum,
-                      )));
+          // 복권 페이지로 이동
+          await Navigator.of(context).push(MaterialPageRoute(
+              builder: (BuildContext context) => LotteryPage(
+                    candyNum: candyNum,
+                  )));
 
-              // User 반영
-              user.recentDailyBonusReceiveDate = DateTime.now().toString();
-              user.candyCount += candyNum;
+          // User 반영
+          user.recentDailyBonusReceiveDate = DateTime.now().toString();
+          user.candyCount += candyNum;
 
-              // Firebase > Users > User 업데이트
-              await Response.updateUser(newUser: user);
+          // Firebase > Users > User 업데이트
+          await Response.updateUser(newUser: user);
 
-              setState(() {});
-            },
-            child: Text('받기',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ))));
+          setState(() {});
+        },
+        child: Container(
+          width: 75,
+          alignment: Alignment.center,
+          child: ElevatedButton(
+              onPressed: null,
+              style: OutlinedButton.styleFrom(
+                foregroundColor: Colors.white,
+                shadowColor: Colors.transparent,
+                backgroundColor: Color.fromRGBO(151, 84, 251, 1),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0)),
+              ),
+              child: Text('받기',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ))),
+        ));
   }
 
   Widget feedButton(Question question) {
@@ -290,58 +289,81 @@ class _FeedPageState extends State<FeedPage> {
     bool canReceiveBonus =
         question.id == bonusQuestionId && !isBonusReceivedToday;
 
-    return SizedBox(
-        width: 50.0,
-        child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: () async {
-              // 만약, 보너스를 받을 수 있다면
-              await Navigator.of(context).push(MaterialPageRoute(
-                  builder: (BuildContext context) => AnswerPage(
-                      user: user,
-                      questionId: question.id,
-                      questionContent: question.content,
-                      profileImage: question.ownerProfileImage,
-                      name: question.ownerName)));
+    return GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () async {
+          if(!user.answeredQuestions.contains(question.id)){
+            // 만약, 보너스를 받을 수 있다면
+            // TODO: 혜은 -Answer 완료되면 true 반환해야함
+            bool? isCompleted = await Navigator.of(context).push(MaterialPageRoute(
+                builder: (BuildContext context) => AnswerPage(
+                    user: user,
+                    questionId: question.id,
+                    questionContent: question.content,
+                    profileImage: question.ownerProfileImage,
+                    name: question.ownerName)));
 
-              if (canReceiveBonus) {
-                user.recentQuestionBonusReceiveDate = DateTime.now().toString();
-                user.candyCount += 3;
+            // TODO: 임시 테스트 true
+            isCompleted = true;
+
+            if(isCompleted!=null){
+              // 만약, 답변이 완료되었다면
+              if(isCompleted){
+                user.answeredQuestions.add(question.id);
+                if (canReceiveBonus) {
+                  user.recentQuestionBonusReceiveDate = DateTime.now().toString();
+                  user.candyCount += 3;
+                }
+
                 await Response.updateUser(newUser: user);
-
                 setState(() {});
               }
-            },
-            child: canReceiveBonus
-                ? Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                        SizedBox(
-                            width: 14.0,
-                            height: 14.0,
-                            child:
-                                Image(image: AssetImage('images/candy1.png'))),
-                        SizedBox(
-                          width: 6,
-                        ),
-                        Text(
-                          '3',
-                          style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white),
-                        )
-                      ])
-                : Text(
-                    '답변하기',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  )));
+            }
+          }
+        },
+        child: Container(
+          width: 75,
+          alignment: Alignment.center,
+          child: ElevatedButton(
+              onPressed: null,
+              style: OutlinedButton.styleFrom(
+                foregroundColor: Colors.white,
+                shadowColor: Colors.transparent,
+                backgroundColor: user.answeredQuestions.contains(question.id)? Palette.mainPurple.withOpacity(0.4) : Palette.mainPurple,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0)),
+              ),
+              child: canReceiveBonus
+                  ? Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                          SizedBox(
+                              width: 14.0,
+                              height: 14.0,
+                              child: Image(
+                                  image: AssetImage('images/candy1.png'))),
+                          SizedBox(
+                            width: 6,
+                          ),
+                          Text(
+                            '3',
+                            style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                          )
+                        ])
+                  : Text(
+                      user.answeredQuestions.contains(question.id)? '답변완료' : '답변하기',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    )),
+        ));
   }
 
   Future<void> _handleRefresh() async {
@@ -350,9 +372,24 @@ class _FeedPageState extends State<FeedPage> {
         schoolCode: user.schoolCode, limit: 5);
     feed.addAll(newQuestions);
 
-    // TODO: 제거
-    await Future.delayed(Duration(seconds: 3));
+    if (newQuestions.isEmpty) {
+      await Future.delayed(Duration(seconds: 2));
+    }
 
-    setState(() {});
+    setState(() {
+      if (newQuestions.isEmpty) {
+        showSnackBar(pageContext, '우리 학교 질문을 모두 가져왔어요!');
+      }
+    });
+  }
+
+  void showSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: Palette.mainPurple,
+        content: Text(message),
+        duration: Duration(seconds: 2),
+      ),
+    );
   }
 }
