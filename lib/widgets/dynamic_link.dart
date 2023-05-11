@@ -8,12 +8,12 @@ import 'package:get/get.dart';
 class DynamicLink {
   Future<bool> setup(String uid) async {
     bool isExistDynamicLink = await _getInitialDynamicLink(uid);
-    print("11111 $isExistDynamicLink");
+    print("In dynamicLink() : $isExistDynamicLink");
 
     try {
       _addListener(uid);
     } catch (e) {
-      print("여기ㅇㅇㅇㅇㅇㅇ $e");
+      print("In dynamicLink() : $e");
     }
 
     return isExistDynamicLink;
@@ -45,13 +45,13 @@ class DynamicLink {
         PendingDynamicLinkData dynamicLinkData,) {
       _redirectScreen(dynamicLinkData, uid);
     }).onError((error) {
-      print("addListener : $error");
+      print("In dynamicLink() - addListener : $error");
       // logger.e(error);
     });
   }
 
   void _redirectScreen(PendingDynamicLinkData dynamicLinkData, String uid) {
-    print("333333333::::: ${dynamicLinkData.link}");
+    print("In dynamicLink() - _redirectScreen : ${dynamicLinkData.link}");
     if (dynamicLinkData.link.queryParameters.containsKey('cid')) {
       // String? questionId
       // TODO: 혜은 - question에 있는 변수 모두
@@ -59,25 +59,26 @@ class DynamicLink {
           dynamicLinkData.link.path
               .split('/')
               .last; //questionId
-      String? contentId =
-      dynamicLinkData.link.queryParameters['cid']; //contentId
-      String? ownerId =
-      dynamicLinkData.link.queryParameters['ownerId']; //contentId
-      String? content =
-      dynamicLinkData.link.queryParameters['content']; //content
-      String? ownerName =
-      dynamicLinkData.link.queryParameters['ownerName']; //ownerName
-      String? ownerProfileImage =
-      dynamicLinkData.link.queryParameters['imgUrl']; //ownerProfileImg
+
+      String contentId =
+      dynamicLinkData.link.queryParameters['cid']?? ""; //contentId
+      String ownerId =
+      dynamicLinkData.link.queryParameters['ownerId']?? ""; //contentId
+      String content =
+      dynamicLinkData.link.queryParameters['content']?? ""; //content
+      String ownerName =
+      dynamicLinkData.link.queryParameters['ownerName']??""; //ownerName
+      String ownerProfileImage =
+      dynamicLinkData.link.queryParameters['imgUrl']??""; //ownerProfileImg
 
       // print("_redirectScreen: questionId-$questionId, contentId-$contentId");
 
       // TODO: 혜은 - user, question 객체 만들어서 answer page에 전달
       // 임시 User
       User user = User(
-          uid: '',
-          name: '',
-          profileImage: '',
+          uid: uid,
+          name: "",
+          profileImage: "",
           gender: 0,
           number: '',
           age: '',
@@ -103,12 +104,12 @@ class DynamicLink {
 
       // 임시 Question
       Question question = Question(
-          id: questionId,
-          ownerProfileImage: ownerProfileImage ?? '',
-          ownerName: ownerName ?? '',
-          owner: uid,
-          content: content ?? '',
-          contentId: contentId ?? '',
+          id: questionId.replaceAll('%20', ' '), //url 에서의 %20 -> ' ' 공백으로 바꿈
+          ownerProfileImage: ownerProfileImage ,
+          ownerName: ownerName.replaceAll('%20', ' ') ,
+          owner: ownerId,
+          content: content.replaceAll('%20', ' ') ,
+          contentId: contentId,
           receiveTime: '',
           openTime: '',
           url: '',
