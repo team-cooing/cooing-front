@@ -17,11 +17,10 @@ class ShareCard extends StatefulWidget {
 
 class _ShareCardState extends State<ShareCard> {
   String facebookId = "617417756966237";
-
   var imageBackground = "sohee.jpg";
-  // var videoBackground = "video-background.mp4";
   String imageBackgroundPath = "";
   String videoBackgroundPath = "";
+  
   @override
   void initState() {
     super.initState();
