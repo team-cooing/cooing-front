@@ -10,10 +10,10 @@ import '../model/response/user.dart';
 
 class AnswerPage extends StatefulWidget {
   final User user;
-  final questionId;
-  final questionContent;
-  final profileImage;
-  final name;
+  final String questionId;
+  final String questionContent;
+  final String profileImage;
+  final String name;
   const AnswerPage({
     required this.user,
     required this.questionId,
@@ -40,8 +40,8 @@ class _AnswerPageState extends State<AnswerPage> {
   void initState() {
     super.initState();
     // _userData = Provider.of<UserDataProvider>(context, listen: false).userData;
-    hintList = generateHint(_userData!);
-    _userData = widget.user;
+    user = widget.user;
+    hintList = generateHint(user);
     // uid = widget.user.uid;
     askText = widget.questionContent;
     profileImage = widget.profileImage;
@@ -56,7 +56,7 @@ class _AnswerPageState extends State<AnswerPage> {
   String textValue = "";
   late DateTime id;
   UserDataProvider? _userDataProvider;
-  User? _userData;
+  late User user;
   late CollectionReference contentCollectionRef;
   late CollectionReference userCollectionRef;
   late List<String> hintList;
@@ -75,7 +75,7 @@ class _AnswerPageState extends State<AnswerPage> {
           .collection('answers');
 
       final QuerySnapshot snapshot = await userAnswerRef
-          .orderBy('createdAt', descending: true) // createdAt 필드를 기준으로 내림차순 정렬
+          .orderBy('time', descending: false) // time 필드를 기준으로 내림차순 정렬
           .limit(1) // 가장 마지막 document 하나만 가져오기
           .get();
 
@@ -97,12 +97,12 @@ class _AnswerPageState extends State<AnswerPage> {
       await userAnswerRef.doc(newId).set({
         'id': id, // 마이크로세컨드까지 보낸 시간으로 사용
         'time': id,
-        'owner': _userData!.uid,
-        'ownerGender': _userData!.gender,
+        'owner': user.uid,
+        'ownerGender': user.gender,
         'questionId': questionId,
         'content': textValue,
         'isAnonymous': _checkSecret,
-        'nickname': _checkSecret! ? '닉네임' : _userData!.name,
+        'nickname': _checkSecret! ? '닉네임' : user.name,
         'hint': hintList,
         'isOpenedHint': [false, false, false], //bool List
         'isOpened': false,
