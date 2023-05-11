@@ -1,18 +1,18 @@
+import 'package:cooing_front/model/response/question.dart';
+import 'package:cooing_front/model/response/user.dart';
 import 'package:flutter/material.dart';
 import 'package:cooing_front/pages/answer_complete_page.dart';
 import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../model/util/hint.dart';
-import '../model/response/User.dart';
 import 'package:cooing_front/widgets/firebase_method.dart';
 import 'package:cooing_front/model/config/palette.dart';
 
 class AnswerPage extends StatefulWidget {
-  const AnswerPage({
-    Key? key,
-  }) : super(key: key); // final String uid;
+  final User user;
+  final Question question;
 
-  // const AnswerPage({required this.uid, super.key});
+  const AnswerPage({required this.user, required this.question, super.key});
 
   @override
   State<AnswerPage> createState() => _AnswerPageState();
@@ -42,6 +42,7 @@ class _AnswerPageState extends State<AnswerPage> {
   late List<String> hintList;
 
   final TextEditingController _textController = TextEditingController();
+
   @override
   void initState() {
     super.initState();

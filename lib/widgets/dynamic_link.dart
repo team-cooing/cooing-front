@@ -1,3 +1,5 @@
+import 'package:cooing_front/model/response/question.dart';
+import 'package:cooing_front/model/response/user.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:uni_links/uni_links.dart';
 import 'package:cooing_front/pages/answer_page.dart';
@@ -40,8 +42,7 @@ class DynamicLink {
   void _addListener(String uid) {
     List urlData = [];
     FirebaseDynamicLinks.instance.onLink.listen((
-      PendingDynamicLinkData dynamicLinkData,
-    ) {
+        PendingDynamicLinkData dynamicLinkData,) {
       _redirectScreen(dynamicLinkData, uid);
     }).onError((error) {
       print("addListener : $error");
@@ -53,29 +54,68 @@ class DynamicLink {
     print("333333333::::: ${dynamicLinkData.link}");
     if (dynamicLinkData.link.queryParameters.containsKey('cid')) {
       // String? questionId
+      // TODO: 혜은 - question에 있는 변수 모두
       String questionId =
-          dynamicLinkData.link.path.split('/').last; //questionId
+          dynamicLinkData.link.path
+              .split('/')
+              .last; //questionId
       String? contentId =
-          dynamicLinkData.link.queryParameters['cid']; //contentId
+      dynamicLinkData.link.queryParameters['cid']; //contentId
       String? ownerId =
-          dynamicLinkData.link.queryParameters['ownerId']; //contentId
+      dynamicLinkData.link.queryParameters['ownerId']; //contentId
       String? content =
-          dynamicLinkData.link.queryParameters['content']; //content
+      dynamicLinkData.link.queryParameters['content']; //content
       String? ownerName =
-          dynamicLinkData.link.queryParameters['ownerName']; //ownerName
+      dynamicLinkData.link.queryParameters['ownerName']; //ownerName
       String? ownerProfileImage =
-          dynamicLinkData.link.queryParameters['imgUrl']; //ownerProfileImg
+      dynamicLinkData.link.queryParameters['imgUrl']; //ownerProfileImg
 
       // print("_redirectScreen: questionId-$questionId, contentId-$contentId");
-      Get.offAll(() => AnswerPage(), arguments: {
-        "uid": uid,
-        "questionId": questionId,
-        "contentId": contentId,
-        "content": content,
-        "ownerId" : ownerId,
-        "ownerName": ownerName,
-        "ownerProfileImage": ownerProfileImage
-      });
+
+      // TODO: 혜은 - user, question 객체 만들어서 answer page에 전달
+      // 임시 User
+      User user = User(
+          uid: '',
+          name: '',
+          profileImage: '',
+          gender: 0,
+          number: '',
+          age: '',
+          birthday: '',
+          school: '',
+          schoolCode: '',
+          schoolOrg: '',
+          grade: 1,
+          group: 1,
+          eyes: 0,
+          mbti: '',
+          hobby: '',
+          style: [],
+          isSubscribe: false,
+          candyCount: 0,
+          recentQuestionBonusReceiveDate: '',
+          recentDailyBonusReceiveDate: '',
+          questionInfos: [],
+          answeredQuestions: [],
+          currentQuestionId: '',
+          serviceNeedsAgreement: true,
+          privacyNeedsAgreement: true);
+
+      // 임시 Question
+      Question question = Question(
+          id: questionId,
+          ownerProfileImage: ownerProfileImage ?? '',
+          ownerName: ownerName ?? '',
+          owner: uid,
+          content: content ?? '',
+          contentId: contentId ?? '',
+          receiveTime: '',
+          openTime: '',
+          url: '',
+          schoolCode: '',
+          isOpen: false);
+
+      Get.offAll(() => AnswerPage(question: question, user: user,));
     }
   }
 }
@@ -97,7 +137,7 @@ Future<String> getShortLink(String questionId, String contentId, String content,
     // ),
   );
   final dynamicLink =
-      await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
+  await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
 
   return dynamicLink.shortUrl.toString();
 }
