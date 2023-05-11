@@ -178,6 +178,7 @@ class Response{
   }
   static Future<List<Answer?>> readAnswersWithLimit({required String userId, required int limit}) async{
     List<Answer?> answers = [];
+
     try{
       final middleQuery = db.collection('answers').doc(userId).collection('answers').orderBy('time', descending: false);
       final finalQuery = lastAnswerId.isNotEmpty? middleQuery.startAfter([lastAnswerId]).limit(limit) : middleQuery.limit(limit);
@@ -196,6 +197,23 @@ class Response{
     }
 
     return answers;
+  }
+  static Future<Answer?> readLastAnswer({required String userId}) async{
+    Answer? answer;
+
+    try{
+      final middleQuery = db.collection('answers').doc(userId).collection('answers').orderBy('time', descending: false);
+      final finalQuery = middleQuery.limit(1);
+      await finalQuery.get().then((documentSnapshots){
+        answer = Answer.fromJson(documentSnapshots.docs[0].data());
+      });
+    }
+
+    catch(e){
+      print("Error getting document: $e");
+    }
+
+    return answer;
   }
   static Future<void> updateAnswer({required Answer newAnswer}) async{
     final docRef = db.collection("answers").doc(newAnswer.questionOwner).collection('answers').doc(newAnswer.id);

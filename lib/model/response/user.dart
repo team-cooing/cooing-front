@@ -17,6 +17,8 @@ class User {
   List style;
   bool isSubscribe;
   int candyCount;
+  String recentQuestionBonusReceiveDate;
+  String recentDailyBonusReceiveDate;
   List<Map<String, dynamic>> questionInfos;
   List<String> answeredQuestions;
   String currentQuestionId;
@@ -42,6 +44,8 @@ class User {
     required this.style,
     required this.isSubscribe,
     required this.candyCount,
+    required this.recentQuestionBonusReceiveDate,
+    required this.recentDailyBonusReceiveDate,
     required this.questionInfos,
     required this.answeredQuestions,
     required this.currentQuestionId,
@@ -69,6 +73,8 @@ class User {
         style: List<String>.from(json['style']),
         isSubscribe: json['isSubscribe'],
         candyCount: json['candyCount'],
+        recentQuestionBonusReceiveDate: json['recentQuestionBonusReceiveDate'],
+        recentDailyBonusReceiveDate: json['recentDailyBonusReceiveDate'],
         questionInfos: List<Map<String, dynamic>>.from(json['questionInfos']),
         answeredQuestions: List<String>.from(json['answeredQuestions']),
         currentQuestionId: json['currentQuestionId'],
@@ -96,6 +102,8 @@ class User {
       'style': style,
       'isSubscribe': isSubscribe,
       'candyCount': candyCount,
+      'recentQuestionBonusReceiveDate': recentQuestionBonusReceiveDate,
+      'recentDailyBonusReceiveDate': recentDailyBonusReceiveDate,
       'questionInfos': questionInfos,
       'answeredQuestions': answeredQuestions,
       'currentQuestionId': currentQuestionId,

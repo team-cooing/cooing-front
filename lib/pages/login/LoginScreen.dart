@@ -94,6 +94,8 @@ class _LoginScreenState extends State<LoginScreen> {
             style: [],
             isSubscribe: false,
             candyCount: 0,
+            recentDailyBonusReceiveDate: '',
+            recentQuestionBonusReceiveDate: '',
             questionInfos: [],
             answeredQuestions: [],
             currentQuestionId: '',

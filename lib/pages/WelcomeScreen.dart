@@ -60,6 +60,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         "style": args.style,
         'isSubscribe': args.isSubscribe,
         'candyCount': args.candyCount,
+        'recentDailyBonusReceiveDate': args.recentDailyBonusReceiveDate,
+        'recentQuestionBonusReceiveDate': args.recentQuestionBonusReceiveDate,
         'questionInfos': args.questionInfos,
         'answeredQuestions': args.answeredQuestions,
         'currentQuestionId':args.currentQuestionId,

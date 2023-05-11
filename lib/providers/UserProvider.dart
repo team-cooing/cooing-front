@@ -53,6 +53,8 @@ class UserDataProvider with ChangeNotifier {
             style: List<String>.from(data['style']),
             isSubscribe: data['isSubscribe'],
             candyCount: data['candyCount'],
+            recentDailyBonusReceiveDate: data['recentDailyBonusReceiveDate'],
+            recentQuestionBonusReceiveDate: data['recentQuestionBonusReceiveDate'],
             questionInfos:
                 List<Map<String, dynamic>>.from(data['questionInfos']),
             answeredQuestions:

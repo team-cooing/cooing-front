@@ -1,7 +1,10 @@
+import 'dart:math';
+
 import 'package:cooing_front/model/response/answer.dart';
 import 'package:cooing_front/model/response/question.dart';
 import 'package:cooing_front/model/response/user.dart';
 import 'package:cooing_front/pages/SettingScreen.dart';
+import 'package:cooing_front/pages/feed_page.dart';
 import 'package:cooing_front/pages/login/LoginScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:cooing_front/pages/question_page.dart';
@@ -24,6 +27,7 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
   late User? user;
   late Question? currentQuestion;
   late List<Question?> feed = [];
+  late String bonusQuestionId;
   late List<Answer?> answers = [];
 
   bool isUserDataGetting = true;
@@ -60,7 +64,9 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return isLoading ? loadingView() : DefaultTabController(
+    return isLoading
+        ? loadingView()
+        : DefaultTabController(
         length: myTabs.length,
         child: Scaffold(
           appBar: AppBar(
@@ -81,9 +87,16 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
             ),
           ),
           body: TabBarView(controller: _tabController, children: [
-            // TODO: question page로 교체
-            QuestionPage(user: user!, currentQuestion: currentQuestion, feed: feed,),
-            FeedPage(user: user!),
+            QuestionPage(
+              user: user!,
+              currentQuestion: currentQuestion,
+              feed: feed,
+            ),
+            FeedPage(
+              user: user!,
+              feed: feed,
+              bonusQuestionId: bonusQuestionId,
+            ),
             MessagePage(user: user!),
             SettingScreen(user: user!),
           ]),
@@ -99,8 +112,7 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
             child: Center(
                 child: CircularProgressIndicator(
                   color: Palette.mainPurple,
-                )
-            ),
+                )),
           ),
         ],
       ),
@@ -135,6 +147,7 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
 
     return newUser;
   }
+
   getCurrentQuestionData() async {
     // 만약, currentQuestionId가 있다면
     if (user!.currentQuestionId.isNotEmpty) {
@@ -157,17 +170,59 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
       return null;
     }
   }
+
   getFeedQuestionsInSetOfTen() async {
     // Firevase DB에서 feedQuestion 10개 읽기
-    List<Question?> newFeedQuestions = await response.Response
-        .readQuestionsInFeedWithLimit(schoolCode: user!.schoolCode, limit: 10);
+    List<Question?> newFeedQuestions =
+    await response.Response.readQuestionsInFeedWithLimit(
+        schoolCode: user!.schoolCode, limit: 10);
+
+    // 보너스 질문 id 구하기
+    // 가장 적은 질문을 가진 question 찾기
+    String questionIdWithMinAnswersNum = '';
+    int minAnswersNum = 999;
+
+    for (var question in newFeedQuestions) {
+
+      // 만약, 질문이 있다면
+      if (question != null) {
+        // 만약, '가장 적은 질문을 가진 question'이 없다면
+        if (questionIdWithMinAnswersNum.isEmpty) {
+          questionIdWithMinAnswersNum = question.id;
+        }
+
+        Answer? lastAnswer =await response.Response.readLastAnswer(
+            userId: question.owner);
+
+        // 만약, 마지막 답변이 있다면
+        if (lastAnswer != null) {
+          // 만약, 마지막 답변이 지금 질문에 대한 것이 아니라면
+          if (lastAnswer.questionId != question.id) {
+            continue;
+          }
+          // 만약, 마지막 답변이 지금 질문에 대한 것이라면
+          else {
+            String extractedNumber = lastAnswer.id.substring(1, 7);
+            int result = int.parse(extractedNumber);
+
+            if (result < minAnswersNum) {
+              questionIdWithMinAnswersNum = question.id;
+              minAnswersNum = result;
+            }
+          }
+        }
+      }
+    }
+
+    bonusQuestionId = questionIdWithMinAnswersNum;
 
     return newFeedQuestions;
   }
+
   getAnswersInSetOfTen() async {
     // Firevase DB에서 feedQuestion 10개 읽기
-    List<Answer?> newAnswers = await response.Response
-        .readAnswersWithLimit(userId: user!.uid, limit: 10);
+    List<Answer?> newAnswers = await response.Response.readAnswersWithLimit(
+        userId: user!.uid, limit: 10);
 
     return newAnswers;
   }

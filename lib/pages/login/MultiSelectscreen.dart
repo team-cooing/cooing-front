@@ -283,6 +283,8 @@ class _MultiSelectscreenState extends State<MultiSelectscreen> {
                               style: _styleList,
                               isSubscribe: args.isSubscribe,
                               candyCount: args.candyCount,
+                              recentDailyBonusReceiveDate: args.recentDailyBonusReceiveDate,
+                              recentQuestionBonusReceiveDate: args.recentQuestionBonusReceiveDate,
                               questionInfos: args.questionInfos,
                               answeredQuestions: args.answeredQuestions,
                               currentQuestionId: args.currentQuestionId,

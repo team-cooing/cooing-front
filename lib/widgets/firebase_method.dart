@@ -85,6 +85,8 @@ Future<User> getUserDocument(DocumentReference docRef, String id) async {
         style: [],
         isSubscribe: false,
         candyCount: 0,
+        recentDailyBonusReceiveDate: '',
+        recentQuestionBonusReceiveDate: '',
         questionInfos: [],
         answeredQuestions: [],
         currentQuestionId: '',

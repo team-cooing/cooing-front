@@ -605,6 +605,8 @@ class _FeatureScreenState extends State<FeatureScreen> {
                             style: args.style,
                             isSubscribe: args.isSubscribe,
                             candyCount: args.candyCount,
+                            recentDailyBonusReceiveDate: args.recentDailyBonusReceiveDate,
+                            recentQuestionBonusReceiveDate: args.recentQuestionBonusReceiveDate,
                             questionInfos: args.questionInfos,
                             answeredQuestions: args.answeredQuestions,
                             currentQuestionId: args.currentQuestionId,
