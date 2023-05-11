@@ -1,20 +1,18 @@
-import 'package:cooing_front/model/response/User.dart';
-import 'package:cooing_front/pages/login/ClassScreen.dart';
+import 'package:cooing_front/model/response/user.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:cooing_front/model/response/Schools.dart';
+import 'package:cooing_front/model/response/school.dart';
 import 'package:cooing_front/providers/schools_providers.dart';
 
 class SchoolScreen extends StatefulWidget {
   const SchoolScreen({super.key});
 
   @override
-  _SchoolScreenState createState() => _SchoolScreenState();
+  State<SchoolScreen> createState() => _SchoolScreenState();
 }
 
 class _SchoolScreenState extends State<SchoolScreen> {
   FocusNode node1 = FocusNode();
-  List<Schools> schools = [];
+  List<School> schools = [];
   bool isLoading = true;
   bool empty = false;
   bool button = true;
@@ -26,7 +24,7 @@ class _SchoolScreenState extends State<SchoolScreen> {
   Future initSchools(args) async {
     schools = await schoolsProvider.getSchools(args);
     print(schools.length);
-    if (schools.length == 0) {
+    if (schools.isEmpty) {
       empty = true;
     } else {
       empty = false;
@@ -89,7 +87,7 @@ class _SchoolScreenState extends State<SchoolScreen> {
                           isLoading = true;
                         }
 
-                        if (text.length == 0) {
+                        if (text.isEmpty) {
                           setState(() {
                             disableButton = false;
                           });
@@ -107,16 +105,16 @@ class _SchoolScreenState extends State<SchoolScreen> {
                             borderSide: BorderSide(
                                 color: Color.fromARGB(255, 151, 84, 251))),
                         labelText: "학교 입력",
-                        labelStyle: new TextStyle(
+                        labelStyle: TextStyle(
                             color: Color.fromARGB(255, 182, 183, 184))),
                   )),
               Visibility(
+                  visible: empty,
                   child: Text(
                     '검색 결과가 없습니다.',
                     style: TextStyle(
                         color: Color.fromRGBO(51, 61, 75, 0.4), fontSize: 16),
-                  ),
-                  visible: empty),
+                  )),
               Visibility(visible: button, child: Spacer()),
               Visibility(
                   visible: button,
@@ -127,10 +125,10 @@ class _SchoolScreenState extends State<SchoolScreen> {
                         style: ElevatedButton.styleFrom(
                             primary: Color.fromARGB(255, 151, 84, 251),
                             onSurface: Color.fromRGBO(151, 84, 251, 0.2)),
-                        child: const Text('검색',
+                        onPressed: disableButton ? searchButton : null,
+                        child: Text('검색',
                             style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 15)),
-                        onPressed: disableButton ? searchButton : null),
+                                fontWeight: FontWeight.bold, fontSize: 15))),
                   )),
               isLoading
                   ? Container()
@@ -177,16 +175,18 @@ class _SchoolScreenState extends State<SchoolScreen> {
                                         style: args.style,
                                         isSubscribe: args.isSubscribe,
                                         candyCount: args.candyCount,
+                                        recentDailyBonusReceiveDate: args.recentDailyBonusReceiveDate,
+                                        recentQuestionBonusReceiveDate: args.recentQuestionBonusReceiveDate,
                                         questionInfos: args.questionInfos,
                                         answeredQuestions:
                                             args.answeredQuestions,
+                                        currentQuestionId: args.currentQuestionId,
                                         serviceNeedsAgreement:
                                             args.serviceNeedsAgreement,
                                         privacyNeedsAgreement:
                                             args.privacyNeedsAgreement,
                                       ),
                                     );
-                                    ;
                                   },
                                   child: Column(
                                     crossAxisAlignment:

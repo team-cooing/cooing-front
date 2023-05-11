@@ -5,7 +5,7 @@ import 'package:cooing_front/pages/login/ClassScreen.dart';
 import 'package:cooing_front/pages/HintPage.dart';
 import 'package:cooing_front/pages/login/TokenLoginScreen.dart';
 import 'package:cooing_front/pages/login/LoginScreen.dart';
-import 'package:cooing_front/pages/login/SchoolScreen.dart';
+import 'package:cooing_front/pages/login/schoolScreen.dart';
 import 'package:cooing_front/pages/login/SignUpScreen.dart';
 import 'package:cooing_front/pages/login/SplashScreen.dart';
 import 'package:cooing_front/pages/WelcomeScreen.dart';

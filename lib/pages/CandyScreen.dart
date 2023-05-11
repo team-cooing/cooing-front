@@ -1,4 +1,4 @@
-import 'package:cooing_front/model/response/User.dart';
+import 'package:cooing_front/model/response/user.dart';
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 

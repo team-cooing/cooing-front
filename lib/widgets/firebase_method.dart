@@ -1,8 +1,8 @@
 // Question 객체를 Firestore 문서로 변환하는 함수
 
-import 'package:cooing_front/model/response/User.dart';
+import 'package:cooing_front/model/response/user.dart';
 import 'package:cooing_front/model/data/question_list.dart';
-import 'package:cooing_front/model/response/Question.dart';
+import 'package:cooing_front/model/response/question.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import "dart:math";
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,11 +16,11 @@ Map<String, dynamic> _questionToFirestoreDocument(Question question) {
 
 Question initQuestion(Question question) {
   question.content = '';
-  question.contentId = 0;
+  question.contentId = '';
   question.receiveTime = '';
   question.openTime = '';
   question.url = '';
-  question.isValidity = false;
+  question.isOpen = false;
 
   return question;
 }
@@ -108,8 +108,11 @@ Future<User> getUserDocument(DocumentReference docRef, String id) async {
         style: [],
         isSubscribe: false,
         candyCount: 0,
+        recentDailyBonusReceiveDate: '',
+        recentQuestionBonusReceiveDate: '',
         questionInfos: [],
         answeredQuestions: [],
+        currentQuestionId: '',
         serviceNeedsAgreement: false,
         privacyNeedsAgreement: false);
   }
@@ -132,11 +135,12 @@ Future<Question> getDocument(DocumentReference docRef) async {
       ownerName: '',
       owner: '',
       content: '',
-      contentId: 0,
+      contentId: '',
       receiveTime: '',
       openTime: '',
       url: '',
-      isValidity: false,
+      schoolCode: '',
+      isOpen: false,
     );
     // 문서가 존재하지 않습니다.
   }
@@ -251,9 +255,10 @@ Future<Answer> getAnsDoc(
       id: '', // 마이크로세컨드까지 보낸 시간으로 사용
       time: '',
       owner: '',
-      ownerGender: false,
+      ownerGender: 0,
       content: '',
       questionId: '',
+      questionOwner: '',
       isAnonymous: false,
       nickname: '',
       hint: [],

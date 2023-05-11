@@ -1,4 +1,4 @@
-import 'package:cooing_front/model/response/User.dart';
+import 'package:cooing_front/model/response/user.dart';
 import 'package:cooing_front/pages/login/MultiSelectscreen.dart';
 import 'package:flutter/material.dart';
 
@@ -605,8 +605,11 @@ class _FeatureScreenState extends State<FeatureScreen> {
                             style: args.style,
                             isSubscribe: args.isSubscribe,
                             candyCount: args.candyCount,
+                            recentDailyBonusReceiveDate: args.recentDailyBonusReceiveDate,
+                            recentQuestionBonusReceiveDate: args.recentQuestionBonusReceiveDate,
                             questionInfos: args.questionInfos,
                             answeredQuestions: args.answeredQuestions,
+                            currentQuestionId: args.currentQuestionId,
                             serviceNeedsAgreement: args.serviceNeedsAgreement,
                             privacyNeedsAgreement: args.privacyNeedsAgreement,
                           ),

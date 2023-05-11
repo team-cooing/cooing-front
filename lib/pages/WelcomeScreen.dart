@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cooing_front/model/response/User.dart';
+import 'package:cooing_front/model/response/user.dart';
 import 'package:cooing_front/model/util/hint.dart';
 import 'package:cooing_front/pages/question_page.dart';
 import 'package:cooing_front/pages/tab_page.dart';
@@ -60,7 +60,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         "style": args.style,
         'isSubscribe': args.isSubscribe,
         'candyCount': args.candyCount,
+        'recentDailyBonusReceiveDate': args.recentDailyBonusReceiveDate,
+        'recentQuestionBonusReceiveDate': args.recentQuestionBonusReceiveDate,
         'questionInfos': args.questionInfos,
+        'answeredQuestions': args.answeredQuestions,
+        'currentQuestionId':args.currentQuestionId,
         'serviceNeedsAgreement': args.serviceNeedsAgreement,
         'privacyNeedsAgreement': args.privacyNeedsAgreement,
       });

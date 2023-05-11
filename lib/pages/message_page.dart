@@ -1,4 +1,4 @@
-import 'package:cooing_front/model/response/User.dart';
+import 'package:cooing_front/model/response/user.dart';
 import 'package:cooing_front/pages/answer_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -284,7 +284,7 @@ class _MessagePageState extends State<MessagePage> {
                                         children: [
                                           Row(
                                             children: [
-                                              whatIcon(answer.ownerGender,
+                                              whatIcon(answer.ownerGender==0,
                                                   answer.isOpened),
                                               Padding(
                                                   padding: EdgeInsets.only(

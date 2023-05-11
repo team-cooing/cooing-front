@@ -1,11 +1,11 @@
 import 'dart:convert';
 
-import 'package:cooing_front/model/response/Schools.dart';
+import 'package:cooing_front/model/response/school.dart';
 import 'package:http/http.dart' as http;
 
 class SchoolsProviders {
-  Future<List<Schools>> getSchools(args) async {
-    List<Schools> schools = [];
+  Future<List<School>> getSchools(args) async {
+    List<School> schools = [];
 
     Uri uri = Uri.parse(
         "https://open.neis.go.kr/hub/schoolInfo?Type=json&SCHUL_NM=${args}&apiKey=5ba72443538b44759c48f5ed4289cb21");
@@ -16,8 +16,8 @@ class SchoolsProviders {
       print(jsonDecode(response.body).keys.toString());
       if (jsonDecode(response.body).keys.toString() == '(schoolInfo)') {
         schools = jsonDecode(response.body)['schoolInfo'][1]['row']
-            .map<Schools>((school) {
-          return Schools.fromMap(school);
+            .map<School>((school) {
+          return School.fromMap(school);
         }).toList();
       }
       // if (jsonDecode(response.body).k)

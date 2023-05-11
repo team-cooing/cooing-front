@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:cooing_front/model/response/User.dart';
+import 'package:cooing_front/model/response/user.dart';
 import 'package:cooing_front/pages/tab_page.dart';
 import 'package:get/get.dart';
 
@@ -94,8 +94,11 @@ class _LoginScreenState extends State<LoginScreen> {
             style: [],
             isSubscribe: false,
             candyCount: 0,
+            recentDailyBonusReceiveDate: '',
+            recentQuestionBonusReceiveDate: '',
             questionInfos: [],
             answeredQuestions: [],
+            currentQuestionId: '',
             serviceNeedsAgreement: false,
             privacyNeedsAgreement: false,
           ),

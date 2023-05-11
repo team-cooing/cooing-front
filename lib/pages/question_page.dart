@@ -1,455 +1,456 @@
+import 'package:cooing_front/model/config/palette.dart';
 import 'package:cooing_front/model/data/question_list.dart';
-import 'package:cooing_front/widgets/firebase_method.dart';
-import 'package:cooing_front/model/response/Question.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cooing_front/model/response/question.dart';
+import 'package:cooing_front/model/response/response.dart';
+import 'package:cooing_front/model/response/user.dart';
 import 'package:flutter/material.dart';
-import 'package:cooing_front/providers/UserProvider.dart';
-import 'package:cooing_front/model/response/User.dart';
-import 'package:provider/provider.dart';
-import "dart:async";
 
 class QuestionPage extends StatefulWidget {
   final User user;
-  const QuestionPage({required this.user, super.key});
+  final Question? currentQuestion;
+  final List<Question?> feed;
+
+  const QuestionPage(
+      {required this.user,
+        required this.currentQuestion,
+        required this.feed,
+        super.key});
 
   @override
   State<QuestionPage> createState() => _QuestionPageState();
 }
 
-class _QuestionPageState extends State<QuestionPage>
-    with AutomaticKeepAliveClientMixin {
-  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+class _QuestionPageState extends State<QuestionPage> {
+  late User user;
+  Question? currentQuestion;
+  List<Question?> feed = [];
 
-  late CollectionReference contentCollectionRef;
-  late Question newQuestion;
-  late List<Map<String, dynamic>> newQuestionInfos;
-  late final String schoolCode;
+  bool isQuestionReceived = false;
+  bool isQuestionOpen = false;
+  bool hasQuestionCloseTimePassed = false;
 
   @override
   void initState() {
     super.initState();
 
-    // 모든 질문 가져오기
-    List<Map<String, dynamic>> questions = QuestionList.getQuestionLists();
+    // 부모 변수
+    user = widget.user;
+    currentQuestion = widget.currentQuestion;
+    feed = widget.feed;
 
-    // 유저가 받은 질문들은 삭제하기
-    List<int> contentIds = widget.user.questionInfos
-        .map<int>((e) => int.parse(e['contentId']))
-        .toList();
-    print(contentIds);
-
-    for (var questionInfo in widget.user.questionInfos) {}
-
-    // 랜덤으로 새로 받을 질문 선택
-
-    contentCollectionRef = FirebaseFirestore.instance.collection('contents');
-
-    try {
-      late User userData;
-
-      // getUserData().then((data) {
-      //   userData = data;
-      //   newQuestion.owner = userData.uid;
-      //   newQuestion.ownerName = userData.name;
-      //   newQuestion.ownerProfileImage = userData.profileImage;
-      //   newQuestionInfos = userData.questionInfos;
-      //
-      //   // schoolCode = userData.schoolCode;
-      //   schoolCode = '7041275';
-      //   print("스쿨코드는 7041275이다 강제로 맞춰놓았다. 까먹을까봐 출력해놓는다 나중에 고쳐라 신혜은아");
-      //   userDocRef = userCollectionRef.doc(newQuestion.owner);
-      //
-      //   print("newQuestion 에 제대로 들어갔을까");
-      //   print(newQuestion.ownerProfileImage);
-      //
-      //   if (newQuestionInfos.isEmpty) {
-      //     print("userData - questionInfos is Empty");
-      //   } else {
-      //     final lastQuestionInfo = newQuestionInfos.last;
-      //     final String? currentContentId =
-      //         lastQuestionInfo['contentId']?.toString();
-      //     final String? currentQuestionId = lastQuestionInfo['questionId'];
-      //     if (currentContentId != null && currentQuestionId != null) {
-      //       questionDocRef = contentCollectionRef
-      //           .doc(currentContentId)
-      //           .collection('questions')
-      //           .doc(currentQuestionId);
-      //
-      //       getDocument(questionDocRef, currentQuestionId).then((value) {
-      //         setState(() {
-      //           print("value.contentId : ${value.contentId}");
-      //           print("value.questionId : ${value.id}");
-      //           print("value.receiveTime : ${value.receiveTime}");
-      //           print("value : $value");
-      //           newQuestion = value;
-      //         });
-      //       });
-      //     }
-      //   }
-      //
-      //   setState(() {
-      //
-      //   });
-      // });
-    } on FormatException catch (e) {
-      // Handle JSON decoding error
-      print('Error decoding user data: $e');
-    } catch (e) {
-      // Handle other errors
-      print('Error loading user data: $e');
-    }
-  }
-
-  @override
-  bool get wantKeepAlive => true;
-  // UserDataProvider userDataProvider = UserDataProvider();
-
-  Object? questionId;
-  Map<String, dynamic> randomQ = {"id": -1, "question": ""};
-
-  //버튼 text
-  bool isButtonEnabled = true;
-  bool isViewContent = false;
-  String btnBottomMent = '';
-  String viewContentText = '';
-  final List<Color> _colors = <Color>[
-    Colors.white,
-    const Color(0xffe0cbfe),
-    const Color(0xff9754FB)
-  ];
-
-  late String askButtonText = '질문 받기';
-
-  //shareCard
-  bool openShareCard = false;
-  late String userDataJson;
-  //타이머 관련
-  Timer? _timer;
-  Duration _countdown = Duration.zero;
-  bool _isRunning = false; //타이머 isRunning
-  late DateTime receiveTime; //초기화
-  late String receiveTimeText;
-  late DateTime closeDate; //초기화
-  late String closeDateText;
-
-  //임시 questionInfos
-  late Map<String, dynamic> questionInfoList = {};
-  late String currentContentId;
-
-// "question_id" 문서를 만듭니다.
-  void createQuestionDocument(String contentId, String questionId) {
-    firestore
-        .collection('Contents')
-        .doc(contentId)
-        .collection('questions')
-        .doc(questionId)
-        .set({});
-  }
-
-  //open 하기 전인 상태
-  initialState() {
-    print("initialState");
-    openShareCard = false;
-    askButtonText = '질문 받기';
-    isViewContent = false; //"똑똑똑 질문이 도착했어요~"
-    isButtonEnabled = true;
-  }
-
-//
-  openButNotReceive() {
-    print("openButNotReceive");
-    askButtonText = '답변 받기'; //버튼 text는 질문닫기로 변경
-    isViewContent = true;
-    openShareCard = false; //아래에 share card 생성
-    isButtonEnabled = true;
-  }
-
-//답장o 닫는시간x (closeTime 지나기 전)
-  receiveButNotClose() {
-    print("receiveButNotClose");
-    askButtonText = '질문 닫기';
-    isButtonEnabled = false;
-    openShareCard = true; //아래에 share card 생성
-  }
-
-//답장o 닫는시간지남(closeTime 지난 후)
-  receiveAndClose() {
-    print("receiveAndClose");
-
-    isButtonEnabled = true;
-    askButtonText = '질문 닫기';
-    btnBottomMent = '새로운 질문이 도착했어요';
-    openShareCard = true; //아래에 share card 생성
-  }
-
-  changeAskCard() {
-    // setState(() {
-    switch (askButtonText) {
-      case '질문 받기':
-        //질문
-        newQuestion = initQuestion(newQuestion);
-        openButNotReceive();
-        randomQ = filterQuestion(newQuestionInfos);
-        print("빠져나왓니?");
-        newQuestion.content = randomQ['question'].toString();
-        newQuestion.id = DateTime.now().toString();
-        print(newQuestion.contentId);
-        newQuestion.contentId = randomQ['id'];
-        viewContentText = newQuestion.content;
-        _startTimer(); //openTime
-        // questionDocRef = contentCollectionRef
-        //     .doc(newQuestion.contentId.toString())
-        //     .collection('questions')
-        //     .doc(newQuestion.id); //title이 id인 firebase document reference 생성
-        // addNewQuestion(questionDocRef, newQuestion);
-        newQuestionInfos.add({
-          'contentId': newQuestion.contentId.toString(),
-          'questionId': newQuestion.id
-        });
-        print("${newQuestion.contentId} ---- ${newQuestion.content}");
-        print(
-            "239 라인 newQuestion.receiveTime ---- ${newQuestion.receiveTime} ");
-
-        // userDocRef.update({
-        //   'questionInfos': newQuestionInfos
-        // }); //파이어베이스 user - questionInfos 업데이트
-        final userProvider =
-            Provider.of<UserDataProvider>(context, listen: false);
-
-        userProvider.updateQuestionInfos(
-            newQuestionInfos); //기기 쿠키 user - questionInfos 업데이트
-
-        break;
-
-      case '답변 받기':
-        print('들어갔니?000');
-        receiveButNotClose();
-        _resetTimer();
-        newQuestion.isValidity = true;
-
-        String url = 'www.kookmin.ac.kr/12345'; //임시 url
-        receiveTime = DateTime.now();
-        closeDate = receiveTime.add(const Duration(hours: 24));
-        newQuestion.receiveTime = receiveTime.toString();
-        print('262라인 case 문 안에 ${newQuestion.receiveTime}');
-        // updateQuestion('receiveTime', newQuestion.receiveTime, questionDocRef);
-        // updateQuestion('url', url, questionDocRef);
-        // updateQuestion('isValidity', true, questionDocRef);
-        addQuestionToFeed(schoolCode, newQuestion); //피드 추가
-        print('267 라인 ${newQuestion.receiveTime}');
-
-        btnBottomMent =
-            '해당 질문은 ${closeDate.day}일 ${closeDate.hour}시 ${closeDate.minute}분부터 닫을 수 있습니다.';
-
-        break;
-
-      case '질문 닫기':
-        // if (DateTime.now().isAfter(closeDate)) {
-        //   receiveAndClose();
-        //   updateQuestion('isValidity', false, questionDocRef);
-        //   deleteQuestionFromFeed(schoolCode, newQuestion.id);
-        //   askButtonText = '질문 받기'; //버튼 text는 답변받기로 변경
-        // }
-        // updateQuestion('isValidity', false, questionDocRef);
-        deleteQuestionFromFeed(schoolCode, newQuestion.id);
-        initialState();
-        break;
-    }
-    // });
-  }
-
-  void _startTimer() {
-    if (newQuestion.openTime == "") {
-      final openTime = DateTime.now();
-      newQuestion.openTime = openTime.toString();
-      newQuestion.id = openTime.toString();
-      // print(1144$openTime.toString());
-    }
-    DateTime openTime = DateTime.parse(newQuestion.openTime);
-    final endOfDay = DateTime(openTime.year, openTime.month, openTime.day + 1);
-    final remainingSeconds = endOfDay.difference(openTime).inSeconds;
-    setState(() {
-      _countdown = Duration(seconds: remainingSeconds);
-      _isRunning = true;
-    });
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      setState(() {
-        if (_countdown.inSeconds == 0) {
-          _timer?.cancel();
-          _isRunning = false;
-          if (openShareCard == false) {
-            askButtonText = '질문 받기';
-          }
-        } else {
-          _countdown = Duration(seconds: _countdown.inSeconds - 1);
-        }
-      });
-    });
-  }
-
-  void _resetTimer() {
-    setState(() {
-      _countdown = Duration.zero;
-      _isRunning = false;
-    });
-    _timer?.cancel();
-  }
-
-  String _formatDuration(Duration duration) {
-    String twoDigits(int n) {
-      if (n >= 10) return "$n";
-      return "0$n";
-    }
-
-    String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
-    String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
-    String twoDigitHours = twoDigits(duration.inHours);
-
-    return "남은 시간 $twoDigitHours : $twoDigitMinutes : $twoDigitSeconds";
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
+    // Question에 대힌 변수 값 세팅
+    setQuestionState();
   }
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
-
     return Scaffold(
-      // body: SingleChildScrollView(child: _askBody()),
-      body: SingleChildScrollView(child: SizedBox()),
+      body: _buildQuestionPage(),
     );
   }
 
-  // Widget _askBody() {
-  //   return Padding(
-  //       padding: const EdgeInsets.all(25.0),
-  //       child: SafeArea(
-  //           child: Center(
-  //               child: Column(children: <Widget>[
-  //         pupleBox(),
-  //         shareCard(openShareCard),
-  //       ]))));
-  // }
-
-  Widget padding(double num) {
-    return Padding(padding: EdgeInsets.all(num));
+  Widget _buildQuestionPage() {
+    return Padding(
+        padding: const EdgeInsets.all(25.0),
+        child: SafeArea(
+            child: Center(
+                child: Column(children: [
+                  purpleBox(),
+                  (isQuestionReceived & isQuestionOpen) ? shareCard() : SizedBox(),
+                ]))));
   }
 
-  // Widget pupleBox() {
-  //   if (newQuestion.isValidity == false) {
-  //     if (newQuestion.openTime == "") {
-  //       //질문 open 안한 상태
-  //       initialState();
-  //     } else if (newQuestion.receiveTime == "") {
-  //       //질문 받았으나 답변받기 안누른 상태
-  //       _isRunning = true; //timer
-  //       _startTimer(); //openTime
-  //       openButNotReceive();
-  //       viewContentText = newQuestion.content;
-  //       print(newQuestion);
-  //     }
-  //   } else if (newQuestion.isValidity == true) {
-  //     //답변받기 누른 상태
-  //     //closeTime 전이면
-  //     isViewContent = true;
-  //     viewContentText = newQuestion.content;
-  //     DateTime rcvTime = DateTime.parse(newQuestion.receiveTime);
-  //     closeDate = rcvTime.add(const Duration(hours: 24));
-  //     print('setState 문 안에 $rcvTime');
-  //
-  //     if (DateTime.now().isAfter(closeDate)) {
-  //       print("답변받기& after close");
-  //       receiveAndClose();
-  //       deleteQuestionFromFeed(schoolCode, newQuestion.id);
-  //       initialState();
-  //       // updateQuestion('isValidity', false, questionDocRef);
-  //     } else {
-  //       print("답변받기& before close");
-  //       receiveButNotClose();
-  //       btnBottomMent =
-  //           '해당 질문은 ${closeDate.day}일 ${closeDate.hour}시 ${closeDate.minute}분부터 닫을 수 있습니다.';
-  //     }
-  //   }
-  //
-  //   // Update button state
-  //   setState(() {
-  //     isButtonEnabled = isButtonEnabled;
-  //   });
-  //   // Update button state
-  //
-  //   String remainTimer = _formatDuration(_countdown);
-  //
-  //   return SizedBox(
-  //     width: double.infinity,
-  //     child: Card(
-  //       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-  //       color: const Color(0xff9754FB),
-  //       child: Column(
-  //         children: <Widget>[
-  //           padding(5),
-  //           Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-  //             const Padding(padding: EdgeInsets.only(left: 25.0)),
-  //             Text(remainTimer,
-  //                 style: TextStyle(
-  //                     color: Colors.white,
-  //                     backgroundColor: _colors[2],
-  //                     fontSize: _isRunning ? 12 : 0))
-  //           ]),
-  //           const Padding(padding: EdgeInsets.all(15.0)),
-  //           newQuestion.ownerProfileImage.isEmpty
-  //               ? const CircularProgressIndicator()
-  //               : Container(
-  //                   width: 80,
-  //                   height: 80,
-  //                   decoration: BoxDecoration(
-  //                     shape: BoxShape.circle,
-  //                     image: DecorationImage(
-  //                       fit: BoxFit.cover,
-  //                       image: NetworkImage(newQuestion.ownerProfileImage),
-  //                     ),
-  //                   ),
-  //                 ),
-  //           const Padding(padding: EdgeInsets.all(20.0)),
-  //           Text(
-  //             isViewContent ? viewContentText : '똑똑똑! 오늘의 질문이 도착했어요.',
-  //             textAlign: TextAlign.left,
-  //             style: const TextStyle(
-  //                 fontWeight: FontWeight.bold,
-  //                 fontSize: 16,
-  //                 color: Colors.white),
-  //           ),
-  //           Container(
-  //             padding: EdgeInsets.all(25.0),
-  //             child: OutlinedButton(
-  //               onPressed: isButtonEnabled ? () => changeAskCard() : null,
-  //               style: OutlinedButton.styleFrom(
-  //                 padding: EdgeInsets.symmetric(horizontal: 40, vertical: 10),
-  //                 foregroundColor: const Color(0xff9754FB),
-  //                 backgroundColor: isButtonEnabled ? _colors[0] : _colors[1],
-  //                 shape: RoundedRectangleBorder(
-  //                   borderRadius: BorderRadius.circular(30),
-  //                 ),
-  //               ),
-  //               child: Text(
-  //                 askButtonText,
-  //                 style: const TextStyle(
-  //                     fontWeight: FontWeight.bold, fontSize: 16),
-  //               ),
-  //             ),
-  //           ),
-  //           Text(
-  //             btnBottomMent,
-  //             style: TextStyle(
-  //                 color: Colors.white, fontSize: openShareCard ? 10 : 0),
-  //           ),
-  //           const Padding(padding: EdgeInsets.all(9.0)),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
+  Widget purpleBox() {
+    DateTime? nextReceiveTime;
+    DateTime? closeTime;
+
+    // 만약, Current Question이 있다면
+    if (currentQuestion != null) {
+      nextReceiveTime =
+          DateTime.parse(currentQuestion!.receiveTime).add(Duration(hours: 24));
+      // 만약, 질문을 오픈했다면
+      if (currentQuestion!.isOpen) {
+        closeTime =
+            DateTime.parse(currentQuestion!.openTime).add(Duration(hours: 24));
+      }
+    }
+
+    return SizedBox(
+      width: double.infinity,
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+        color: Palette.mainPurple,
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 40),
+          child: Column(
+            children: <Widget>[
+              SizedBox(
+                height: 30,
+              ),
+              // 프로필 이미지
+              user.profileImage.isEmpty
+                  ? const CircularProgressIndicator(
+                color: Palette.mainPurple,
+              )
+                  : Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                    fit: BoxFit.cover,
+                    image: NetworkImage(user.profileImage),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              // 질문 텍스트
+              Text(
+                isQuestionReceived
+                    ? currentQuestion!.content
+                    : '똑똑똑! 오늘의 질문이 도착했어요.',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: Colors.white),
+              ),
+              SizedBox(
+                height: 40,
+              ),
+              // 버튼
+              OutlinedButton(
+                onPressed: () async {
+                  // 만약, 지금이 오픈한 질문의 Close Time 전이라면
+                  if (isQuestionReceived &
+                  isQuestionOpen &
+                  !hasQuestionCloseTimePassed) {
+                    return;
+                  }
+
+                  // 버튼 클릭 이벤트
+                  onButtonInPurpleBoxClicked();
+                },
+                style: OutlinedButton.styleFrom(
+                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                  backgroundColor: (isQuestionReceived &
+                  isQuestionOpen &
+                  !hasQuestionCloseTimePassed)
+                      ? Colors.white.withOpacity(0.7)
+                      : Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                ),
+                // 버튼 텍스트
+                child: Text(
+                  isQuestionReceived
+                      ? isQuestionOpen
+                      ? '질문 닫기'
+                      : (DateTime.now().day >
+                      DateTime.parse(currentQuestion!.receiveTime)
+                          .day)
+                      ? '새로운 질문 받기'
+                      : '답변 받기'
+                      : '질문 받기',
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: Palette.mainPurple),
+                ),
+              ),
+              SizedBox(
+                height: isQuestionReceived ? 20 : 0,
+              ),
+              // 안내 코멘트
+              Text(
+                isQuestionReceived
+                    ? isQuestionOpen
+                    ? hasQuestionCloseTimePassed
+                    ? '새로운 질문이 도착했어요!'
+                    : '해당 질문은 ${closeTime!.day}일 ${closeTime.hour}시 ${closeTime.minute}분부터 닫을 수 있습니다.'
+                    : (DateTime.now().day >
+                    DateTime.parse(currentQuestion!.receiveTime)
+                        .day)
+                    ? '새로운 질문이 도착했어요!'
+                    : '다음 질문 도착은 ${nextReceiveTime!.day}일 00시 00분입니다.'
+                    : '',
+                style: TextStyle(color: Colors.white, fontSize: 10),
+              ),
+              SizedBox(
+                height: 30,
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget shareCard() {
+    return Column(children: <Widget>[
+      Container(
+        padding: const EdgeInsets.only(top: 20),
+        child: SizedBox(
+          width: double.infinity,
+          height: 90.0,
+          child: Container(
+            padding: EdgeInsets.all(25.0),
+            decoration: BoxDecoration(
+                color: Color(0xFFF2F3F3),
+                borderRadius: BorderRadius.circular(20)),
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Row(
+                        children: [
+                          SizedBox(
+                              width: 25.0,
+                              height: 25.0,
+                              child: Image(
+                                  image:
+                                  AssetImage('images/icon_copyLink.png'))),
+                          Padding(padding: EdgeInsets.only(right: 10.0)),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "1단계",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Color(0xff333D4B),
+                                ),
+                              ),
+                              Text(
+                                "링크 복사하기",
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    color: Color(0xff333D4B),
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          )
+                        ],
+                      )
+                    ],
+                  ),
+                  ElevatedButton(
+                      onPressed: () {},
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        shadowColor: Colors.transparent,
+                        backgroundColor: Color.fromRGBO(151, 84, 251, 1),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0)),
+                      ),
+                      child: const Text(
+                        "복사",
+                        style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white),
+                      ))
+                ]),
+          ),
+        ),
+      ),
+      Container(
+        padding: const EdgeInsets.only(top: 20),
+        child: SizedBox(
+          width: double.infinity,
+          height: 90.0,
+          child: Container(
+            padding: EdgeInsets.all(25.0),
+            decoration: BoxDecoration(
+                color: Color(0xffF2F3F3),
+                borderRadius: BorderRadius.circular(20)),
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Row(
+                        children: [
+                          SizedBox(
+                              width: 25.0,
+                              height: 25.0,
+                              child: Image(
+                                  image:
+                                  AssetImage('images/icon_instagram.png'))),
+                          Padding(padding: EdgeInsets.only(right: 10.0)),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "2단계",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Color(0xff333D4B),
+                                ),
+                              ),
+                              Text(
+                                "친구들에게 공유",
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    color: Color(0xff333D4B),
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          )
+                        ],
+                      )
+                    ],
+                  ),
+                  ElevatedButton(
+                      onPressed: () {},
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        shadowColor: Colors.transparent,
+                        backgroundColor: Color.fromRGBO(151, 84, 251, 1),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0)),
+                      ),
+                      child: const Text(
+                        "공유",
+                        style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white),
+                      ))
+                ]),
+          ),
+        ),
+      ),
+    ]);
+  }
+
+  setQuestionState() {
+    // Current Question에 따른 현재 상태 설정
+    // 만약, Current Question이 있다면
+    if (currentQuestion != null) {
+      isQuestionReceived = true;
+      //만약, Current Question이 오픈한 상태라면
+      if (currentQuestion!.isOpen) {
+        isQuestionOpen = true;
+        // 최소 오픈 시간
+        DateTime closeTime =
+        DateTime.parse(currentQuestion!.openTime).add(Duration(hours: 24));
+        //만약, 지금 시간이 Current Question의 최소 오픈 시간을 지났다면
+        if (DateTime.now().isAfter(closeTime)) {
+          hasQuestionCloseTimePassed = true;
+        } else {
+          hasQuestionCloseTimePassed = false;
+        }
+      } else {
+        isQuestionOpen = false;
+      }
+    } else {
+      isQuestionReceived = false;
+    }
+  }
+
+  onButtonInPurpleBoxClicked() async {
+    // 만약, 질문을 받지 않은 상태라면
+    if (!isQuestionReceived) {
+      // 주요 기능: 질문 받기
+      // 새로운 콘텐츠 id 받기
+      List<String> questionDataIds = QuestionList.questionList
+          .map((item) => item['id'].toString())
+          .toList();
+      List<String> receivedContentIds = user.questionInfos
+          .map((item) => item['contentId'].toString())
+          .toList();
+      questionDataIds.shuffle();
+      String newContentId =
+      questionDataIds.firstWhere((id) => !receivedContentIds.contains(id));
+
+      // 새로운 질문 객체 생성
+      DateTime now = DateTime.now();
+      Question newQuestion = Question(
+          id: now.toString(),
+          ownerProfileImage: user.profileImage,
+          ownerName: user.name,
+          owner: user.uid,
+          content: QuestionList.questionList[int.parse(newContentId)]
+          ['question'],
+          contentId: newContentId,
+          receiveTime: now.toString(),
+          openTime: '',
+          url: '',
+          schoolCode: user.schoolCode,
+          isOpen: false);
+
+      // 1-1. User 반영
+      user.questionInfos.add(
+          {'contentId': newQuestion.contentId, 'questionId': newQuestion.id});
+      user.currentQuestionId = '#${newContentId}_${now.toString()}';
+      // 1-2. Question 반영
+      currentQuestion = newQuestion;
+
+      // 2-1. Firebase > Users > User 업데이트
+      await Response.updateUser(newUser: user);
+      // 2-2. Firebase > Contents > Questions > Question 생성
+      await Response.createQuestion(newQuestion: newQuestion);
+    } else {
+      // 만약, 질문을 오픈하지 않은 상태라면
+      if (!isQuestionOpen) {
+        // 만약, 질문 받은 시간 다음날이라면
+        if (DateTime.now().day >
+            DateTime.parse(currentQuestion!.receiveTime).day) {
+          // 1-1. User 반영
+          user.currentQuestionId = '';
+          // 2-1. Firebase Users > User 업데이트
+          await Response.updateUser(newUser: user);
+          currentQuestion = null;
+        } else {
+          // 주요 기능: 질문 오픈하기
+          // 1-1. Question 반영
+          currentQuestion!.isOpen = true;
+          currentQuestion!.openTime = DateTime.now().toString();
+          currentQuestion!.url = getUrl();
+          // 1-2. Feed 반영
+          feed.add(currentQuestion);
+
+          // 2-1. Firebase Contents > Questions > Question 업데이트
+          await Response.updateQuestion(newQuestion: currentQuestion!);
+          // 2-2. Firebase Schools > Feed > Question 생성
+          await Response.createQuestionInFeed(newQuestion: currentQuestion!);
+        }
+      } else {
+        // 주요 기능: 질문 닫기
+        // 1-1. User 반영
+        user.currentQuestionId = '';
+        // 1-2. Question 반영
+        currentQuestion!.isOpen = false;
+        // 1-3. Feed 반영
+        feed.remove(currentQuestion);
+
+        // 2-1. Firebase Users > User 업데이트
+        await Response.updateUser(newUser: user);
+        // 2-2. Firebase Contents > Questions > Question 업데이트
+        await Response.updateQuestion(newQuestion: currentQuestion!);
+        // 2-3. Firebase Schools > Feed > Question 삭제
+        await Response.deleteQuestionInFeed(
+            schoolCode: currentQuestion!.schoolCode,
+            questionId: currentQuestion!.id);
+
+        currentQuestion = null;
+      }
+    }
+
+    setState(() {
+      setQuestionState();
+    });
+  }
+
+  getUrl() {
+    // TODO: 혜은 - url 생성한 걸 가져오는 코드 추가해야됨
+    return '';
+  }
 }
