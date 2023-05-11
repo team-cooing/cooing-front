@@ -8,6 +8,7 @@ import 'package:cooing_front/pages/feed_page.dart';
 import 'package:get/get.dart';
 import 'package:cooing_front/model/response/response.dart' as response;
 import 'package:cooing_front/model/config/palette.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 
 class TabPage extends StatefulWidget {
   const TabPage({super.key});
@@ -113,4 +114,5 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
       Get.offAll(LoginScreen());
     }
   }
+
 }

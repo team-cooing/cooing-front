@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:cooing_front/pages/main_page.dart';
 import 'package:get/get.dart';
+import 'package:cooing_front/pages/tab_page.dart';
 
 class AnswerCompleteScreen extends StatefulWidget {
   const AnswerCompleteScreen({Key? key}) : super(key: key);
@@ -10,7 +10,9 @@ class AnswerCompleteScreen extends StatefulWidget {
 }
 
 class AnswerCompleteScreenState extends State<AnswerCompleteScreen> {
-  String owner = Get.arguments;
+  String owner = Get.arguments['ownerName'];
+  String uid = Get.arguments['uid'];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,10 +65,7 @@ class AnswerCompleteScreenState extends State<AnswerCompleteScreen> {
                 children: [
                   ElevatedButton(
                       onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const MainPage()));
+                        Get.offAll(TabPage(), arguments: uid);
                       },
                       style: OutlinedButton.styleFrom(
                         fixedSize: Size.fromHeight(50),

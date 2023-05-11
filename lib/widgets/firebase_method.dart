@@ -6,6 +6,7 @@ import 'package:cooing_front/model/response/Question.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import "dart:math";
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
 import 'package:cooing_front/model/response/answer.dart';
 
@@ -22,6 +23,28 @@ Question initQuestion(Question question) {
   question.isValidity = false;
 
   return question;
+}
+
+Future<User> getUserData(String uid) async {
+  final prefs = await AsyncPrefsOperation();
+
+  final userDataJson = prefs.getString('userData');
+  if (userDataJson != null) {
+    print("answer page : 쿠키 에서 UserData 로드");
+    print(userDataJson);
+    Map<String, dynamic> userDataMap =
+        json.decode(userDataJson); //z쿠키가 있ㅇㅡ면 쿠키 리턴
+    return User.fromJson(userDataMap);
+  } else {
+    // Handle missing data
+    print('answer page : No user data found in shared preferences');
+
+    DocumentReference userDocRef =
+        FirebaseFirestore.instance.collection('users').doc(uid);
+    print("answer page : uid : $uid");
+    print("answer page : firebase 에서 UserData 로드");
+    return await getUserDocument(userDocRef, uid); //쿠키없으면 파베에서 유저 데이터 리턴
+  }
 }
 
 Future<void> addQuestionToFeed(String schoolCode, Question question) async {
@@ -94,7 +117,7 @@ Future<User> getUserDocument(DocumentReference docRef, String id) async {
   return user;
 }
 
-Future<Question> getDocument(DocumentReference docRef, String id) async {
+Future<Question> getDocument(DocumentReference docRef) async {
   DocumentSnapshot doc = await docRef.get();
   Question question;
   if (doc.exists) {
@@ -133,6 +156,8 @@ Future<void> updateDocument(
     String section, dynamic updateStr, DocumentReference? docReference) async {
   Map<String, dynamic> data = {section: updateStr};
   await docReference?.update(data);
+
+  print("firebase $section 업데이트됨");
 }
 
 // TODO: 이미 받았던 질문 필터링 물어보기

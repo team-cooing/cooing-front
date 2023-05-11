@@ -1,17 +1,10 @@
-import 'dart:convert';
-import 'dart:io';
-import 'package:cooing_front/model/response/User.dart';
-
-import 'package:cooing_front/pages/login/SignUpScreen.dart';
-import 'package:cooing_front/model/util/Login_platform.dart';
 import 'package:cooing_front/pages/tab_page.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:http/http.dart' as http;
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
 // import 'package:parameters/';
+import 'package:cooing_front/widgets/dynamic_link.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -42,14 +35,26 @@ class _SplashScreenState extends State<SplashScreen> {
         final email = user.kakaoAccount?.email ?? '';
         uid = user.id.toString();
 
-        final newUser = await firebase.FirebaseAuth.instance.signInWithEmailAndPassword(
+        final newUser =
+            await firebase.FirebaseAuth.instance.signInWithEmailAndPassword(
           email: email,
           password: uid,
         );
 
         newUserUid = newUser.user!.uid;
+        print(000000000000);
 
-        initialRoute = 'tab';
+        DynamicLink().setup(newUserUid).then((value) {
+          if (value) {
+            print(value);
+
+            print("dynamic link 로 접속");
+          } else {
+            print("dynamic link 로 접속하지 않음 ");
+            initialRoute = 'tab';
+          }
+        });
+
         print('기기내 카카오 토큰으로 로그인 성공');
       }
     } on kakao.KakaoAuthException catch (e) {
@@ -64,14 +69,14 @@ class _SplashScreenState extends State<SplashScreen> {
     }
 
     await Future.delayed(Duration(seconds: 4));
-    if(initialRoute=='tab'){
+    if (initialRoute == 'tab') {
       Get.offAll(TabPage(), arguments: newUserUid);
-    }else{
+    } else {
       Navigator.pushReplacementNamed(context, initialRoute);
     }
-
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(

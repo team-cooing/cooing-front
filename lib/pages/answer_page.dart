@@ -1,25 +1,14 @@
-import 'package:cooing_front/providers/UserProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:cooing_front/pages/answer_complete_page.dart';
 import 'package:get/get.dart';
-import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:provider/provider.dart';
 import '../model/util/hint.dart';
 import '../model/response/User.dart';
+import 'package:cooing_front/widgets/firebase_method.dart';
+import 'package:cooing_front/model/config/palette.dart';
 
 class AnswerPage extends StatefulWidget {
-  final User user;
-  final questionId;
-  final questionContent;
-  final profileImage;
-  final name;
   const AnswerPage({
-    required this.user,
-    required this.questionId,
-    required this.questionContent,
-    required this.profileImage,
-    required this.name,
     Key? key,
   }) : super(key: key); // final String uid;
 
@@ -30,85 +19,119 @@ class AnswerPage extends StatefulWidget {
 }
 
 class _AnswerPageState extends State<AnswerPage> {
-  // var questionList = ['내 첫인상은 어땠어?', '내 mbti는 무엇인 것 같아?', '나랑 닮은 동물은 뭐야?'];
-  late String askText;
+  bool isLoading = true;
+
+  late String content;
   late String questionId;
   late String profileImage;
-  late String name;
-  late String uid;
-  @override
-  void initState() {
-    super.initState();
-    // _userData = Provider.of<UserDataProvider>(context, listen: false).userData;
-    hintList = generateHint(_userData!);
-    _userData = widget.user;
-    // uid = widget.user.uid;
-    askText = widget.questionContent;
-    profileImage = widget.profileImage;
-    name = widget.name;
-    questionId = widget.questionId;
-  }
+  late String ownerName;
+  late String ownerId;
+  late String contentId;
+  late String ownerProfileImage;
 
-  bool? _checkSecret = false;
+  late String uid;
+  late User _userData;
+  late bool _checkSecret = false;
   late DocumentReference userDocRef;
 
   int maxLength = 100;
   String textValue = "";
-  late DateTime id;
-  UserDataProvider? _userDataProvider;
-  User? _userData;
+  late String timeId;
   late CollectionReference contentCollectionRef;
   late CollectionReference userCollectionRef;
   late List<String> hintList;
 
   final TextEditingController _textController = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    final arguments = Get.arguments;
+    uid = arguments["uid"] ?? "";
+    questionId = arguments["questionId"].replaceAll('%20', ' ') ?? "";
+    contentId = arguments["contentId"] ?? "";
+    ownerId = arguments["ownerId"] ?? "";
+    content = arguments["content"].replaceAll('%20', ' ') ?? "";
+    ownerName = arguments["ownerName"].replaceAll('%20', ' ') ?? "";
+    ownerProfileImage = arguments["ownerProfileImage"] ?? "";
 
-  final _authentication = firebase.FirebaseAuth.instance;
-
-  Future<void> _uploadUserToFirebase() async {
-    try {
-      String uid = widget.user.uid;
-      String newId;
-      final userAnswerRef = FirebaseFirestore.instance
-          .collection('answers')
-          .doc(uid)
-          .collection('answers');
-
-      final QuerySnapshot snapshot = await userAnswerRef
-          .orderBy('createdAt', descending: true) // createdAt 필드를 기준으로 내림차순 정렬
-          .limit(1) // 가장 마지막 document 하나만 가져오기
-          .get();
-
-      if (snapshot.docs.isNotEmpty) {
-        final lastDocument = snapshot.docs.last;
-        final String lastId = lastDocument.id; // 가장 최근 document의 ID
-        final int lastNumber =
-            int.tryParse(lastId.split('_')[0].substring(1)) ??
-                0; // 가장 최근 document의 번호
-
-        // 새 document의 ID 생성
-        newId =
-            '#${(lastNumber + 1).toString().padLeft(6, '0')}_${DateTime.now().toString()}';
-      } else {
-        print('No documents found in collection');
-        newId = '#000001_${DateTime.now().toString()}';
-      }
-
-      await userAnswerRef.doc(newId).set({
-        'id': id, // 마이크로세컨드까지 보낸 시간으로 사용
-        'time': id,
-        'owner': _userData!.uid,
-        'ownerGender': _userData!.gender,
-        'questionId': questionId,
-        'content': textValue,
-        'isAnonymous': _checkSecret,
-        'nickname': _checkSecret! ? '닉네임' : _userData!.name,
-        'hint': hintList,
-        'isOpenedHint': [false, false, false], //bool List
-        'isOpened': false,
+    getUserData(uid).then((data) {
+      _userData = data;
+      hintList = generateHint(_userData);
+      print(_userData);
+      setState(() {
+        isLoading = false;
       });
+    });
 
-      Get.to(() => AnswerCompleteScreen(), arguments: name);
+    _textController.addListener(() {
+      setState(() {
+        textValue = _textController.text;
+      });
+    });
+  }
+
+  // Future<void> _loadQuestion() async {
+  //   final questionDoc = FirebaseFirestore.instance
+  //       .collection("contents")
+  //       .doc(contentId)
+  //       .collection("questions")
+  //       .doc(questionId);
+  //   final questionSnapshot = await getDocument(questionDoc);
+  //   setState(() {
+  //     viewQuestion = questionSnapshot;
+  //   });
+  // }
+
+  Future<void> _uploadUserToFirebase(String ownerId) async {
+    try {
+      if (_userData != null) {
+        print("userData가 정상");
+        timeId = DateTime.now().toString();
+        String newAnswerId;
+        print("ownerId: $ownerId");
+        final userAnswerRef = FirebaseFirestore.instance
+            .collection('answers')
+            .doc(ownerId) //question 주인의 아이디에 답변 저장
+            .collection('answers');
+
+        final QuerySnapshot snapshot = await userAnswerRef
+            .orderBy('createdAt',
+                descending: true) // createdAt 필드를 기준으로 내림차순 정렬
+            .limit(1) // 가장 마지막 document 하나만 가져오기
+            .get();
+
+        if (snapshot.docs.isNotEmpty) {
+          final lastDocument = snapshot.docs.last;
+          final String lastId = lastDocument.id; // 가장 최근 document의 ID
+          final int lastNumber =
+              int.tryParse(lastId.split('_')[0].substring(1)) ??
+                  0; // 가장 최근 document의 번호
+
+          // 새 document의 ID 생성
+
+          newAnswerId =
+              '#${(lastNumber + 1).toString().padLeft(6, '0')}_$timeId';
+        } else {
+          print('No documents found in answer collection');
+          newAnswerId = '#000001_$timeId';
+        }
+
+        await userAnswerRef.doc(newAnswerId).set({
+          'id': newAnswerId, // 마이크로세컨드까지 보낸 시간으로 사용
+          'time': timeId,
+          'owner': _userData.uid,
+          'ownerGender': _userData.gender,
+          'questionId': questionId,
+          'content': textValue,
+          'isAnonymous': _checkSecret,
+          'nickname': _checkSecret ? '닉네임' : _userData.name,
+          'hint': hintList,
+          'isOpenedHint': [false, false, false], //bool List
+          'isOpened': false,
+        });
+      } else {
+        print("userData is Null");
+      }
     } catch (e) {
       print(e);
     }
@@ -116,26 +139,44 @@ class _AnswerPageState extends State<AnswerPage> {
 
   @override
   Widget build(BuildContext context) {
+    return isLoading
+        ? loadingView()
+        : Scaffold(
+            appBar: AppBar(
+              automaticallyImplyLeading: false,
+              backgroundColor: Colors.transparent,
+              elevation: 0.0,
+              leading: IconButton(
+                icon: const Icon(Icons.close_rounded),
+                color: Colors.black54,
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+            body: SafeArea(
+                child: Column(children: [
+              Expanded(
+                child: _answerBody(),
+              ),
+              Align(alignment: Alignment.bottomCenter, child: sendBtn())
+            ])),
+          );
+  }
+
+  Widget loadingView() {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: Colors.transparent,
-        elevation: 0.0,
-        leading: IconButton(
-          icon: const Icon(Icons.close_rounded),
-          color: Colors.black54,
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Expanded(
+            child: Center(
+                child: CircularProgressIndicator(
+              color: Palette.mainPurple,
+            )),
+          ),
+        ],
       ),
-      body: SafeArea(
-          child: Column(children: [
-        Expanded(
-          child: _answerBody(),
-        ),
-        Align(alignment: Alignment.bottomCenter, child: sendBtn())
-      ])),
     );
   }
 
@@ -173,16 +214,18 @@ class _AnswerPageState extends State<AnswerPage> {
               color: const Color(0xff9754FB),
               child: Column(children: <Widget>[
                 const Padding(padding: EdgeInsets.all(15.0)),
-                SizedBox(
-                  width: 80.0,
-                  height: 80.0,
-                  child: CircleAvatar(
-                    backgroundImage: NetworkImage(profileImage),
-                  ),
-                ),
+                ownerProfileImage.isEmpty
+                    ? const CircularProgressIndicator()
+                    : SizedBox(
+                        width: 80.0,
+                        height: 80.0,
+                        child: CircleAvatar(
+                          backgroundImage: NetworkImage(ownerProfileImage),
+                        ),
+                      ),
                 const Padding(padding: EdgeInsets.all(10.0)),
                 Text(
-                  askText,
+                  content,
                   style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -208,11 +251,6 @@ class _AnswerPageState extends State<AnswerPage> {
             controller: _textController,
             maxLines: 5,
             maxLength: 100,
-            onChanged: (value) {
-              setState(() {
-                textValue = value;
-              });
-            },
             decoration: InputDecoration(
               counterText: "",
               border: OutlineInputBorder(
@@ -255,7 +293,9 @@ class _AnswerPageState extends State<AnswerPage> {
             value: _checkSecret,
             onChanged: (value) {
               setState(() {
-                _checkSecret = value;
+                if (value != null) {
+                  _checkSecret = value;
+                }
               });
             },
           ),
@@ -279,7 +319,9 @@ class _AnswerPageState extends State<AnswerPage> {
             Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           ElevatedButton(
               onPressed: () async {
-                await _uploadUserToFirebase();
+                await _uploadUserToFirebase(ownerId);
+                Get.to(() => AnswerCompleteScreen(),
+                    arguments: {"ownerName": ownerName, "uid": uid});
               },
               style: OutlinedButton.styleFrom(
                 fixedSize: Size.fromHeight(50),

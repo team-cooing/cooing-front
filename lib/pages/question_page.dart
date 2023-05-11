@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:cooing_front/model/data/question_list.dart';
 import 'package:cooing_front/widgets/firebase_method.dart';
 import 'package:cooing_front/model/response/Question.dart';
@@ -35,15 +33,14 @@ class _QuestionPageState extends State<QuestionPage>
     List<Map<String, dynamic>> questions = QuestionList.getQuestionLists();
 
     // 유저가 받은 질문들은 삭제하기
-    List<int> contentIds = widget.user.questionInfos.map<int>((e) => int.parse(e['contentId'])).toList();
+    List<int> contentIds = widget.user.questionInfos
+        .map<int>((e) => int.parse(e['contentId']))
+        .toList();
     print(contentIds);
 
-    for(var questionInfo in widget.user.questionInfos){
-    }
+    for (var questionInfo in widget.user.questionInfos) {}
 
     // 랜덤으로 새로 받을 질문 선택
-
-
 
     contentCollectionRef = FirebaseFirestore.instance.collection('contents');
 
