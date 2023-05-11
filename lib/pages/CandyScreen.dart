@@ -29,6 +29,10 @@ class _CandyScreenState extends State<CandyScreen> {
       print(ids);
       ProductDetailsResponse response =
           await InAppPurchase.instance.queryProductDetails(ids);
+      if (response.error != null) {
+        print('Failed to fetch product details: ${response.error}');
+        return;
+      }
       print(response.productDetails.toString());
       print(response.productDetails);
       print(response.error);

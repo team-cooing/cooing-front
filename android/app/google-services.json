@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:80485709896:android:da35f148a20d710aad007d",
         "android_client_info": {
-          "package_name": "com.example.cooing_front"
+          "package_name": "com.midas.cooing"
         }
       },
       "oauth_client": [
@@ -34,7 +34,7 @@
               "client_id": "80485709896-adalppnfo4cml3om2ocs2mudm1498bob.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.cooingFront"
+                "bundle_id": "com.midas.cooing"
               }
             }
           ]
