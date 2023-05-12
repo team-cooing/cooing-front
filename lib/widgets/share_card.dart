@@ -1,29 +1,31 @@
 import 'dart:io';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cooing_front/widgets/firebase_method.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:async';
 import 'package:social_share/social_share.dart';
-import 'package:cooing_front/widgets/dynamic_link.dart';
 
 class ShareCard extends StatefulWidget {
-  const ShareCard({super.key});
+  final String url;
+  const ShareCard({required this.url, super.key});
 
   @override
-  _ShareCardState createState() => _ShareCardState();
+  ShareCardState createState() => ShareCardState();
 }
 
-class _ShareCardState extends State<ShareCard> {
+class ShareCardState extends State<ShareCard> {
+  late String currentQuestionUrl = '';
+
   String facebookId = "617417756966237";
   var imageBackground = "sohee.jpg";
   String imageBackgroundPath = "";
   String videoBackgroundPath = "";
-  
+
   @override
   void initState() {
     super.initState();
+    currentQuestionUrl = widget.url;
     copyBundleAssets();
   }
 
@@ -39,29 +41,11 @@ class _ShareCardState extends State<ShareCard> {
     });
   }
 
-  void _onCopyButtonPressed(String questionId, String contentId, String content,
-      String ownerId, String ownerName, String ownerProfileImage) {
-    getShortLink(questionId, contentId, content, ownerId, ownerName,
-            ownerProfileImage)
-        .then((value) {
-      String url = value;
-      print("In feed_page : $url");
-      Clipboard.setData(ClipboardData(text: url));
-
-      //파베에 올리기.
-      updateDocument(
-          "url",
-          url,
-          FirebaseFirestore.instance
-              .collection("contents")
-              .doc(contentId)
-              .collection("questions")
-              .doc(questionId));
-
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('링크 복사완료!'),
-      ));
-    });
+  void _onCopyButtonPressed(String url) {
+    Clipboard.setData(ClipboardData(text: url));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('링크 복사완료!'),
+    ));
   }
 
   Future<void> copyBundleAssets() async {
@@ -92,7 +76,7 @@ class _ShareCardState extends State<ShareCard> {
   Widget shareBlock(
       AssetImage assetImage, String level, String title, String buttonTxt) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+      padding: const EdgeInsets.only(top: 20),
       child: SizedBox(
         width: double.infinity,
         height: 85.0,
@@ -139,8 +123,11 @@ class _ShareCardState extends State<ShareCard> {
             ElevatedButton(
               onPressed: () {
                 if (buttonTxt == '복사') {
-                  _onCopyButtonPressed("questionId", "contentId", "content",
-                      "ownerId", "ownerName", "ownerProfileImage");
+                  print(
+                      "in ShareCard() - currentQuestionUrl :  $currentQuestionUrl");
+                  currentQuestionUrl.isNotEmpty
+                      ? _onCopyButtonPressed(currentQuestionUrl)
+                      : print("url 비어있음");
                 } else {
                   _onShareButtonPressed();
                 }

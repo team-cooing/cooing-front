@@ -3,6 +3,8 @@ import 'package:cooing_front/model/data/question_list.dart';
 import 'package:cooing_front/model/response/question.dart';
 import 'package:cooing_front/model/response/response.dart';
 import 'package:cooing_front/model/response/user.dart';
+import 'package:cooing_front/widgets/dynamic_link.dart';
+import 'package:cooing_front/widgets/share_card.dart';
 import 'package:flutter/material.dart';
 
 class QuestionPage extends StatefulWidget {
@@ -12,9 +14,9 @@ class QuestionPage extends StatefulWidget {
 
   const QuestionPage(
       {required this.user,
-        required this.currentQuestion,
-        required this.feed,
-        super.key});
+      required this.currentQuestion,
+      required this.feed,
+      super.key});
 
   @override
   State<QuestionPage> createState() => _QuestionPageState();
@@ -45,8 +47,9 @@ class _QuestionPageState extends State<QuestionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _buildQuestionPage(),
-    );
+        body: SingleChildScrollView(
+      child: _buildQuestionPage(),
+    ));
   }
 
   Widget _buildQuestionPage() {
@@ -55,9 +58,11 @@ class _QuestionPageState extends State<QuestionPage> {
         child: SafeArea(
             child: Center(
                 child: Column(children: [
-                  purpleBox(),
-                  (isQuestionReceived & isQuestionOpen) ? shareCard() : SizedBox(),
-                ]))));
+          purpleBox(),
+          (isQuestionReceived & isQuestionOpen)
+              ? ShareCard(url: currentQuestion!.url)
+              : SizedBox(),
+        ]))));
   }
 
   Widget purpleBox() {
@@ -90,19 +95,19 @@ class _QuestionPageState extends State<QuestionPage> {
               // 프로필 이미지
               user.profileImage.isEmpty
                   ? const CircularProgressIndicator(
-                color: Palette.mainPurple,
-              )
+                      color: Palette.mainPurple,
+                    )
                   : Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  image: DecorationImage(
-                    fit: BoxFit.cover,
-                    image: NetworkImage(user.profileImage),
-                  ),
-                ),
-              ),
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                          fit: BoxFit.cover,
+                          image: NetworkImage(user.profileImage),
+                        ),
+                      ),
+                    ),
               SizedBox(
                 height: 20,
               ),
@@ -125,8 +130,8 @@ class _QuestionPageState extends State<QuestionPage> {
                 onPressed: () async {
                   // 만약, 지금이 오픈한 질문의 Close Time 전이라면
                   if (isQuestionReceived &
-                  isQuestionOpen &
-                  !hasQuestionCloseTimePassed) {
+                      isQuestionOpen &
+                      !hasQuestionCloseTimePassed) {
                     return;
                   }
 
@@ -136,8 +141,8 @@ class _QuestionPageState extends State<QuestionPage> {
                 style: OutlinedButton.styleFrom(
                   padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                   backgroundColor: (isQuestionReceived &
-                  isQuestionOpen &
-                  !hasQuestionCloseTimePassed)
+                          isQuestionOpen &
+                          !hasQuestionCloseTimePassed)
                       ? Colors.white.withOpacity(0.7)
                       : Colors.white,
                   shape: RoundedRectangleBorder(
@@ -148,12 +153,12 @@ class _QuestionPageState extends State<QuestionPage> {
                 child: Text(
                   isQuestionReceived
                       ? isQuestionOpen
-                      ? '질문 닫기'
-                      : (DateTime.now().day >
-                      DateTime.parse(currentQuestion!.receiveTime)
-                          .day)
-                      ? '새로운 질문 받기'
-                      : '답변 받기'
+                          ? '질문 닫기'
+                          : (DateTime.now().day >
+                                  DateTime.parse(currentQuestion!.receiveTime)
+                                      .day)
+                              ? '새로운 질문 받기'
+                              : '답변 받기'
                       : '질문 받기',
                   style: const TextStyle(
                       fontWeight: FontWeight.bold,
@@ -168,14 +173,14 @@ class _QuestionPageState extends State<QuestionPage> {
               Text(
                 isQuestionReceived
                     ? isQuestionOpen
-                    ? hasQuestionCloseTimePassed
-                    ? '새로운 질문이 도착했어요!'
-                    : '해당 질문은 ${closeTime!.day}일 ${closeTime.hour}시 ${closeTime.minute}분부터 닫을 수 있습니다.'
-                    : (DateTime.now().day >
-                    DateTime.parse(currentQuestion!.receiveTime)
-                        .day)
-                    ? '새로운 질문이 도착했어요!'
-                    : '다음 질문 도착은 ${nextReceiveTime!.day}일 00시 00분입니다.'
+                        ? hasQuestionCloseTimePassed
+                            ? '새로운 질문이 도착했어요!'
+                            : '해당 질문은 ${closeTime!.day}일 ${closeTime.hour}시 ${closeTime.minute}분부터 닫을 수 있습니다.'
+                        : (DateTime.now().day >
+                                DateTime.parse(currentQuestion!.receiveTime)
+                                    .day)
+                            ? '새로운 질문이 도착했어요!'
+                            : '다음 질문 도착은 ${nextReceiveTime!.day}일 00시 00분입니다.'
                     : '',
                 style: TextStyle(color: Colors.white, fontSize: 10),
               ),
@@ -189,146 +194,146 @@ class _QuestionPageState extends State<QuestionPage> {
     );
   }
 
-  Widget shareCard() {
-    return Column(children: <Widget>[
-      Container(
-        padding: const EdgeInsets.only(top: 20),
-        child: SizedBox(
-          width: double.infinity,
-          height: 90.0,
-          child: Container(
-            padding: EdgeInsets.all(25.0),
-            decoration: BoxDecoration(
-                color: Color(0xFFF2F3F3),
-                borderRadius: BorderRadius.circular(20)),
-            child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Row(
-                        children: [
-                          SizedBox(
-                              width: 25.0,
-                              height: 25.0,
-                              child: Image(
-                                  image:
-                                  AssetImage('images/icon_copyLink.png'))),
-                          Padding(padding: EdgeInsets.only(right: 10.0)),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "1단계",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Color(0xff333D4B),
-                                ),
-                              ),
-                              Text(
-                                "링크 복사하기",
-                                style: TextStyle(
-                                    fontSize: 16,
-                                    color: Color(0xff333D4B),
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          )
-                        ],
-                      )
-                    ],
-                  ),
-                  ElevatedButton(
-                      onPressed: () {},
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        shadowColor: Colors.transparent,
-                        backgroundColor: Color.fromRGBO(151, 84, 251, 1),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0)),
-                      ),
-                      child: const Text(
-                        "복사",
-                        style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white),
-                      ))
-                ]),
-          ),
-        ),
-      ),
-      Container(
-        padding: const EdgeInsets.only(top: 20),
-        child: SizedBox(
-          width: double.infinity,
-          height: 90.0,
-          child: Container(
-            padding: EdgeInsets.all(25.0),
-            decoration: BoxDecoration(
-                color: Color(0xffF2F3F3),
-                borderRadius: BorderRadius.circular(20)),
-            child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Row(
-                        children: [
-                          SizedBox(
-                              width: 25.0,
-                              height: 25.0,
-                              child: Image(
-                                  image:
-                                  AssetImage('images/icon_instagram.png'))),
-                          Padding(padding: EdgeInsets.only(right: 10.0)),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "2단계",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Color(0xff333D4B),
-                                ),
-                              ),
-                              Text(
-                                "친구들에게 공유",
-                                style: TextStyle(
-                                    fontSize: 16,
-                                    color: Color(0xff333D4B),
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          )
-                        ],
-                      )
-                    ],
-                  ),
-                  ElevatedButton(
-                      onPressed: () {},
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        shadowColor: Colors.transparent,
-                        backgroundColor: Color.fromRGBO(151, 84, 251, 1),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0)),
-                      ),
-                      child: const Text(
-                        "공유",
-                        style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white),
-                      ))
-                ]),
-          ),
-        ),
-      ),
-    ]);
-  }
+  // Widget shareCard() {
+  //   return Column(children: <Widget>[
+  //     Container(
+  //       padding: const EdgeInsets.only(top: 20),
+  //       child: SizedBox(
+  //         width: double.infinity,
+  //         height: 90.0,
+  //         child: Container(
+  //           padding: EdgeInsets.all(25.0),
+  //           decoration: BoxDecoration(
+  //               color: Color(0xFFF2F3F3),
+  //               borderRadius: BorderRadius.circular(20)),
+  //           child: Row(
+  //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //               children: [
+  //                 Column(
+  //                   mainAxisAlignment: MainAxisAlignment.center,
+  //                   children: [
+  //                     Row(
+  //                       children: [
+  //                         SizedBox(
+  //                             width: 25.0,
+  //                             height: 25.0,
+  //                             child: Image(
+  //                                 image:
+  //                                     AssetImage('images/icon_copyLink.png'))),
+  //                         Padding(padding: EdgeInsets.only(right: 10.0)),
+  //                         Column(
+  //                           crossAxisAlignment: CrossAxisAlignment.start,
+  //                           children: [
+  //                             Text(
+  //                               "1단계",
+  //                               style: TextStyle(
+  //                                 fontSize: 12,
+  //                                 color: Color(0xff333D4B),
+  //                               ),
+  //                             ),
+  //                             Text(
+  //                               "링크 복사하기",
+  //                               style: TextStyle(
+  //                                   fontSize: 16,
+  //                                   color: Color(0xff333D4B),
+  //                                   fontWeight: FontWeight.bold),
+  //                             ),
+  //                           ],
+  //                         )
+  //                       ],
+  //                     )
+  //                   ],
+  //                 ),
+  //                 ElevatedButton(
+  //                     onPressed: () {},
+  //                     style: OutlinedButton.styleFrom(
+  //                       foregroundColor: Colors.white,
+  //                       shadowColor: Colors.transparent,
+  //                       backgroundColor: Color.fromRGBO(151, 84, 251, 1),
+  //                       shape: RoundedRectangleBorder(
+  //                           borderRadius: BorderRadius.circular(10.0)),
+  //                     ),
+  //                     child: const Text(
+  //                       "복사",
+  //                       style: TextStyle(
+  //                           fontSize: 13,
+  //                           fontWeight: FontWeight.bold,
+  //                           color: Colors.white),
+  //                     ))
+  //               ]),
+  //         ),
+  //       ),
+  //     ),
+  //     Container(
+  //       padding: const EdgeInsets.only(top: 20),
+  //       child: SizedBox(
+  //         width: double.infinity,
+  //         height: 90.0,
+  //         child: Container(
+  //           padding: EdgeInsets.all(25.0),
+  //           decoration: BoxDecoration(
+  //               color: Color(0xffF2F3F3),
+  //               borderRadius: BorderRadius.circular(20)),
+  //           child: Row(
+  //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //               children: [
+  //                 Column(
+  //                   mainAxisAlignment: MainAxisAlignment.center,
+  //                   children: [
+  //                     Row(
+  //                       children: [
+  //                         SizedBox(
+  //                             width: 25.0,
+  //                             height: 25.0,
+  //                             child: Image(
+  //                                 image:
+  //                                     AssetImage('images/icon_instagram.png'))),
+  //                         Padding(padding: EdgeInsets.only(right: 10.0)),
+  //                         Column(
+  //                           crossAxisAlignment: CrossAxisAlignment.start,
+  //                           children: [
+  //                             Text(
+  //                               "2단계",
+  //                               style: TextStyle(
+  //                                 fontSize: 12,
+  //                                 color: Color(0xff333D4B),
+  //                               ),
+  //                             ),
+  //                             Text(
+  //                               "친구들에게 공유",
+  //                               style: TextStyle(
+  //                                   fontSize: 16,
+  //                                   color: Color(0xff333D4B),
+  //                                   fontWeight: FontWeight.bold),
+  //                             ),
+  //                           ],
+  //                         )
+  //                       ],
+  //                     )
+  //                   ],
+  //                 ),
+  //                 ElevatedButton(
+  //                     onPressed: () {},
+  //                     style: OutlinedButton.styleFrom(
+  //                       foregroundColor: Colors.white,
+  //                       shadowColor: Colors.transparent,
+  //                       backgroundColor: Color.fromRGBO(151, 84, 251, 1),
+  //                       shape: RoundedRectangleBorder(
+  //                           borderRadius: BorderRadius.circular(10.0)),
+  //                     ),
+  //                     child: const Text(
+  //                       "공유",
+  //                       style: TextStyle(
+  //                           fontSize: 13,
+  //                           fontWeight: FontWeight.bold,
+  //                           color: Colors.white),
+  //                     ))
+  //               ]),
+  //         ),
+  //       ),
+  //     ),
+  //   ]);
+  // }
 
   setQuestionState() {
     // Current Question에 따른 현재 상태 설정
@@ -340,7 +345,7 @@ class _QuestionPageState extends State<QuestionPage> {
         isQuestionOpen = true;
         // 최소 오픈 시간
         DateTime closeTime =
-        DateTime.parse(currentQuestion!.openTime).add(Duration(hours: 24));
+            DateTime.parse(currentQuestion!.openTime).add(Duration(hours: 24));
         //만약, 지금 시간이 Current Question의 최소 오픈 시간을 지났다면
         if (DateTime.now().isAfter(closeTime)) {
           hasQuestionCloseTimePassed = true;
@@ -368,7 +373,7 @@ class _QuestionPageState extends State<QuestionPage> {
           .toList();
       questionDataIds.shuffle();
       String newContentId =
-      questionDataIds.firstWhere((id) => !receivedContentIds.contains(id));
+          questionDataIds.firstWhere((id) => !receivedContentIds.contains(id));
 
       // 새로운 질문 객체 생성
       DateTime now = DateTime.now();
@@ -378,7 +383,7 @@ class _QuestionPageState extends State<QuestionPage> {
           ownerName: user.name,
           owner: user.uid,
           content: QuestionList.questionList[int.parse(newContentId)]
-          ['question'],
+              ['question'],
           contentId: newContentId,
           receiveTime: now.toString(),
           openTime: '',
@@ -413,7 +418,7 @@ class _QuestionPageState extends State<QuestionPage> {
           // 1-1. Question 반영
           currentQuestion!.isOpen = true;
           currentQuestion!.openTime = DateTime.now().toString();
-          currentQuestion!.url = getUrl();
+          currentQuestion!.url = getUrl(currentQuestion!);
           // 1-2. Feed 반영
           feed.add(currentQuestion);
 
@@ -449,8 +454,13 @@ class _QuestionPageState extends State<QuestionPage> {
     });
   }
 
-  getUrl() {
+  String getUrl(Question question) {
     // TODO: 혜은 - url 생성한 걸 가져오는 코드 추가해야됨
-    return '';
+    String url = '';
+    getShortLink(question).then((value) {
+      url = value;
+      print("getUrl() : $url");
+    });
+    return url;
   }
 }
