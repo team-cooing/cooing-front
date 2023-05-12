@@ -217,7 +217,9 @@ class _AnswerPageState extends State<AnswerPage> {
               child: Column(children: <Widget>[
                 const Padding(padding: EdgeInsets.all(15.0)),
                 question.ownerProfileImage.isEmpty
-                    ? const CircularProgressIndicator()
+                    ? CircularProgressIndicator(
+                        color: Palette.mainPurple,
+                      )
                     : SizedBox(
                         width: 80.0,
                         height: 80.0,
