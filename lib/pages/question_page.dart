@@ -194,147 +194,6 @@ class _QuestionPageState extends State<QuestionPage> {
     );
   }
 
-  // Widget shareCard() {
-  //   return Column(children: <Widget>[
-  //     Container(
-  //       padding: const EdgeInsets.only(top: 20),
-  //       child: SizedBox(
-  //         width: double.infinity,
-  //         height: 90.0,
-  //         child: Container(
-  //           padding: EdgeInsets.all(25.0),
-  //           decoration: BoxDecoration(
-  //               color: Color(0xFFF2F3F3),
-  //               borderRadius: BorderRadius.circular(20)),
-  //           child: Row(
-  //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //               children: [
-  //                 Column(
-  //                   mainAxisAlignment: MainAxisAlignment.center,
-  //                   children: [
-  //                     Row(
-  //                       children: [
-  //                         SizedBox(
-  //                             width: 25.0,
-  //                             height: 25.0,
-  //                             child: Image(
-  //                                 image:
-  //                                     AssetImage('images/icon_copyLink.png'))),
-  //                         Padding(padding: EdgeInsets.only(right: 10.0)),
-  //                         Column(
-  //                           crossAxisAlignment: CrossAxisAlignment.start,
-  //                           children: [
-  //                             Text(
-  //                               "1단계",
-  //                               style: TextStyle(
-  //                                 fontSize: 12,
-  //                                 color: Color(0xff333D4B),
-  //                               ),
-  //                             ),
-  //                             Text(
-  //                               "링크 복사하기",
-  //                               style: TextStyle(
-  //                                   fontSize: 16,
-  //                                   color: Color(0xff333D4B),
-  //                                   fontWeight: FontWeight.bold),
-  //                             ),
-  //                           ],
-  //                         )
-  //                       ],
-  //                     )
-  //                   ],
-  //                 ),
-  //                 ElevatedButton(
-  //                     onPressed: () {},
-  //                     style: OutlinedButton.styleFrom(
-  //                       foregroundColor: Colors.white,
-  //                       shadowColor: Colors.transparent,
-  //                       backgroundColor: Color.fromRGBO(151, 84, 251, 1),
-  //                       shape: RoundedRectangleBorder(
-  //                           borderRadius: BorderRadius.circular(10.0)),
-  //                     ),
-  //                     child: const Text(
-  //                       "복사",
-  //                       style: TextStyle(
-  //                           fontSize: 13,
-  //                           fontWeight: FontWeight.bold,
-  //                           color: Colors.white),
-  //                     ))
-  //               ]),
-  //         ),
-  //       ),
-  //     ),
-  //     Container(
-  //       padding: const EdgeInsets.only(top: 20),
-  //       child: SizedBox(
-  //         width: double.infinity,
-  //         height: 90.0,
-  //         child: Container(
-  //           padding: EdgeInsets.all(25.0),
-  //           decoration: BoxDecoration(
-  //               color: Color(0xffF2F3F3),
-  //               borderRadius: BorderRadius.circular(20)),
-  //           child: Row(
-  //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //               children: [
-  //                 Column(
-  //                   mainAxisAlignment: MainAxisAlignment.center,
-  //                   children: [
-  //                     Row(
-  //                       children: [
-  //                         SizedBox(
-  //                             width: 25.0,
-  //                             height: 25.0,
-  //                             child: Image(
-  //                                 image:
-  //                                     AssetImage('images/icon_instagram.png'))),
-  //                         Padding(padding: EdgeInsets.only(right: 10.0)),
-  //                         Column(
-  //                           crossAxisAlignment: CrossAxisAlignment.start,
-  //                           children: [
-  //                             Text(
-  //                               "2단계",
-  //                               style: TextStyle(
-  //                                 fontSize: 12,
-  //                                 color: Color(0xff333D4B),
-  //                               ),
-  //                             ),
-  //                             Text(
-  //                               "친구들에게 공유",
-  //                               style: TextStyle(
-  //                                   fontSize: 16,
-  //                                   color: Color(0xff333D4B),
-  //                                   fontWeight: FontWeight.bold),
-  //                             ),
-  //                           ],
-  //                         )
-  //                       ],
-  //                     )
-  //                   ],
-  //                 ),
-  //                 ElevatedButton(
-  //                     onPressed: () {},
-  //                     style: OutlinedButton.styleFrom(
-  //                       foregroundColor: Colors.white,
-  //                       shadowColor: Colors.transparent,
-  //                       backgroundColor: Color.fromRGBO(151, 84, 251, 1),
-  //                       shape: RoundedRectangleBorder(
-  //                           borderRadius: BorderRadius.circular(10.0)),
-  //                     ),
-  //                     child: const Text(
-  //                       "공유",
-  //                       style: TextStyle(
-  //                           fontSize: 13,
-  //                           fontWeight: FontWeight.bold,
-  //                           color: Colors.white),
-  //                     ))
-  //               ]),
-  //         ),
-  //       ),
-  //     ),
-  //   ]);
-  // }
-
   setQuestionState() {
     // Current Question에 따른 현재 상태 설정
     // 만약, Current Question이 있다면
@@ -418,7 +277,7 @@ class _QuestionPageState extends State<QuestionPage> {
           // 1-1. Question 반영
           currentQuestion!.isOpen = true;
           currentQuestion!.openTime = DateTime.now().toString();
-          currentQuestion!.url = getUrl(currentQuestion!);
+          currentQuestion!.url = await getUrl(currentQuestion!);
           // 1-2. Feed 반영
           feed.add(currentQuestion);
 
@@ -454,13 +313,9 @@ class _QuestionPageState extends State<QuestionPage> {
     });
   }
 
-  String getUrl(Question question) {
+  Future<String> getUrl(Question question) async {
     // TODO: 혜은 - url 생성한 걸 가져오는 코드 추가해야됨
-    String url = '';
-    getShortLink(question).then((value) {
-      url = value;
-      print("getUrl() : $url");
-    });
+    String url = await getShortLink(question);
     return url;
   }
 }
