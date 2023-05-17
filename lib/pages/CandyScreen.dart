@@ -1,59 +1,94 @@
 import 'dart:async';
-
+import 'dart:io';
+import 'package:cooing_front/model/response/PurchasableProduct.dart';
 import 'package:cooing_front/model/response/User.dart';
+import 'package:cooing_front/model/response/storeState.dart';
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 
 class CandyScreen extends StatefulWidget {
   const CandyScreen({Key? key}) : super(key: key);
-
   @override
   State<CandyScreen> createState() => _CandyScreenState();
 }
 
 class _CandyScreenState extends State<CandyScreen> {
   // 인앱결제를 위한 초기화
+  StoreState storeState = StoreState.loading;
+  late StreamSubscription<List<PurchaseDetails>> _subscription;
+  List<PurchasableProduct> products = [];
+
   final InAppPurchase _inAppPurchase = InAppPurchase.instance;
-  bool _available = false; // 인앱 결제가 가능한지 여부를 나타내는 변수
+
+  //
   List<ProductDetails> _products = []; // 사용 가능한 상품 목록
 
   Future<void> _loadProducts() async {
-    _available = await _inAppPurchase.isAvailable();
-    Set<String> ids = Set<String>.from([
-      "candy25",
-      "candy50",
-      "candy100",
-    ]);
-    if (_available) {
-      print(_available);
-      print(ids);
-      ProductDetailsResponse response =
-          await InAppPurchase.instance.queryProductDetails(ids);
-      if (response.error != null) {
-        print('Failed to fetch product details: ${response.error}');
-        return;
-      }
-      print(response.productDetails.toString());
-      print(response.productDetails);
-      print(response.error);
-      setState(() {
-        this._products = response.productDetails;
-      });
+    final _available = await _inAppPurchase.isAvailable();
+
+    if (!_available) {
+      storeState = StoreState.notAvailable;
+      return;
     }
+
+    const ids = <String>{'candy25', 'candy50', 'candy100', 'goldenCandy'};
+
+    final response = await _inAppPurchase.queryProductDetails(ids);
+
+    products =
+        response.productDetails.map((e) => PurchasableProduct(e)).toList();
+    storeState = StoreState.available;
+
+    if (response.error != null) {
+      print('Failed to fetch product details: ${response.error}');
+      return;
+    }
+
+    // setState(() {
+    //   products =
+    //       response.productDetails.map((e) => PurchasableProduct(e)).toList();
+    //   print(products[0].id); //candy100
+    //   print(products[0].title); //candy100
+    //   print(products[0].description); //candy100
+    //   print(products[0].price); //w11000
+    //   print(products[0].status); //ProductStatus.purchasable
+    //   print(products[0].productDetails); //AppStoreProductDetails
+    // });
+  }
+
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
   }
 
   @override
   void initState() {
+    Future(() => _loadProducts());
     super.initState();
-    Future(this._loadProducts);
 
     // 인앱 결제 초기화
     // 사용 가능한 상품 조회
   }
 
-  void _buyProduct(ProductDetails product) {
-    final PurchaseParam purchaseParam = PurchaseParam(productDetails: product);
-    InAppPurchase.instance.buyNonConsumable(purchaseParam: purchaseParam);
+  Future<void> buy(PurchasableProduct product) async {
+    final purchaseParam = PurchaseParam(productDetails: product.productDetails);
+    switch (product.id) {
+      case 'candy25':
+        // 구매를 다 끝내지 않고 창을 종료했을 경우, 다음 구매가 눌러지지 않는 오류 발생
+        await _inAppPurchase.buyConsumable(purchaseParam: purchaseParam);
+        break;
+      case 'candy50':
+        await _inAppPurchase.buyConsumable(purchaseParam: purchaseParam);
+        break;
+      case 'candy100':
+        await _inAppPurchase.buyConsumable(purchaseParam: purchaseParam);
+        break;
+      case 'goldenCandy':
+
+      default:
+        throw ArgumentError.value(
+            product.productDetails, '${product.id} is not a known product');
+    }
   }
 
   Widget build(BuildContext context) {
@@ -125,8 +160,11 @@ class _CandyScreenState extends State<CandyScreen> {
                             ],
                           ),
                           ElevatedButton(
-                              onPressed: () {
-                                _buyProduct(_products[0]);
+                              onPressed: () async {
+                                PurchasableProduct productDetails = products
+                                    .where((product) => product.id == 'candy25')
+                                    .first;
+                                buy(productDetails);
                               },
                               style: OutlinedButton.styleFrom(
                                 foregroundColor: Colors.white,
@@ -182,7 +220,12 @@ class _CandyScreenState extends State<CandyScreen> {
                             ],
                           ),
                           ElevatedButton(
-                              onPressed: null,
+                              onPressed: () async {
+                                PurchasableProduct productDetails = products
+                                    .where((product) => product.id == 'candy50')
+                                    .first;
+                                buy(productDetails);
+                              },
                               style: OutlinedButton.styleFrom(
                                 foregroundColor: Colors.white,
                                 backgroundColor:
@@ -237,7 +280,13 @@ class _CandyScreenState extends State<CandyScreen> {
                             ],
                           ),
                           ElevatedButton(
-                              onPressed: null,
+                              onPressed: () async {
+                                PurchasableProduct productDetails = products
+                                    .where(
+                                        (product) => product.id == 'candy100')
+                                    .first;
+                                buy(productDetails);
+                              },
                               style: OutlinedButton.styleFrom(
                                 foregroundColor: Colors.white,
                                 backgroundColor:
@@ -305,7 +354,13 @@ class _CandyScreenState extends State<CandyScreen> {
                             ],
                           ),
                           ElevatedButton(
-                              onPressed: null,
+                              onPressed: () async {
+                                PurchasableProduct productDetails = products
+                                    .where((product) =>
+                                        product.id == 'goldenCandy')
+                                    .first;
+                                buy(productDetails);
+                              },
                               style: OutlinedButton.styleFrom(
                                 foregroundColor: Colors.white,
                                 backgroundColor:
