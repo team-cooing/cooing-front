@@ -21,6 +21,14 @@ class UserDataProvider with ChangeNotifier {
     }
   }
 
+  void updateCandyCount(int additionalCandyCount) {
+    if (_userData != null) {
+      _userData!.candyCount += additionalCandyCount;
+      _saveUserDataToCookie(_userData!);
+      notifyListeners();
+    }
+  }
+
   Future<void> loadData() async {
     if (_isDataLoaded) {
       return;

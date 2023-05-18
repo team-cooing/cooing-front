@@ -1,11 +1,12 @@
 import 'package:cooing_front/model/response/User.dart';
 import 'package:cooing_front/pages/login/FeatureScreen.dart';
 import 'package:cooing_front/pages/login/SchoolScreen.dart';
+import 'package:cooing_front/providers/UserProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 import 'CandyScreen.dart';
 
 class SettingScreen extends StatefulWidget {
@@ -47,6 +48,8 @@ class _SettingScreenState extends State<SettingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserDataProvider>(context, listen: true);
+
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -87,11 +90,12 @@ class _SettingScreenState extends State<SettingScreen> {
                                     ),
                                   ),
                                   Text(
-                                    "5개",
+                                    '${userProvider.userData?.candyCount.toString() ?? ''}개',
                                     style: TextStyle(
-                                        fontSize: 16,
-                                        color: Color(0xff333D4B),
-                                        fontWeight: FontWeight.bold),
+                                      fontSize: 16,
+                                      color: Color(0xff333D4B),
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ],
                               )

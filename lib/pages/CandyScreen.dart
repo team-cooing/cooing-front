@@ -1,11 +1,14 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cooing_front/model/response/PurchasableProduct.dart';
 import 'package:cooing_front/model/response/User.dart';
 import 'package:cooing_front/model/response/storeState.dart';
+import 'package:cooing_front/providers/UserProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:provider/provider.dart';
 
 class CandyScreen extends StatefulWidget {
   const CandyScreen({Key? key}) : super(key: key);
@@ -18,7 +21,7 @@ class _CandyScreenState extends State<CandyScreen> {
   StoreState storeState = StoreState.loading;
   late StreamSubscription<List<PurchaseDetails>> _subscription;
   List<PurchasableProduct> products = [];
-
+  late final response;
   final InAppPurchase _inAppPurchase = InAppPurchase.instance;
   String? latestPurchasedID;
 
@@ -46,7 +49,7 @@ class _CandyScreenState extends State<CandyScreen> {
 
     const ids = <String>{'candy25', 'candy50', 'candy100', 'goldenCandy'};
 
-    final response = await _inAppPurchase.queryProductDetails(ids);
+    response = await _inAppPurchase.queryProductDetails(ids);
     setState(() {
       products =
           response.productDetails.map((e) => PurchasableProduct(e)).toList();
@@ -70,14 +73,14 @@ class _CandyScreenState extends State<CandyScreen> {
     print(purchase.pendingCompletePurchase);
     print('---------');
     if (purchase.status == PurchaseStatus.pending) {
-      // 구매가 진행 중입니다.
+      // 구매가 진행 중
     } else if (purchase.status == PurchaseStatus.error) {
-      // 구매 중 오류가 발생했습니다.
+      // 구매 중 오류가 발생
     } else if (purchase.status == PurchaseStatus.purchased ||
         purchase.status == PurchaseStatus.restored) {
       if (purchase.pendingCompletePurchase) {
         await _inAppPurchase.completePurchase(purchase);
-        // 구매를 완료했습니다.
+        // 구매를 완료
       }
 
       if (purchase.pendingCompletePurchase &&
@@ -87,22 +90,18 @@ class _CandyScreenState extends State<CandyScreen> {
 
         if (purchase.productID == 'candy25') {
           // 캔디 25 구매 완료 이벤트 처리
-          updateCandyCount(25);
+          updateCandy(purchase.productID, 25);
           FlutterDialog();
         } else if (purchase.productID == 'candy50') {
-          // 캔디 50 구매 완료 이벤트 처리
-          // 예시: 캔디 개수를 업데이트하거나 알림을 표시하는 등의 작업을 수행할 수 있습니다.
-          updateCandyCount(50);
+          updateCandy(purchase.productID, 50);
           FlutterDialog();
         } else if (purchase.productID == 'candy100') {
-          // 캔디 50 구매 완료 이벤트 처리
-          // 예시: 캔디 개수를 업데이트하거나 알림을 표시하는 등의 작업을 수행할 수 있습니다.
-          updateCandyCount(100);
+          updateCandy(purchase.productID, 100);
           FlutterDialog();
         }
       }
     } else if (purchase.status == PurchaseStatus.canceled) {
-      // 구매가 취소되었습니다. 취소된 경우에도 거래를 완료해야 합니다.
+      // 구매 취소된 경우에도 거래를 완료해야 함.
       if (purchase.pendingCompletePurchase) {
         await _inAppPurchase.completePurchase(purchase);
       }
@@ -119,9 +118,10 @@ class _CandyScreenState extends State<CandyScreen> {
       case 'candy50':
       case 'candy100':
         await _inAppPurchase.buyConsumable(purchaseParam: purchaseParam);
-
         break;
       case 'goldenCandy':
+
+        // 구독하지 않은 경우
         await _inAppPurchase.buyNonConsumable(purchaseParam: purchaseParam);
 
         break;
@@ -132,8 +132,25 @@ class _CandyScreenState extends State<CandyScreen> {
     }
   }
 
-  Future<void> updateCandyCount(int number) async {
-    print(number);
+  Future<void> updateCandy(String productId, int number) async {
+    final userProvider = Provider.of<UserDataProvider>(context, listen: false);
+    userProvider.updateCandyCount(number);
+    if (userProvider.userData != null) {
+      final uid = userProvider.userData!.uid;
+      final userRef = FirebaseFirestore.instance.collection('users').doc(uid);
+      await userRef.update({'candyCount': userProvider.userData?.candyCount});
+
+      final purchaseRef = FirebaseFirestore.instance
+          .collection("purchaseHistory")
+          .doc(uid)
+          .collection('history');
+
+      final timestamp = DateTime.now();
+
+      await purchaseRef.doc(timestamp.toString()).set({
+        'type': productId,
+      });
+    }
   }
 
   void FlutterDialog() {
