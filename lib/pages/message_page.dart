@@ -112,14 +112,18 @@ class _MessagePageState extends State<MessagePage> {
     }
   }
 
-  Widget whatIcon(bool gender, bool isChecked) {
+  Widget whatIcon(int gender, bool isChecked) {
+    bool genderBool = false;
+    if (gender == 1) {
+      genderBool = true;
+    }
     return Stack(
       clipBehavior: Clip.none,
       children: [
         SizedBox(
             width: 25.0,
             height: 25.0,
-            child: gender
+            child: genderBool
                 ? Image(image: AssetImage('images/icon_msg_girl.png'))
                 : Image(image: AssetImage('images/icon_msg_boy.png'))),
         Positioned(
@@ -179,8 +183,8 @@ class _MessagePageState extends State<MessagePage> {
                 int value,
               ) {
                 return Padding(
-                    padding:
-                        const EdgeInsets.only(left: 20.0, top: 30, bottom: 15),
+                    padding: const EdgeInsets.only(
+                        left: 20.0, right: 20, top: 30, bottom: 15),
                     child: Padding(
                         padding: EdgeInsets.symmetric(horizontal: 5),
                         child: Column(
@@ -284,7 +288,7 @@ class _MessagePageState extends State<MessagePage> {
                                         children: [
                                           Row(
                                             children: [
-                                              whatIcon(answer.ownerGender==0,
+                                              whatIcon(answer.ownerGender,
                                                   answer.isOpened),
                                               Padding(
                                                   padding: EdgeInsets.only(
