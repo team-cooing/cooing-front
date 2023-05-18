@@ -5,6 +5,7 @@ import 'package:cooing_front/model/response/User.dart';
 import 'package:cooing_front/model/response/storeState.dart';
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:flutter/cupertino.dart';
 
 class CandyScreen extends StatefulWidget {
   const CandyScreen({Key? key}) : super(key: key);
@@ -19,9 +20,21 @@ class _CandyScreenState extends State<CandyScreen> {
   List<PurchasableProduct> products = [];
 
   final InAppPurchase _inAppPurchase = InAppPurchase.instance;
+  String? latestPurchasedID;
 
-  //
-  List<ProductDetails> _products = []; // 사용 가능한 상품 목록
+  @override
+  void initState() {
+    super.initState();
+    _subscription = _inAppPurchase.purchaseStream
+        .listen((List<PurchaseDetails> purchaseDetailsList) {
+      for (PurchaseDetails purchase in purchaseDetailsList) {
+        _handlePurchase(purchase);
+      }
+    });
+    if (storeState == StoreState.loading) {
+      _loadProducts();
+    }
+  }
 
   Future<void> _loadProducts() async {
     final _available = await _inAppPurchase.isAvailable();
@@ -34,26 +47,16 @@ class _CandyScreenState extends State<CandyScreen> {
     const ids = <String>{'candy25', 'candy50', 'candy100', 'goldenCandy'};
 
     final response = await _inAppPurchase.queryProductDetails(ids);
-
-    products =
-        response.productDetails.map((e) => PurchasableProduct(e)).toList();
-    storeState = StoreState.available;
+    setState(() {
+      products =
+          response.productDetails.map((e) => PurchasableProduct(e)).toList();
+      storeState = StoreState.available;
+    });
 
     if (response.error != null) {
       print('Failed to fetch product details: ${response.error}');
       return;
     }
-
-    // setState(() {
-    //   products =
-    //       response.productDetails.map((e) => PurchasableProduct(e)).toList();
-    //   print(products[0].id); //candy100
-    //   print(products[0].title); //candy100
-    //   print(products[0].description); //candy100
-    //   print(products[0].price); //w11000
-    //   print(products[0].status); //ProductStatus.purchasable
-    //   print(products[0].productDetails); //AppStoreProductDetails
-    // });
   }
 
   void dispose() {
@@ -61,34 +64,94 @@ class _CandyScreenState extends State<CandyScreen> {
     super.dispose();
   }
 
-  @override
-  void initState() {
-    Future(() => _loadProducts());
-    super.initState();
+  Future<void> _handlePurchase(PurchaseDetails purchase) async {
+    print(purchase.productID);
+    print(purchase.status);
+    print(purchase.pendingCompletePurchase);
+    print('---------');
+    if (purchase.status == PurchaseStatus.pending) {
+      // 구매가 진행 중입니다.
+    } else if (purchase.status == PurchaseStatus.error) {
+      // 구매 중 오류가 발생했습니다.
+    } else if (purchase.status == PurchaseStatus.purchased ||
+        purchase.status == PurchaseStatus.restored) {
+      if (purchase.pendingCompletePurchase) {
+        await _inAppPurchase.completePurchase(purchase);
+        // 구매를 완료했습니다.
+      }
 
-    // 인앱 결제 초기화
-    // 사용 가능한 상품 조회
+      if (purchase.pendingCompletePurchase &&
+          purchase.purchaseID != latestPurchasedID) {
+        // 최신 구매 ID 업데이트
+        latestPurchasedID = purchase.purchaseID;
+
+        if (purchase.productID == 'candy25') {
+          // 캔디 25 구매 완료 이벤트 처리
+          updateCandyCount(25);
+          FlutterDialog();
+        } else if (purchase.productID == 'candy50') {
+          // 캔디 50 구매 완료 이벤트 처리
+          // 예시: 캔디 개수를 업데이트하거나 알림을 표시하는 등의 작업을 수행할 수 있습니다.
+          updateCandyCount(50);
+          FlutterDialog();
+        } else if (purchase.productID == 'candy100') {
+          // 캔디 50 구매 완료 이벤트 처리
+          // 예시: 캔디 개수를 업데이트하거나 알림을 표시하는 등의 작업을 수행할 수 있습니다.
+          updateCandyCount(100);
+          FlutterDialog();
+        }
+      }
+    } else if (purchase.status == PurchaseStatus.canceled) {
+      // 구매가 취소되었습니다. 취소된 경우에도 거래를 완료해야 합니다.
+      if (purchase.pendingCompletePurchase) {
+        await _inAppPurchase.completePurchase(purchase);
+      }
+    }
   }
+
+// 캔디 25, 50, 100개는 예전에 샀던 안샀던 계속 구매 가능.
+// 구독은 사고 나면 구매가 불가능
 
   Future<void> buy(PurchasableProduct product) async {
     final purchaseParam = PurchaseParam(productDetails: product.productDetails);
     switch (product.id) {
       case 'candy25':
-        // 구매를 다 끝내지 않고 창을 종료했을 경우, 다음 구매가 눌러지지 않는 오류 발생
-        await _inAppPurchase.buyConsumable(purchaseParam: purchaseParam);
-        break;
       case 'candy50':
-        await _inAppPurchase.buyConsumable(purchaseParam: purchaseParam);
-        break;
       case 'candy100':
         await _inAppPurchase.buyConsumable(purchaseParam: purchaseParam);
+
         break;
       case 'goldenCandy':
+        await _inAppPurchase.buyNonConsumable(purchaseParam: purchaseParam);
+
+        break;
 
       default:
         throw ArgumentError.value(
             product.productDetails, '${product.id} is not a known product');
     }
+  }
+
+  Future<void> updateCandyCount(int number) async {
+    print(number);
+  }
+
+  void FlutterDialog() {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return CupertinoAlertDialog(
+            title: Text('승인 완료'),
+            content: Text('정상적으로 구매가 완료되었습니다.'),
+            actions: <Widget>[
+              TextButton(
+                  onPressed: () {
+                    //action code for "Yes" button
+                  },
+                  child: Text('확인')),
+            ],
+          );
+        });
   }
 
   Widget build(BuildContext context) {
