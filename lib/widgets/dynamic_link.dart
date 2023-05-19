@@ -46,7 +46,6 @@ class DynamicLink {
       _redirectScreen(dynamicLinkData, uid);
     }).onError((error) {
       print("In dynamicLink() - addListener : $error");
-      // logger.e(error);
     });
   }
 
@@ -118,6 +117,7 @@ class DynamicLink {
       Get.offAll(() => AnswerPage(
             question: question,
             user: user,
+            isFromLink: true,
           ));
     }
   }

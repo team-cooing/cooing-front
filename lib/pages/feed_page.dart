@@ -298,7 +298,8 @@ class _FeedPageState extends State<FeedPage> {
             bool? isCompleted = await Navigator.of(context).push(MaterialPageRoute(
                 builder: (BuildContext context) => AnswerPage(
                     user: user,
-                question: question,)));
+                question: question,
+                isFromLink: false,)));
 
             // TODO: 임시 테스트 true
             isCompleted = true;

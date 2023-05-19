@@ -31,7 +31,6 @@ class _QuestionPageState extends State<QuestionPage> {
   late User user;
   Question? currentQuestion;
   List<Question?> feed = [];
-  var photo_path;
   bool isQuestionReceived = false;
   bool isQuestionOpen = false;
   bool hasQuestionCloseTimePassed = false;
@@ -340,6 +339,7 @@ class _QuestionPageState extends State<QuestionPage> {
   }
 
   void _onShareButtonPressed(var path) {
+    //공유 버튼 클릭시
     String facebookId = "617417756966237";
 
     SocialShare.shareInstagramStory(
@@ -354,13 +354,31 @@ class _QuestionPageState extends State<QuestionPage> {
   }
 
   void _onCopyButtonPressed(String url) {
+    //복사 버튼 클릭시 클립보드에 복사
     Clipboard.setData(ClipboardData(text: url));
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text('링크 복사완료!'),
-    ));
+
+    //하단에 "링크복사완료!" 메시지 스낵바
+    final snackBar = SnackBar(
+      content: Text(
+        '링크 복사완료!',
+        style: TextStyle(
+          fontSize: 15,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+      ),
+      backgroundColor: Colors.black,
+    );
+    // 스낵바 나타남
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    // 2초 후에 SnackBar를 숨김
+    Future.delayed(Duration(seconds: 2), () {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    });
   }
 
   Widget shareCard() {
+    //링크복사, 인스타그램 아이콘
     AssetImage iconLink = AssetImage('images/icon_copyLink.png');
     AssetImage iconInstagram = AssetImage('images/icon_instagram.png');
 
@@ -420,11 +438,10 @@ class _QuestionPageState extends State<QuestionPage> {
             ElevatedButton(
               onPressed: () async {
                 if (buttonTxt == '복사') {
-                  print(
-                      "in ShareCard() - currentQuestionUrl :  ${currentQuestion!.url}");
+                  print("복사버튼클릭 -> url :  ${currentQuestion!.url}");
                   _onCopyButtonPressed(currentQuestion!.url);
                 } else {
-                  //버튼 text 가 "공유"일 때
+                  //버튼 text 가 "공유"일 때, pupleBox 사진 찍음
                   var path = await screenshot();
                   _onShareButtonPressed(path);
                 }

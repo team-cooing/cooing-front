@@ -2,7 +2,6 @@ import 'package:cooing_front/model/response/user.dart';
 import 'package:cooing_front/pages/answer_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cooing_front/model/data/question_list.dart';
 import 'package:grouped_list/grouped_list.dart';
@@ -32,77 +31,47 @@ class _MessagePageState extends State<MessagePage> {
   late List<Map<String, dynamic>> msgcontentInfos;
   late Map<String, dynamic> questionAnswerMapList;
   late List<Map<String, dynamic>> groupList = [];
-  late String uid;
+  late User userData;
 
   @override
   void initState() {
     super.initState();
 
-    uid = widget.user.uid;
+    userData = widget.user;
 
-    userCollectionRef = firestore.collection('users');
     contentCollectionRef = firestore.collection('contents');
     answerCollectionRef =
-        firestore.collection('answers').doc(uid).collection('answers');
-
-    Future<User> getUserData() async {
-      final prefs = await AsyncPrefsOperation();
-
-      final userDataJson = prefs.getString('userData');
-      if (userDataJson != null) {
-        print("쿠키 에서 UserData 로드");
-        print(userDataJson);
-        Map<String, dynamic> userDataMap =
-            json.decode(userDataJson); //z쿠키가 있ㅇㅡ면 쿠키 리턴
-        return User.fromJson(userDataMap);
-      } else {
-        final userAnswerRef = FirebaseFirestore.instance
-            .collection('answers')
-            .doc(uid)
-            .collection('answers');
-
-        // Handle missing data
-        print('No user data found in shared preferences');
-        userDocRef = userCollectionRef.doc(uid);
-        print("uid : $uid");
-        print("firebase 에서 UserData 로드");
-        return await getUserDocument(userDocRef, uid); //쿠키없으면 파베에서 유저 데이터 리턴
-      }
-    }
+        firestore.collection('answers').doc(userData.uid).collection('answers');
 
     try {
-      late User userData;
+      msgcontentInfos = userData.questionInfos;
+      if (msgcontentInfos.isEmpty) {
+        print("userData - contentInfos is Empty");
+      } else {
+        getAnswersByQuestionIds(msgcontentInfos, answerCollectionRef)
+            .then((value) {
+          questionAnswerMapList = value;
+          questionAnswerMapList.forEach((key, value) {
+            // print("44444");
+            print("key : $key value : $value");
 
-      getUserData().then((data) {
-        userData = data;
-        msgcontentInfos = userData.questionInfos;
-        if (msgcontentInfos.isEmpty) {
-          print("userData - contentInfos is Empty");
-        } else {
-          getAnswersByQuestionIds(msgcontentInfos, answerCollectionRef)
-              .then((value) {
-            questionAnswerMapList = value;
-            questionAnswerMapList.forEach((key, value) {
-              // print("44444");
-              print("key : $key value : $value");
-
-              Map<String, dynamic> groupMap = {
-                'contentId': key,
-                // 'content': questionList.elementAt(int.parse(key))['question']
-                //     as String,-
-                'answers': value
-              };
-              groupList.add(groupMap);
-            });
-
-            setState(() {
-              // 화면을 다시 그립니다.
-              groupList = groupList;
-              print("####groupList: $groupList");
-            });
+            Map<String, dynamic> groupMap = {
+              'contentId': key,
+              // 'content': questionList.elementAt(int.parse(key))['question']
+              //     as String,-
+              'answers': value
+            };
+            groupList.add(groupMap);
           });
-        }
-      });
+
+          setState(() {
+            // 화면을 다시 그립니다.
+
+            groupList = groupList;
+            // print("####groupList: $groupList");
+          });
+        });
+      }
     } on FormatException catch (e) {
       // Handle JSON decoding error
       print('Error decoding user data: $e');
@@ -253,8 +222,8 @@ class _MessagePageState extends State<MessagePage> {
                       child: GestureDetector(
                           onTap: () {
                             Get.to(() => AnswerDetailPage(
-                                  answerId: answer.id,
-                                  userId: uid,
+                                  answer: answer,
+                                  user: userData,
                                   contentId: contentId,
                                 ));
                           },

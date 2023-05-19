@@ -2,31 +2,34 @@ import 'package:cooing_front/model/response/question.dart';
 import 'package:cooing_front/model/response/user.dart';
 import 'package:flutter/material.dart';
 import 'package:cooing_front/pages/answer_complete_page.dart';
-import 'package:get/get.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import '../model/util/hint.dart';
 import 'package:cooing_front/pages/tab_page.dart';
-import 'package:cooing_front/widgets/firebase_method.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cooing_front/model/config/palette.dart';
 import 'dart:math';
+import 'package:cooing_front/model/util/hint.dart';
 
 class AnswerPage extends StatefulWidget {
   final User user;
   final Question question;
-
-  const AnswerPage({required this.user, required this.question, super.key});
+  final bool isFromLink;
+  const AnswerPage(
+      {required this.user,
+      required this.question,
+      required this.isFromLink,
+      super.key});
 
   @override
   State<AnswerPage> createState() => _AnswerPageState();
 }
 
 class _AnswerPageState extends State<AnswerPage> {
-  bool isLoading = true;
   late Question question;
 
   late String uid;
   late User _userData;
   late bool _checkSecret = false;
+  late bool isFromLink;
+
   late DocumentReference userDocRef;
 
   int maxLength = 100;
@@ -41,17 +44,10 @@ class _AnswerPageState extends State<AnswerPage> {
   @override
   void initState() {
     super.initState();
-    uid = widget.user.uid;
+    _userData = widget.user;
     question = widget.question;
-
-    getUserData(uid).then((data) {
-      _userData = data;
-      hintList = generateHint(_userData);
-      print(_userData);
-      setState(() {
-        isLoading = false;
-      });
-    });
+    isFromLink = widget.isFromLink;
+    hintList = generateHint(_userData);
 
     _textController.addListener(() {
       setState(() {
@@ -76,8 +72,10 @@ class _AnswerPageState extends State<AnswerPage> {
         timeId = DateTime.now().toString();
         print("ownerId: $ownerId");
 
-        final DocumentSnapshot userSnapshot =
-            await FirebaseFirestore.instance.collection('users').doc(uid).get();
+        final DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(_userData.uid)
+            .get();
 
         Map<String, dynamic>? data =
             userSnapshot.data() as Map<String, dynamic>?;
@@ -99,7 +97,6 @@ class _AnswerPageState extends State<AnswerPage> {
             .limit(1)
             .get();
 
-        print("????????? ${snapshot.size}");
         if (snapshot.docs.isNotEmpty) {
           final String lastDocumentId = snapshot.docs.last.id; //가장 최근 answer Id
           // print("last Answer document id : $lastDocumentId");
@@ -124,7 +121,7 @@ class _AnswerPageState extends State<AnswerPage> {
           print('No documents found in answer collection');
           newAnswerId = '#000001_$questionId';
         }
-
+        //Answer 데이터 업로드
         await userAnswerRef.doc(newAnswerId).set({
           'id': newAnswerId, // 마이크로세컨드까지 보낸 시간으로 사용
           'time': timeId,
@@ -139,6 +136,7 @@ class _AnswerPageState extends State<AnswerPage> {
           'isOpenedHint': [false, false, false], //bool List
           'isOpened': false,
         });
+        //user의 answeredQuestion 업로드
         await FirebaseFirestore.instance.collection('users').doc(uid).update({
           'answeredQuestions': answeredQuestions,
         });
@@ -169,34 +167,40 @@ class _AnswerPageState extends State<AnswerPage> {
         });
   }
 
+  Future<bool> _navigateBack() async {
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return isLoading
-        ? loadingView()
-        : WillPopScope(
-            child: Scaffold(
-              appBar: AppBar(
-                automaticallyImplyLeading: false,
-                backgroundColor: Colors.transparent,
-                elevation: 0.0,
-                leading: IconButton(
-                  icon: const Icon(Icons.close_rounded),
-                  color: Colors.black54,
-                  onPressed: () {
-                    Get.to(TabPage(), arguments: uid);
-                  },
-                ),
-              ),
-              body: SingleChildScrollView(
-                  child: Column(children: [
-                _answerBody(),
-                Align(alignment: Alignment.bottomCenter, child: sendBtn())
-              ])),
-            ),
-            onWillPop: () async {
-              Get.to(TabPage(), arguments: uid);
-              return false;
-            });
+    return WillPopScope(
+      onWillPop: _navigateBack,
+      child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          backgroundColor: Colors.transparent,
+          elevation: 0.0,
+          leading: IconButton(
+            icon: const Icon(Icons.close_rounded),
+            color: Colors.black54,
+            onPressed: () {
+              isFromLink
+                  ? Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (BuildContext context) => TabPage()),
+                    )
+                  : Navigator.pop(context, false);
+            },
+          ),
+        ),
+        body: SingleChildScrollView(
+            child: Column(children: [
+          _answerBody(),
+          Align(alignment: Alignment.bottomCenter, child: sendBtn())
+        ])),
+      ),
+    );
   }
 
   Widget loadingView() {
@@ -361,12 +365,23 @@ class _AnswerPageState extends State<AnswerPage> {
             Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           ElevatedButton(
               onPressed: () async {
-                if (textValue.isNotEmpty) {
-                  await _uploadUserToFirebase(question.owner, question.id);
-                  Get.to(() => AnswerCompleteScreen(),
-                      arguments: {"ownerName": question.ownerName, "uid": uid});
-                } else {
+                if (textValue.isEmpty) {
                   emptyTextDialog();
+                } else {
+                  //firebase 에 업로드
+                  await _uploadUserToFirebase(question.owner, question.id);
+
+                  bool? isCompleted = true;
+                  Navigator.pop(context, isCompleted);
+
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (BuildContext context) => AnswerCompleteScreen(
+                        uid: _userData.uid,
+                        owner: question.ownerName,
+                      ),
+                    ),
+                  );
                 }
               },
               style: OutlinedButton.styleFrom(
