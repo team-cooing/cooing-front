@@ -4,6 +4,7 @@ import 'package:cooing_front/model/response/user.dart';
 import 'package:cooing_front/pages/SettingScreen.dart';
 import 'package:cooing_front/pages/feed_page.dart';
 import 'package:cooing_front/pages/login/LoginScreen.dart';
+import 'package:cooing_front/pages/message_page_2.dart';
 import 'package:flutter/material.dart';
 import 'package:cooing_front/pages/question_page.dart';
 import 'package:cooing_front/pages/message_page.dart';
@@ -94,7 +95,7 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
               feed: feed,
               bonusQuestionId: bonusQuestionId,
             ),
-            MessagePage(user: user!),
+            MessagePage2(user: user!, answers: answers,),
             SettingScreen(user: user!),
           ]),
         ));
@@ -223,7 +224,7 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
   getAnswersInSetOfTen() async {
     // Firevase DB에서 feedQuestion 10개 읽기
     List<Answer?> newAnswers = await response.Response.readAnswersWithLimit(
-        userId: user!.uid, limit: 10);
+        userId: user!.uid, limit: 3);
 
     return newAnswers;
   }

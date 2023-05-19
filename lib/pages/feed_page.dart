@@ -134,105 +134,102 @@ class _FeedPageState extends State<FeedPage> {
   }
 
   Widget feedItem(int index) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 5),
-      child: Card(
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(20),
-                topRight: Radius.circular(20),
-                bottomRight: Radius.circular(20))),
-        elevation: 0,
-        margin: EdgeInsets.only(
-            left: 15,
-            right: 15,
-            top: (index == 0 &&
-                        !DateTime.now().isAfter(
-                            DateTime.parse(widget.user.recentDailyBonusReceiveDate)
-                                .add(Duration(hours: 24)))) ||
-                    index == -1
-                ? 30
-                : 10,
-            bottom: index == widget.feed.length - 1 ? 30 : 10),
-        child: SizedBox(
-          width: double.infinity,
-          child: Container(
-            padding: EdgeInsets.all(25.0),
-            decoration: BoxDecoration(
-                color: Color(0xffF2F3F3),
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
-                    bottomRight: Radius.circular(20))),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          SizedBox(
-                            width: 42.0,
-                            height: 42.0,
-                            child: CircleAvatar(
-                              backgroundImage: index == -1
-                                  ? AssetImage('images/logo_128.png')
-                                      as ImageProvider
-                                  : NetworkImage(
-                                  widget.feed[index]!.ownerProfileImage),
-                            ),
+    return Card(
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+              bottomRight: Radius.circular(20))),
+      elevation: 0,
+      margin: EdgeInsets.only(
+          left: 20,
+          right: 20,
+          top: (index == 0 &&
+                      !DateTime.now().isAfter(
+                          DateTime.parse(widget.user.recentDailyBonusReceiveDate)
+                              .add(Duration(hours: 24)))) ||
+                  index == -1
+              ? 30
+              : 10,
+          bottom: index == widget.feed.length - 1 ? 30 : 10),
+      child: SizedBox(
+        width: double.infinity,
+        child: Container(
+          padding: EdgeInsets.all(25.0),
+          decoration: BoxDecoration(
+              color: Color(0xffF2F3F3),
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                  bottomRight: Radius.circular(20))),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SizedBox(
+                          width: 42.0,
+                          height: 42.0,
+                          child: CircleAvatar(
+                            backgroundImage: index == -1
+                                ? AssetImage('images/logo_128.png')
+                                    as ImageProvider
+                                : NetworkImage(
+                                widget.feed[index]!.ownerProfileImage),
                           ),
-                          Padding(
-                            padding: EdgeInsets.only(right: 14.0),
-                          ),
-                          Expanded(
-                            child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(right: 14.0),
+                        ),
+                        Expanded(
+                          child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  index == -1
+                                      ? '쿠잉 복권'
+                                      : widget.feed[index]!.ownerName,
+                                  maxLines: 2,
+                                  softWrap: true,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Color(0xff333D4B),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.all(3),
+                                ),
+                                Flexible(
+                                  child: Text(
                                     index == -1
-                                        ? '쿠잉 복권'
-                                        : widget.feed[index]!.ownerName,
-                                    maxLines: 2,
+                                        ? '오늘도 쿠잉이 캔디 쏜다~!'
+                                        : widget.feed[index]!.content,
                                     softWrap: true,
                                     style: TextStyle(
-                                      fontSize: 12,
+                                      fontSize: 14,
                                       color: Color(0xff333D4B),
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  Padding(
-                                    padding: EdgeInsets.all(3),
-                                  ),
-                                  Flexible(
-                                    child: Text(
-                                      index == -1
-                                          ? '오늘도 쿠잉이 캔디 쏜다~!'
-                                          : widget.feed[index]!.content,
-                                      softWrap: true,
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: Color(0xff333D4B),
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                ]),
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
+                                ),
+                              ]),
+                        ),
+                      ],
+                    )
+                  ],
                 ),
-                index == -1 ? lotteryButton() : feedButton(widget.feed[index]!),
-              ],
-            ),
+              ),
+              index == -1 ? lotteryButton() : feedButton(widget.feed[index]!),
+            ],
           ),
         ),
       ),
