@@ -38,7 +38,6 @@ class _QuestionPageState extends State<QuestionPage> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.feed);
 
     return Scaffold(
         body: SingleChildScrollView(
@@ -54,6 +53,7 @@ class _QuestionPageState extends State<QuestionPage> {
                 child: Column(children: [
           purpleBox(),
           (isQuestionReceived & isQuestionOpen)
+          // TODO: 혜은 - 인스타그램 넘어가는 것 체크해줘
               ? ShareCard(url: widget.currentQuestion!.url)
               : SizedBox(),
         ]))));
@@ -271,7 +271,7 @@ class _QuestionPageState extends State<QuestionPage> {
           // 1-1. Question 반영
           widget.currentQuestion!.isOpen = true;
           widget.currentQuestion!.openTime = DateTime.now().toString();
-          widget.currentQuestion!.url = getUrl(widget.currentQuestion!);
+          widget.currentQuestion!.url = await getUrl(widget.currentQuestion!);
           // 1-2. Feed 반영
           widget.feed.insert(0, widget.currentQuestion);
 
@@ -315,13 +315,9 @@ class _QuestionPageState extends State<QuestionPage> {
     });
   }
 
-  String getUrl(Question question) {
-    // TODO: 혜은 - url 생성한 걸 가져오는 코드 추가해야됨
-    String url = '';
-    getShortLink(question).then((value) {
-      url = value;
-      print("getUrl() : $url");
-    });
+  Future<String> getUrl(Question question) async{
+    String url = await getShortLink(question);
+
     return url;
   }
 }

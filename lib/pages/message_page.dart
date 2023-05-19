@@ -356,7 +356,7 @@ class _MessagePageState extends State<MessagePage> {
   Future<void> _handleRefresh() async {
     // Firebase Answers > Answers > Answer 5개 추가로 읽기
     List<Answer?> newAnswers =
-        await Response.readAnswersWithLimit(userId: widget.user.uid, limit: 1);
+        await Response.readAnswersWithLimit(userId: widget.user.uid, limit: 5);
     widget.answers.addAll(newAnswers);
 
     if (newAnswers.isEmpty) {
