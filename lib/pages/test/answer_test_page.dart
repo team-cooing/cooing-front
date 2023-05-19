@@ -9,7 +9,7 @@ sendAnswer(User toUser, User fromUser, Question question) async {
   DateTime now = DateTime.now();
 
   Answer newAnswer = Answer(
-      id: '#${currentNum}_${now.toString()}',
+      id: '#00000${currentNum}_${now.toString()}',
       time: now.toString(),
       owner: fromUser.uid,
       ownerGender: 1,
@@ -17,7 +17,7 @@ sendAnswer(User toUser, User fromUser, Question question) async {
       questionId: question.id,
       questionOwner: question.owner,
       isAnonymous: true,
-      nickname: '활발한 남학샌',
+      nickname: '활발한 남학생',
       hint: ['힌트 1', '힌트 2', '힌트 3'],
       isOpenedHint: [false, false, false],
       isOpened: false);
