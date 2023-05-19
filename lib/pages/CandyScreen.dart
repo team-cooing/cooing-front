@@ -41,7 +41,7 @@ class _CandyScreenState extends State<CandyScreen> {
 
   Future<void> _loadProducts() async {
     final _available = await _inAppPurchase.isAvailable();
-
+    print(_available);
     if (!_available) {
       storeState = StoreState.notAvailable;
       return;
@@ -51,8 +51,11 @@ class _CandyScreenState extends State<CandyScreen> {
 
     response = await _inAppPurchase.queryProductDetails(ids);
     setState(() {
-      products =
-          response.productDetails.map((e) => PurchasableProduct(e)).toList();
+      products = response.productDetails
+          .map<PurchasableProduct>(
+              (dynamic e) => PurchasableProduct(e as ProductDetails))
+          .toList();
+      print(products[0].id);
       storeState = StoreState.available;
     });
 
