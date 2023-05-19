@@ -45,6 +45,8 @@ class _FeedPageState extends State<FeedPage> {
   Widget build(BuildContext context) {
     pageContext = context;
 
+    print(widget.feed.toString());
+
     return Scaffold(body: _buildFeedPage());
   }
 

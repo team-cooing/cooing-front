@@ -38,6 +38,7 @@ class _QuestionPageState extends State<QuestionPage> {
 
   @override
   Widget build(BuildContext context) {
+    print(widget.feed);
 
     return Scaffold(
         body: SingleChildScrollView(
@@ -272,7 +273,7 @@ class _QuestionPageState extends State<QuestionPage> {
           widget.currentQuestion!.openTime = DateTime.now().toString();
           widget.currentQuestion!.url = getUrl(widget.currentQuestion!);
           // 1-2. Feed 반영
-          widget.feed.add(widget.currentQuestion);
+          widget.feed.insert(0, widget.currentQuestion);
 
           // 2-1. Firebase Contents > Questions > Question 업데이트
           await Response.updateQuestion(newQuestion: widget.currentQuestion!);
@@ -286,8 +287,16 @@ class _QuestionPageState extends State<QuestionPage> {
         // 1-2. Question 반영
         widget.currentQuestion!.isOpen = false;
         // 1-3. Feed 반영
-        widget.feed.remove(widget.currentQuestion);
-
+        for(var i = 0; i<widget.feed.length; i++){
+          // 만약, 아이템이 있다면
+          if(widget.feed[i]!=null){
+            // 만약, 아이템의 현재 질문 아이다와 같다면
+            if(widget.feed[i]!.id==widget.currentQuestion!.id){
+              widget.feed.removeAt(i);
+              break;
+            }
+          }
+        }
         // 2-1. Firebase Users > User 업데이트
         await Response.updateUser(newUser: widget.user);
         // 2-2. Firebase Contents > Questions > Question 업데이트
