@@ -32,7 +32,7 @@ class _MessagePageState extends State<MessagePage> {
 
     // answers questionId에 따라 카테고리화
     categorizedAnswers.clear();
-    for(var questionInfo in widget.user.questionInfos){
+    for (var questionInfo in widget.user.questionInfos) {
       categorizedAnswers[questionInfo['questionId']] = [];
     }
     for (var answer in widget.answers) {
@@ -53,8 +53,11 @@ class _MessagePageState extends State<MessagePage> {
       child: ListView.builder(
           itemCount: widget.user.questionInfos.length,
           itemBuilder: (BuildContext context, int index) {
-
-            return questionItem(index);
+            return Padding(
+                padding: EdgeInsets.only(
+                    bottom:
+                        index == widget.user.questionInfos.length - 1 ? 30 : 0),
+                child: questionItem(index));
           }),
       builder: (
         BuildContext context,
@@ -116,28 +119,29 @@ class _MessagePageState extends State<MessagePage> {
   }
 
   Widget questionItem(int questionIndex) {
-    String questionId = widget.user.questionInfos.reversed.toList()[questionIndex]['questionId'];
+    String questionId = widget.user.questionInfos.reversed
+        .toList()[questionIndex]['questionId'];
 
     // 만약, 카테고리화된 답변이 없다면
-    if(categorizedAnswers[questionId]!.isEmpty){
+    if (categorizedAnswers[questionId]!.isEmpty) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-              padding: const EdgeInsets.only(left: 20, right: 20, top: 30, bottom: 0),
+              padding: const EdgeInsets.only(
+                  left: 20, right: 20, top: 30, bottom: 0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '#${widget.user.questionInfos.length-questionIndex}번째 질문',
+                    '#${widget.user.questionInfos.length - questionIndex}번째 질문',
                     textAlign: TextAlign.left,
                     style: TextStyle(fontSize: 14),
                   ),
                   Padding(padding: EdgeInsets.all(3)),
                   Text(
                     '"${QuestionList.questionList.elementAt(int.parse(widget.user.questionInfos.reversed.toList()[questionIndex]['contentId']))['question'] as String}"',
-                    style:
-                    TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ],
               )),
@@ -152,57 +156,56 @@ class _MessagePageState extends State<MessagePage> {
                   width: double.infinity,
                   child: Container(
                       margin: EdgeInsets.only(
-                          left: 20,
-                          right: 20,
-                          top: 20,
-                          bottom: 0),
-                      padding: EdgeInsets.symmetric(horizontal: 25, vertical: 30),
+                          left: 20, right: 20, top: 20, bottom: 0),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 25, vertical: 30),
                       decoration: BoxDecoration(
                           color: Color(0xffF2F3F3),
                           borderRadius: BorderRadius.only(
                               topLeft: Radius.circular(20),
                               topRight: Radius.circular(20),
-                              bottomRight:
-                              Radius.circular(20))),
+                              bottomRight: Radius.circular(20))),
                       child: Center(
                           child: Text(
-                            '이 질문에 대한 답변이 없습니다.',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Color(0xff333D4B),
-                            ),
-                          )))))
+                        '이 질문에 대한 답변이 없습니다.',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Color(0xff333D4B),
+                        ),
+                      )))))
         ],
       );
-    }else{
+    } else {
       return ListView.builder(
           physics: NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           itemCount: categorizedAnswers[questionId]!.length,
           itemBuilder: (BuildContext context, int index) {
             // answers 속 index
-            int answerIndex = widget.answers.indexOf(categorizedAnswers[questionId]![index]);
+            int answerIndex =
+                widget.answers.indexOf(categorizedAnswers[questionId]![index]);
 
             // 만약, 첫번째 아이템이라면
-            if(index==0){
+            if (index == 0) {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                      padding: const EdgeInsets.only(left: 20, right: 20, top: 30, bottom: 0),
+                      padding: const EdgeInsets.only(
+                          left: 20, right: 20, top: 30, bottom: 0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '#${widget.user.questionInfos.length-questionIndex}번째 질문',
+                            '#${widget.user.questionInfos.length - questionIndex}번째 질문',
                             textAlign: TextAlign.left,
                             style: TextStyle(fontSize: 14),
                           ),
                           Padding(padding: EdgeInsets.all(3)),
                           Text(
                             '"${QuestionList.questionList.elementAt(int.parse(widget.user.questionInfos.reversed.toList()[questionIndex]['contentId']))['question'] as String}"',
-                            style:
-                            TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
                           ),
                         ],
                       )),
@@ -245,14 +248,14 @@ class _MessagePageState extends State<MessagePage> {
                   bottomRight: Radius.circular(20))),
           elevation: 0,
           margin: EdgeInsets.only(
-              left: 20.0,
-              right: 20.0,
-              top: 20,),
+            left: 20.0,
+            right: 20.0,
+            top: 20,
+          ),
           child: SizedBox(
             width: double.infinity,
             child: Container(
-              padding: EdgeInsets.symmetric(
-                  horizontal: 25, vertical: 30),
+              padding: EdgeInsets.symmetric(horizontal: 25, vertical: 30),
               decoration: BoxDecoration(
                   color: Color(0xffF2F3F3),
                   borderRadius: BorderRadius.only(
@@ -273,8 +276,7 @@ class _MessagePageState extends State<MessagePage> {
                                 SizedBox(
                                     width: 25.0,
                                     height: 25.0,
-                                    child: widget.answers[index]!
-                                                .ownerGender ==
+                                    child: widget.answers[index]!.ownerGender ==
                                             0
                                         ? Image(
                                             image: AssetImage(
