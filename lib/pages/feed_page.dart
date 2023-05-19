@@ -25,19 +25,20 @@ class FeedPage extends StatefulWidget {
 }
 
 class _FeedPageState extends State<FeedPage> {
-  late User user;
-  List<Question?> feed = [];
-  late String bonusQuestionId;
   late BuildContext pageContext;
 
   @override
   void initState() {
     super.initState();
 
-    // 부모 데이터
-    user = widget.user;
-    feed = widget.feed;
-    bonusQuestionId = widget.bonusQuestionId;
+    // 만약, 유저 데이터에 recentDailyBonusReceiveDate가 없다면
+    if(widget.user.recentDailyBonusReceiveDate.isEmpty){
+      widget.user.recentDailyBonusReceiveDate = '2000-01-01 00:00:00.000000';
+    }
+    // 만약, 유저 데이터에recentQuestionBonusReceiveDate가 없다면
+    if(widget.user.recentQuestionBonusReceiveDate.isEmpty){
+      widget.user.recentQuestionBonusReceiveDate = '2000-01-01 00:00:00.000000';
+    }
   }
 
   @override
@@ -54,17 +55,17 @@ class _FeedPageState extends State<FeedPage> {
       trailingScrollIndicatorVisible: false,
       leadingScrollIndicatorVisible: true,
       child: ListView.builder(
-          itemCount: feed.length,
+          itemCount: widget.feed.length,
           itemBuilder: (BuildContext context, int index) {
             // 만약, Feed 아이템이 null이라면
-            if (feed[index] == null) {
+            if (widget.feed[index] == null) {
               return SizedBox();
             }
 
             // 만약, index가 0이고, 데일리 보너스를 받지 않았다면
             if (index == 0 &&
                 DateTime.now().isAfter(
-                    DateTime.parse(user.recentDailyBonusReceiveDate)
+                    DateTime.parse(widget.user.recentDailyBonusReceiveDate)
                         .add(Duration(hours: 24)))) {
               return Column(
                 children: [feedItem(-1), feedItem(index)],
@@ -147,12 +148,12 @@ class _FeedPageState extends State<FeedPage> {
             right: 15,
             top: (index == 0 &&
                         !DateTime.now().isAfter(
-                            DateTime.parse(user.recentDailyBonusReceiveDate)
+                            DateTime.parse(widget.user.recentDailyBonusReceiveDate)
                                 .add(Duration(hours: 24)))) ||
                     index == -1
                 ? 30
                 : 10,
-            bottom: index == feed.length - 1 ? 30 : 10),
+            bottom: index == widget.feed.length - 1 ? 30 : 10),
         child: SizedBox(
           width: double.infinity,
           child: Container(
@@ -183,7 +184,7 @@ class _FeedPageState extends State<FeedPage> {
                                   ? AssetImage('images/logo_128.png')
                                       as ImageProvider
                                   : NetworkImage(
-                                      feed[index]!.ownerProfileImage),
+                                  widget.feed[index]!.ownerProfileImage),
                             ),
                           ),
                           Padding(
@@ -198,7 +199,7 @@ class _FeedPageState extends State<FeedPage> {
                                   Text(
                                     index == -1
                                         ? '쿠잉 복권'
-                                        : feed[index]!.ownerName,
+                                        : widget.feed[index]!.ownerName,
                                     maxLines: 2,
                                     softWrap: true,
                                     style: TextStyle(
@@ -213,7 +214,7 @@ class _FeedPageState extends State<FeedPage> {
                                     child: Text(
                                       index == -1
                                           ? '오늘도 쿠잉이 캔디 쏜다~!'
-                                          : feed[index]!.content,
+                                          : widget.feed[index]!.content,
                                       softWrap: true,
                                       style: TextStyle(
                                         fontSize: 14,
@@ -229,7 +230,7 @@ class _FeedPageState extends State<FeedPage> {
                     ],
                   ),
                 ),
-                index == -1 ? lotteryButton() : feedButton(feed[index]!),
+                index == -1 ? lotteryButton() : feedButton(widget.feed[index]!),
               ],
             ),
           ),
@@ -251,11 +252,11 @@ class _FeedPageState extends State<FeedPage> {
                   )));
 
           // User 반영
-          user.recentDailyBonusReceiveDate = DateTime.now().toString();
-          user.candyCount += candyNum;
+          widget.user.recentDailyBonusReceiveDate = DateTime.now().toString();
+          widget.user.candyCount += candyNum;
 
           // Firebase > Users > User 업데이트
-          await Response.updateUser(newUser: user);
+          await Response.updateUser(newUser: widget.user);
 
           setState(() {});
         },
@@ -284,20 +285,20 @@ class _FeedPageState extends State<FeedPage> {
   Widget feedButton(Question question) {
     // 오늘 보너스 받았는지 확인
     bool isBonusReceivedToday = !DateTime.now().isAfter(
-        DateTime.parse(user.recentQuestionBonusReceiveDate)
+        DateTime.parse(widget.user.recentQuestionBonusReceiveDate)
             .add(Duration(hours: 24)));
     bool canReceiveBonus =
-        question.id == bonusQuestionId && !isBonusReceivedToday;
+        question.id == widget.bonusQuestionId && !isBonusReceivedToday;
 
     return GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: () async {
-          if(!user.answeredQuestions.contains(question.id)){
+          if(!widget.user.answeredQuestions.contains(question.id)){
             // 만약, 보너스를 받을 수 있다면
             // TODO: 혜은 -Answer 완료되면 true 반환해야함
             bool? isCompleted = await Navigator.of(context).push(MaterialPageRoute(
                 builder: (BuildContext context) => AnswerPage(
-                    user: user,
+                    user: widget.user,
                 question: question,)));
 
             // TODO: 임시 테스트 true
@@ -306,13 +307,13 @@ class _FeedPageState extends State<FeedPage> {
             if(isCompleted!=null){
               // 만약, 답변이 완료되었다면
               if(isCompleted){
-                user.answeredQuestions.add(question.id);
+                widget.user.answeredQuestions.add(question.id);
                 if (canReceiveBonus) {
-                  user.recentQuestionBonusReceiveDate = DateTime.now().toString();
-                  user.candyCount += 3;
+                  widget.user.recentQuestionBonusReceiveDate = DateTime.now().toString();
+                  widget.user.candyCount += 3;
                 }
 
-                await Response.updateUser(newUser: user);
+                await Response.updateUser(newUser: widget.user);
                 setState(() {});
               }
             }
@@ -326,7 +327,7 @@ class _FeedPageState extends State<FeedPage> {
               style: OutlinedButton.styleFrom(
                 foregroundColor: Colors.white,
                 shadowColor: Colors.transparent,
-                backgroundColor: user.answeredQuestions.contains(question.id)? Palette.mainPurple.withOpacity(0.4) : Palette.mainPurple,
+                backgroundColor: widget.user.answeredQuestions.contains(question.id)? Palette.mainPurple.withOpacity(0.4) : Palette.mainPurple,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0)),
               ),
@@ -352,7 +353,7 @@ class _FeedPageState extends State<FeedPage> {
                           )
                         ])
                   : Text(
-                      user.answeredQuestions.contains(question.id)? '답변완료' : '답변하기',
+                widget.user.answeredQuestions.contains(question.id)? '답변완료' : '답변하기',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 11,
@@ -366,8 +367,8 @@ class _FeedPageState extends State<FeedPage> {
   Future<void> _handleRefresh() async {
     // Firebase Schools > Questions > Question 5개 추가로 읽기
     List<Question?> newQuestions = await Response.readQuestionsInFeedWithLimit(
-        schoolCode: user.schoolCode, limit: 5);
-    feed.addAll(newQuestions);
+        schoolCode: widget.user.schoolCode, limit: 5);
+    widget.feed.addAll(newQuestions);
 
     if (newQuestions.isEmpty) {
       await Future.delayed(Duration(seconds: 2));
