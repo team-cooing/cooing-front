@@ -2,29 +2,34 @@ import 'package:cooing_front/model/response/question.dart';
 import 'package:cooing_front/model/response/user.dart';
 import 'package:flutter/material.dart';
 import 'package:cooing_front/pages/answer_complete_page.dart';
-import 'package:get/get.dart';
+import 'package:cooing_front/pages/tab_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../model/util/hint.dart';
-import 'package:cooing_front/widgets/firebase_method.dart';
 import 'package:cooing_front/model/config/palette.dart';
+import 'dart:math';
+import 'package:cooing_front/model/util/hint.dart';
 
 class AnswerPage extends StatefulWidget {
   final User user;
   final Question question;
-
-  const AnswerPage({required this.user, required this.question, super.key});
+  final bool isFromLink;
+  const AnswerPage(
+      {required this.user,
+      required this.question,
+      required this.isFromLink,
+      super.key});
 
   @override
   State<AnswerPage> createState() => _AnswerPageState();
 }
 
 class _AnswerPageState extends State<AnswerPage> {
-  bool isLoading = true;
   late Question question;
 
   late String uid;
   late User _userData;
   late bool _checkSecret = false;
+  late bool isFromLink;
+
   late DocumentReference userDocRef;
 
   int maxLength = 100;
@@ -39,17 +44,10 @@ class _AnswerPageState extends State<AnswerPage> {
   @override
   void initState() {
     super.initState();
-    uid = widget.user.uid;
+    _userData = widget.user;
     question = widget.question;
-
-    getUserData(uid).then((data) {
-      _userData = data;
-      hintList = generateHint(_userData);
-      print(_userData);
-      setState(() {
-        isLoading = false;
-      });
-    });
+    isFromLink = widget.isFromLink;
+    hintList = generateHint(_userData);
 
     _textController.addListener(() {
       setState(() {
@@ -58,59 +56,89 @@ class _AnswerPageState extends State<AnswerPage> {
     });
   }
 
-  Future<void> _uploadUserToFirebase(String ownerId) async {
-    String newAnswerId;
+  String getNickname(User user) {
+    List styles = user.style;
+    int gender = user.gender; // 0: male, 1: female
+    String genderString = gender == 0 ? '남학생' : '여학생';
+    String randomStyle = styles[Random().nextInt(styles.length)];
+    return '$randomStyle $genderString';
+  }
 
+  Future<void> _uploadUserToFirebase(String ownerId, String questionId) async {
+    String newAnswerId;
+    List<String>? answeredQuestions;
     try {
       if (question.id.isNotEmpty) {
         timeId = DateTime.now().toString();
         print("ownerId: $ownerId");
 
+        final DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(_userData.uid)
+            .get();
+
+        Map<String, dynamic>? data =
+            userSnapshot.data() as Map<String, dynamic>?;
+
+        if (data != null) {
+          answeredQuestions = List<String>.from(data['answeredQuestions']);
+        } else {
+          answeredQuestions = [];
+        }
+
+        answeredQuestions.add(questionId);
+
         final userAnswerRef = FirebaseFirestore.instance
             .collection('answers')
             .doc(ownerId) //question 주인 answer collection 가져오기
             .collection('answers');
-
         final QuerySnapshot snapshot = await userAnswerRef
-            .orderBy('createdAt',
-                descending: true) // createdAt 필드를 기준으로 내림차순 정렬
-            .limit(1) // 가장 마지막 document 하나만 가져오기
+            .orderBy('time', descending: true)
+            .limit(1)
             .get();
 
         if (snapshot.docs.isNotEmpty) {
           final String lastDocumentId = snapshot.docs.last.id; //가장 최근 answer Id
+          // print("last Answer document id : $lastDocumentId");
+          // print("Current question Id : $questionId");
 
-          if (lastDocumentId.split('-').last != question.id) {
+          if (lastDocumentId.split('_').last != questionId) {
+            print("${lastDocumentId.split('_').last} ???? $questionId");
             //가장 최근 답변이 이전 질문에 대한 답변일 때
-            newAnswerId = '#000001_${question.id}';
+            newAnswerId = '#000001_$questionId';
           } else {
             //현재 질문에 대한 답변일 때
             final int lastNumber =
                 int.tryParse(lastDocumentId.split('_')[0].substring(1)) ??
                     0; // 가장 최근 document의 번호
             newAnswerId =
-                '#${(lastNumber + 1).toString().padLeft(6, '0')}_${question.id}';
+                '#${(lastNumber + 1).toString().padLeft(6, '0')}_$questionId';
           }
 
           // 새 document의 ID 생성
         } else {
           //answer 데이터가 아예 없을 때
           print('No documents found in answer collection');
-          newAnswerId = '#000001_${question.id}';
+          newAnswerId = '#000001_$questionId';
         }
-
+        //Answer 데이터 업로드
         await userAnswerRef.doc(newAnswerId).set({
           'id': newAnswerId, // 마이크로세컨드까지 보낸 시간으로 사용
           'time': timeId,
           'owner': _userData.uid,
           'ownerGender': _userData.gender,
-          'questionId': question.id,
+          'questionId': questionId,
           'content': textValue,
+          'questionOwner': question.ownerName,
           'isAnonymous': _checkSecret,
-          'nickname': _checkSecret ? '닉네임' : _userData.name,
+          'nickname': _checkSecret ? getNickname(_userData) : _userData.name,
           'hint': hintList,
           'isOpenedHint': [false, false, false], //bool List
           'isOpened': false,
+        });
+        //user의 answeredQuestion 업로드
+        await FirebaseFirestore.instance.collection('users').doc(uid).update({
+          'answeredQuestions': answeredQuestions,
         });
       } else {
         print("userData is Null");
@@ -139,52 +167,54 @@ class _AnswerPageState extends State<AnswerPage> {
         });
   }
 
+  Future<bool> _navigateBack() async {
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return isLoading
-        ? loadingView()
-        : Scaffold(
-            appBar: AppBar(
-              automaticallyImplyLeading: false,
-              backgroundColor: Colors.transparent,
-              elevation: 0.0,
-              leading: IconButton(
-                icon: const Icon(Icons.close_rounded),
-                color: Colors.black54,
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-            ),
-            body: SafeArea(
-                child: Column(children: [
-              Expanded(
-                child: _answerBody(),
-              ),
-              Align(alignment: Alignment.bottomCenter, child: sendBtn())
-            ])),
-          );
+    return WillPopScope(
+      onWillPop: _navigateBack,
+      child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          backgroundColor: Colors.transparent,
+          elevation: 0.0,
+          leading: IconButton(
+            icon: const Icon(Icons.close_rounded),
+            color: Colors.black54,
+            onPressed: () {
+              isFromLink
+                  ? Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (BuildContext context) => TabPage()),
+                    )
+                  : Navigator.pop(context, false);
+            },
+          ),
+        ),
+        body: SingleChildScrollView(
+            child: Column(children: [
+          _answerBody(),
+          Align(alignment: Alignment.bottomCenter, child: sendBtn())
+        ])),
+      ),
+    );
   }
 
   Widget loadingView() {
     return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Expanded(
-            child: Center(
-                child: CircularProgressIndicator(
-              color: Palette.mainPurple,
-            )),
-          ),
-        ],
+      body: Center(
+        child: CircularProgressIndicator(
+          color: Palette.mainPurple,
+        ),
       ),
     );
   }
 
   Widget _answerBody() {
-    return SingleChildScrollView(
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Row(
         children: [
           Padding(padding: EdgeInsets.all(15.0)),
@@ -200,9 +230,19 @@ class _AnswerPageState extends State<AnswerPage> {
         ],
       ),
       const Padding(padding: EdgeInsets.all(7.0)),
+      Center(
+        child: Text(
+          "${question.ownerName}에게",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18.0,
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ),
       _answerCard(),
       checking(),
-    ]));
+    ]);
   }
 
   Widget _answerCard() {
@@ -316,7 +356,8 @@ class _AnswerPageState extends State<AnswerPage> {
   Widget sendBtn() {
     return Padding(
         padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).systemGestureInsets.bottom + 20,
+          bottom: MediaQuery.of(context).systemGestureInsets.bottom + 10,
+          top: 15,
           left: 20,
           right: 20,
         ),
@@ -324,12 +365,23 @@ class _AnswerPageState extends State<AnswerPage> {
             Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           ElevatedButton(
               onPressed: () async {
-                if (textValue.isNotEmpty) {
-                  await _uploadUserToFirebase(question.id);
-                  Get.to(() => AnswerCompleteScreen(),
-                      arguments: {"ownerName": question.ownerName, "uid": uid});
-                } else {
+                if (textValue.isEmpty) {
                   emptyTextDialog();
+                } else {
+                  //firebase 에 업로드
+                  await _uploadUserToFirebase(question.owner, question.id);
+
+                  bool? isCompleted = true;
+                  Navigator.pop(context, isCompleted);
+
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (BuildContext context) => AnswerCompleteScreen(
+                        uid: _userData.uid,
+                        owner: question.ownerName,
+                      ),
+                    ),
+                  );
                 }
               },
               style: OutlinedButton.styleFrom(

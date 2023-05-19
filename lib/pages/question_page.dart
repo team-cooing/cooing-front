@@ -4,8 +4,13 @@ import 'package:cooing_front/model/response/question.dart';
 import 'package:cooing_front/model/response/response.dart';
 import 'package:cooing_front/model/response/user.dart';
 import 'package:cooing_front/widgets/dynamic_link.dart';
-import 'package:cooing_front/widgets/share_card.dart';
 import 'package:flutter/material.dart';
+import 'dart:async';
+import 'package:screenshot/screenshot.dart';
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
+import 'package:flutter/services.dart';
+import 'package:social_share/social_share.dart';
 
 // ignore: must_be_immutable
 class QuestionPage extends StatefulWidget {
@@ -27,7 +32,7 @@ class _QuestionPageState extends State<QuestionPage> {
   bool isQuestionReceived = false;
   bool isQuestionOpen = false;
   bool hasQuestionCloseTimePassed = false;
-
+  late String currentQuestionUrl;
   @override
   void initState() {
     super.initState();
@@ -45,17 +50,31 @@ class _QuestionPageState extends State<QuestionPage> {
     ));
   }
 
+  Future<String?> screenshot() async {
+    var data = await screenshotController.capture();
+    if (data == null) {
+      return null;
+    }
+    final tempDir = await getTemporaryDirectory();
+    final assetPath = '${tempDir.path}/temp.png';
+    File file = await File(assetPath).create();
+    await file.writeAsBytes(data);
+    return file.path;
+  }
+
+  ScreenshotController screenshotController = ScreenshotController();
+
   Widget _buildQuestionPage() {
     return Padding(
         padding: const EdgeInsets.all(25.0),
         child: SafeArea(
             child: Center(
                 child: Column(children: [
-          purpleBox(),
-          (isQuestionReceived & isQuestionOpen)
-          // TODO: 혜은 - 인스타그램 넘어가는 것 체크해줘
-              ? ShareCard(url: widget.currentQuestion!.url)
-              : SizedBox(),
+          Screenshot(
+            controller: screenshotController,
+            child: purpleBox(),
+          ),
+          (isQuestionReceived & isQuestionOpen) ? shareCard() : SizedBox(),
         ]))));
   }
 
@@ -315,9 +334,139 @@ class _QuestionPageState extends State<QuestionPage> {
     });
   }
 
-  Future<String> getUrl(Question question) async{
-    String url = await getShortLink(question);
+  Future<String> getUrl(Question question) async {
+    // TODO: 혜은 - url 생성한 걸 가져오는 코드 추가해야됨
+    currentQuestionUrl = await getShortLink(question);
+    return currentQuestionUrl;
+  }
 
-    return url;
+  void _onShareButtonPressed(var path) {
+    //공유 버튼 클릭시
+    String facebookId = "617417756966237";
+
+    SocialShare.shareInstagramStory(
+            appId: facebookId,
+            imagePath: path,
+            backgroundTopColor: "#ffffff",
+            backgroundBottomColor: "#9754FB",
+            attributionURL: "www.naver.com")
+        .then((data) {
+      print(data);
+    });
+  }
+
+  void _onCopyButtonPressed(String url) {
+    //복사 버튼 클릭시 클립보드에 복사
+    Clipboard.setData(ClipboardData(text: url));
+
+    //하단에 "링크복사완료!" 메시지 스낵바
+    final snackBar = SnackBar(
+      content: Text(
+        '링크 복사완료!',
+        style: TextStyle(
+          fontSize: 15,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+      ),
+      backgroundColor: Colors.black,
+    );
+    // 스낵바 나타남
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    // 2초 후에 SnackBar를 숨김
+    Future.delayed(Duration(seconds: 2), () {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    });
+  }
+
+  Widget shareCard() {
+    //링크복사, 인스타그램 아이콘
+    AssetImage iconLink = AssetImage('images/icon_copyLink.png');
+    AssetImage iconInstagram = AssetImage('images/icon_instagram.png');
+
+    return (Column(children: <Widget>[
+      shareBlock(iconLink, "1단계", "링크 복사하기", "복사"),
+      shareBlock(iconInstagram, "2단계", "친구들에게 공유", "공유"),
+    ]));
+  }
+
+  Widget shareBlock(
+      AssetImage assetImage, String level, String title, String buttonTxt) {
+    return Container(
+      padding: const EdgeInsets.only(top: 20),
+      child: SizedBox(
+        width: double.infinity,
+        height: 85.0,
+        child: Container(
+          padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20),
+          decoration: BoxDecoration(
+              color: Color(0xffF2F3F3),
+              borderRadius: BorderRadius.circular(20)),
+          child:
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Row(
+                  children: [
+                    SizedBox(
+                        width: 25.0,
+                        height: 25.0,
+                        child: Image(image: assetImage)),
+                    Padding(padding: EdgeInsets.only(right: 15.0)),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          level,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Color(0xff333D4B),
+                          ),
+                        ),
+                        Text(
+                          title,
+                          style: TextStyle(
+                              fontSize: 16,
+                              color: Color(0xff333D4B),
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    )
+                  ],
+                )
+              ],
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                if (buttonTxt == '복사') {
+                  print("복사버튼클릭 -> url :  ${widget.currentQuestion!.url}");
+                  _onCopyButtonPressed(widget.currentQuestion!.url);
+                } else {
+                  //버튼 text 가 "공유"일 때, pupleBox 사진 찍음
+                  var path = await screenshot();
+                  _onShareButtonPressed(path);
+                }
+              },
+              style: OutlinedButton.styleFrom(
+                foregroundColor: Colors.white,
+                shadowColor: Colors.transparent,
+                backgroundColor: Color.fromRGBO(151, 84, 251, 1),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0)),
+              ),
+              child: Text(
+                buttonTxt,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ]),
+        ),
+      ),
+    );
   }
 }

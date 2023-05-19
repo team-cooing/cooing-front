@@ -3,15 +3,26 @@ import 'package:get/get.dart';
 import 'package:cooing_front/pages/tab_page.dart';
 
 class AnswerCompleteScreen extends StatefulWidget {
-  const AnswerCompleteScreen({Key? key}) : super(key: key);
+  final String owner;
+  final String uid;
+  const AnswerCompleteScreen(
+      {required this.owner, required this.uid, super.key});
 
   @override
   State<AnswerCompleteScreen> createState() => AnswerCompleteScreenState();
 }
 
 class AnswerCompleteScreenState extends State<AnswerCompleteScreen> {
-  String owner = Get.arguments['ownerName'];
-  String uid = Get.arguments['uid'];
+  late String owner;
+  late String uid;
+
+  @override
+  void initState() {
+    super.initState();
+
+    owner = widget.owner;
+    uid = widget.uid;
+  }
 
   @override
   Widget build(BuildContext context) {
