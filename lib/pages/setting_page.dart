@@ -8,20 +8,20 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'CandyScreen.dart';
 
-class SettingScreen extends StatefulWidget {
+class SettingPage extends StatefulWidget {
   final User user;
 
-  const SettingScreen({required this.user, super.key});
+  const SettingPage({required this.user, super.key});
 
   @override
-  _SettingScreenState createState() => _SettingScreenState();
+  State<SettingPage> createState() => _SettingPageState();
 }
 
-class _SettingScreenState extends State<SettingScreen> {
+class _SettingPageState extends State<SettingPage> {
   final List settingElements = [
     {
       'title': '인스타 팔로우',
-      'link': '',
+      'link': 'https://www.instagram.com/we.cooing/',
     },
     {
       'title': '질문을 공유하는 방법',
@@ -87,7 +87,7 @@ class _SettingScreenState extends State<SettingScreen> {
                                     ),
                                   ),
                                   Text(
-                                    "5개",
+                                    "${widget.user.candyCount}개",
                                     style: TextStyle(
                                         fontSize: 16,
                                         color: Color(0xff333D4B),
@@ -121,45 +121,42 @@ class _SettingScreenState extends State<SettingScreen> {
               ),
             ),
           ),
-          SingleChildScrollView(
-            physics: AlwaysScrollableScrollPhysics(),
-            child: Column(
-              children: [
-                ListView.builder(
-                    physics: NeverScrollableScrollPhysics(),
-                    itemCount: settingElements.length,
-                    shrinkWrap: true,
-                    itemBuilder: ((context, index) {
-                      return Padding(
-                          padding: EdgeInsets.only(
-                              left: 25.0, bottom: 20.0, top: 20.0),
-                          child: GestureDetector(
-                            child: Text(
-                              "${settingElements[index]['title']}",
-                              style: TextStyle(
-                                  fontSize: 16,
-                                  color: Color(0xff333D4B),
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            onTap: () async {
-                              final reportUrl = Uri.parse(
-                                  "${settingElements[index]['link']}");
-                              print("${settingElements[index]['title']}");
+          Column(
+            children: [
+              ListView.builder(
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: settingElements.length,
+                  shrinkWrap: true,
+                  itemBuilder: ((context, index) {
+                    return Padding(
+                        padding: EdgeInsets.only(
+                            left: 25.0, bottom: 20.0, top: 20.0),
+                        child: GestureDetector(
+                          child: Text(
+                            "${settingElements[index]['title']}",
+                            style: TextStyle(
+                                fontSize: 16,
+                                color: Color(0xff333D4B),
+                                fontWeight: FontWeight.bold),
+                          ),
+                          onTap: () async {
+                            final reportUrl = Uri.parse(
+                                "${settingElements[index]['link']}");
+                            print("${settingElements[index]['title']}");
 
-                              if (await canLaunchUrl(reportUrl)) {
-                                launchUrl(reportUrl);
-                              } else {
-                                // ignore: avoid_print
-                                print("Can't launch $reportUrl");
-                              }
-                            },
-                          ));
-                    })),
-              ],
-            ),
+                            if (await canLaunchUrl(reportUrl)) {
+                              launchUrl(reportUrl);
+                            } else {
+                              // ignore: avoid_print
+                              print("Can't launch $reportUrl");
+                            }
+                          },
+                        ));
+                  })),
+            ],
           ),
           Padding(
-              padding: EdgeInsets.only(left: 25.0),
+              padding: EdgeInsets.only(left: 25.0, top: 20),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,

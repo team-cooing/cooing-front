@@ -180,7 +180,7 @@ class Response{
     List<Answer?> answers = [];
 
     try{
-      final middleQuery = db.collection('answers').doc(userId).collection('answers').orderBy('time', descending: false);
+      final middleQuery = db.collection('answers').doc(userId).collection('answers').orderBy('time', descending: true);
       final finalQuery = lastAnswerId.isNotEmpty? middleQuery.startAfter([lastAnswerId]).limit(limit) : middleQuery.limit(limit);
       await finalQuery.get().then((documentSnapshots){
 

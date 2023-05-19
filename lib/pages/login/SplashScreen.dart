@@ -1,8 +1,10 @@
+import 'package:cooing_front/model/config/palette.dart';
 import 'package:cooing_front/pages/tab_page.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
+
 // import 'package:parameters/';
 import 'package:cooing_front/widgets/dynamic_link.dart';
 
@@ -83,22 +85,13 @@ class _SplashScreenState extends State<SplashScreen> {
           backgroundColor: Colors.transparent,
           elevation: 0,
         ),
-        backgroundColor: Color(0xFFffffff),
+        backgroundColor: Palette.mainPurple,
         body: Container(
-            padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
-            child: Form(
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "쿠잉",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 22,
-                          color: Color.fromARGB(255, 51, 61, 75)),
-                    ),
-                    Spacer(),
-                  ]),
-            )));
+            width: double.infinity,
+            height: double.infinity,
+            alignment: Alignment.topCenter,
+            decoration: BoxDecoration(
+                image:
+                    DecorationImage(fit: BoxFit.cover, image: AssetImage('images/splash.png')))));
   }
 }
