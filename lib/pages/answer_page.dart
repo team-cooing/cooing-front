@@ -132,6 +132,7 @@ class _AnswerPageState extends State<AnswerPage> {
           'ownerGender': _userData.gender,
           'questionId': questionId,
           'content': textValue,
+          'questionOwner': question.ownerName,
           'isAnonymous': _checkSecret,
           'nickname': _checkSecret ? getNickname(_userData) : _userData.name,
           'hint': hintList,
