@@ -4,10 +4,9 @@ import 'package:cooing_front/model/response/user.dart';
 import 'package:cooing_front/pages/SettingScreen.dart';
 import 'package:cooing_front/pages/feed_page.dart';
 import 'package:cooing_front/pages/login/LoginScreen.dart';
-import 'package:cooing_front/pages/message_page_2.dart';
+import 'package:cooing_front/pages/message_page.dart';
 import 'package:flutter/material.dart';
 import 'package:cooing_front/pages/question_page.dart';
-import 'package:cooing_front/pages/message_page.dart';
 import 'package:get/get.dart';
 import 'package:cooing_front/model/response/response.dart' as response;
 import 'package:cooing_front/model/config/palette.dart';
@@ -95,7 +94,7 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
               feed: feed,
               bonusQuestionId: bonusQuestionId,
             ),
-            MessagePage2(user: user!, answers: answers,),
+            MessagePage(user: user!, answers: answers,),
             SettingScreen(user: user!),
           ]),
         ));

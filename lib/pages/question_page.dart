@@ -3,7 +3,6 @@ import 'package:cooing_front/model/data/question_list.dart';
 import 'package:cooing_front/model/response/question.dart';
 import 'package:cooing_front/model/response/response.dart';
 import 'package:cooing_front/model/response/user.dart';
-import 'package:cooing_front/pages/test/answer_test_page.dart';
 import 'package:cooing_front/widgets/dynamic_link.dart';
 import 'package:cooing_front/widgets/share_card.dart';
 import 'package:flutter/material.dart';
