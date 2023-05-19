@@ -1,27 +1,28 @@
-import 'package:cooing_front/model/response/user.dart';
+import 'package:cooing_front/model/response/User.dart';
 import 'package:cooing_front/pages/login/FeatureScreen.dart';
-import 'package:cooing_front/pages/login/schoolScreen.dart';
+import 'package:cooing_front/pages/login/SchoolScreen.dart';
+import 'package:cooing_front/providers/UserProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 import 'CandyScreen.dart';
 
-class SettingPage extends StatefulWidget {
+class SettingScreen extends StatefulWidget {
   final User user;
 
-  const SettingPage({required this.user, super.key});
+  const SettingScreen({required this.user, super.key});
 
   @override
-  State<SettingPage> createState() => _SettingPageState();
+  _SettingScreenState createState() => _SettingScreenState();
 }
 
-class _SettingPageState extends State<SettingPage> {
+class _SettingScreenState extends State<SettingScreen> {
   final List settingElements = [
     {
       'title': '인스타 팔로우',
-      'link': 'https://www.instagram.com/we.cooing/',
+      'link': '',
     },
     {
       'title': '질문을 공유하는 방법',
@@ -47,6 +48,8 @@ class _SettingPageState extends State<SettingPage> {
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserDataProvider>(context, listen: true);
+
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -87,11 +90,12 @@ class _SettingPageState extends State<SettingPage> {
                                     ),
                                   ),
                                   Text(
-                                    "${widget.user.candyCount}개",
+                                    '${userProvider.userData?.candyCount.toString() ?? ''}개',
                                     style: TextStyle(
-                                        fontSize: 16,
-                                        color: Color(0xff333D4B),
-                                        fontWeight: FontWeight.bold),
+                                      fontSize: 16,
+                                      color: Color(0xff333D4B),
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ],
                               )
@@ -121,42 +125,45 @@ class _SettingPageState extends State<SettingPage> {
               ),
             ),
           ),
-          Column(
-            children: [
-              ListView.builder(
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: settingElements.length,
-                  shrinkWrap: true,
-                  itemBuilder: ((context, index) {
-                    return Padding(
-                        padding: EdgeInsets.only(
-                            left: 25.0, bottom: 20.0, top: 20.0),
-                        child: GestureDetector(
-                          child: Text(
-                            "${settingElements[index]['title']}",
-                            style: TextStyle(
-                                fontSize: 16,
-                                color: Color(0xff333D4B),
-                                fontWeight: FontWeight.bold),
-                          ),
-                          onTap: () async {
-                            final reportUrl = Uri.parse(
-                                "${settingElements[index]['link']}");
-                            print("${settingElements[index]['title']}");
+          SingleChildScrollView(
+            physics: AlwaysScrollableScrollPhysics(),
+            child: Column(
+              children: [
+                ListView.builder(
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: settingElements.length,
+                    shrinkWrap: true,
+                    itemBuilder: ((context, index) {
+                      return Padding(
+                          padding: EdgeInsets.only(
+                              left: 25.0, bottom: 20.0, top: 20.0),
+                          child: GestureDetector(
+                            child: Text(
+                              "${settingElements[index]['title']}",
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  color: Color(0xff333D4B),
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            onTap: () async {
+                              final reportUrl = Uri.parse(
+                                  "${settingElements[index]['link']}");
+                              print("${settingElements[index]['title']}");
 
-                            if (await canLaunchUrl(reportUrl)) {
-                              launchUrl(reportUrl);
-                            } else {
-                              // ignore: avoid_print
-                              print("Can't launch $reportUrl");
-                            }
-                          },
-                        ));
-                  })),
-            ],
+                              if (await canLaunchUrl(reportUrl)) {
+                                launchUrl(reportUrl);
+                              } else {
+                                // ignore: avoid_print
+                                print("Can't launch $reportUrl");
+                              }
+                            },
+                          ));
+                    })),
+              ],
+            ),
           ),
           Padding(
-              padding: EdgeInsets.only(left: 25.0, top: 20),
+              padding: EdgeInsets.only(left: 25.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
