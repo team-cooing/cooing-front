@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:cooing_front/model/response/answer.dart';
 import 'package:cooing_front/model/response/question.dart';
 import 'package:cooing_front/model/response/user.dart';
@@ -9,7 +7,6 @@ import 'package:cooing_front/pages/login/LoginScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:cooing_front/pages/question_page.dart';
 import 'package:cooing_front/pages/message_page.dart';
-import 'package:cooing_front/pages/feed_page.dart';
 import 'package:get/get.dart';
 import 'package:cooing_front/model/response/response.dart' as response;
 import 'package:cooing_front/model/config/palette.dart';
@@ -186,7 +183,7 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
       // 만약, 질문이 있다면
       if (question != null) {
         // 만약, 이미 답변한 질문이라면
-        if(user!.answeredQuestions.contains(question.id)){
+        if(user!.answeredQuestions.contains(question.id) || question.owner==user!.uid){
           continue;
         }
 
