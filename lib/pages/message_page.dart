@@ -229,9 +229,9 @@ class _MessagePageState extends State<MessagePage> {
         onTap: () async {
           await Navigator.of(context).push(MaterialPageRoute(
               builder: (BuildContext context) => AnswerDetailPage(
-                  userId: widget.user.uid,
-                  answerId: widget.answers[index]!.id,
-                  contentId: '')));
+                    user: widget.user,
+                    answer: widget.answers[index]!,
+                  )));
 
           if (!widget.answers[index]!.isOpened) {
             widget.answers[index]!.isOpened = true;

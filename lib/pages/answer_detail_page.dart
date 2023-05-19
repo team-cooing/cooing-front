@@ -16,11 +16,9 @@ import 'package:cooing_front/model/data/question_list.dart';
 class AnswerDetailPage extends StatefulWidget {
   final User user;
   final Answer answer;
-  final String contentId;
   const AnswerDetailPage(
       {required this.user,
       required this.answer,
-      required this.contentId,
       super.key});
 
   @override
@@ -43,7 +41,7 @@ class _AnswerDetailPageState extends State<AnswerDetailPage> {
     super.initState();
     userData = widget.user;
     answerData = widget.answer;
-    contentId = widget.contentId;
+    contentId = widget.answer.contentId;
     questionContent = QuestionList.questionList
         .elementAt(int.parse(contentId))['question'] as String;
 

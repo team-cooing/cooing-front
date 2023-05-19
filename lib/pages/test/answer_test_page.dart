@@ -14,6 +14,7 @@ sendAnswer(User toUser, User fromUser, Question question) async {
       owner: fromUser.uid,
       ownerGender: 1,
       content: '예시입니다',
+      contentId: '1',
       questionId: question.id,
       questionOwner: question.owner,
       isAnonymous: true,

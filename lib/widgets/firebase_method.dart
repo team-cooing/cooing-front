@@ -257,6 +257,7 @@ Future<Answer> getAnsDoc(
       owner: '',
       ownerGender: 0,
       content: '',
+      contentId: '',
       questionId: '',
       questionOwner: '',
       isAnonymous: false,
