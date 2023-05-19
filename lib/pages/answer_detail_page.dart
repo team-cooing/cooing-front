@@ -5,21 +5,21 @@ import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cooing_front/model/response/answer.dart';
-import 'package:cooing_front/model/data/question_list.dart';
+import 'package:cooing_front/model/response/user.dart';
 import 'package:social_share/social_share.dart';
 import 'dart:async';
 import 'package:screenshot/screenshot.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
+import 'package:cooing_front/model/data/question_list.dart';
 
 class AnswerDetailPage extends StatefulWidget {
-  final String userId;
-  final String answerId;
+  final User user;
+  final Answer answer;
   final String contentId;
-
   const AnswerDetailPage(
-      {required this.userId,
-      required this.answerId,
+      {required this.user,
+      required this.answer,
       required this.contentId,
       super.key});
 
@@ -32,42 +32,28 @@ class _AnswerDetailPageState extends State<AnswerDetailPage> {
   late CollectionReference answerDocRef;
   late CollectionReference questionDocRef;
 
-  late String userId;
-  late String answerId;
   late String contentId;
   late String questionContent;
-  Answer? answerData;
+
+  late User userData;
+  late Answer answerData;
   String imgUrl = '';
   @override
   void initState() {
     super.initState();
-    userId = widget.userId;
-    answerId = widget.answerId;
+    userData = widget.user;
+    answerData = widget.answer;
     contentId = widget.contentId;
-    answerData = null;
     questionContent = QuestionList.questionList
         .elementAt(int.parse(contentId))['question'] as String;
-    questionDocRef =
-        firestore.collection('contents').doc(contentId).collection('questions');
+
     answerDocRef =
-        firestore.collection('answers').doc(userId).collection('answers');
+        firestore.collection('answers').doc(userData.uid).collection('answers');
+
     try {
-      getAnsDoc(answerDocRef, answerId).then((value) {
-        setState(() {
-          answerData = value; // 데이터를 가져온 후에 상태를 업데이트함
-        });
-        print("inAnswerDetailCard: $answerData");
-        getDocument(questionDocRef.doc(value.questionId)).then((value) {
-          imgUrl = value.ownerProfileImage;
-          setState(() {
-            imgUrl = imgUrl;
-// 데이터를 가져온 후에 상태를 업데이트함
-          });
-        });
-        if (answerData!.isOpened == false) {
-          updateDocument('isOpened', true, answerDocRef.doc(answerId));
-        }
-      });
+      if (answerData.isOpened == false) {
+        updateDocument('isOpened', true, answerDocRef.doc(answerData.id));
+      }
     } catch (e) {
       print("Error loading answer data : $e");
     }
@@ -77,10 +63,6 @@ class _AnswerDetailPageState extends State<AnswerDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (answerData == null) {
-      return Center(child: CircularProgressIndicator());
-    }
-
     return Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
@@ -110,14 +92,20 @@ class _AnswerDetailPageState extends State<AnswerDetailPage> {
         body: LayoutBuilder(
           builder: (context, constraints) {
             return SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _answerBody(),
-                  bottomBtns(answerData!.isAnonymous),
-                ],
-              ),
-            );
+                child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight,
+                    ),
+                    child: IntrinsicHeight(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _answerBody(),
+                          Spacer(),
+                          bottomBtns(answerData.isAnonymous),
+                        ],
+                      ),
+                    )));
           },
         ));
   }
@@ -163,7 +151,7 @@ class _AnswerDetailPageState extends State<AnswerDetailPage> {
                 child: Column(
                   children: [
                     Text(
-                      "${answerData!.nickname}이 보낸 메시지",
+                      "${answerData.nickname}이 보낸 메시지",
                       style:
                           TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
@@ -229,7 +217,7 @@ class _AnswerDetailPageState extends State<AnswerDetailPage> {
           borderRadius: BorderRadius.circular(20),
           border: Border.all(color: Colors.white, width: 0)),
       child: Text(
-        answerData!.content,
+        answerData.content,
         style: TextStyle(
           color: Colors.black,
         ),
@@ -267,7 +255,6 @@ class _AnswerDetailPageState extends State<AnswerDetailPage> {
             if (path == null) {
               return;
             }
-            print("Clicked : <답장하기>");
             SocialShare.shareInstagramStory(
                     appId: '617417756966237',
                     imagePath: path,
@@ -291,24 +278,6 @@ class _AnswerDetailPageState extends State<AnswerDetailPage> {
           )),
     );
 
-    if (isAnony == true) {
-      return SafeArea(
-          child: Padding(
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).systemGestureInsets.bottom + 15,
-                left: 20,
-                right: 20,
-              ),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    SizedBox(height: 15),
-                    fromWhoButton,
-                    Padding(padding: EdgeInsets.all(5)),
-                    replyBtn
-                  ])));
-    }
-
     return SafeArea(
         child: Padding(
             padding: EdgeInsets.only(
@@ -318,6 +287,10 @@ class _AnswerDetailPageState extends State<AnswerDetailPage> {
             ),
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [SizedBox(height: 65), replyBtn])));
+                children: <Widget>[
+                  (isAnony!) ? fromWhoButton : SizedBox(height: 25),
+                  Padding(padding: EdgeInsets.all(8)),
+                  replyBtn
+                ])));
   }
 }
