@@ -16,10 +16,7 @@ import 'package:cooing_front/model/data/question_list.dart';
 class AnswerDetailPage extends StatefulWidget {
   final User user;
   final Answer answer;
-  const AnswerDetailPage(
-      {required this.user,
-      required this.answer,
-      super.key});
+  const AnswerDetailPage({required this.user, required this.answer, super.key});
 
   @override
   _AnswerDetailPageState createState() => _AnswerDetailPageState();
@@ -229,7 +226,7 @@ class _AnswerDetailPageState extends State<AnswerDetailPage> {
       height: 50,
       child: ElevatedButton(
           onPressed: () {
-            Get.to(() => HintScreen());
+            Get.to(() => HintScreen(user: widget.user));
           },
           style: OutlinedButton.styleFrom(
             foregroundColor: Colors.white,

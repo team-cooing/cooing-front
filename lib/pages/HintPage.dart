@@ -3,9 +3,13 @@ import 'package:cooing_front/pages/CandyScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart';
+import 'package:cooing_front/model/response/user.dart';
+import 'package:cooing_front/model/response/response.dart';
 
 class HintScreen extends StatefulWidget {
-  const HintScreen({Key? key}) : super(key: key);
+  final User user;
+
+  const HintScreen({required this.user, super.key});
 
   @override
   State<HintScreen> createState() => _HintScreenState();
@@ -77,7 +81,7 @@ class _HintScreenState extends State<HintScreen> {
                         ),
                         ElevatedButton(
                             onPressed: () {
-                              Get.to(CandyScreen());
+                              Get.to(CandyScreen(user: widget.user));
                             },
                             style: OutlinedButton.styleFrom(
                               shadowColor: Colors.transparent,
@@ -142,7 +146,8 @@ class _HintScreenState extends State<HintScreen> {
                                           hint2 = true;
                                           openHint[0] = true;
                                         } else {
-                                          Get.to(CandyScreen());
+                                          Get.to(
+                                              CandyScreen(user: widget.user));
                                         }
                                       }
                                     });
@@ -214,7 +219,8 @@ class _HintScreenState extends State<HintScreen> {
                                             hint3 = true;
                                             openHint[1] = true;
                                           } else {
-                                            Get.to(CandyScreen());
+                                            Get.to(
+                                                CandyScreen(user: widget.user));
                                           }
                                         }
                                       });
@@ -283,7 +289,8 @@ class _HintScreenState extends State<HintScreen> {
                                             hint3 = false;
                                             openHint[2] = true;
                                           } else {
-                                            Get.to(CandyScreen());
+                                            Get.to(
+                                                CandyScreen(user: widget.user));
                                           }
                                         }
                                       });
