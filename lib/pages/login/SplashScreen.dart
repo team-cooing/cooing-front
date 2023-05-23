@@ -4,8 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
-
-// import 'package:parameters/';
 import 'package:cooing_front/widgets/dynamic_link.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -31,7 +29,6 @@ class _SplashScreenState extends State<SplashScreen> {
     try {
       final hasToken = await kakao.AuthApi.instance.hasToken();
       if (hasToken) {
-        final tokenInfo = await kakao.UserApi.instance.accessTokenInfo();
         final user = await kakao.UserApi.instance.me();
 
         final email = user.kakaoAccount?.email ?? '';
