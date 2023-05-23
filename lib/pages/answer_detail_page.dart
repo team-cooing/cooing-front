@@ -7,7 +7,6 @@ import 'package:social_share/social_share.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:async';
 import 'dart:io';
@@ -59,7 +58,7 @@ class AnswerDetailPageState extends State<AnswerDetailPage> {
                   final reportUrl = Uri.parse('https://pf.kakao.com/_kexoDxj');
 
                   if (await canLaunchUrl(reportUrl)) {
-                    launchUrl(reportUrl);
+                    launchUrl(reportUrl, mode: LaunchMode.externalApplication);
                   } else {
                     // ignore: avoid_print
                     print("Can't launch $reportUrl");

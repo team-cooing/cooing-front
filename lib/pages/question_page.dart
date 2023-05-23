@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:screenshot/screenshot.dart';
 import 'dart:io';
+import 'package:url_launcher/url_launcher.dart';
+
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/services.dart';
 import 'package:social_share/social_share.dart';
@@ -352,23 +354,18 @@ class _QuestionPageState extends State<QuestionPage> {
             backgroundTopColor: "#ffffff",
             backgroundBottomColor: "#9754FB",
             attributionURL: "www.naver.com")
-        .then((data) {
-      print("?????? $data");
+        .then((data) async {
       if (data == "error") {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: Palette.mainPurple,
-            content: Text("Instagram이 없습니다!"),
-            duration: Duration(seconds: 2),
-            action: SnackBarAction(
-              //추가로 작업을 넣기. 버튼넣기라 생각하면 편하다.
-              label: '설치', //버튼이름
-              onPressed: () {
-                
-              }, //버튼 눌렀을때.
-            ),
-          ),
-        );
+        final reportUrl = Uri.parse(
+            'https://we-cooing.notion.site/e802f6eaf1594ff6bd01dbd5ddcc3396');
+        print("Link로 이동");
+
+        if (await canLaunchUrl(reportUrl)) {
+          launchUrl(reportUrl, mode: LaunchMode.externalApplication);
+        } else {
+          // ignore: avoid_print
+          print("Can't launch $reportUrl");
+        }
       }
     });
   }
