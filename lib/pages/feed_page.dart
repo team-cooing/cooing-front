@@ -5,7 +5,7 @@ import 'package:cooing_front/model/response/question.dart';
 import 'package:cooing_front/model/response/response.dart';
 import 'package:cooing_front/model/response/user.dart';
 import 'package:cooing_front/pages/answer_page.dart';
-import 'package:cooing_front/pages/lottery_page.dart';
+import 'package:cooing_front/pages/candy_complete_page.dart';
 import 'package:custom_refresh_indicator/custom_refresh_indicator.dart';
 import 'package:flutter/material.dart';
 
@@ -244,8 +244,8 @@ class _FeedPageState extends State<FeedPage> {
 
           // 복권 페이지로 이동
           await Navigator.of(context).push(MaterialPageRoute(
-              builder: (BuildContext context) => LotteryPage(
-                    candyNum: candyNum,
+              builder: (BuildContext context) => CandyCompletePage(
+                    num: candyNum,
                   )));
 
           // User 반영

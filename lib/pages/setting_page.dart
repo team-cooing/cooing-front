@@ -1,13 +1,16 @@
-import 'package:cooing_front/model/response/user.dart';
-import 'package:cooing_front/providers/UserProvider.dart';
+import 'package:cooing_front/model/response/user.dart' as ru;
+import 'package:cooing_front/model/response/response.dart' as r;
+import 'package:cooing_front/pages/login/LoginScreen.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:provider/provider.dart';
+import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'CandyScreen.dart';
 
 class SettingScreen extends StatefulWidget {
-  User user;
+
+  final ru.User user;
 
   SettingScreen({required this.user, super.key});
 
@@ -16,10 +19,11 @@ class SettingScreen extends StatefulWidget {
 }
 
 class _SettingScreenState extends State<SettingScreen> {
+  late BuildContext scaffoldContext;
   final List settingElements = [
     {
       'title': '인스타 팔로우',
-      'link': '',
+      'link': 'https://www.instagram.com/we.cooing',
     },
     {
       'title': '질문을 공유하는 방법',
@@ -45,7 +49,8 @@ class _SettingScreenState extends State<SettingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserDataProvider>(context, listen: true);
+    // final userProvider = Provider.of<UserDataProvider>(context, listen: true);
+    scaffoldContext = context;
 
     return Scaffold(
       body: Column(
@@ -154,15 +159,28 @@ class _SettingScreenState extends State<SettingScreen> {
                                   fontWeight: FontWeight.bold),
                             ),
                             onTap: () async {
-                              final reportUrl = Uri.parse(
-                                  "${settingElements[index]['link']}");
-                              print("${settingElements[index]['title']}");
+                              // 만약, 로그아웃이 아니라면
+                              if (index != settingElements.length - 1) {
+                                final reportUrl = Uri.parse(
+                                    "${settingElements[index]['link']}");
+                                print("${settingElements[index]['title']}");
 
-                              if (await canLaunchUrl(reportUrl)) {
-                                launchUrl(reportUrl);
+                                if (await canLaunchUrl(reportUrl)) {
+                                  launchUrl(reportUrl, mode: LaunchMode.externalApplication);
+                                } else {
+                                  // ignore: avoid_print
+                                  print("Can't launch $reportUrl");
+                                }
                               } else {
-                                // ignore: avoid_print
-                                print("Can't launch $reportUrl");
+                                await logout();
+                                // 로그인 페이지로 이동
+                                if (!mounted) return;
+                                Navigator.of(scaffoldContext)
+                                    .pushAndRemoveUntil(
+                                        MaterialPageRoute(
+                                            builder: (BuildContext context) =>
+                                                LoginScreen()),
+                                        (route) => false);
                               }
                             },
                           ));
@@ -170,31 +188,88 @@ class _SettingScreenState extends State<SettingScreen> {
               ],
             ),
           ),
-          Padding(
-              padding: EdgeInsets.only(left: 25.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '회원 탈퇴',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Color(0xffB6B7B8),
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () async {
+              await deleteUser();
+              // 로그인 페이지로 이동
+              if (!mounted) return;
+              Navigator.of(scaffoldContext).pushAndRemoveUntil(
+                  MaterialPageRoute(
+                      builder: (BuildContext context) => LoginScreen()),
+                  (route) => false);
+            },
+            child: Padding(
+                padding: EdgeInsets.only(left: 25.0, top: 20),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '회원 탈퇴',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Color(0xffB6B7B8),
+                      ),
                     ),
-                  ),
-                  Padding(padding: EdgeInsets.all(5.0)),
-                  Text(
-                    '탈퇴한 뒤에는 데이터를 복구할 수 없으니 신중히 진행해 주세요.',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Color(0xffB6B7B8),
+                    Padding(padding: EdgeInsets.all(5.0)),
+                    Text(
+                      '탈퇴한 뒤에는 데이터를 복구할 수 없으니 신중히 진행해 주세요.',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Color(0xffB6B7B8),
+                      ),
                     ),
-                  ),
-                ],
-              ))
+                  ],
+                )),
+          )
         ],
       ),
     );
+  }
+
+  Future logout() async {
+    // 카카오, 파베 로그아웃
+    try {
+      await UserApi.instance.logout();
+      await fb.FirebaseAuth.instance.signOut();
+    } catch (e) {
+      print(e.toString());
+    }
+    // 토큰 정보 제거
+    try {
+      await TokenManagerProvider.instance.manager.clear();
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  Future deleteUser() async {
+    // 파베 유저 데이터 관련 정보 삭제 - 유저 데이터, 피드 데이터 삭제
+    await r.Response.deleteUser(userUid: widget.user.uid);
+    await r.Response.deleteQuestionInFeed(
+        schoolCode: widget.user.schoolCode,
+        questionId: widget.user.questionInfos[widget.user.questionInfos.length-1]['questionId']);
+    // 카카오 회원 정보 삭제
+    try {
+      await UserApi.instance.unlink();
+    } catch (e) {
+      print(e.toString());
+    }
+    // 토큰 정보 제거
+    try {
+      await TokenManagerProvider.instance.manager.clear();
+    } catch (e) {
+      print(e.toString());
+    }
+    // 파베 Auth 회원 정보 삭제
+    try{
+      fb.User? firebaseUser = fb.FirebaseAuth.instance.currentUser;
+      if(firebaseUser!=null){
+        await firebaseUser.delete();
+      }
+    }catch(e){
+      print(e.toString());
+    }
   }
 }
