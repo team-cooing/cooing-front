@@ -5,7 +5,7 @@ import 'package:cooing_front/pages/login/ClassScreen.dart';
 import 'package:cooing_front/pages/HintPage.dart';
 import 'package:cooing_front/pages/login/TokenLoginScreen.dart';
 import 'package:cooing_front/pages/login/LoginScreen.dart';
-import 'package:cooing_front/pages/login/SchoolScreen.dart';
+import 'package:cooing_front/pages/login/schoolScreen.dart';
 import 'package:cooing_front/pages/login/SignUpScreen.dart';
 import 'package:cooing_front/pages/login/SplashScreen.dart';
 import 'package:cooing_front/pages/WelcomeScreen.dart';
@@ -65,8 +65,8 @@ class MyApp extends StatelessWidget {
         'agree': (context) => const AgreeScreen(),
         'welcome': (context) => const WelcomeScreen(),
         'tab': (context) => const TabPage(),
-        'hint': (context) => const HintScreen(),
-        'candy': (context) => const CandyScreen(),
+        // 'hint': (context) => const HintScreen(),
+        // 'candy': (context) => const CandyScreen(),
         '_working': (context) => const TabPage(),
       },
     );

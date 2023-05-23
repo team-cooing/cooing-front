@@ -2,26 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cooing_front/pages/tab_page.dart';
 
-class AnswerCompleteScreen extends StatefulWidget {
-  final String owner;
-  final String uid;
-  const AnswerCompleteScreen(
-      {required this.owner, required this.uid, super.key});
+class CandyCompleteScreen extends StatefulWidget {
+  const CandyCompleteScreen({super.key});
 
   @override
-  State<AnswerCompleteScreen> createState() => AnswerCompleteScreenState();
+  State<CandyCompleteScreen> createState() => CandyCompleteScreenState();
 }
 
-class AnswerCompleteScreenState extends State<AnswerCompleteScreen> {
-  late String owner;
-  late String uid;
-
+class CandyCompleteScreenState extends State<CandyCompleteScreen> {
   @override
   void initState() {
     super.initState();
-
-    owner = widget.owner;
-    uid = widget.uid;
   }
 
   @override
@@ -46,7 +37,7 @@ class AnswerCompleteScreenState extends State<AnswerCompleteScreen> {
           Container(
             padding: EdgeInsets.only(top: 50, bottom: 7),
             child: Text(
-              "성공적으로 $owner님께",
+              "성공적으로 캔디 충전이",
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 22,
@@ -54,7 +45,7 @@ class AnswerCompleteScreenState extends State<AnswerCompleteScreen> {
             ),
           ),
           Text(
-            "답변을 전달했어요",
+            "완료되었어요",
             style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 22,
@@ -76,7 +67,7 @@ class AnswerCompleteScreenState extends State<AnswerCompleteScreen> {
                 children: [
                   ElevatedButton(
                       onPressed: () {
-                        Get.offAll(TabPage(), arguments: uid);
+                        Navigator.of(context).pop();
                       },
                       style: OutlinedButton.styleFrom(
                         fixedSize: Size.fromHeight(50),

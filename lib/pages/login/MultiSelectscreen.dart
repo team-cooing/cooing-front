@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:cooing_front/model/response/User.dart';
+import 'package:cooing_front/model/response/user.dart';
 import 'package:cooing_front/model/util/firebase_auth_remote_data_source.dart';
 import 'package:cooing_front/pages/login/FeatureScreen.dart';
-import 'package:cooing_front/pages/login/SchoolScreen.dart';
+import 'package:cooing_front/pages/login/schoolScreen.dart';
 import 'package:cooing_front/pages/WelcomeScreen.dart';
 import 'package:cooing_front/providers/UserProvider.dart';
 import 'package:provider/provider.dart';
@@ -283,8 +283,11 @@ class _MultiSelectscreenState extends State<MultiSelectscreen> {
                               style: _styleList,
                               isSubscribe: args.isSubscribe,
                               candyCount: args.candyCount,
+                              recentDailyBonusReceiveDate: args.recentDailyBonusReceiveDate,
+                              recentQuestionBonusReceiveDate: args.recentQuestionBonusReceiveDate,
                               questionInfos: args.questionInfos,
                               answeredQuestions: args.answeredQuestions,
+                              currentQuestionId: args.currentQuestionId,
                               serviceNeedsAgreement: args.serviceNeedsAgreement,
                               privacyNeedsAgreement: args.privacyNeedsAgreement,
                             ),

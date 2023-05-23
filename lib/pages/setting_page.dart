@@ -1,21 +1,18 @@
-import 'package:cooing_front/model/response/User.dart';
-import 'package:cooing_front/pages/login/FeatureScreen.dart';
-import 'package:cooing_front/pages/login/SchoolScreen.dart';
+import 'package:cooing_front/model/response/user.dart';
 import 'package:cooing_front/providers/UserProvider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'CandyScreen.dart';
 
 class SettingScreen extends StatefulWidget {
-  final User user;
+  User user;
 
-  const SettingScreen({required this.user, super.key});
+  SettingScreen({required this.user, super.key});
 
   @override
-  _SettingScreenState createState() => _SettingScreenState();
+  State<SettingScreen> createState() => _SettingScreenState();
 }
 
 class _SettingScreenState extends State<SettingScreen> {
@@ -90,7 +87,7 @@ class _SettingScreenState extends State<SettingScreen> {
                                     ),
                                   ),
                                   Text(
-                                    '${userProvider.userData?.candyCount.toString() ?? ''}개',
+                                    '${widget.user.candyCount}개',
                                     style: TextStyle(
                                       fontSize: 16,
                                       color: Color(0xff333D4B),
@@ -104,8 +101,14 @@ class _SettingScreenState extends State<SettingScreen> {
                         ],
                       ),
                       ElevatedButton(
-                          onPressed: () {
-                            Get.to(CandyScreen());
+                          onPressed: () async {
+                            await Navigator.of(context).push(MaterialPageRoute(
+                              builder: (BuildContext context) => CandyScreen(
+                                user: widget.user,
+                              ),
+                            ));
+
+                            setState(() {});
                           },
                           style: OutlinedButton.styleFrom(
                             foregroundColor: Colors.white,

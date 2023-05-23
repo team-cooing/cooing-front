@@ -17,11 +17,13 @@ class User {
   List style;
   bool isSubscribe;
   int candyCount;
+  String recentQuestionBonusReceiveDate;
+  String recentDailyBonusReceiveDate;
   List<Map<String, dynamic>> questionInfos;
   List<String> answeredQuestions;
+  String currentQuestionId;
   bool serviceNeedsAgreement;
   bool privacyNeedsAgreement;
-  // QuestionId_Info = [[ContentID, QuestionID], ... ];
 
   User({
     required this.uid,
@@ -42,8 +44,11 @@ class User {
     required this.style,
     required this.isSubscribe,
     required this.candyCount,
+    required this.recentQuestionBonusReceiveDate,
+    required this.recentDailyBonusReceiveDate,
     required this.questionInfos,
     required this.answeredQuestions,
+    required this.currentQuestionId,
     required this.serviceNeedsAgreement,
     required this.privacyNeedsAgreement,
   });
@@ -68,12 +73,11 @@ class User {
         style: List<String>.from(json['style']),
         isSubscribe: json['isSubscribe'],
         candyCount: json['candyCount'],
-        questionInfos: json['questionInfos'] != null
-            ? List<Map<String, dynamic>>.from(json['questionInfos'])
-            : [],
-        answeredQuestions: json['answeredQuestions'] != null
-            ? List<String>.from(json['answeredQuestions'])
-            : [],
+        recentQuestionBonusReceiveDate: json['recentQuestionBonusReceiveDate'],
+        recentDailyBonusReceiveDate: json['recentDailyBonusReceiveDate'],
+        questionInfos: List<Map<String, dynamic>>.from(json['questionInfos']),
+        answeredQuestions: List<String>.from(json['answeredQuestions']),
+        currentQuestionId: json['currentQuestionId'],
         serviceNeedsAgreement: json['serviceNeedsAgreement'],
         privacyNeedsAgreement: json['privacyNeedsAgreement']);
   }
@@ -84,8 +88,8 @@ class User {
       'name': name,
       'profileImage': profileImage,
       'gender': gender,
-      'age': age,
       'number': number,
+      'age': age,
       'birthday': birthday,
       'school': school,
       'schoolCode': schoolCode,
@@ -98,7 +102,11 @@ class User {
       'style': style,
       'isSubscribe': isSubscribe,
       'candyCount': candyCount,
+      'recentQuestionBonusReceiveDate': recentQuestionBonusReceiveDate,
+      'recentDailyBonusReceiveDate': recentDailyBonusReceiveDate,
       'questionInfos': questionInfos,
+      'answeredQuestions': answeredQuestions,
+      'currentQuestionId': currentQuestionId,
       'serviceNeedsAgreement': serviceNeedsAgreement,
       'privacyNeedsAgreement': privacyNeedsAgreement,
     };

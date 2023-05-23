@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
-import 'package:cooing_front/model/response/User.dart';
+import 'package:cooing_front/model/response/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
@@ -61,10 +61,13 @@ class UserDataProvider with ChangeNotifier {
             style: List<String>.from(data['style']),
             isSubscribe: data['isSubscribe'],
             candyCount: data['candyCount'],
+            recentDailyBonusReceiveDate: data['recentDailyBonusReceiveDate'],
+            recentQuestionBonusReceiveDate: data['recentQuestionBonusReceiveDate'],
             questionInfos:
                 List<Map<String, dynamic>>.from(data['questionInfos']),
             answeredQuestions:
                 List<String>.from(data['answeredQuestions'] ?? []),
+            currentQuestionId: data['currentQuestionId'],
             serviceNeedsAgreement: data['serviceNeedsAgreement'],
             privacyNeedsAgreement: data['privacyNeedsAgreement']);
         _isDataLoaded = true;

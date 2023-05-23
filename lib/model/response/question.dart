@@ -4,11 +4,12 @@ class Question {
   String ownerName;
   String owner;
   String content;
-  int contentId;
+  String contentId;
   String receiveTime;
   String openTime;
   String url;
-  bool isValidity; // 열려있냐 닫혀있냐? 0:닫힘 1: 열림
+  String schoolCode;
+  bool isOpen; // 열려있냐 닫혀있냐? 0:닫힘 1: 열림
 
   Question(
       {required this.id,
@@ -20,7 +21,8 @@ class Question {
       required this.receiveTime,
       required this.openTime,
       required this.url,
-      required this.isValidity});
+        required this.schoolCode,
+      required this.isOpen});
 
   factory Question.fromJson(Map<String, dynamic> json) {
     return Question(
@@ -33,7 +35,8 @@ class Question {
         receiveTime: json['receiveTime'], //답변받기 누른시간
         openTime: json['openTime'], //질문받기 누른 시간
         url: json['url'],
-        isValidity: json['isValidity']);
+        schoolCode: json['schoolCode'],
+        isOpen: json['isOpen']);
   }
 
   Map<String, dynamic> toJson() {
@@ -41,12 +44,14 @@ class Question {
       'id': id,
       'ownerProfileImage': ownerProfileImage,
       'ownerName': ownerName,
+      'owner': owner,
       'content': content,
       'contentId': contentId,
       'receiveTime': receiveTime,
       'openTime': openTime,
       'url': url,
-      'isValidity': isValidity
+      'schoolCode': schoolCode,
+      'isOpen': isOpen
     };
   }
 

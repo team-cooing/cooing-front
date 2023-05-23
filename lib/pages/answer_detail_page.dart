@@ -1,151 +1,218 @@
 import 'package:cooing_front/pages/HintPage.dart';
+import 'package:cooing_front/widgets/firebase_method.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cooing_front/model/response/answer.dart';
+import 'package:cooing_front/model/response/user.dart';
+import 'package:social_share/social_share.dart';
+import 'dart:async';
+import 'package:screenshot/screenshot.dart';
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
+import 'package:cooing_front/model/data/question_list.dart';
 
 class AnswerDetailPage extends StatefulWidget {
-  const AnswerDetailPage({super.key});
+  final User user;
+  final Answer answer;
+  const AnswerDetailPage({required this.user, required this.answer, super.key});
 
   @override
   _AnswerDetailPageState createState() => _AnswerDetailPageState();
 }
 
 class _AnswerDetailPageState extends State<AnswerDetailPage> {
-  String askText = '내 첫인상은 어땠어?';
-  bool? isAnonymous = true;
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  late CollectionReference answerDocRef;
+  late CollectionReference questionDocRef;
+
+  late String contentId;
+  late String questionContent;
+
+  late User userData;
+  late Answer answerData;
+  String imgUrl = '';
+  @override
+  void initState() {
+    super.initState();
+    userData = widget.user;
+    answerData = widget.answer;
+    contentId = widget.answer.contentId;
+    questionContent = QuestionList.questionList
+        .elementAt(int.parse(contentId))['question'] as String;
+
+    answerDocRef =
+        firestore.collection('answers').doc(userData.uid).collection('answers');
+
+    try {
+      if (answerData.isOpened == false) {
+        updateDocument('isOpened', true, answerDocRef.doc(answerData.id));
+      }
+    } catch (e) {
+      print("Error loading answer data : $e");
+    }
+  }
+
   int maxLength = 100;
-  String textValue =
-      "너는 \n처음 봤을 때 왠\n지 다가가기 어려웠는데\n막상 이ㅎㅎ야기하고 나니까 \n좋았던 것 같아.\n생각보다 착해!ㅋzzzzzzzzzzzz\nㅋ\nㅋ\nㅋ\nㅋ\nㅋ";
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        backgroundColor: Color.fromARGB(0, 87, 56, 56),
-        elevation: 0.0,
-        leading: BackButton(color: Color.fromRGBO(51, 61, 75, 1)),
-        actions: [
-          IconButton(
-              onPressed: () async {
-                final reportUrl = Uri.parse('https://pf.kakao.com/_kexoDxj');
+        resizeToAvoidBottomInset: false,
+        appBar: AppBar(
+          backgroundColor: Color.fromARGB(0, 87, 56, 56),
+          elevation: 0.0,
+          leading: BackButton(color: Color.fromRGBO(51, 61, 75, 1)),
+          actions: [
+            IconButton(
+                onPressed: () async {
+                  final reportUrl = Uri.parse('https://pf.kakao.com/_kexoDxj');
 
-                if (await canLaunchUrl(reportUrl)) {
-                  launchUrl(reportUrl);
-                } else {
-                  // ignore: avoid_print
-                  print("Can't launch $reportUrl");
-                }
-              },
-              icon: Icon(Icons.warning_rounded),
-              iconSize: 30,
-              color: Colors.black45),
-          Padding(
-            padding: EdgeInsets.all(5),
-          )
-        ],
-      ),
-      body: SafeArea(
-        child: Column(children: [
-          _answerBody(),
-          Spacer(),
-          bottomBtns(isAnonymous),
-        ]),
-      ),
-      // bottomNavigationBar: bottomBtns(isAnonymous));
-    );
+                  if (await canLaunchUrl(reportUrl)) {
+                    launchUrl(reportUrl);
+                  } else {
+                    // ignore: avoid_print
+                    print("Can't launch $reportUrl");
+                  }
+                },
+                icon: Icon(Icons.warning_rounded),
+                iconSize: 30,
+                color: Colors.black45),
+            Padding(
+              padding: EdgeInsets.all(5),
+            )
+          ],
+        ),
+        body: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+                child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight,
+                    ),
+                    child: IntrinsicHeight(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _answerBody(),
+                          Spacer(),
+                          bottomBtns(answerData.isAnonymous),
+                        ],
+                      ),
+                    )));
+          },
+        ));
   }
+
+  Future<String?> screenshot() async {
+    var data = await screenshotController.capture();
+    if (data == null) {
+      return null;
+    }
+    final tempDir = await getTemporaryDirectory();
+    final assetPath = '${tempDir.path}/temp.png';
+    File file = await File(assetPath).create();
+    await file.writeAsBytes(data);
+    return file.path;
+  }
+
+  ScreenshotController screenshotController = ScreenshotController();
 
   Widget _answerBody() {
-    return SizedBox(
-      child: Column(children: [
-        SingleChildScrollView(
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(
-            children: [
-              Padding(padding: EdgeInsets.only(left: 20, top: 20.0)),
-              Text(
-                "답변 확인",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 22.0,
-                ),
-                textAlign: TextAlign.center,
-              )
-            ],
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.only(left: 20, top: 20.0),
+          child: Text(
+            "답변 확인",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 22.0,
+            ),
+            textAlign: TextAlign.center,
           ),
-          const Padding(padding: EdgeInsets.all(20.0)),
-          fromMsgTxt(isAnonymous),
-          _answerDetailCard(),
-        ])),
-      ]),
-    );
-  }
-
-  Widget fromMsgTxt(bool? isAnony) {
-    var name = '';
-
-    if (isAnony == true) {
-      name = '훌륭한 남학생';
-    } else {
-      name = '박길현';
-    }
-
-    return Center(
-      child: Text(
-        "$name이 보낸 메시지",
-        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-      ),
+        ),
+        const Padding(padding: EdgeInsets.all(12.0)),
+        Screenshot(
+            controller: screenshotController,
+            child: Container(
+                padding: EdgeInsets.only(top: 15, bottom: 5),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Column(
+                  children: [
+                    Text(
+                      "${answerData.nickname}이 보낸 메시지",
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    _answerDetailCard(),
+                  ],
+                ))),
+      ],
     );
   }
 
   Widget _answerDetailCard() {
-    return Center(
-        child: Container(
-            width: double.infinity,
-            padding:
-                EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 10),
-            child: Card(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30)),
-              color: const Color(0xff9754FB),
-              child: Column(children: <Widget>[
-                const Padding(padding: EdgeInsets.all(15.0)),
-                const SizedBox(
-                  width: 80.0,
-                  height: 80.0,
-                  child: CircleAvatar(
-                    backgroundImage: AssetImage('images/sohee.jpg'),
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 10),
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(30),
+        ),
+        color: const Color(0xff9754FB),
+        child: Column(
+          children: <Widget>[
+            const Padding(padding: EdgeInsets.all(15.0)),
+            imgUrl.isEmpty
+                ? const CircularProgressIndicator()
+                : Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      image: DecorationImage(
+                        fit: BoxFit.cover,
+                        image: NetworkImage(imgUrl),
+                      ),
+                    ),
                   ),
+            Padding(
+              padding: EdgeInsets.only(left: 20.0, right: 20.0, top: 20),
+              child: Text(
+                questionContent,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: Colors.white,
                 ),
-                const Padding(padding: EdgeInsets.all(10.0)),
-                Text(
-                  askText,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      color: Colors.white),
-                ),
-                Container(
-                  padding: EdgeInsets.only(
-                      left: 20.0, right: 20.0, top: 25, bottom: 25),
-                  child: answerTxtView(),
-                )
-              ]),
-            )));
+              ),
+            ),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 25),
+              child: answerTxtView(),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget answerTxtView() {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 15),
+      padding: EdgeInsets.only(left: 15.0, right: 15.0, top: 30, bottom: 35),
       decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(color: Colors.white, width: 0)),
       child: Text(
-        textValue,
+        answerData.content,
         style: TextStyle(
           color: Colors.black,
         ),
@@ -154,13 +221,16 @@ class _AnswerDetailPageState extends State<AnswerDetailPage> {
   }
 
   Widget bottomBtns(bool? isAnony) {
-    Spacer();
     var fromWhoButton = SizedBox(
       width: double.infinity,
       height: 50,
       child: ElevatedButton(
-          onPressed: () {
-            Get.to(() => HintScreen());
+          onPressed: () async {
+            await Navigator.of(context).push(MaterialPageRoute(
+                builder: (BuildContext context) => HintScreen(
+                      user: widget.user,
+                      answer: widget.answer,
+                    )));
           },
           style: OutlinedButton.styleFrom(
             foregroundColor: Colors.white,
@@ -179,8 +249,20 @@ class _AnswerDetailPageState extends State<AnswerDetailPage> {
       width: double.infinity,
       height: 50,
       child: ElevatedButton(
-          onPressed: () {
-            print("Clicked : <답장하기>");
+          onPressed: () async {
+            var path = await screenshot();
+            if (path == null) {
+              return;
+            }
+            SocialShare.shareInstagramStory(
+                    appId: '617417756966237',
+                    imagePath: path,
+                    backgroundTopColor: "#FFFFFF",
+                    backgroundBottomColor: "#9754FB",
+                    attributionURL: "링크없으")
+                .then((data) {
+              print(data);
+            });
           },
           style: OutlinedButton.styleFrom(
             foregroundColor: Colors.white,
@@ -195,32 +277,19 @@ class _AnswerDetailPageState extends State<AnswerDetailPage> {
           )),
     );
 
-    if (isAnony == true) {
-      return SafeArea(
-          child: Padding(
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).systemGestureInsets.bottom + 20,
-                left: 20,
-                right: 20,
-              ),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    fromWhoButton,
-                    Padding(padding: EdgeInsets.all(5)),
-                    replyBtn
-                  ])));
-    }
-
     return SafeArea(
         child: Padding(
             padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).systemGestureInsets.bottom + 20,
+              bottom: MediaQuery.of(context).systemGestureInsets.bottom + 15,
               left: 20,
               right: 20,
             ),
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [replyBtn])));
+                children: <Widget>[
+                  (isAnony!) ? fromWhoButton : SizedBox(height: 25),
+                  Padding(padding: EdgeInsets.all(8)),
+                  replyBtn
+                ])));
   }
 }

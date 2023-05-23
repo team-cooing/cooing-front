@@ -2,9 +2,11 @@ class Answer {
   String id; // 마이크로세컨드까지 보낸 시간으로 사용
   String time;
   String owner;
-  bool ownerGender;
+  int ownerGender;
   String content;
+  String contentId;
   String questionId;
+  String questionOwner;
   bool isAnonymous;
   String nickname;
   List hint;
@@ -17,7 +19,9 @@ class Answer {
         required this.owner,
         required this.ownerGender,
         required this.content,
+        required this.contentId,
         required this.questionId,
+        required this.questionOwner,
         required this.isAnonymous,
         required this.nickname,
         required this.hint,
@@ -31,7 +35,9 @@ class Answer {
         owner: json['owner'],
         ownerGender: json['ownerGender'],
         content: json['content'],
+        contentId: json['contentId'],
         questionId: json['questionId'],
+        questionOwner: json['questionOwner'],
         isAnonymous: json['isAnonymous'],
         nickname: json['nickname'],
         hint: json['hint'],
@@ -42,11 +48,13 @@ class Answer {
   Map<String, dynamic> toJson() {
     return {
       'id': id, // 마이크로세컨드까지 보낸 시간으로 사용
-      'time': id,
+      'time': time,
       'owner': owner,
       'ownerGender': ownerGender,
       'content': content,
+      'contentId': contentId,
       'questionId': questionId,
+      'questionOwner': questionOwner,
       'isAnonymous': isAnonymous,
       'nickname': nickname,
       'hint': hint,

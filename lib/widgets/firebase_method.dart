@@ -1,13 +1,14 @@
 // Question 객체를 Firestore 문서로 변환하는 함수
 
-import 'package:cooing_front/model/response/User.dart';
+import 'package:cooing_front/model/response/user.dart';
 import 'package:cooing_front/model/data/question_list.dart';
-import 'package:cooing_front/model/response/Question.dart';
+import 'package:cooing_front/model/response/question.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import "dart:math";
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
-import '../model/response/answer.dart';
+import 'package:cooing_front/model/response/answer.dart';
 
 Map<String, dynamic> _questionToFirestoreDocument(Question question) {
   return question.toJson();
@@ -15,13 +16,35 @@ Map<String, dynamic> _questionToFirestoreDocument(Question question) {
 
 Question initQuestion(Question question) {
   question.content = '';
-  question.contentId = 0;
+  question.contentId = '';
   question.receiveTime = '';
   question.openTime = '';
   question.url = '';
-  question.isValidity = false;
+  question.isOpen = false;
 
   return question;
+}
+
+Future<User> getUserData(String uid) async {
+  final prefs = await AsyncPrefsOperation();
+
+  final userDataJson = prefs.getString('userData');
+  if (userDataJson != null) {
+    print("answer page : 쿠키 에서 UserData 로드");
+    print(userDataJson);
+    Map<String, dynamic> userDataMap =
+        json.decode(userDataJson); //z쿠키가 있ㅇㅡ면 쿠키 리턴
+    return User.fromJson(userDataMap);
+  } else {
+    // Handle missing data
+    print('answer page : No user data found in shared preferences');
+
+    DocumentReference userDocRef =
+        FirebaseFirestore.instance.collection('users').doc(uid);
+    print("answer page : uid : $uid");
+    print("answer page : firebase 에서 UserData 로드");
+    return await getUserDocument(userDocRef, uid); //쿠키없으면 파베에서 유저 데이터 리턴
+  }
 }
 
 Future<void> addQuestionToFeed(String schoolCode, Question question) async {
@@ -85,8 +108,11 @@ Future<User> getUserDocument(DocumentReference docRef, String id) async {
         style: [],
         isSubscribe: false,
         candyCount: 0,
+        recentDailyBonusReceiveDate: '',
+        recentQuestionBonusReceiveDate: '',
         questionInfos: [],
         answeredQuestions: [],
+        currentQuestionId: '',
         serviceNeedsAgreement: false,
         privacyNeedsAgreement: false);
   }
@@ -94,7 +120,7 @@ Future<User> getUserDocument(DocumentReference docRef, String id) async {
   return user;
 }
 
-Future<Question> getDocument(DocumentReference docRef, String id) async {
+Future<Question> getDocument(DocumentReference docRef) async {
   DocumentSnapshot doc = await docRef.get();
   Question question;
   if (doc.exists) {
@@ -109,11 +135,12 @@ Future<Question> getDocument(DocumentReference docRef, String id) async {
       ownerName: '',
       owner: '',
       content: '',
-      contentId: 0,
+      contentId: '',
       receiveTime: '',
       openTime: '',
       url: '',
-      isValidity: false,
+      schoolCode: '',
+      isOpen: false,
     );
     // 문서가 존재하지 않습니다.
   }
@@ -129,10 +156,12 @@ Future<void> addNewQuestion(
 }
 
 //FireStore에 이미 있는 question 값 업데이트
-Future<void> updateQuestion(
+Future<void> updateDocument(
     String section, dynamic updateStr, DocumentReference? docReference) async {
   Map<String, dynamic> data = {section: updateStr};
   await docReference?.update(data);
+
+  print("firebase $section 업데이트됨");
 }
 
 // TODO: 이미 받았던 질문 필터링 물어보기
@@ -143,7 +172,8 @@ Map<String, dynamic> filterQuestion(List<Map<String, dynamic>> questionInfos) {
   Map<String, dynamic> randomQuestion;
   print("filterQuestion ) questionInfos = $questionInfos");
   if (questionInfos.isEmpty) {
-    return QuestionList.questionList[Random().nextInt(QuestionList.questionList.length)];
+    return QuestionList
+        .questionList[Random().nextInt(QuestionList.questionList.length)];
   } // questionInfos 에 있는 질문 id 를 추출합니다.
   Set<int> receivedIds =
       questionInfos.map((info) => int.parse(info['contentId'])).toSet();
@@ -156,7 +186,8 @@ Map<String, dynamic> filterQuestion(List<Map<String, dynamic>> questionInfos) {
 
   int randomId =
       availableIds.cast<int>().toList()[Random().nextInt(availableIds.length)];
-  return QuestionList.questionList.firstWhere((question) => question['id'] == randomId);
+  return QuestionList.questionList
+      .firstWhere((question) => question['id'] == randomId);
 }
 
 Future<SharedPreferences> AsyncPrefsOperation() async {
@@ -172,42 +203,38 @@ Future<Map<String, dynamic>> getAnswersByQuestionIds(
   String currentQuestionId;
   String currentContentId;
   for (int i = 0; i < questionInfos.length; i++) {
-    currentQuestionId = questionInfos[i]['questionId'];
-    currentContentId = questionInfos[i]['contentId'];
+    currentQuestionId = questionInfos[i]['questionId'] ?? '';
+    currentContentId = questionInfos[i]['contentId'] ?? '';
 
-    List<Map<String, dynamic>> currentAnswers =
+    List<Answer> currentAnswers =
         await getAnswerDocuments(answerCollection, currentQuestionId);
-    currentAnswers.sort((a, b) => b['time'].compareTo(a['time']));
 
     answerMapList[currentContentId] = currentAnswers;
   }
 
-  print("answerMapList: $answerMapList");
+  // print("answerMapList: $answerMapList");
 
   return answerMapList;
 }
 
-Future<List<Map<String, dynamic>>> getAnswerDocuments(
+Future<List<Answer>> getAnswerDocuments(
     CollectionReference<Map<String, dynamic>> answerCollection,
     String questionId) async {
   QuerySnapshot querySnapshot =
       await answerCollection.where('questionId', isEqualTo: questionId).get();
-  List<Map<String, dynamic>> answerInformList = [];
+  List<Answer> answerInformList = [];
 
   for (DocumentSnapshot document in querySnapshot.docs) {
     Answer answer = await getAnsDoc(answerCollection, document.id);
     print(answer);
-    Map<String, dynamic> inform = {
-      // 'questionId': answer.questionId,
-      'isOpened': answer.isOpened,
-      'gender': answer.ownerGender,
-      'time': answer.time,
-      'nickname': answer.nickname
-    };
 
-    answerInformList.add(inform);
+    answerInformList.add(answer);
   }
   print("answerInformList : $answerInformList");
+  if (answerInformList.length > 2) {
+    answerInformList.sort((a, b) => b.time.compareTo(a.time));
+  }
+
   return answerInformList;
 }
 
@@ -228,9 +255,11 @@ Future<Answer> getAnsDoc(
       id: '', // 마이크로세컨드까지 보낸 시간으로 사용
       time: '',
       owner: '',
-      ownerGender: false,
+      ownerGender: 0,
       content: '',
+      contentId: '',
       questionId: '',
+      questionOwner: '',
       isAnonymous: false,
       nickname: '',
       hint: [],
