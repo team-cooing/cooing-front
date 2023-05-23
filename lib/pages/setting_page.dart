@@ -9,7 +9,6 @@ import 'package:url_launcher/url_launcher.dart';
 import 'CandyScreen.dart';
 
 class SettingScreen extends StatefulWidget {
-
   final ru.User user;
 
   SettingScreen({required this.user, super.key});
@@ -110,6 +109,7 @@ class _SettingScreenState extends State<SettingScreen> {
                             await Navigator.of(context).push(MaterialPageRoute(
                               builder: (BuildContext context) => CandyScreen(
                                 user: widget.user,
+                                number: 0,
                               ),
                             ));
 
@@ -161,7 +161,8 @@ class _SettingScreenState extends State<SettingScreen> {
                                 print("${settingElements[index]['title']}");
 
                                 if (await canLaunchUrl(reportUrl)) {
-                                  launchUrl(reportUrl, mode: LaunchMode.externalApplication);
+                                  launchUrl(reportUrl,
+                                      mode: LaunchMode.externalApplication);
                                 } else {
                                   // ignore: avoid_print
                                   print("Can't launch $reportUrl");
@@ -244,7 +245,8 @@ class _SettingScreenState extends State<SettingScreen> {
     await r.Response.deleteUser(userUid: widget.user.uid);
     await r.Response.deleteQuestionInFeed(
         schoolCode: widget.user.schoolCode,
-        questionId: widget.user.questionInfos[widget.user.questionInfos.length-1]['questionId']);
+        questionId: widget.user
+            .questionInfos[widget.user.questionInfos.length - 1]['questionId']);
     // 카카오 회원 정보 삭제
     try {
       await UserApi.instance.unlink();
@@ -258,12 +260,12 @@ class _SettingScreenState extends State<SettingScreen> {
       print(e.toString());
     }
     // 파베 Auth 회원 정보 삭제
-    try{
+    try {
       fb.User? firebaseUser = fb.FirebaseAuth.instance.currentUser;
-      if(firebaseUser!=null){
+      if (firebaseUser != null) {
         await firebaseUser.delete();
       }
-    }catch(e){
+    } catch (e) {
       print(e.toString());
     }
   }

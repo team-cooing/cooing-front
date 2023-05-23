@@ -5,7 +5,7 @@ import 'package:cooing_front/model/response/question.dart';
 import 'package:cooing_front/model/response/response.dart';
 import 'package:cooing_front/model/response/user.dart';
 import 'package:cooing_front/pages/answer_page.dart';
-import 'package:cooing_front/pages/candy_complete_page.dart';
+import 'package:cooing_front/pages/lottery_complete_page.dart';
 import 'package:custom_refresh_indicator/custom_refresh_indicator.dart';
 import 'package:flutter/material.dart';
 
@@ -32,11 +32,11 @@ class _FeedPageState extends State<FeedPage> {
     super.initState();
 
     // 만약, 유저 데이터에 recentDailyBonusReceiveDate가 없다면
-    if(widget.user.recentDailyBonusReceiveDate.isEmpty){
+    if (widget.user.recentDailyBonusReceiveDate.isEmpty) {
       widget.user.recentDailyBonusReceiveDate = '2000-01-01 00:00:00.000000';
     }
     // 만약, 유저 데이터에recentQuestionBonusReceiveDate가 없다면
-    if(widget.user.recentQuestionBonusReceiveDate.isEmpty){
+    if (widget.user.recentQuestionBonusReceiveDate.isEmpty) {
       widget.user.recentQuestionBonusReceiveDate = '2000-01-01 00:00:00.000000';
     }
   }
@@ -145,9 +145,9 @@ class _FeedPageState extends State<FeedPage> {
           left: 20,
           right: 20,
           top: (index == 0 &&
-                      !DateTime.now().isAfter(
-                          DateTime.parse(widget.user.recentDailyBonusReceiveDate)
-                              .add(Duration(hours: 24)))) ||
+                      !DateTime.now().isAfter(DateTime.parse(
+                              widget.user.recentDailyBonusReceiveDate)
+                          .add(Duration(hours: 24)))) ||
                   index == -1
               ? 30
               : 10,
@@ -182,7 +182,7 @@ class _FeedPageState extends State<FeedPage> {
                                 ? AssetImage('images/logo_128.png')
                                     as ImageProvider
                                 : NetworkImage(
-                                widget.feed[index]!.ownerProfileImage),
+                                    widget.feed[index]!.ownerProfileImage),
                           ),
                         ),
                         Padding(
@@ -290,20 +290,24 @@ class _FeedPageState extends State<FeedPage> {
     return GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: () async {
-          if(!widget.user.answeredQuestions.contains(question.id)){
+          if (!widget.user.answeredQuestions.contains(question.id)) {
             // 만약, 보너스를 받을 수 있다면
             // TODO: 혜은 -Answer 완료되면 true 반환해야함
-            bool? isCompleted = await Navigator.of(context).push(MaterialPageRoute(
-                builder: (BuildContext context) => AnswerPage(
-                    user: widget.user,
-                question: question, isFromLink: false,)));
+            bool? isCompleted =
+                await Navigator.of(context).push(MaterialPageRoute(
+                    builder: (BuildContext context) => AnswerPage(
+                          user: widget.user,
+                          question: question,
+                          isFromLink: false,
+                        )));
 
-            if(isCompleted!=null){
+            if (isCompleted != null) {
               // 만약, 답변이 완료되었다면
-              if(isCompleted){
+              if (isCompleted) {
                 widget.user.answeredQuestions.add(question.id);
                 if (canReceiveBonus) {
-                  widget.user.recentQuestionBonusReceiveDate = DateTime.now().toString();
+                  widget.user.recentQuestionBonusReceiveDate =
+                      DateTime.now().toString();
                   widget.user.candyCount += 3;
                 }
 
@@ -321,7 +325,10 @@ class _FeedPageState extends State<FeedPage> {
               style: OutlinedButton.styleFrom(
                 foregroundColor: Colors.white,
                 shadowColor: Colors.transparent,
-                backgroundColor: widget.user.answeredQuestions.contains(question.id)? Palette.mainPurple.withOpacity(0.4) : Palette.mainPurple,
+                backgroundColor:
+                    widget.user.answeredQuestions.contains(question.id)
+                        ? Palette.mainPurple.withOpacity(0.4)
+                        : Palette.mainPurple,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0)),
               ),
@@ -347,7 +354,9 @@ class _FeedPageState extends State<FeedPage> {
                           )
                         ])
                   : Text(
-                widget.user.answeredQuestions.contains(question.id)? '답변완료' : '답변하기',
+                      widget.user.answeredQuestions.contains(question.id)
+                          ? '답변완료'
+                          : '답변하기',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 11,

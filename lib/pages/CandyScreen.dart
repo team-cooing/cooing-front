@@ -15,8 +15,9 @@ import 'package:provider/provider.dart';
 
 class CandyScreen extends StatefulWidget {
   final User user;
+  final int number;
 
-  const CandyScreen({required this.user, super.key});
+  const CandyScreen({required this.user, required this.number, super.key});
 
   @override
   State<CandyScreen> createState() => _CandyScreenState();
@@ -32,6 +33,8 @@ class _CandyScreenState extends State<CandyScreen> {
   late final response;
   final InAppPurchase _inAppPurchase = InAppPurchase.instance;
   String? latestPurchasedID;
+  String content1 = "캔디가 부족해요!";
+  String content2 = '캔디를 충전할까요?';
 
   @override
   void initState() {
@@ -76,7 +79,7 @@ class _CandyScreenState extends State<CandyScreen> {
                   children: [
                 Container(
                     child: Text(
-                  "캔디가 부족해요!",
+                  widget.number == 1 ? content1 : content2,
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 22,
@@ -270,79 +273,79 @@ class _CandyScreenState extends State<CandyScreen> {
                   ),
                 ),
                 Padding(padding: EdgeInsets.all(10.0)),
-                SizedBox(
-                  width: double.infinity,
-                  height: 90.0,
-                  child: Container(
-                    padding: EdgeInsets.all(25.0),
-                    decoration: BoxDecoration(
-                        color: Color(0xffF2F3F3),
-                        borderRadius: BorderRadius.circular(20)),
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Row(
-                                children: [
-                                  SizedBox(
-                                      width: 25.0,
-                                      height: 25.0,
-                                      child: Image(
-                                          image:
-                                              AssetImage('images/candy2.png'))),
-                                  Padding(
-                                      padding: EdgeInsets.only(right: 10.0)),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "황금캔디 구독(월)",
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            color: Color(0xff333D4B),
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                      Text(
-                                        "모든 힌트를 볼 수 있습니다.",
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: Color(0xff333D4B),
-                                        ),
-                                      ),
-                                    ],
-                                  )
-                                ],
-                              )
-                            ],
-                          ),
-                          ElevatedButton(
-                              onPressed: () async {
-                                PurchasableProduct productDetails = products
-                                    .where((product) =>
-                                        product.id == 'goldenCandy')
-                                    .first;
-                                buy(productDetails);
-                              },
-                              style: OutlinedButton.styleFrom(
-                                foregroundColor: Colors.white,
-                                backgroundColor:
-                                    Color.fromRGBO(151, 84, 251, 1),
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10.0)),
-                              ),
-                              child: const Text(
-                                "12,000원",
-                                style: TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white),
-                              ))
-                        ]),
-                  ),
-                )
+                // SizedBox(
+                //   width: double.infinity,
+                //   height: 90.0,
+                //   child: Container(
+                //     padding: EdgeInsets.all(25.0),
+                //     decoration: BoxDecoration(
+                //         color: Color(0xffF2F3F3),
+                //         borderRadius: BorderRadius.circular(20)),
+                //     child: Row(
+                //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //         children: [
+                //           Column(
+                //             mainAxisAlignment: MainAxisAlignment.center,
+                //             children: [
+                //               Row(
+                //                 children: [
+                //                   SizedBox(
+                //                       width: 25.0,
+                //                       height: 25.0,
+                //                       child: Image(
+                //                           image:
+                //                               AssetImage('images/candy2.png'))),
+                //                   Padding(
+                //                       padding: EdgeInsets.only(right: 10.0)),
+                //                   Column(
+                //                     crossAxisAlignment:
+                //                         CrossAxisAlignment.start,
+                //                     children: [
+                //                       Text(
+                //                         "황금캔디 구독(월)",
+                //                         style: TextStyle(
+                //                             fontSize: 16,
+                //                             color: Color(0xff333D4B),
+                //                             fontWeight: FontWeight.bold),
+                //                       ),
+                //                       Text(
+                //                         "모든 힌트를 볼 수 있습니다.",
+                //                         style: TextStyle(
+                //                           fontSize: 12,
+                //                           color: Color(0xff333D4B),
+                //                         ),
+                //                       ),
+                //                     ],
+                //                   )
+                //                 ],
+                //               )
+                //             ],
+                //           ),
+                //           ElevatedButton(
+                //               onPressed: () async {
+                //                 PurchasableProduct productDetails = products
+                //                     .where((product) =>
+                //                         product.id == 'goldenCandy')
+                //                     .first;
+                //                 buy(productDetails);
+                //               },
+                //               style: OutlinedButton.styleFrom(
+                //                 foregroundColor: Colors.white,
+                //                 backgroundColor:
+                //                     Color.fromRGBO(151, 84, 251, 1),
+                //                 shape: RoundedRectangleBorder(
+                //                     borderRadius: BorderRadius.circular(10.0)),
+                //               ),
+                //               child: const Text(
+                //                 "12,000원",
+                //                 style: TextStyle(
+                //                     fontSize: 13,
+                //                     fontWeight: FontWeight.bold,
+                //                     color: Colors.white),
+                //               ))
+                //         ]),
+                //   ),
+                // )
               ])),
         ),
       ),

@@ -92,6 +92,7 @@ class _HintScreenState extends State<HintScreen> {
                                       builder: (BuildContext context) =>
                                           CandyScreen(
                                             user: widget.user,
+                                            number: 0,
                                           )));
                               setState(() {});
                             },
@@ -166,8 +167,8 @@ class _HintScreenState extends State<HintScreen> {
                                                   builder:
                                                       (BuildContext context) =>
                                                           CandyScreen(
-                                                            user: widget.user,
-                                                          )));
+                                                              user: widget.user,
+                                                              number: 1)));
                                         }
                                       }
                                     });
@@ -245,8 +246,8 @@ class _HintScreenState extends State<HintScreen> {
                                                     builder: (BuildContext
                                                             context) =>
                                                         CandyScreen(
-                                                          user: widget.user,
-                                                        )));
+                                                            user: widget.user,
+                                                            number: 1)));
                                           }
                                         }
                                       });
@@ -329,6 +330,7 @@ class _HintScreenState extends State<HintScreen> {
                                                             context) =>
                                                         CandyScreen(
                                                           user: widget.user,
+                                                          number: 1,
                                                         )));
                                           }
                                         }
