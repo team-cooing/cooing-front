@@ -65,8 +65,8 @@ class MyApp extends StatelessWidget {
         'agree': (context) => const AgreeScreen(),
         'welcome': (context) => const WelcomeScreen(),
         'tab': (context) => const TabPage(),
-        'hint': (context) => const HintScreen(),
-        'candy': (context) => const CandyScreen(),
+        // 'hint': (context) => const HintScreen(),
+        // 'candy': (context) => const CandyScreen(),
         '_working': (context) => const TabPage(),
       },
     );

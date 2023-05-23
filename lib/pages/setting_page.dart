@@ -9,9 +9,10 @@ import 'package:url_launcher/url_launcher.dart';
 import 'CandyScreen.dart';
 
 class SettingScreen extends StatefulWidget {
+
   final ru.User user;
 
-  const SettingScreen({required this.user, super.key});
+  SettingScreen({required this.user, super.key});
 
   @override
   State<SettingScreen> createState() => _SettingScreenState();
@@ -105,8 +106,19 @@ class _SettingScreenState extends State<SettingScreen> {
                         ],
                       ),
                       ElevatedButton(
-                          onPressed: () {
-                            Get.to(CandyScreen());
+                          onPressed: () async {
+                            final result = await Navigator.of(context)
+                                .push(MaterialPageRoute(
+                              builder: (BuildContext context) => CandyScreen(
+                                user: widget.user,
+                              ),
+                            ));
+
+                            if (result != null) {
+                              setState(() {
+                                widget.user = result;
+                              });
+                            }
                           },
                           style: OutlinedButton.styleFrom(
                             foregroundColor: Colors.white,
