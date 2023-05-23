@@ -241,6 +241,7 @@ class _MessagePageState extends State<MessagePage> {
           setState(() {});
         },
         child: Card(
+          color: Colors.transparent,
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(20),
