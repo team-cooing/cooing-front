@@ -1,12 +1,10 @@
 import 'package:cooing_front/model/response/user.dart' as ru;
 import 'package:cooing_front/model/response/response.dart' as r;
 import 'package:cooing_front/pages/login/LoginScreen.dart';
-import 'package:cooing_front/providers/UserProvider.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
-import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'CandyScreen.dart';
 
@@ -24,7 +22,7 @@ class _SettingScreenState extends State<SettingScreen> {
   final List settingElements = [
     {
       'title': '인스타 팔로우',
-      'link': '',
+      'link': 'https://www.instagram.com/we.cooing',
     },
     {
       'title': '질문을 공유하는 방법',
@@ -50,7 +48,7 @@ class _SettingScreenState extends State<SettingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserDataProvider>(context, listen: true);
+    // final userProvider = Provider.of<UserDataProvider>(context, listen: true);
     scaffoldContext = context;
 
     return Scaffold(
@@ -156,7 +154,7 @@ class _SettingScreenState extends State<SettingScreen> {
                                 print("${settingElements[index]['title']}");
 
                                 if (await canLaunchUrl(reportUrl)) {
-                                  launchUrl(reportUrl);
+                                  launchUrl(reportUrl, mode: LaunchMode.externalApplication);
                                 } else {
                                   // ignore: avoid_print
                                   print("Can't launch $reportUrl");
