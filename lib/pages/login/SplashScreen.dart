@@ -92,6 +92,6 @@ class _SplashScreenState extends State<SplashScreen> {
             alignment: Alignment.topCenter,
             decoration: BoxDecoration(
                 image:
-                    DecorationImage(fit: BoxFit.cover, image: AssetImage('images/splash.png')))));
+                    DecorationImage(alignment: Alignment.topCenter, fit: BoxFit.cover, image: AssetImage('images/splash.png')))));
   }
 }
