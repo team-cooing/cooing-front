@@ -3,13 +3,12 @@ import 'dart:io';
 import 'package:cooing_front/model/response/user.dart';
 import 'package:cooing_front/pages/tab_page.dart';
 import 'package:get/get.dart';
-
-import 'package:cooing_front/pages/login/SignUpScreen.dart';
 import 'package:cooing_front/model/util/Login_platform.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 // import 'package:parameters/';
 
 class LoginScreen extends StatefulWidget {
@@ -59,6 +58,85 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (error) {
       print('카카오톡으로 로그인 실패 $error');
       print(await kakao.KakaoSdk.origin);
+    }
+  }
+
+  void signInWithApple() async {
+    String uid = '';
+    String name = '';
+    String profileImage = '';
+    try{
+      final appleCredential = await SignInWithApple.getAppleIDCredential(scopes: [
+        AppleIDAuthorizationScopes.email,
+        AppleIDAuthorizationScopes.fullName,
+      ]);
+
+      uid = appleCredential.authorizationCode;
+      name = '${appleCredential.givenName}${appleCredential.familyName}';
+      profileImage = await getAppleProfilePhoto(appleCredential.identityToken!);
+
+      final oauthCredential = firebase.OAuthProvider('apple.com').credential(
+          idToken: appleCredential.identityToken,
+          accessToken: appleCredential.authorizationCode
+      );
+
+      firebase.UserCredential userCredential = await firebase.FirebaseAuth.instance.signInWithCredential(oauthCredential);
+
+      Get.offAll(TabPage(), arguments: userCredential.user!.uid);
+    }on firebase.FirebaseAuthException catch(e){
+      if(e.code == 'user-not-found'){
+        Navigator.pushNamed(
+          context,
+          'signUp',
+          arguments: User(
+            uid: uid,
+            name: name,
+            profileImage: profileImage,
+            gender: 0,
+            number: '',
+            age: '',
+            birthday: '0000-00-00',
+            school: '',
+            schoolCode: '',
+            schoolOrg: '',
+            grade: 0,
+            group: 0,
+            eyes: 0,
+            mbti: '',
+            hobby: '',
+            style: [],
+            isSubscribe: false,
+            candyCount: 0,
+            recentDailyBonusReceiveDate: '',
+            recentQuestionBonusReceiveDate: '',
+            questionInfos: [],
+            answeredQuestions: [],
+            currentQuestionId: '',
+            serviceNeedsAgreement: false,
+            privacyNeedsAgreement: false,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<String> getAppleProfilePhoto(String identityToken) async {
+    final url = Uri.parse(
+        'https://appleid.apple.com/auth/userinfo'
+    );
+
+    final response = await http.get(
+      url,
+      headers: {
+        'Authorization': 'Bearer $identityToken',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+      return json['picture'];
+    } else {
+      throw Exception('Failed to retrieve profile photo');
     }
   }
 
@@ -151,32 +229,70 @@ class _LoginScreenState extends State<LoginScreen> {
                           color: Color.fromARGB(255, 51, 61, 75)),
                     ),
                     Spacer(),
-                    _loginButton()
+                    _kakaoLoginButton(),
+                    SizedBox(height: 20,),
+                    _appleLoginButton(),
                   ]),
             )));
   }
 
-  Widget _loginButton() {
-    return SizedBox(
-      width: double.infinity,
-      child: TextButton(
-        child: Image.asset('images/kakao_login_medium_wide.png'),
-        onPressed: () {
-          signInWithKakao();
-        },
+  Widget _appleLoginButton() {
+    return GestureDetector(
+      onTap: (){
+        signInWithApple();
+      },
+      child: Container(
+        alignment: Alignment.center,
+        width: double.infinity,
+        height: 60,
+        decoration: BoxDecoration(
+            color: Color(0XFF000000),
+            borderRadius: BorderRadius.circular(12)
+        ),
+        child: GestureDetector(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset('images/apple_symbol.png', height: 20,),
+              SizedBox(width: 10,),
+              Text('Apple로 로그인 ', style: TextStyle(
+                  fontSize: 15,
+                  color: Colors.white
+              ),)
+            ],
+          ),
+        ),
       ),
     );
   }
 
-  // Widget _logoutButton() {
-  //   return ElevatedButton(
-  //     onPressed: signOut,
-  //     style: ButtonStyle(
-  //       backgroundColor: MaterialStateProperty.all(
-  //         const Color(0xff0165E1),
-  //       ),
-  //     ),
-  //     child: const Text('로그아웃'),
-  //   );
-  // }
+  Widget _kakaoLoginButton() {
+    return GestureDetector(
+      onTap: (){
+        signInWithKakao();
+      },
+      child: Container(
+        alignment: Alignment.center,
+        width: double.infinity,
+        height: 60,
+        decoration: BoxDecoration(
+          color: Color(0XFFFEE500),
+          borderRadius: BorderRadius.circular(12)
+        ),
+        child: GestureDetector(
+          child: Row(
+             mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset('images/kakao_symbol.png', height: 20,),
+              SizedBox(width: 10,),
+              Text('카카오 로그인 ', style: TextStyle(
+                fontSize: 15,
+                color: Colors.black.withOpacity(0.85)
+              ),)
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
