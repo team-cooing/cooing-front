@@ -41,7 +41,6 @@ class _HintScreenState extends State<HintScreen> {
             await Response.updateAnswer(newAnswer: widget.answer);
             await Response.updateUser(newUser: widget.user);
             Navigator.of(context).pop();
-            // setState(() {});
           },
         ),
         elevation: 0,
