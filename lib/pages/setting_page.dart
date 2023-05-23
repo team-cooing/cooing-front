@@ -107,18 +107,13 @@ class _SettingScreenState extends State<SettingScreen> {
                       ),
                       ElevatedButton(
                           onPressed: () async {
-                            final result = await Navigator.of(context)
-                                .push(MaterialPageRoute(
+                            await Navigator.of(context).push(MaterialPageRoute(
                               builder: (BuildContext context) => CandyScreen(
                                 user: widget.user,
                               ),
                             ));
 
-                            if (result != null) {
-                              setState(() {
-                                widget.user = result;
-                              });
-                            }
+                            setState(() {});
                           },
                           style: OutlinedButton.styleFrom(
                             foregroundColor: Colors.white,

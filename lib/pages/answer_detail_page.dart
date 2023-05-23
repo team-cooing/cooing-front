@@ -225,8 +225,12 @@ class _AnswerDetailPageState extends State<AnswerDetailPage> {
       width: double.infinity,
       height: 50,
       child: ElevatedButton(
-          onPressed: () {
-            Get.to(() => HintScreen(user: widget.user));
+          onPressed: () async {
+            await Navigator.of(context).push(MaterialPageRoute(
+                builder: (BuildContext context) => HintScreen(
+                      user: widget.user,
+                      answer: widget.answer,
+                    )));
           },
           style: OutlinedButton.styleFrom(
             foregroundColor: Colors.white,

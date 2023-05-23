@@ -1,43 +1,48 @@
+import 'package:cooing_front/model/response/answer.dart';
 import 'package:cooing_front/model/response/user.dart';
 import 'package:cooing_front/pages/CandyScreen.dart';
+import 'package:cooing_front/pages/answer_detail_page.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:http/http.dart';
-import 'package:cooing_front/model/response/user.dart';
 import 'package:cooing_front/model/response/response.dart';
+import 'package:get/get_navigation/get_navigation.dart';
 
 class HintScreen extends StatefulWidget {
   final User user;
+  final Answer answer;
 
-  const HintScreen({required this.user, super.key});
+  const HintScreen({required this.user, required this.answer, super.key});
 
   @override
   State<HintScreen> createState() => _HintScreenState();
 }
 
 class _HintScreenState extends State<HintScreen> {
+  late List<dynamic> openHint;
+  late bool goldenCandy;
+
   @override
   void initState() {
     super.initState();
+    print(widget.answer.hint);
+    openHint = widget.answer.isOpenedHint;
+    goldenCandy = widget.user.isSubscribe;
   }
 
-  int candy = 10;
-
-  bool hint1 = true;
-  bool hint2 = false;
-  bool hint3 = false;
-
-  bool goldenCandy = true;
   // List<String> getHint(User user);
-
-  List<String> getHint = ['1~6반 사이', '초성에 받침이 2개', '강아지 상'];
-  List<bool> openHint = [false, false, false];
 
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        leading: BackButton(color: Color.fromRGBO(51, 61, 75, 1)),
+        leading: BackButton(
+          color: Color.fromRGBO(51, 61, 75, 1),
+          onPressed: () async {
+            widget.answer.isOpenedHint = openHint;
+            await Response.updateAnswer(newAnswer: widget.answer);
+            await Response.updateUser(newUser: widget.user);
+            Navigator.of(context).pop();
+          },
+        ),
         elevation: 0,
       ),
       backgroundColor: Color(0xFFffffff),
@@ -73,15 +78,21 @@ class _HintScreenState extends State<HintScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          "${candy}개",
+                          "${widget.user.candyCount}개",
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 22,
                               color: Color.fromARGB(255, 51, 61, 75)),
                         ),
                         ElevatedButton(
-                            onPressed: () {
-                              Get.to(CandyScreen(user: widget.user));
+                            onPressed: () async {
+                              await Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                      builder: (BuildContext context) =>
+                                          CandyScreen(
+                                            user: widget.user,
+                                          )));
+                              setState(() {});
                             },
                             style: OutlinedButton.styleFrom(
                               shadowColor: Colors.transparent,
@@ -102,7 +113,7 @@ class _HintScreenState extends State<HintScreen> {
                 ),
                 Padding(padding: EdgeInsets.all(15.0)),
                 AnimatedOpacity(
-                  opacity: hint1 ? 1 : 0.6,
+                  opacity: !openHint[0] ? 1 : 0.6,
                   duration: Duration(milliseconds: 1),
                   child: SizedBox(
                     width: double.infinity,
@@ -119,7 +130,9 @@ class _HintScreenState extends State<HintScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  openHint[0] ? getHint[0] : "첫번째 힌트",
+                                  openHint[0]
+                                      ? widget.answer.hint[0]
+                                      : "첫번째 힌트",
                                   style: TextStyle(
                                       fontSize: 16,
                                       color: Color(0xff333D4B),
@@ -130,24 +143,30 @@ class _HintScreenState extends State<HintScreen> {
                             ElevatedButton(
                                 onPressed: () {
                                   if (goldenCandy) {
-                                    if (hint1) {
+                                    if (openHint[0] == false) {
                                       setState(() {
-                                        hint1 = false;
-                                        hint2 = true;
                                         openHint[0] = true;
                                       });
                                     }
                                   } else {
                                     setState(() {
-                                      if (hint1) {
-                                        if (candy >= 3) {
-                                          candy -= 3;
-                                          hint1 = false;
-                                          hint2 = true;
+                                      if (openHint[0] == false) {
+                                        if (widget.user.candyCount >= 3) {
+                                          widget.user.candyCount -= 3;
+                                          print('여기');
+
                                           openHint[0] = true;
+                                          print(openHint[0]);
+                                          // await Response.updateAnswer(
+                                          //     newAnswer: widget.answer);
                                         } else {
-                                          Get.to(
-                                              CandyScreen(user: widget.user));
+                                          Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                  builder:
+                                                      (BuildContext context) =>
+                                                          CandyScreen(
+                                                            user: widget.user,
+                                                          )));
                                         }
                                       }
                                     });
@@ -175,7 +194,8 @@ class _HintScreenState extends State<HintScreen> {
                 ),
                 Padding(padding: EdgeInsets.all(10.0)),
                 AnimatedOpacity(
-                    opacity: hint2 ? 1 : 0.6,
+                    opacity:
+                        (openHint[0] == true && openHint[1] == false) ? 1 : 0.6,
                     duration: Duration(milliseconds: 1),
                     child: SizedBox(
                       width: double.infinity,
@@ -192,7 +212,9 @@ class _HintScreenState extends State<HintScreen> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text(
-                                    openHint[1] ? getHint[1] : "두번째 힌트",
+                                    openHint[1]
+                                        ? widget.answer.hint[1]
+                                        : "두번째 힌트",
                                     style: TextStyle(
                                         fontSize: 16,
                                         color: Color(0xff333D4B),
@@ -203,24 +225,27 @@ class _HintScreenState extends State<HintScreen> {
                               ElevatedButton(
                                   onPressed: () {
                                     if (goldenCandy) {
-                                      if (hint2) {
+                                      if (openHint[0] == true &&
+                                          openHint[1] == false) {
                                         setState(() {
-                                          hint2 = false;
-                                          hint3 = true;
                                           openHint[1] = true;
                                         });
                                       }
                                     } else {
                                       setState(() {
-                                        if (hint2) {
-                                          if (candy >= 3) {
-                                            candy -= 3;
-                                            hint2 = false;
-                                            hint3 = true;
+                                        if (openHint[0] == true &&
+                                            openHint[1] == false) {
+                                          if (widget.user.candyCount >= 3) {
+                                            widget.user.candyCount -= 3;
                                             openHint[1] = true;
                                           } else {
-                                            Get.to(
-                                                CandyScreen(user: widget.user));
+                                            Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                    builder: (BuildContext
+                                                            context) =>
+                                                        CandyScreen(
+                                                          user: widget.user,
+                                                        )));
                                           }
                                         }
                                       });
@@ -247,7 +272,11 @@ class _HintScreenState extends State<HintScreen> {
                     )),
                 Padding(padding: EdgeInsets.all(10.0)),
                 AnimatedOpacity(
-                    opacity: hint3 ? 1 : 0.6,
+                    opacity: (openHint[0] == true &&
+                            openHint[1] == true &&
+                            openHint[2] == false)
+                        ? 1
+                        : 0.6,
                     duration: Duration(milliseconds: 1),
                     child: SizedBox(
                       width: double.infinity,
@@ -264,7 +293,9 @@ class _HintScreenState extends State<HintScreen> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text(
-                                    openHint[2] ? getHint[2] : "세번째 힌트",
+                                    openHint[2]
+                                        ? widget.answer.hint[2]
+                                        : "세번째 힌트",
                                     style: TextStyle(
                                         fontSize: 16,
                                         color: Color(0xff333D4B),
@@ -275,22 +306,29 @@ class _HintScreenState extends State<HintScreen> {
                               ElevatedButton(
                                   onPressed: () {
                                     if (goldenCandy) {
-                                      if (hint3) {
+                                      if (openHint[0] == true &&
+                                          openHint[1] == true &&
+                                          openHint[2] == false) {
                                         setState(() {
-                                          hint3 = false;
                                           openHint[2] = true;
                                         });
                                       }
                                     } else {
                                       setState(() {
-                                        if (hint3) {
-                                          if (candy >= 3) {
-                                            candy -= 3;
-                                            hint3 = false;
+                                        if (openHint[0] == true &&
+                                            openHint[1] == true &&
+                                            openHint[2] == false) {
+                                          if (widget.user.candyCount >= 3) {
+                                            widget.user.candyCount -= 3;
                                             openHint[2] = true;
                                           } else {
-                                            Get.to(
-                                                CandyScreen(user: widget.user));
+                                            Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                    builder: (BuildContext
+                                                            context) =>
+                                                        CandyScreen(
+                                                          user: widget.user,
+                                                        )));
                                           }
                                         }
                                       });
@@ -328,7 +366,13 @@ class _HintScreenState extends State<HintScreen> {
                   primary: Color.fromARGB(255, 151, 84, 251)),
               child: const Text('확인',
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-              onPressed: () {}),
+              onPressed: () async {
+                widget.answer.isOpenedHint = openHint;
+                await Response.updateAnswer(newAnswer: widget.answer);
+                await Response.updateUser(newUser: widget.user);
+                Navigator.of(context).pop();
+                setState(() {});
+              }),
         ),
       ),
     );
