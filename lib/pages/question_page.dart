@@ -43,7 +43,6 @@ class _QuestionPageState extends State<QuestionPage> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
         body: SingleChildScrollView(
       child: _buildQuestionPage(),
@@ -84,12 +83,12 @@ class _QuestionPageState extends State<QuestionPage> {
 
     // 만약, Current Question이 있다면
     if (widget.currentQuestion != null) {
-      nextReceiveTime =
-          DateTime.parse(widget.currentQuestion!.receiveTime).add(Duration(hours: 24));
+      nextReceiveTime = DateTime.parse(widget.currentQuestion!.receiveTime)
+          .add(Duration(hours: 24));
       // 만약, 질문을 오픈했다면
       if (widget.currentQuestion!.isOpen) {
-        closeTime =
-            DateTime.parse(widget.currentQuestion!.openTime).add(Duration(hours: 24));
+        closeTime = DateTime.parse(widget.currentQuestion!.openTime)
+            .add(Duration(hours: 24));
       }
     }
 
@@ -168,7 +167,8 @@ class _QuestionPageState extends State<QuestionPage> {
                       ? isQuestionOpen
                           ? '질문 닫기'
                           : (DateTime.now().day >
-                                  DateTime.parse(widget.currentQuestion!.receiveTime)
+                                  DateTime.parse(
+                                          widget.currentQuestion!.receiveTime)
                                       .day)
                               ? '새로운 질문 받기'
                               : '답변 받기'
@@ -190,7 +190,8 @@ class _QuestionPageState extends State<QuestionPage> {
                             ? '새로운 질문이 도착했어요!'
                             : '해당 질문은 ${closeTime!.day}일 ${closeTime.hour}시 ${closeTime.minute}분부터 닫을 수 있습니다.'
                         : (DateTime.now().day >
-                                DateTime.parse(widget.currentQuestion!.receiveTime)
+                                DateTime.parse(
+                                        widget.currentQuestion!.receiveTime)
                                     .day)
                             ? '새로운 질문이 도착했어요!'
                             : '다음 질문 도착은 ${nextReceiveTime!.day}일 00시 00분입니다.'
@@ -216,8 +217,8 @@ class _QuestionPageState extends State<QuestionPage> {
       if (widget.currentQuestion!.isOpen) {
         isQuestionOpen = true;
         // 최소 오픈 시간
-        DateTime closeTime =
-            DateTime.parse(widget.currentQuestion!.openTime).add(Duration(hours: 24));
+        DateTime closeTime = DateTime.parse(widget.currentQuestion!.openTime)
+            .add(Duration(hours: 24));
         //만약, 지금 시간이 Current Question의 최소 오픈 시간을 지났다면
         if (DateTime.now().isAfter(closeTime)) {
           hasQuestionCloseTimePassed = true;
@@ -297,7 +298,8 @@ class _QuestionPageState extends State<QuestionPage> {
           // 2-1. Firebase Contents > Questions > Question 업데이트
           await Response.updateQuestion(newQuestion: widget.currentQuestion!);
           // 2-2. Firebase Schools > Feed > Question 생성
-          await Response.createQuestionInFeed(newQuestion: widget.currentQuestion!);
+          await Response.createQuestionInFeed(
+              newQuestion: widget.currentQuestion!);
         }
       } else {
         // 주요 기능: 질문 닫기
@@ -306,11 +308,11 @@ class _QuestionPageState extends State<QuestionPage> {
         // 1-2. Question 반영
         widget.currentQuestion!.isOpen = false;
         // 1-3. Feed 반영
-        for(var i = 0; i<widget.feed.length; i++){
+        for (var i = 0; i < widget.feed.length; i++) {
           // 만약, 아이템이 있다면
-          if(widget.feed[i]!=null){
+          if (widget.feed[i] != null) {
             // 만약, 아이템의 현재 질문 아이다와 같다면
-            if(widget.feed[i]!.id==widget.currentQuestion!.id){
+            if (widget.feed[i]!.id == widget.currentQuestion!.id) {
               widget.feed.removeAt(i);
               break;
             }
@@ -351,7 +353,23 @@ class _QuestionPageState extends State<QuestionPage> {
             backgroundBottomColor: "#9754FB",
             attributionURL: "www.naver.com")
         .then((data) {
-      print(data);
+      print("?????? $data");
+      if (data == "error") {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Palette.mainPurple,
+            content: Text("Instagram이 없습니다!"),
+            duration: Duration(seconds: 2),
+            action: SnackBarAction(
+              //추가로 작업을 넣기. 버튼넣기라 생각하면 편하다.
+              label: '설치', //버튼이름
+              onPressed: () {
+                
+              }, //버튼 눌렀을때.
+            ),
+          ),
+        );
+      }
     });
   }
 
@@ -360,23 +378,22 @@ class _QuestionPageState extends State<QuestionPage> {
     Clipboard.setData(ClipboardData(text: url));
 
     //하단에 "링크복사완료!" 메시지 스낵바
-    final snackBar = SnackBar(
-      content: Text(
-        '링크 복사완료!',
-        style: TextStyle(
-          fontSize: 15,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-        ),
-      ),
-      backgroundColor: Colors.black,
-    );
+
     // 스낵바 나타남
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    // 2초 후에 SnackBar를 숨김
-    Future.delayed(Duration(seconds: 2), () {
-      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: Palette.mainPurple,
+        content: Text(
+          '링크 복사완료!',
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        duration: Duration(seconds: 2),
+      ),
+    );
   }
 
   Widget shareCard() {
@@ -440,10 +457,9 @@ class _QuestionPageState extends State<QuestionPage> {
             ElevatedButton(
               onPressed: () async {
                 if (buttonTxt == '복사') {
-                  print("복사버튼클릭 -> url :  ${widget.currentQuestion!.url}");
                   _onCopyButtonPressed(widget.currentQuestion!.url);
                 } else {
-                  //버튼 text 가 "공유"일 때, pupleBox 사진 찍음
+                  //"공유" 버튼 클릭 시, pupleBox 사진 찍음
                   var path = await screenshot();
                   _onShareButtonPressed(path);
                 }
