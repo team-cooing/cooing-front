@@ -1,17 +1,16 @@
 import 'package:cooing_front/pages/HintPage.dart';
-import 'package:cooing_front/widgets/firebase_method.dart';
+import 'package:cooing_front/model/response/answer.dart';
+import 'package:cooing_front/model/response/user.dart';
+import 'package:cooing_front/model/data/question_list.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:social_share/social_share.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:screenshot/screenshot.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cooing_front/model/response/answer.dart';
-import 'package:cooing_front/model/response/user.dart';
-import 'package:social_share/social_share.dart';
 import 'dart:async';
-import 'package:screenshot/screenshot.dart';
 import 'dart:io';
-import 'package:path_provider/path_provider.dart';
-import 'package:cooing_front/model/data/question_list.dart';
 
 class AnswerDetailPage extends StatefulWidget {
   final User user;
@@ -19,11 +18,10 @@ class AnswerDetailPage extends StatefulWidget {
   const AnswerDetailPage({required this.user, required this.answer, super.key});
 
   @override
-  _AnswerDetailPageState createState() => _AnswerDetailPageState();
+  AnswerDetailPageState createState() => AnswerDetailPageState();
 }
 
-class _AnswerDetailPageState extends State<AnswerDetailPage> {
-  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+class AnswerDetailPageState extends State<AnswerDetailPage> {
   late CollectionReference answerDocRef;
   late CollectionReference questionDocRef;
 
@@ -32,26 +30,17 @@ class _AnswerDetailPageState extends State<AnswerDetailPage> {
 
   late User userData;
   late Answer answerData;
-  String imgUrl = '';
+  late String imgUrl = '';
+
   @override
   void initState() {
     super.initState();
     userData = widget.user;
     answerData = widget.answer;
-    contentId = widget.answer.contentId;
     questionContent = QuestionList.questionList
-        .elementAt(int.parse(contentId))['question'] as String;
+        .elementAt(int.parse(widget.answer.contentId))['question'] as String;
 
-    answerDocRef =
-        firestore.collection('answers').doc(userData.uid).collection('answers');
-
-    try {
-      if (answerData.isOpened == false) {
-        updateDocument('isOpened', true, answerDocRef.doc(answerData.id));
-      }
-    } catch (e) {
-      print("Error loading answer data : $e");
-    }
+    imgUrl = userData.profileImage;
   }
 
   int maxLength = 100;
@@ -140,7 +129,7 @@ class _AnswerDetailPageState extends State<AnswerDetailPage> {
             child: Container(
                 padding: EdgeInsets.only(top: 15, bottom: 5),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Colors.transparent,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Column(
@@ -255,14 +244,11 @@ class _AnswerDetailPageState extends State<AnswerDetailPage> {
               return;
             }
             SocialShare.shareInstagramStory(
-                    appId: '617417756966237',
-                    imagePath: path,
-                    backgroundTopColor: "#FFFFFF",
-                    backgroundBottomColor: "#9754FB",
-                    attributionURL: "링크없으")
-                .then((data) {
-              print(data);
-            });
+                appId: '617417756966237',
+                imagePath: path,
+                backgroundTopColor: "#FFFFFF",
+                backgroundBottomColor: "#9754FB",
+                attributionURL: "");
           },
           style: OutlinedButton.styleFrom(
             foregroundColor: Colors.white,

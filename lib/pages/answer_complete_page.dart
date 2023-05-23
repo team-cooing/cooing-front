@@ -1,12 +1,16 @@
+import 'package:cooing_front/pages/tab_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:cooing_front/pages/tab_page.dart';
 
 class AnswerCompleteScreen extends StatefulWidget {
   final String owner;
   final String uid;
+  final bool isFromLink;
   const AnswerCompleteScreen(
-      {required this.owner, required this.uid, super.key});
+      {required this.owner,
+      required this.uid,
+      required this.isFromLink,
+      super.key});
 
   @override
   State<AnswerCompleteScreen> createState() => AnswerCompleteScreenState();
@@ -15,13 +19,14 @@ class AnswerCompleteScreen extends StatefulWidget {
 class AnswerCompleteScreenState extends State<AnswerCompleteScreen> {
   late String owner;
   late String uid;
-
+  late bool isFromLink;
   @override
   void initState() {
     super.initState();
-
+    print(widget.uid);
     owner = widget.owner;
     uid = widget.uid;
+    isFromLink = widget.isFromLink;
   }
 
   @override
@@ -76,7 +81,12 @@ class AnswerCompleteScreenState extends State<AnswerCompleteScreen> {
                 children: [
                   ElevatedButton(
                       onPressed: () {
-                        Get.offAll(TabPage(), arguments: uid);
+                        if (isFromLink) {
+                          Get.offAll(TabPage(), arguments: uid);
+                        } else {
+                          Navigator.of(context).pop();
+                          Navigator.of(context).pop(true);
+                        }
                       },
                       style: OutlinedButton.styleFrom(
                         fixedSize: Size.fromHeight(50),
