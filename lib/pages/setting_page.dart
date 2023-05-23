@@ -93,7 +93,7 @@ class _SettingScreenState extends State<SettingScreen> {
                                     ),
                                   ),
                                   Text(
-                                    '${userProvider.userData?.candyCount.toString() ?? ''}개',
+                                    '${widget.user.candyCount}개',
                                     style: TextStyle(
                                       fontSize: 16,
                                       color: Color(0xff333D4B),
