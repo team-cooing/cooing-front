@@ -5,6 +5,7 @@ import 'package:cooing_front/model/response/PurchasableProduct.dart';
 import 'package:cooing_front/model/response/user.dart';
 import 'package:cooing_front/model/response/storeState.dart';
 import 'package:cooing_front/model/response/response.dart';
+import 'package:cooing_front/pages/candy_complete_page.dart';
 
 import 'package:cooing_front/providers/UserProvider.dart';
 import 'package:flutter/material.dart';
@@ -46,8 +47,6 @@ class _CandyScreenState extends State<CandyScreen> {
     }
   }
 
-          .map<PurchasableProduct>(
-              (dynamic e) => PurchasableProduct(e as ProductDetails))
   @override
   Widget build(BuildContext context) {
     pageContext = context;
@@ -62,7 +61,7 @@ class _CandyScreenState extends State<CandyScreen> {
         leading: IconButton(
           icon: Icon(Icons.close, color: Color.fromRGBO(51, 61, 75, 1)),
           onPressed: () {
-            Navigator.of(pageContext).pop(widget.user);
+            Navigator.of(pageContext).pop();
           },
         ),
         elevation: 0,
@@ -405,13 +404,22 @@ class _CandyScreenState extends State<CandyScreen> {
         if (purchase.productID == 'candy25') {
           // 캔디 25 구매 완료 이벤트 처리
           updateCandy(purchase.productID, 25);
-          FlutterDialog(pageContext);
+          Navigator.of(pageContext).push(
+            MaterialPageRoute(
+                builder: (BuildContext context) => CandyCompleteScreen()),
+          );
         } else if (purchase.productID == 'candy50') {
           updateCandy(purchase.productID, 50);
-          FlutterDialog(pageContext);
+          Navigator.of(pageContext).push(
+            MaterialPageRoute(
+                builder: (BuildContext context) => CandyCompleteScreen()),
+          );
         } else if (purchase.productID == 'candy100') {
           updateCandy(purchase.productID, 100);
-          FlutterDialog(pageContext);
+          Navigator.of(pageContext).push(
+            MaterialPageRoute(
+                builder: (BuildContext context) => CandyCompleteScreen()),
+          );
         }
       }
     } else if (purchase.status == PurchaseStatus.canceled) {
@@ -447,7 +455,7 @@ class _CandyScreenState extends State<CandyScreen> {
   }
 
   Future<void> updateCandy(String productId, int number) async {
-    widget.user.candyCount = widget.user.candyCount + number;
+    widget.user.candyCount += number;
 
     await Response.updateUser(newUser: widget.user);
 
@@ -464,23 +472,5 @@ class _CandyScreenState extends State<CandyScreen> {
     await purchaseRef.doc(timestamp.toString()).set({
       'type': productId,
     });
-  }
-
-  void FlutterDialog(BuildContext context) {
-    showDialog(
-        context: context,
-        builder: (context) {
-          return CupertinoAlertDialog(
-            title: Text('승인 완료'),
-            content: Text('정상적으로 구매가 완료되었습니다.'),
-            actions: <Widget>[
-              TextButton(
-                  onPressed: () {
-                    //action code for "Yes" button
-                  },
-                  child: Text('확인')),
-            ],
-          );
-        });
   }
 }
