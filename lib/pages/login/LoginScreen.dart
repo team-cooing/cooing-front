@@ -65,8 +65,9 @@ class _LoginScreenState extends State<LoginScreen> {
     String uid = '';
     String name = '';
     String profileImage = '';
-    try{
-      final appleCredential = await SignInWithApple.getAppleIDCredential(scopes: [
+    try {
+      final appleCredential =
+          await SignInWithApple.getAppleIDCredential(scopes: [
         AppleIDAuthorizationScopes.email,
         AppleIDAuthorizationScopes.fullName,
       ]);
@@ -77,14 +78,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
       final oauthCredential = firebase.OAuthProvider('apple.com').credential(
           idToken: appleCredential.identityToken,
-          accessToken: appleCredential.authorizationCode
-      );
+          accessToken: appleCredential.authorizationCode);
 
-      firebase.UserCredential userCredential = await firebase.FirebaseAuth.instance.signInWithCredential(oauthCredential);
+      firebase.UserCredential userCredential = await firebase
+          .FirebaseAuth.instance
+          .signInWithCredential(oauthCredential);
 
       Get.offAll(TabPage(), arguments: userCredential.user!.uid);
-    }on firebase.FirebaseAuthException catch(e){
-      if(e.code == 'user-not-found'){
+    } on firebase.FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
         Navigator.pushNamed(
           context,
           'signUp',
@@ -121,9 +123,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<String> getAppleProfilePhoto(String identityToken) async {
-    final url = Uri.parse(
-        'https://appleid.apple.com/auth/userinfo'
-    );
+    final url = Uri.parse('https://appleid.apple.com/auth/userinfo');
 
     final response = await http.get(
       url,
@@ -230,7 +230,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     Spacer(),
                     _kakaoLoginButton(),
-                    SizedBox(height: 20,),
+                    SizedBox(
+                      height: 20,
+                    ),
                     _appleLoginButton(),
                   ]),
             )));
@@ -238,7 +240,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _appleLoginButton() {
     return GestureDetector(
-      onTap: (){
+      onTap: () {
         signInWithApple();
       },
       child: Container(
@@ -246,19 +248,22 @@ class _LoginScreenState extends State<LoginScreen> {
         width: double.infinity,
         height: 60,
         decoration: BoxDecoration(
-            color: Color(0XFF000000),
-            borderRadius: BorderRadius.circular(12)
-        ),
+            color: Color(0XFF000000), borderRadius: BorderRadius.circular(12)),
         child: GestureDetector(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset('images/apple_symbol.png', height: 20,),
-              SizedBox(width: 10,),
-              Text('Apple로 로그인 ', style: TextStyle(
-                  fontSize: 15,
-                  color: Colors.white
-              ),)
+              Image.asset(
+                'images/apple_symbol.png',
+                height: 20,
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              Text(
+                'Apple로 로그인 ',
+                style: TextStyle(fontSize: 15, color: Colors.white),
+              )
             ],
           ),
         ),
@@ -268,7 +273,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _kakaoLoginButton() {
     return GestureDetector(
-      onTap: (){
+      onTap: () {
         signInWithKakao();
       },
       child: Container(
@@ -276,19 +281,23 @@ class _LoginScreenState extends State<LoginScreen> {
         width: double.infinity,
         height: 60,
         decoration: BoxDecoration(
-          color: Color(0XFFFEE500),
-          borderRadius: BorderRadius.circular(12)
-        ),
+            color: Color(0XFFFEE500), borderRadius: BorderRadius.circular(12)),
         child: GestureDetector(
           child: Row(
-             mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset('images/kakao_symbol.png', height: 20,),
-              SizedBox(width: 10,),
-              Text('카카오 로그인 ', style: TextStyle(
-                fontSize: 15,
-                color: Colors.black.withOpacity(0.85)
-              ),)
+              Image.asset(
+                'images/kakao_symbol.png',
+                height: 20,
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              Text(
+                '카카오 로그인 ',
+                style: TextStyle(
+                    fontSize: 15, color: Colors.black.withOpacity(0.85)),
+              )
             ],
           ),
         ),

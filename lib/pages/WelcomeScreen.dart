@@ -64,7 +64,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         'recentQuestionBonusReceiveDate': args.recentQuestionBonusReceiveDate,
         'questionInfos': args.questionInfos,
         'answeredQuestions': args.answeredQuestions,
-        'currentQuestionId':args.currentQuestionId,
+        'currentQuestionId': args.currentQuestionId,
         'serviceNeedsAgreement': args.serviceNeedsAgreement,
         'privacyNeedsAgreement': args.privacyNeedsAgreement,
       });

@@ -39,6 +39,7 @@ class _AgreeScreenState extends State<AgreeScreen> {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
+          automaticallyImplyLeading: false, // 추가
         ),
         backgroundColor: Color(0xFFffffff),
         body: Container(
@@ -183,8 +184,10 @@ class _AgreeScreenState extends State<AgreeScreen> {
                                 style: args.style,
                                 isSubscribe: args.isSubscribe,
                                 candyCount: args.candyCount,
-                                recentDailyBonusReceiveDate: args.recentDailyBonusReceiveDate,
-                                recentQuestionBonusReceiveDate: args.recentQuestionBonusReceiveDate,
+                                recentDailyBonusReceiveDate:
+                                    args.recentDailyBonusReceiveDate,
+                                recentQuestionBonusReceiveDate:
+                                    args.recentQuestionBonusReceiveDate,
                                 questionInfos: args.questionInfos,
                                 answeredQuestions: args.answeredQuestions,
                                 currentQuestionId: args.currentQuestionId,

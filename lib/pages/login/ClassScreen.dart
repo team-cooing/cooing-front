@@ -22,8 +22,8 @@ class _ClassScreenState extends State<ClassScreen> {
   bool button = false;
   int title = 0;
 
-  int _grade = 0;
-  int _group = 0;
+  String _grade = '';
+  String _group = '';
 
   // var thirdField = FocusNode();
 
@@ -35,6 +35,7 @@ class _ClassScreenState extends State<ClassScreen> {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
+          automaticallyImplyLeading: false, // 추가
         ),
         backgroundColor: Color(0xFFffffff),
         body: Container(
@@ -60,13 +61,19 @@ class _ClassScreenState extends State<ClassScreen> {
                     FilteringTextInputFormatter.digitsOnly
                   ],
                   onChanged: (text) {
-                    if (text.length >= 1) {
+                    if (text.length >= 1 && _grade.length > 0) {
                       setState(() {
                         button = true;
                         // FocusScope.of(context).requestFocus(ageField);
                       });
+                    } else {
+                      setState(() {
+                        button = false;
+                      });
                     }
-                    _group = int.parse(text);
+                    setState(() {
+                      _group = text;
+                    });
                   },
                   decoration: InputDecoration(
                       counterText: '',
@@ -102,7 +109,18 @@ class _ClassScreenState extends State<ClassScreen> {
                       title = 1;
                     });
                   }
-                  _grade = int.parse(text);
+                  if (text.length == 1 && _group.length > 0) {
+                    setState(() {
+                      button = true;
+                    });
+                  } else {
+                    setState(() {
+                      button = false;
+                    });
+                  }
+                  setState(() {
+                    _grade = text;
+                  });
                 },
               ),
               Spacer(),
@@ -132,16 +150,18 @@ class _ClassScreenState extends State<ClassScreen> {
                                 school: args.school,
                                 schoolCode: args.schoolCode,
                                 schoolOrg: args.schoolOrg,
-                                grade: _grade,
-                                group: _group,
+                                grade: int.parse(_grade),
+                                group: int.parse(_group),
                                 eyes: args.eyes,
                                 mbti: args.mbti,
                                 hobby: args.hobby,
                                 style: args.style,
                                 isSubscribe: args.isSubscribe,
                                 candyCount: args.candyCount,
-                                recentDailyBonusReceiveDate: args.recentDailyBonusReceiveDate,
-                                recentQuestionBonusReceiveDate: args.recentQuestionBonusReceiveDate,
+                                recentDailyBonusReceiveDate:
+                                    args.recentDailyBonusReceiveDate,
+                                recentQuestionBonusReceiveDate:
+                                    args.recentQuestionBonusReceiveDate,
                                 questionInfos: args.questionInfos,
                                 answeredQuestions: args.answeredQuestions,
                                 currentQuestionId: args.currentQuestionId,
