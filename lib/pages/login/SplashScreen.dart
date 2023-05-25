@@ -1,10 +1,11 @@
 import 'package:cooing_front/model/config/palette.dart';
+import 'package:cooing_front/widgets/dynamic_link.dart';
+
 import 'package:cooing_front/pages/tab_page.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
-import 'package:cooing_front/widgets/dynamic_link.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -43,18 +44,16 @@ class _SplashScreenState extends State<SplashScreen> {
         newUserUid = newUser.user!.uid;
         print(000000000000);
 
-        DynamicLink().setup(newUserUid).then((value) {
+        DynamicLink().setup().then((value) {
           if (value) {
             print(value);
-
             print("dynamic link 로 접속");
           } else {
             print("dynamic link 로 접속하지 않음 ");
-            initialRoute = 'tab';
           }
         });
-
         print('기기내 카카오 토큰으로 로그인 성공');
+        initialRoute = 'tab';
       }
     } on kakao.KakaoAuthException catch (e) {
       initialRoute = 'home';
@@ -88,7 +87,9 @@ class _SplashScreenState extends State<SplashScreen> {
             height: double.infinity,
             alignment: Alignment.topCenter,
             decoration: BoxDecoration(
-                image:
-                    DecorationImage(alignment: Alignment.topCenter, fit: BoxFit.cover, image: AssetImage('images/splash.png')))));
+                image: DecorationImage(
+                    alignment: Alignment.topCenter,
+                    fit: BoxFit.cover,
+                    image: AssetImage('images/splash.png')))));
   }
 }
