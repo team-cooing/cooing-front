@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AgreeScreen extends StatefulWidget {
   const AgreeScreen({super.key});
@@ -39,6 +40,7 @@ class _AgreeScreenState extends State<AgreeScreen> {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
+          automaticallyImplyLeading: false, // 추가
         ),
         backgroundColor: Color(0xFFffffff),
         body: Container(
@@ -95,7 +97,8 @@ class _AgreeScreenState extends State<AgreeScreen> {
                           "https://we-cooing.notion.site/9a8b8ef68b964b5881c57ce50657854d");
 
                       if (await canLaunchUrl(reportUrl)) {
-                        launchUrl(reportUrl);
+                        launchUrl(reportUrl,
+                            mode: LaunchMode.externalApplication);
                       } else {
                         // ignore: avoid_print
                         print("Can't launch $reportUrl");
@@ -140,7 +143,8 @@ class _AgreeScreenState extends State<AgreeScreen> {
                           "https://we-cooing.notion.site/909def3b7b194ac48fabe0f142f60176");
 
                       if (await canLaunchUrl(reportUrl)) {
-                        launchUrl(reportUrl);
+                        launchUrl(reportUrl,
+                            mode: LaunchMode.externalApplication);
                       } else {
                         // ignore: avoid_print
                         print("Can't launch $reportUrl");
@@ -183,8 +187,10 @@ class _AgreeScreenState extends State<AgreeScreen> {
                                 style: args.style,
                                 isSubscribe: args.isSubscribe,
                                 candyCount: args.candyCount,
-                                recentDailyBonusReceiveDate: args.recentDailyBonusReceiveDate,
-                                recentQuestionBonusReceiveDate: args.recentQuestionBonusReceiveDate,
+                                recentDailyBonusReceiveDate:
+                                    args.recentDailyBonusReceiveDate,
+                                recentQuestionBonusReceiveDate:
+                                    args.recentQuestionBonusReceiveDate,
                                 questionInfos: args.questionInfos,
                                 answeredQuestions: args.answeredQuestions,
                                 currentQuestionId: args.currentQuestionId,

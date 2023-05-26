@@ -22,11 +22,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
   FocusNode numberField = FocusNode();
   FocusNode ageField = FocusNode();
 
+  bool name = false;
   bool number = false;
   bool age = false;
-  bool button = true;
+
+  bool button = false;
+  bool enable = true;
   int title = 0;
 
+  String _name = '';
   String _age = '';
   String _number = '';
 
@@ -34,11 +38,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // final node1 = FocusNode();
     final args = ModalRoute.of(context)!.settings.arguments as User;
-    TextEditingController textEditingController =
-        TextEditingController(text: args.name);
-    // print(args.name);
 
     return Scaffold(
         appBar: AppBar(
@@ -67,12 +67,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ],
                   // focusNode: node1,
                   onChanged: (text) {
-                    if (text.length == 2) {
+                    if (text.length == 2 &&
+                        _number.length == 11 &&
+                        _name.length > 0 &&
+                        int.parse(text) <= 19) {
                       setState(() {
                         button = true;
                       });
+                    } else {
+                      setState(() {
+                        button = false;
+                      });
                     }
-                    _age = text;
+                    setState(() {
+                      _age = text;
+                    });
+
                     // 현재 텍스트필드의 텍스트를 출력
                   },
                   maxLength: 2,
@@ -99,15 +109,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     FilteringTextInputFormatter.digitsOnly
                   ],
                   onChanged: (text) {
-                    if (text.length == 11) {
+                    if (text.length == 11 && _name.length > 0) {
                       setState(() {
+                        ageField.requestFocus();
                         age = true;
                         title = 2;
-                        ageField.requestFocus();
-                        // FocusScope.of(context).requestFocus(ageField);
+                      });
+                    } else {
+                      setState(() {
+                        button = false;
                       });
                     }
-                    _number = text;
+                    setState(() {
+                      _number = text;
+                    });
                     // 현재 텍스트필드의 텍스트를 출력
                   },
                   decoration: InputDecoration(
@@ -121,14 +136,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
               ),
               TextField(
-                controller: textEditingController,
                 focusNode: node1,
-                onChanged: (value) {
-                  textEditingController.selection = TextSelection.collapsed(
-                      offset: textEditingController.text.length);
-                  args.name = value;
-                },
+                enabled: enable,
                 autofocus: true,
+                onChanged: (value) {
+                  print(value.length);
+                  if (value.length > 0) {
+                    setState(() {
+                      button = true;
+                    });
+                  }
+                  setState(() {
+                    _name = value;
+                  });
+                },
                 decoration: InputDecoration(
                     focusedBorder: UnderlineInputBorder(
                         borderSide: BorderSide(
@@ -151,10 +172,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 fontWeight: FontWeight.bold, fontSize: 15)),
                         onPressed: () {
                           if (!number) {
-                            numberField.requestFocus();
                             setState(() {
+                              numberField.requestFocus();
+                              enable = false;
                               button = false;
                               number = true;
+                              // node1.unfocus();
                               title = 1;
                             });
                           } else {
@@ -163,7 +186,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               'school',
                               arguments: User(
                                 uid: args.uid,
-                                name: args.name,
+                                name: _name,
                                 profileImage: args.profileImage,
                                 gender: args.gender,
                                 number: _number,
@@ -180,8 +203,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 style: args.style,
                                 isSubscribe: args.isSubscribe,
                                 candyCount: args.candyCount,
-                                recentDailyBonusReceiveDate: args.recentDailyBonusReceiveDate,
-                                recentQuestionBonusReceiveDate: args.recentQuestionBonusReceiveDate,
+                                recentDailyBonusReceiveDate:
+                                    args.recentDailyBonusReceiveDate,
+                                recentQuestionBonusReceiveDate:
+                                    args.recentQuestionBonusReceiveDate,
                                 questionInfos: args.questionInfos,
                                 answeredQuestions: args.answeredQuestions,
                                 currentQuestionId: args.currentQuestionId,

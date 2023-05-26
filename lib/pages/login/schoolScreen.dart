@@ -61,6 +61,7 @@ class _SchoolScreenState extends State<SchoolScreen> {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
+          automaticallyImplyLeading: false, // 추가
         ),
         backgroundColor: Color(0xFFffffff),
         body: Container(
@@ -175,12 +176,15 @@ class _SchoolScreenState extends State<SchoolScreen> {
                                         style: args.style,
                                         isSubscribe: args.isSubscribe,
                                         candyCount: args.candyCount,
-                                        recentDailyBonusReceiveDate: args.recentDailyBonusReceiveDate,
-                                        recentQuestionBonusReceiveDate: args.recentQuestionBonusReceiveDate,
+                                        recentDailyBonusReceiveDate:
+                                            args.recentDailyBonusReceiveDate,
+                                        recentQuestionBonusReceiveDate:
+                                            args.recentQuestionBonusReceiveDate,
                                         questionInfos: args.questionInfos,
                                         answeredQuestions:
                                             args.answeredQuestions,
-                                        currentQuestionId: args.currentQuestionId,
+                                        currentQuestionId:
+                                            args.currentQuestionId,
                                         serviceNeedsAgreement:
                                             args.serviceNeedsAgreement,
                                         privacyNeedsAgreement:

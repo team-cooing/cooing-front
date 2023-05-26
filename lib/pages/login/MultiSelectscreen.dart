@@ -134,6 +134,7 @@ class _MultiSelectscreenState extends State<MultiSelectscreen> {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
+          automaticallyImplyLeading: false, // 추가
         ),
         backgroundColor: Color(0xFFffffff),
         body: SingleChildScrollView(
@@ -283,8 +284,10 @@ class _MultiSelectscreenState extends State<MultiSelectscreen> {
                               style: _styleList,
                               isSubscribe: args.isSubscribe,
                               candyCount: args.candyCount,
-                              recentDailyBonusReceiveDate: args.recentDailyBonusReceiveDate,
-                              recentQuestionBonusReceiveDate: args.recentQuestionBonusReceiveDate,
+                              recentDailyBonusReceiveDate:
+                                  args.recentDailyBonusReceiveDate,
+                              recentQuestionBonusReceiveDate:
+                                  args.recentQuestionBonusReceiveDate,
                               questionInfos: args.questionInfos,
                               answeredQuestions: args.answeredQuestions,
                               currentQuestionId: args.currentQuestionId,
