@@ -5,6 +5,7 @@ import 'package:cooing_front/pages/login/LoginScreen.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'CandyScreen.dart';
 
@@ -232,11 +233,22 @@ class _SettingScreenState extends State<SettingScreen> {
     } catch (e) {
       print(e.toString());
     }
-    // 토큰 정보 제거
-    try {
-      await TokenManagerProvider.instance.manager.clear();
-    } catch (e) {
-      print(e.toString());
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? appleLoginToken = prefs.getString('apple_login_token');
+
+    // 만약, 애플 로그인이라면
+    if(appleLoginToken!=null){
+      prefs.remove('apple_login_token');
+    }
+    // 만약, 카카오 로그인이라면
+    else{
+      // 토큰 정보 제거
+      try {
+        await TokenManagerProvider.instance.manager.clear();
+      } catch (e) {
+        print(e.toString());
+      }
     }
   }
 
@@ -247,24 +259,39 @@ class _SettingScreenState extends State<SettingScreen> {
       widget.currentQuestion!.isOpen = false;
       await r.Response.updateQuestion(newQuestion: widget.currentQuestion!);
     }
+
     // 파베 유저 데이터 관련 정보 삭제 - 유저 데이터, 피드 데이터 삭제
     await r.Response.deleteUser(userUid: widget.user.uid);
-    await r.Response.deleteQuestionInFeed(
-        schoolCode: widget.user.schoolCode,
-        questionId: widget.user
-            .questionInfos[widget.user.questionInfos.length - 1]['questionId']);
-    // 카카오 회원 정보 삭제
-    try {
-      await UserApi.instance.unlink();
-    } catch (e) {
-      print(e.toString());
+    if(widget.user.questionInfos.isNotEmpty){
+      await r.Response.deleteQuestionInFeed(
+          schoolCode: widget.user.schoolCode,
+          questionId: widget.user
+              .questionInfos[widget.user.questionInfos.length - 1]['questionId']);
     }
-    // 토큰 정보 제거
-    try {
-      await TokenManagerProvider.instance.manager.clear();
-    } catch (e) {
-      print(e.toString());
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? appleLoginToken = prefs.getString('apple_login_token');
+
+    // 만약, 애플 로그인이라면
+    if(appleLoginToken!=null){
+      prefs.remove('apple_login_token');
     }
+    // 만약, 카카오로그인이라면
+    else{
+      // 카카오 회원 정보 삭제
+      try {
+        await UserApi.instance.unlink();
+      } catch (e) {
+        print(e.toString());
+      }
+      // 토큰 정보 제거
+      try {
+        await TokenManagerProvider.instance.manager.clear();
+      } catch (e) {
+        print(e.toString());
+      }
+    }
+
     // 파베 Auth 회원 정보 삭제
     try {
       fb.User? firebaseUser = fb.FirebaseAuth.instance.currentUser;
