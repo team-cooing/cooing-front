@@ -44,16 +44,19 @@ class _SplashScreenState extends State<SplashScreen> {
         newUserUid = newUser.user!.uid;
         print(000000000000);
 
-        DynamicLink().setup().then((value) {
+        DynamicLink().setup(newUserUid).then((value) {
+          print("SplashScreen ::::::::::: DynamicLink()$value $newUserUid");
+
           if (value) {
-            print(value);
+            print("value ?????? $value");
             print("dynamic link 로 접속");
           } else {
+            initialRoute = 'tab';
             print("dynamic link 로 접속하지 않음 ");
           }
         });
+
         print('기기내 카카오 토큰으로 로그인 성공');
-        initialRoute = 'tab';
       }
     } on kakao.KakaoAuthException catch (e) {
       initialRoute = 'home';

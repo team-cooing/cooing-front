@@ -292,11 +292,11 @@ class _FeedPageState extends State<FeedPage> {
         onTap: () async {
           if (!widget.user.answeredQuestions.contains(question.id)) {
             // 만약, 보너스를 받을 수 있다면
-            // TODO: 혜은 -Answer 완료되면 true 반환해야함
             bool? isCompleted =
                 await Navigator.of(context).push(MaterialPageRoute(
                     builder: (BuildContext context) => AnswerPage(
                           user: widget.user,
+                          uid: widget.user.uid,
                           question: question,
                           isFromLink: false,
                         )));

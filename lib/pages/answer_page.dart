@@ -15,10 +15,12 @@ import 'dart:math';
 
 class AnswerPage extends StatefulWidget {
   final User? user;
+  final String uid;
   final Question question;
   final bool isFromLink;
   const AnswerPage(
       {required this.user,
+      required this.uid,
       required this.question,
       required this.isFromLink,
       super.key});
@@ -51,48 +53,49 @@ class _AnswerPageState extends State<AnswerPage> {
   void initState() {
     super.initState();
     // userData = widget.user;
-    print("init !!!");
+    uid = widget.uid;
     isFromLink = widget.isFromLink;
-    getQuestion(widget.question).then((value) {
-      question = value;
-      //링크를 통해 들어왔을 때
-      //쿠키 data, 쿠키가 없으면 null 리턴
-      // getCookie();
 
-      if (isFromLink) {
-        //쿠키에서 user 데이터 불러오기
-        getUserCookieData().then((value) {
-          //쿠키 없으면
-          if (value == null) {
-            setState(() {
-              canLogin = false;
-            });
-          } else {
-            _userData = value;
-            hintList = generateHint(_userData!);
-            setState(() {
-              isLoading = false;
-            });
-          }
-        });
-      } else {
-        _userData = widget.user;
-        hintList = generateHint(_userData!);
-
-        setState(() {
-          isLoading = false;
-        });
-        print("widget.user : ${_userData!.uid}");
-      }
-    });
+    settingData();
 
     _textController.addListener(() {
       setState(() {
         textValue = _textController.text;
       });
     });
-    
   }
+
+  Future<void> settingData() async {
+    question = await getQuestion(widget.question);
+
+    print("333333333333    $uid");
+    //링크를 통해 들어왔을 때
+    if (isFromLink) {
+      //user 데이터 불러오기
+      getUserCookieData(uid).then((value) {
+        _userData = value;
+        hintList = generateHint(_userData!);
+      });
+    } else {
+      _userData = widget.user;
+      hintList = generateHint(_userData!);
+      print("widget.user : ${_userData!.uid}");
+    }
+
+    await Future.delayed(Duration(seconds: 3));
+
+    if (_userData != null && hintList.isNotEmpty && question != null) {
+      isLoading = false;
+    } else if (_userData == null) {
+      Navigator.pushReplacementNamed(context, '/initialRoute');
+    }
+
+    setState(() {});
+  }
+
+  // Future<void> _getUserData() async {
+  //   //쿠키읽기
+  // }
 
   getQuestion(Question? q) async {
     question = await response.Response.readQuestion(
@@ -199,51 +202,9 @@ class _AnswerPageState extends State<AnswerPage> {
     }
   }
 
-  void showDialogMsg(String type) {
-    late String title;
-    late String content;
-
-    if (type == "textEmpty") {
-      title = "입력된 답변이 없습니다.";
-      content = "답변을 입력하세요.";
-    }
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            backgroundColor: Colors.white,
-            title: Text(title,
-                style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20.0,
-                )),
-            content: Text(content,
-                style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14.0,
-                )),
-            actions: <Widget>[
-              OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                  fixedSize: Size.fromHeight(10),
-                  foregroundColor: Colors.white,
-                  backgroundColor: const Color(0xff9754FB),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14.0)),
-                ),
-                child: Text('확인'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        });
-  }
-
   Future<bool> _navigateBack() async {
+    hideKeyboard();
+
     return true;
   }
 
@@ -312,56 +273,60 @@ class _AnswerPageState extends State<AnswerPage> {
                 ])));
   }
 
+  void hideKeyboard() {
+    FocusScope.of(context).unfocus();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return canLogin
-        ? isLoading
-            ? loadingView()
-            : question!.isOpen
-                ? WillPopScope(
-                    onWillPop: _navigateBack,
-                    child: Scaffold(
-                      appBar: AppBar(
-                        automaticallyImplyLeading: false,
-                        backgroundColor: Colors.transparent,
-                        elevation: 0.0,
-                        leading: IconButton(
-                          icon: const Icon(Icons.close_rounded),
-                          color: Colors.black54,
-                          onPressed: () {
-                            isFromLink
-                                ? Get.offAll(TabPage(),
-                                    arguments: _userData!.uid)
-                                : Navigator.pop(context, false);
-                          },
-                        ),
-                      ),
-                      body: SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            _answerBody(),
-                            Align(
-                              alignment: Alignment.bottomCenter,
-                              child: sendBtn(),
-                            ),
-                          ],
-                        ),
+    return isLoading
+        ? loadingView()
+        : question!.isOpen
+            ? WillPopScope(
+                onWillPop: _navigateBack,
+                child: GestureDetector(
+                  onTap: () => hideKeyboard(),
+                  child: Scaffold(
+                    appBar: AppBar(
+                      automaticallyImplyLeading: false,
+                      backgroundColor: Colors.transparent,
+                      elevation: 0.0,
+                      leading: IconButton(
+                        icon: const Icon(Icons.close_rounded),
+                        color: Colors.black54,
+                        onPressed: () {
+                          isFromLink
+                              ? Get.offAll(TabPage(), arguments: _userData!.uid)
+                              : Navigator.pop(context, false);
+                        },
                       ),
                     ),
-                  )
-                : Scaffold(
-                    backgroundColor: Color(0xFFffffff),
-                    body: SizedBox(
-                      width: double.infinity,
+                    body: SingleChildScrollView(
                       child: Column(
                         children: [
-                          Expanded(child: isNotOpenedView()),
-                          okBtn(),
+                          _answerBody(),
+                          Align(
+                            alignment: Alignment.bottomCenter,
+                            child: sendBtn(),
+                          ),
                         ],
                       ),
                     ),
-                  )
-        : Scaffold();
+                  ),
+                ),
+              )
+            : Scaffold(
+                backgroundColor: Color(0xFFffffff),
+                body: SizedBox(
+                  width: double.infinity,
+                  child: Column(
+                    children: [
+                      Expanded(child: isNotOpenedView()),
+                      okBtn(),
+                    ],
+                  ),
+                ),
+              );
   }
 
   Widget _answerBody() {
@@ -522,48 +487,58 @@ class _AnswerPageState extends State<AnswerPage> {
   }
 
   Widget sendBtn() {
-    return Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).systemGestureInsets.bottom + 10,
-          top: 15,
-          left: 20,
-          right: 20,
-        ),
-        child:
-            Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          ElevatedButton(
-              onPressed: () {
-                if (textValue.isEmpty) {
-                  showDialogMsg("textEmpty");
-                } else {
-                  //firebase 에 업로드
-                  _uploadUserToFirebase(question!.owner, question!.id);
+    bool isTextEmpty = textValue.isEmpty;
 
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (BuildContext context) => AnswerCompleteScreen(
-                        uid: _userData!.uid,
-                        owner: question!.ownerName,
-                        isFromLink: isFromLink,
-                      ),
-                    ),
-                  );
-                }
-              },
+    return Padding(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).systemGestureInsets.bottom + 10,
+        top: 15,
+        left: 20,
+        right: 20,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Opacity(
+            opacity: isTextEmpty ? 0.5 : 1.0,
+            child: ElevatedButton(
+              onPressed: isTextEmpty
+                  ? null
+                  : () {
+                      // Only execute the code when textValue is not empty
+                      _uploadUserToFirebase(question!.owner, question!.id);
+
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (BuildContext context) =>
+                              AnswerCompleteScreen(
+                            uid: _userData!.uid,
+                            owner: question!.ownerName,
+                            isFromLink: isFromLink,
+                          ),
+                        ),
+                      );
+                    },
               style: OutlinedButton.styleFrom(
                 fixedSize: Size.fromHeight(50),
                 foregroundColor: Colors.white,
                 backgroundColor: const Color(0xff9754FB),
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14.0)),
+                  borderRadius: BorderRadius.circular(14.0),
+                ),
               ),
               child: const Text(
                 "보내기",
                 style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white),
-              ))
-        ]));
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
