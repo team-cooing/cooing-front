@@ -61,6 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  // TODO: Apple Login
   void signInWithApple() async {
     String uid = '';
     String name = '';
@@ -73,7 +74,9 @@ class _LoginScreenState extends State<LoginScreen> {
       ]);
 
       uid = appleCredential.authorizationCode;
+      print(uid);
       name = '${appleCredential.givenName}${appleCredential.familyName}';
+      print(name);
       profileImage = await getAppleProfilePhoto(appleCredential.identityToken!);
 
       final oauthCredential = firebase.OAuthProvider('apple.com').credential(
@@ -134,6 +137,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (response.statusCode == 200) {
       final json = jsonDecode(response.body);
+
       return json['picture'];
     } else {
       throw Exception('Failed to retrieve profile photo');

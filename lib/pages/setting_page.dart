@@ -1,17 +1,18 @@
+import 'package:cooing_front/model/response/question.dart';
 import 'package:cooing_front/model/response/user.dart' as ru;
 import 'package:cooing_front/model/response/response.dart' as r;
 import 'package:cooing_front/pages/login/LoginScreen.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'CandyScreen.dart';
 
 class SettingScreen extends StatefulWidget {
   final ru.User user;
+  final Question? currentQuestion;
 
-  SettingScreen({required this.user, super.key});
+  SettingScreen({required this.user, required this.currentQuestion, super.key});
 
   @override
   State<SettingScreen> createState() => _SettingScreenState();
@@ -44,6 +45,10 @@ class _SettingScreenState extends State<SettingScreen> {
       'title': '로그아웃',
       'link': '',
     },
+    {
+      'title': '회원탈퇴',
+      'link': '',
+    }
   ];
 
   @override
@@ -133,92 +138,87 @@ class _SettingScreenState extends State<SettingScreen> {
               ),
             ),
           ),
-          SingleChildScrollView(
-            physics: AlwaysScrollableScrollPhysics(),
-            child: Column(
-              children: [
-                ListView.builder(
-                    physics: NeverScrollableScrollPhysics(),
-                    itemCount: settingElements.length,
-                    shrinkWrap: true,
-                    itemBuilder: ((context, index) {
-                      return Padding(
-                          padding: EdgeInsets.only(
-                              left: 25.0, bottom: 20.0, top: 20.0),
-                          child: GestureDetector(
-                            child: Text(
-                              "${settingElements[index]['title']}",
+          ListView.builder(
+              physics: NeverScrollableScrollPhysics(),
+              itemCount: settingElements.length,
+              shrinkWrap: true,
+              itemBuilder: ((context, index) {
+                if(index==settingElements.length-1){
+                  return GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () async {
+                      await deleteUser();
+                      // 로그인 페이지로 이동
+                      if (!mounted) return;
+                      Navigator.of(scaffoldContext).pushAndRemoveUntil(
+                          MaterialPageRoute(
+                              builder: (BuildContext context) => LoginScreen()),
+                              (route) => false);
+                    },
+                    child: Padding(
+                        padding: EdgeInsets.only(left: 25.0, top: 20),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '회원 탈퇴',
                               style: TextStyle(
-                                  fontSize: 16,
-                                  color: Color(0xff333D4B),
-                                  fontWeight: FontWeight.bold),
+                                fontSize: 16,
+                                color: Color(0xffB6B7B8),
+                              ),
                             ),
-                            onTap: () async {
-                              // 만약, 로그아웃이 아니라면
-                              if (index != settingElements.length - 1) {
-                                final reportUrl = Uri.parse(
-                                    "${settingElements[index]['link']}");
-                                print("${settingElements[index]['title']}");
+                            Padding(padding: EdgeInsets.all(5.0)),
+                            Text(
+                              '탈퇴한 뒤에는 데이터를 복구할 수 없으니 신중히 진행해 주세요.',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Color(0xffB6B7B8),
+                              ),
+                            ),
+                          ],
+                        )),
+                  );
+                }
+                return Padding(
+                    padding: EdgeInsets.only(
+                        left: 25.0, top: 20.0, bottom: 20),
+                    child: GestureDetector(
+                      child: Text(
+                        "${settingElements[index]['title']}",
+                        style: TextStyle(
+                            fontSize: 16,
+                            color: Color(0xff333D4B),
+                            fontWeight: FontWeight.bold),
+                      ),
+                      onTap: () async {
+                        // 만약, 로그아웃이 아니라면
+                        if (index != settingElements.length - 2) {
+                          final reportUrl = Uri.parse(
+                              "${settingElements[index]['link']}");
+                          print("${settingElements[index]['title']}");
 
-                                if (await canLaunchUrl(reportUrl)) {
-                                  launchUrl(reportUrl,
-                                      mode: LaunchMode.externalApplication);
-                                } else {
-                                  // ignore: avoid_print
-                                  print("Can't launch $reportUrl");
-                                }
-                              } else {
-                                await logout();
-                                // 로그인 페이지로 이동
-                                if (!mounted) return;
-                                Navigator.of(scaffoldContext)
-                                    .pushAndRemoveUntil(
-                                        MaterialPageRoute(
-                                            builder: (BuildContext context) =>
-                                                LoginScreen()),
-                                        (route) => false);
-                              }
-                            },
-                          ));
-                    })),
-              ],
-            ),
-          ),
-          GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: () async {
-              await deleteUser();
-              // 로그인 페이지로 이동
-              if (!mounted) return;
-              Navigator.of(scaffoldContext).pushAndRemoveUntil(
-                  MaterialPageRoute(
-                      builder: (BuildContext context) => LoginScreen()),
-                  (route) => false);
-            },
-            child: Padding(
-                padding: EdgeInsets.only(left: 25.0, top: 20),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '회원 탈퇴',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Color(0xffB6B7B8),
-                      ),
-                    ),
-                    Padding(padding: EdgeInsets.all(5.0)),
-                    Text(
-                      '탈퇴한 뒤에는 데이터를 복구할 수 없으니 신중히 진행해 주세요.',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Color(0xffB6B7B8),
-                      ),
-                    ),
-                  ],
-                )),
-          )
+                          if (await canLaunchUrl(reportUrl)) {
+                            launchUrl(reportUrl,
+                                mode: LaunchMode.externalApplication);
+                          } else {
+                            // ignore: avoid_print
+                            print("Can't launch $reportUrl");
+                          }
+                        } else {
+                          await logout();
+                          // 로그인 페이지로 이동
+                          if (!mounted) return;
+                          Navigator.of(scaffoldContext)
+                              .pushAndRemoveUntil(
+                              MaterialPageRoute(
+                                  builder: (BuildContext context) =>
+                                      LoginScreen()),
+                                  (route) => false);
+                        }
+                      },
+                    ));
+              })),
         ],
       ),
     );
@@ -241,6 +241,12 @@ class _SettingScreenState extends State<SettingScreen> {
   }
 
   Future deleteUser() async {
+    // 만약, 현재 열린 질문이 있다면
+    if(widget.currentQuestion!=null){
+      // 질문 닫기
+      widget.currentQuestion!.isOpen = false;
+      await r.Response.updateQuestion(newQuestion: widget.currentQuestion!);
+    }
     // 파베 유저 데이터 관련 정보 삭제 - 유저 데이터, 피드 데이터 삭제
     await r.Response.deleteUser(userUid: widget.user.uid);
     await r.Response.deleteQuestionInFeed(

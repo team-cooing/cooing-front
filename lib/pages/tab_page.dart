@@ -130,7 +130,7 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
                   user: user!,
                   answers: answers,
                 ),
-                SettingScreen(user: user!),
+                SettingScreen(user: user!, currentQuestion: currentQuestion,),
               ]),
             ));
   }

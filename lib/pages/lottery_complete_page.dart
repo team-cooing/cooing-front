@@ -33,7 +33,7 @@ class _CandyCompletePageState extends State<CandyCompletePage> {
                   Container(
                     padding: EdgeInsets.only(top: 50, bottom: 7),
                     child: Text(
-                      "캔디 ${widget.num}개 당청!",
+                      "캔디 ${widget.num}개 당첨!",
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 22,
