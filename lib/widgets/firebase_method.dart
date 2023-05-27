@@ -5,15 +5,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:cooing_front/model/response/response.dart' as response;
 
-Future<User?> getUserCookieData(String uid) async {
+Future<User?> getUserData(String uid) async {
   final prefs = await asyncPrefsOperation();
   final userDataJson = prefs.getString('userData');
   if (userDataJson != null) {
     print("answer page : 쿠키 에서 UserData 로드");
-    Map<String, dynamic> userDataMap =
-        json.decode(userDataJson); //z쿠키가 있ㅇㅡ면 쿠키 리턴
+    Map<String, dynamic> userDataMap = json.decode(userDataJson);
     return User.fromJson(userDataMap);
   } else {
+    //쿠키없으면 서버에서 읽기
     User? user = await response.Response.readUser(userUid: uid);
     print("서버에서 user 읽음");
     return user;
