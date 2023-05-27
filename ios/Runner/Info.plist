@@ -4,18 +4,19 @@
 <dict>
 <key>LSApplicationQueriesSchemes</key>
 	<array>
-	<string>instagram-stories</string>
-	<string>instagram</string>
+		<string>instagram-stories</string>
+		<string>instagram</string>
+	<string>tg</string>
 	</array>
-	<key>FacebookAppID</key>
-	<string>617417756966237</string>
-	<key>KAKAO_APP_KEY</key>
+<key>FacebookAppID</key>
+<string>617417756966237</string>
+<key>KAKAO_APP_KEY</key>
 	<string>010e5977ad5bf0cfbc9ab47ebfaa14a2
 	010e5977ad5bf0cfbc9ab47ebfaa14a2
 	010e5977ad5bf0cfbc9ab47ebfaa14a2
 	</string>
 <!-- //url_launcher 관련 -->
-	 <key>LSApplicationQueriesSchemes</key>
+<key>LSApplicationQueriesSchemes</key>
   <array>
     <string>https</string>
     <string>http</string>
