@@ -19,7 +19,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
-import 'package:cooing_front/widgets/dynamic_link.dart';
 
 void main() async {
   kakao.KakaoSdk.init(nativeAppKey: '010e5977ad5bf0cfbc9ab47ebfaa14a2');
@@ -29,15 +28,15 @@ void main() async {
     InAppPurchaseAndroidPlatformAddition.enablePendingPurchases();
   }
 
-  DynamicLink().setup().then((value) {
-    if (value) {
-      print(value);
-
-      print("dynamic link 로 접속");
-    } else {
-      print("dynamic link 로 접속하지 않음 ");
-    }
-  });
+  // DynamicLink().setup("").then((value) {
+  //   print("Main ::::::::::: DynamicLink() ");
+  //   if (value) {
+  //     print(value);
+  //     print("dynamic link 로 접속");
+  //   } else {
+  //     print("dynamic link 로 접속하지 않음 ");
+  //   }
+  // });
 
   runApp(
     MultiProvider(
