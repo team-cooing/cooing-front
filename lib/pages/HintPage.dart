@@ -52,7 +52,6 @@ class _HintScreenState extends State<HintScreen> {
           child: Center(
               child: SingleChildScrollView(
                   physics: BouncingScrollPhysics(), // Disable overscroll glow
-
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -135,20 +134,14 @@ class _HintScreenState extends State<HintScreen> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          openHint[0]
-                                              ? widget.answer.hint[0]
-                                              : "첫번째 힌트",
-                                          style: TextStyle(
-                                              fontSize: 16,
-                                              color: Color(0xff333D4B),
-                                              fontWeight: FontWeight.bold),
-                                        )
-                                      ],
+                                    Text(
+                                      openHint[0]
+                                          ? widget.answer.hint[0]
+                                          : "첫번째 힌트",
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          color: Color(0xff333D4B),
+                                          fontWeight: FontWeight.bold),
                                     ),
                                     ElevatedButton(
                                         onPressed: () {
@@ -215,80 +208,77 @@ class _HintScreenState extends State<HintScreen> {
                               width: double.infinity,
                               height: 90.0,
                               child: Container(
-                                padding: EdgeInsets.all(25.0),
-                                decoration: BoxDecoration(
-                                    color: Color(0xffF2F3F3),
-                                    borderRadius: BorderRadius.circular(20)),
-                                child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            openHint[1]
-                                                ? widget.answer.hint[1]
-                                                : "두번째 힌트",
-                                            style: TextStyle(
-                                                fontSize: 16,
-                                                color: Color(0xff333D4B),
-                                                fontWeight: FontWeight.bold),
-                                          )
-                                        ],
-                                      ),
-                                      ElevatedButton(
-                                          onPressed: () {
-                                            if (goldenCandy) {
-                                              if (openHint[0] == true &&
-                                                  openHint[1] == false) {
-                                                setState(() {
-                                                  openHint[1] = true;
-                                                });
-                                              }
-                                            } else {
-                                              setState(() {
+                                  padding: EdgeInsets.all(25.0),
+                                  decoration: BoxDecoration(
+                                      color: Color(0xffF2F3F3),
+                                      borderRadius: BorderRadius.circular(20)),
+                                  child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Flexible(
+                                            child: Text(
+                                          openHint[1]
+                                              ? widget.answer.hint[1]
+                                              : "두번째 힌트",
+                                          softWrap: true,
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              color: Color(0xff333D4B),
+                                              fontWeight: FontWeight.bold),
+                                        )),
+                                        ElevatedButton(
+                                            onPressed: () {
+                                              if (goldenCandy) {
                                                 if (openHint[0] == true &&
                                                     openHint[1] == false) {
-                                                  if (widget.user.candyCount >=
-                                                      3) {
-                                                    widget.user.candyCount -= 3;
+                                                  setState(() {
                                                     openHint[1] = true;
-                                                  } else {
-                                                    Navigator.of(context).push(
-                                                        MaterialPageRoute(
-                                                            builder: (BuildContext
-                                                                    context) =>
-                                                                CandyScreen(
-                                                                    user: widget
-                                                                        .user,
-                                                                    number:
-                                                                        1)));
-                                                  }
+                                                  });
                                                 }
-                                              });
-                                            }
-                                          },
-                                          style: OutlinedButton.styleFrom(
-                                            foregroundColor: Colors.white,
-                                            shadowColor: Colors.transparent,
-                                            backgroundColor:
-                                                Color.fromRGBO(151, 84, 251, 1),
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        10.0)),
-                                          ),
-                                          child: Text(
-                                            goldenCandy ? '황금 캔디' : "캔디 3개",
-                                            style: TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.white),
-                                          ))
-                                    ]),
-                              ),
+                                              } else {
+                                                setState(() {
+                                                  if (openHint[0] == true &&
+                                                      openHint[1] == false) {
+                                                    if (widget
+                                                            .user.candyCount >=
+                                                        3) {
+                                                      widget.user.candyCount -=
+                                                          3;
+                                                      openHint[1] = true;
+                                                    } else {
+                                                      Navigator.of(context).push(
+                                                          MaterialPageRoute(
+                                                              builder: (BuildContext
+                                                                      context) =>
+                                                                  CandyScreen(
+                                                                      user: widget
+                                                                          .user,
+                                                                      number:
+                                                                          1)));
+                                                    }
+                                                  }
+                                                });
+                                              }
+                                            },
+                                            style: OutlinedButton.styleFrom(
+                                              foregroundColor: Colors.white,
+                                              shadowColor: Colors.transparent,
+                                              backgroundColor: Color.fromRGBO(
+                                                  151, 84, 251, 1),
+                                              shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          10.0)),
+                                            ),
+                                            child: Text(
+                                              goldenCandy ? '황금 캔디' : "캔디 3개",
+                                              style: TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.white),
+                                            ))
+                                      ])),
                             )),
                         Padding(padding: EdgeInsets.all(10.0)),
                         AnimatedOpacity(
@@ -307,23 +297,18 @@ class _HintScreenState extends State<HintScreen> {
                                     color: Color(0xffF2F3F3),
                                     borderRadius: BorderRadius.circular(20)),
                                 child: Row(
+                                    mainAxisSize: MainAxisSize.min,
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            openHint[2]
-                                                ? widget.answer.hint[2]
-                                                : "세번째 힌트",
-                                            style: TextStyle(
-                                                fontSize: 16,
-                                                color: Color(0xff333D4B),
-                                                fontWeight: FontWeight.bold),
-                                          )
-                                        ],
+                                      Text(
+                                        openHint[2]
+                                            ? widget.answer.hint[2]
+                                            : "세번째 힌트",
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            color: Color(0xff333D4B),
+                                            fontWeight: FontWeight.bold),
                                       ),
                                       ElevatedButton(
                                           onPressed: () {
