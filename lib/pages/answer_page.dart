@@ -72,7 +72,7 @@ class _AnswerPageState extends State<AnswerPage> {
     //링크를 통해 들어왔을 때
     if (isFromLink) {
       //user 데이터 불러오기
-      getUserCookieData(uid).then((value) {
+      getUserData(uid).then((value) {
         _userData = value;
         hintList = generateHint(_userData!);
       });
@@ -92,10 +92,6 @@ class _AnswerPageState extends State<AnswerPage> {
 
     setState(() {});
   }
-
-  // Future<void> _getUserData() async {
-  //   //쿠키읽기
-  // }
 
   getQuestion(Question? q) async {
     question = await response.Response.readQuestion(
@@ -122,21 +118,21 @@ class _AnswerPageState extends State<AnswerPage> {
         timeId = DateTime.now().toString();
         print("ownerId: $ownerId");
 
-        final DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(_userData!.uid)
-            .get();
+        // final DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+        //     .collection('users')
+        //     .doc(_userData!.uid)
+        //     .get();
 
-        Map<String, dynamic>? data =
-            userSnapshot.data() as Map<String, dynamic>?;
+        // Map<String, dynamic>? data =
+        //     userSnapshot.data() as Map<String, dynamic>?;
 
-        if (data != null) {
-          answeredQuestions = List<String>.from(data['answeredQuestions']);
-        } else {
-          answeredQuestions = [];
-        }
+        // if (data != null) {
+        //   answeredQuestions = List<String>.from(data['answeredQuestions']);
+        // } else {
+        //   answeredQuestions = [];
+        // }
 
-        answeredQuestions.add(questionId);
+        _userData!.answeredQuestions.add(questionId);
 
         final userAnswerRef = FirebaseFirestore.instance
             .collection('answers')
@@ -171,6 +167,7 @@ class _AnswerPageState extends State<AnswerPage> {
           print('No documents found in answer collection');
           newAnswerId = '#000001_$questionId';
         }
+
         //Answer 데이터 업로드
         await userAnswerRef.doc(newAnswerId).set({
           'id': newAnswerId, // 마이크로세컨드까지 보낸 시간으로 사용
@@ -187,13 +184,9 @@ class _AnswerPageState extends State<AnswerPage> {
           'isOpenedHint': [false, false, false], //bool List
           'isOpened': false,
         });
-        //user의 answeredQuestion 업로드
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(_userData!.uid)
-            .update({
-          'answeredQuestions': answeredQuestions,
-        });
+
+        //user 업데이트
+        response.Response.createUser(newUser: _userData!);
       } else {
         print("userData is Null");
       }
