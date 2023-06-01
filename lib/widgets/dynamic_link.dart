@@ -112,7 +112,8 @@ class DynamicLink {
           openTime: '',
           url: '',
           schoolCode: '',
-          isOpen: false);
+          isOpen: false,
+          fcmToken: '');
 
       Get.offAll(() => AnswerPage(
             question: question,

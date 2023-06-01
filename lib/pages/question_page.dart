@@ -4,6 +4,7 @@ import 'package:cooing_front/model/response/question.dart';
 import 'package:cooing_front/model/response/response.dart';
 import 'package:cooing_front/model/response/user.dart';
 import 'package:cooing_front/widgets/dynamic_link.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:screenshot/screenshot.dart';
@@ -35,6 +36,8 @@ class _QuestionPageState extends State<QuestionPage> {
   bool isQuestionOpen = false;
   bool hasQuestionCloseTimePassed = false;
   late String currentQuestionUrl;
+  var token;
+
   @override
   void initState() {
     super.initState();
@@ -236,6 +239,8 @@ class _QuestionPageState extends State<QuestionPage> {
   }
 
   onButtonInPurpleBoxClicked() async {
+    token = await FirebaseMessaging.instance.getToken();
+    print(token);
     // 만약, 질문을 받지 않은 상태라면
     if (!isQuestionReceived) {
       // 주요 기능: 질문 받기
@@ -264,7 +269,8 @@ class _QuestionPageState extends State<QuestionPage> {
           openTime: '',
           url: '',
           schoolCode: widget.user.schoolCode,
-          isOpen: false);
+          isOpen: false,
+          fcmToken: token);
 
       // 1-1. User 반영
       widget.user.questionInfos.add(

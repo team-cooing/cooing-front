@@ -2,25 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-<key>LSApplicationQueriesSchemes</key>
-	<array>
-	<string>instagram-stories</string>
-	<string>instagram</string>
-	</array>
-	<key>FacebookAppID</key>
-	<string>617417756966237</string>
-	<key>KAKAO_APP_KEY</key>
-	<string>010e5977ad5bf0cfbc9ab47ebfaa14a2
-	010e5977ad5bf0cfbc9ab47ebfaa14a2
-	010e5977ad5bf0cfbc9ab47ebfaa14a2
-	</string>
-<!-- //url_launcher 관련 -->
-	 <key>LSApplicationQueriesSchemes</key>
-  <array>
-    <string>https</string>
-    <string>http</string>
-  </array>
-  <!-- ///// 문제시 이곳 수정 -->
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
@@ -54,10 +35,27 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>FacebookAppID</key>
+	<string>617417756966237</string>
+	<key>KAKAO_APP_KEY</key>
+	<string>010e5977ad5bf0cfbc9ab47ebfaa14a2
+	010e5977ad5bf0cfbc9ab47ebfaa14a2
+	010e5977ad5bf0cfbc9ab47ebfaa14a2
+	</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>https</string>
+		<string>http</string>
+	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>remote-notification</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
