@@ -74,31 +74,32 @@ class DynamicLink {
       // TODO: 혜은 - user, question 객체 만들어서 answer page에 전달
       // 임시 User
       User user = User(
-          uid: uid,
-          name: "",
-          profileImage: "",
-          gender: 0,
-          number: '',
-          age: '',
-          birthday: '',
-          school: '',
-          schoolCode: '',
-          schoolOrg: '',
-          grade: 1,
-          group: 1,
-          eyes: 0,
-          mbti: '',
-          hobby: '',
-          style: [],
-          isSubscribe: false,
-          candyCount: 0,
-          recentQuestionBonusReceiveDate: '',
-          recentDailyBonusReceiveDate: '',
-          questionInfos: [],
-          answeredQuestions: [],
-          currentQuestionId: '',
-          serviceNeedsAgreement: true,
-          privacyNeedsAgreement: true);
+        uid: uid,
+        name: "",
+        profileImage: "",
+        gender: 0,
+        number: '',
+        age: '',
+        birthday: '',
+        school: '',
+        schoolCode: '',
+        schoolOrg: '',
+        grade: 1,
+        group: 1,
+        eyes: 0,
+        mbti: '',
+        hobby: '',
+        style: [],
+        isSubscribe: false,
+        candyCount: 0,
+        recentQuestionBonusReceiveDate: '',
+        recentDailyBonusReceiveDate: '',
+        questionInfos: [],
+        answeredQuestions: [],
+        currentQuestionId: '',
+        serviceNeedsAgreement: true,
+        privacyNeedsAgreement: true,
+      );
 
       // 임시 Question
       Question question = Question(
@@ -112,7 +113,8 @@ class DynamicLink {
           openTime: '',
           url: '',
           schoolCode: '',
-          isOpen: false);
+          isOpen: false,
+          fcmToken: '');
 
       Get.offAll(() => AnswerPage(
             question: question,

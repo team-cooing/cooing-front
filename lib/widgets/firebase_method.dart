@@ -90,31 +90,32 @@ Future<User> getUserDocument(DocumentReference docRef, String id) async {
     user = User.fromJson(data);
   } else {
     user = User(
-        birthday: '',
-        uid: '',
-        name: '',
-        profileImage: '',
-        gender: 0,
-        number: '',
-        age: '',
-        school: '',
-        schoolCode: '',
-        schoolOrg: '',
-        grade: 0,
-        group: 0,
-        eyes: 0,
-        mbti: '',
-        hobby: '',
-        style: [],
-        isSubscribe: false,
-        candyCount: 0,
-        recentDailyBonusReceiveDate: '',
-        recentQuestionBonusReceiveDate: '',
-        questionInfos: [],
-        answeredQuestions: [],
-        currentQuestionId: '',
-        serviceNeedsAgreement: false,
-        privacyNeedsAgreement: false);
+      birthday: '',
+      uid: '',
+      name: '',
+      profileImage: '',
+      gender: 0,
+      number: '',
+      age: '',
+      school: '',
+      schoolCode: '',
+      schoolOrg: '',
+      grade: 0,
+      group: 0,
+      eyes: 0,
+      mbti: '',
+      hobby: '',
+      style: [],
+      isSubscribe: false,
+      candyCount: 0,
+      recentDailyBonusReceiveDate: '',
+      recentQuestionBonusReceiveDate: '',
+      questionInfos: [],
+      answeredQuestions: [],
+      currentQuestionId: '',
+      serviceNeedsAgreement: false,
+      privacyNeedsAgreement: false,
+    );
   }
 
   return user;
@@ -130,18 +131,18 @@ Future<Question> getDocument(DocumentReference docRef) async {
     question = Question.fromJson(data);
   } else {
     question = Question(
-      id: '',
-      ownerProfileImage: '',
-      ownerName: '',
-      owner: '',
-      content: '',
-      contentId: '',
-      receiveTime: '',
-      openTime: '',
-      url: '',
-      schoolCode: '',
-      isOpen: false,
-    );
+        id: '',
+        ownerProfileImage: '',
+        ownerName: '',
+        owner: '',
+        content: '',
+        contentId: '',
+        receiveTime: '',
+        openTime: '',
+        url: '',
+        schoolCode: '',
+        isOpen: false,
+        fcmToken: '');
     // 문서가 존재하지 않습니다.
   }
 

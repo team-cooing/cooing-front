@@ -1,3 +1,4 @@
+import 'package:cooing_front/model/response/fcmController.dart';
 import 'package:cooing_front/model/response/question.dart';
 import 'package:cooing_front/model/response/user.dart';
 import 'package:cooing_front/model/util/hint.dart';
@@ -43,6 +44,8 @@ class _AnswerPageState extends State<AnswerPage> {
   late CollectionReference userCollectionRef;
 
   final TextEditingController _textController = TextEditingController();
+  final FCMController _fcmController = FCMController();
+  late String nickname;
 
   @override
   void initState() {
@@ -145,6 +148,7 @@ class _AnswerPageState extends State<AnswerPage> {
           newAnswerId = '#000001_$questionId';
         }
         //Answer 데이터 업로드
+
         await userAnswerRef.doc(newAnswerId).set({
           'id': newAnswerId, // 마이크로세컨드까지 보낸 시간으로 사용
           'time': timeId,
@@ -155,7 +159,7 @@ class _AnswerPageState extends State<AnswerPage> {
           'contentId': question.contentId,
           'questionOwner': question.owner,
           'isAnonymous': _checkSecret,
-          'nickname': _checkSecret ? getNickname(_userData) : _userData.name,
+          'nickname': nickname,
           'hint': hintList,
           'isOpenedHint': [false, false, false], //bool List
           'isOpened': false,
@@ -464,6 +468,11 @@ class _AnswerPageState extends State<AnswerPage> {
                 if (value != null) {
                   _checkSecret = value;
                 }
+                if (_checkSecret == true) {
+                  nickname = getNickname(_userData);
+                } else {
+                  nickname = _userData.name;
+                }
               });
             },
           ),
@@ -492,6 +501,9 @@ class _AnswerPageState extends State<AnswerPage> {
                   showDialogMsg("textEmpty");
                 } else {
                   //firebase 에 업로드
+                  String content = "${nickname}에게 메시지가 도착했어요!";
+                  _fcmController.sendMessage(
+                      userToken: question.fcmToken, title: '쿠잉', body: content);
                   _uploadUserToFirebase(question.owner, question.id);
 
                   Navigator.of(context).push(

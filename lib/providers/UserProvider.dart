@@ -43,33 +43,33 @@ class UserDataProvider with ChangeNotifier {
       final data = snapshot.data();
       if (data != null) {
         _userData = User(
-            uid: uid,
-            name: data['name'],
-            profileImage: data['profileImage'],
-            gender: data['gender'],
-            age: data['age'],
-            birthday: data['birthday'],
-            number: data['number'],
-            school: data['school'],
-            schoolCode: data['schoolCode'],
-            schoolOrg: data['schoolOrg'],
-            grade: data['grade'],
-            group: data['group'],
-            eyes: data['eyes'],
-            mbti: data['mbti'],
-            hobby: data['hobby'],
-            style: List<String>.from(data['style']),
-            isSubscribe: data['isSubscribe'],
-            candyCount: data['candyCount'],
-            recentDailyBonusReceiveDate: data['recentDailyBonusReceiveDate'],
-            recentQuestionBonusReceiveDate: data['recentQuestionBonusReceiveDate'],
-            questionInfos:
-                List<Map<String, dynamic>>.from(data['questionInfos']),
-            answeredQuestions:
-                List<String>.from(data['answeredQuestions'] ?? []),
-            currentQuestionId: data['currentQuestionId'],
-            serviceNeedsAgreement: data['serviceNeedsAgreement'],
-            privacyNeedsAgreement: data['privacyNeedsAgreement']);
+          uid: uid,
+          name: data['name'],
+          profileImage: data['profileImage'],
+          gender: data['gender'],
+          age: data['age'],
+          birthday: data['birthday'],
+          number: data['number'],
+          school: data['school'],
+          schoolCode: data['schoolCode'],
+          schoolOrg: data['schoolOrg'],
+          grade: data['grade'],
+          group: data['group'],
+          eyes: data['eyes'],
+          mbti: data['mbti'],
+          hobby: data['hobby'],
+          style: List<String>.from(data['style']),
+          isSubscribe: data['isSubscribe'],
+          candyCount: data['candyCount'],
+          recentDailyBonusReceiveDate: data['recentDailyBonusReceiveDate'],
+          recentQuestionBonusReceiveDate:
+              data['recentQuestionBonusReceiveDate'],
+          questionInfos: List<Map<String, dynamic>>.from(data['questionInfos']),
+          answeredQuestions: List<String>.from(data['answeredQuestions'] ?? []),
+          currentQuestionId: data['currentQuestionId'],
+          serviceNeedsAgreement: data['serviceNeedsAgreement'],
+          privacyNeedsAgreement: data['privacyNeedsAgreement'],
+        );
         _isDataLoaded = true;
         _saveUserDataToCookie(_userData!);
         notifyListeners();

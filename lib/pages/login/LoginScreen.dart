@@ -1,5 +1,6 @@
-import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
+import 'package:cooing_front/model/response/response.dart' as r;
 import 'package:cooing_front/model/response/user.dart';
 import 'package:cooing_front/pages/tab_page.dart';
 import 'package:get/get.dart';
@@ -8,8 +9,8 @@ import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
-// import 'package:parameters/';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -19,6 +20,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  late BuildContext scaffoldContext;
   LoginPlatform _loginPlatform = LoginPlatform.none;
   String nickname = '';
   String profileImage = '';
@@ -61,82 +63,78 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  // TODO: Apple Login
   void signInWithApple() async {
-    String uid = '';
-    String name = '';
-    String profileImage = '';
     try {
-      final appleCredential =
-          await SignInWithApple.getAppleIDCredential(scopes: [
-        AppleIDAuthorizationScopes.email,
-        AppleIDAuthorizationScopes.fullName,
-      ]);
+      // Apple Credential 받기
+      final appleCredential = await SignInWithApple.getAppleIDCredential(
+          scopes: [
+            AppleIDAuthorizationScopes.email,
+            AppleIDAuthorizationScopes.fullName
+          ]);
 
-      uid = appleCredential.authorizationCode;
-      name = '${appleCredential.givenName}${appleCredential.familyName}';
-      profileImage = await getAppleProfilePhoto(appleCredential.identityToken!);
+      // OAuth Credential 생성
+      final oauthCredential = firebase.OAuthProvider("apple.com").credential(
+        idToken: appleCredential.identityToken,
+      );
 
-      final oauthCredential = firebase.OAuthProvider('apple.com').credential(
-          idToken: appleCredential.identityToken,
-          accessToken: appleCredential.authorizationCode);
-
-      firebase.UserCredential userCredential = await firebase
-          .FirebaseAuth.instance
+      // Firebase Credential 받기
+      final userCredential = await firebase.FirebaseAuth.instance
           .signInWithCredential(oauthCredential);
 
-      Get.offAll(TabPage(), arguments: userCredential.user!.uid);
-    } on firebase.FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        Navigator.pushNamed(
-          context,
-          'signUp',
-          arguments: User(
-            uid: uid,
-            name: name,
-            profileImage: profileImage,
-            gender: 0,
-            number: '',
-            age: '',
-            birthday: '0000-00-00',
-            school: '',
-            schoolCode: '',
-            schoolOrg: '',
-            grade: 0,
-            group: 0,
-            eyes: 0,
-            mbti: '',
-            hobby: '',
-            style: [],
-            isSubscribe: false,
-            candyCount: 0,
-            recentDailyBonusReceiveDate: '',
-            recentQuestionBonusReceiveDate: '',
-            questionInfos: [],
-            answeredQuestions: [],
-            currentQuestionId: '',
-            serviceNeedsAgreement: false,
-            privacyNeedsAgreement: false,
-          ),
-        );
+      // 만약, appleSignInUser가 있다면
+      final appleSignInUser = userCredential.user;
+      if (appleSignInUser != null) {
+        final appleSignInUserInDB =
+            await r.Response.readUser(userUid: appleSignInUser.uid);
+        print(appleSignInUserInDB);
+        // 만약, DB에 User가 없다면
+        if (appleSignInUserInDB == null) {
+          print('Apple Login - Not User in DB');
+          if (!mounted) return;
+          Navigator.pushNamed(
+            scaffoldContext,
+            'signUp',
+            arguments: User(
+              uid: appleSignInUser.uid,
+              name: 'apple_{appleCredential.identityToken}',
+              profileImage: getRandomProfile(),
+              gender: 0,
+              number: '',
+              age: '',
+              birthday: '0000-00-00',
+              school: '',
+              schoolCode: '',
+              schoolOrg: '',
+              grade: 0,
+              group: 0,
+              eyes: 0,
+              mbti: '',
+              hobby: '',
+              style: [],
+              isSubscribe: false,
+              candyCount: 0,
+              recentDailyBonusReceiveDate: '',
+              recentQuestionBonusReceiveDate: '',
+              questionInfos: [],
+              answeredQuestions: [],
+              currentQuestionId: '',
+              serviceNeedsAgreement: false,
+              privacyNeedsAgreement: false,
+            ),
+          );
+        } else {
+          // 애플 로그인 토큰 저장
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          String token = appleCredential.identityToken.toString();
+          await prefs.setString('apple_login_token', token);
+          print('Apple Login token saved: $token');
+          Get.offAll(TabPage(), arguments: appleSignInUser.uid);
+        }
       }
-    }
-  }
-
-  Future<String> getAppleProfilePhoto(String identityToken) async {
-    final url = Uri.parse('https://appleid.apple.com/auth/userinfo');
-
-    final response = await http.get(
-      url,
-      headers: {
-        'Authorization': 'Bearer $identityToken',
-      },
-    );
-
-    if (response.statusCode == 200) {
-      final json = jsonDecode(response.body);
-      return json['picture'];
-    } else {
-      throw Exception('Failed to retrieve profile photo');
+    } catch (e) {
+      // 로그인 실패 시 예외 처리를 수행합니다.
+      print('Apple 로그인 실패: $e');
     }
   }
 
@@ -202,6 +200,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    scaffoldContext = context;
+
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.transparent,
@@ -303,5 +303,22 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
+  }
+
+  String getRandomProfile() {
+    String result = '';
+
+    List<String> profileURLs = [
+      'https://firebasestorage.googleapis.com/v0/b/team-cooing.appspot.com/o/user.png?alt=media&token=4e727797-8f8d-421d-a64c-9d5f8963598d',
+      'https://firebasestorage.googleapis.com/v0/b/team-cooing.appspot.com/o/user%20(1).png?alt=media&token=34fc54dd-5ecd-4d45-a379-9480b1d3a54c',
+      'https://firebasestorage.googleapis.com/v0/b/team-cooing.appspot.com/o/user%20(2).png?alt=media&token=44a4be66-ab68-4abd-9e46-e94a1d1a8134',
+      'https://firebasestorage.googleapis.com/v0/b/team-cooing.appspot.com/o/user%20(3).png?alt=media&token=b68aaaca-27b9-4a48-839d-56958038d5e9',
+      'https://firebasestorage.googleapis.com/v0/b/team-cooing.appspot.com/o/user%20(4).png?alt=media&token=a5ff7899-1e7c-4643-84bf-a71441db4046',
+      'https://firebasestorage.googleapis.com/v0/b/team-cooing.appspot.com/o/user%20(5).png?alt=media&token=a0d83156-2866-4eaf-bf33-7a6cf52585ec',
+    ];
+
+    result = profileURLs[Random().nextInt(profileURLs.length)];
+
+    return result;
   }
 }
