@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
-
+import 'package:cooing_front/pages/login/LoginScreen.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cooing_front/model/response/user.dart';
 import 'package:cooing_front/model/util/hint.dart';
@@ -10,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({Key? key}) : super(key: key);
@@ -31,45 +34,83 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   Future<void> _uploadUserToFirebase() async {
     try {
       final args = ModalRoute.of(context)!.settings.arguments as User;
-      final user = await kakao.UserApi.instance.me();
-      final newUser = await _authentication.createUserWithEmailAndPassword(
-          email: user.kakaoAccount!.email.toString(),
-          password: user.id.toString());
 
-      final uid = newUser.user!.uid.toString();
-      print(uid);
+      final firebaseUser = _authentication.currentUser;
 
-      final userRef = FirebaseFirestore.instance.collection('users');
+      print(firebaseUser);
 
-      await userRef.doc(uid).set({
-        'uid': uid,
-        "name": args.name,
-        "profileImage": args.profileImage,
-        'gender': args.gender,
-        'age': args.age,
-        'number': args.number,
-        'birthday': args.birthday,
-        'school': args.school,
-        'schoolCode': args.schoolCode,
-        'schoolOrg': args.schoolOrg,
-        'grade': args.grade,
-        'group': args.group,
-        'eyes': args.eyes,
-        'mbti': args.mbti,
-        'hobby': args.hobby,
-        "style": args.style,
-        'isSubscribe': args.isSubscribe,
-        'candyCount': args.candyCount,
-        'recentDailyBonusReceiveDate': args.recentDailyBonusReceiveDate,
-        'recentQuestionBonusReceiveDate': args.recentQuestionBonusReceiveDate,
-        'questionInfos': args.questionInfos,
-        'answeredQuestions': args.answeredQuestions,
-        'currentQuestionId': args.currentQuestionId,
-        'serviceNeedsAgreement': args.serviceNeedsAgreement,
-        'privacyNeedsAgreement': args.privacyNeedsAgreement,
-      });
+      if (firebaseUser != null) {
+        final uid = firebaseUser.uid.toString();
+        final userRef = FirebaseFirestore.instance.collection('users');
+        await userRef.doc(uid).set({
+          "uid": uid,
+          "name": args.name,
+          "profileImage": args.profileImage,
+          'gender': args.gender,
+          'age': args.age,
+          'number': args.number,
+          'birthday': args.birthday,
+          'school': args.school,
+          'schoolCode': args.schoolCode,
+          'schoolOrg': args.schoolOrg,
+          'grade': args.grade,
+          'group': args.group,
+          'eyes': args.eyes,
+          'mbti': args.mbti,
+          'hobby': args.hobby,
+          "style": args.style,
+          'isSubscribe': args.isSubscribe,
+          'candyCount': args.candyCount,
+          'recentDailyBonusReceiveDate': args.recentDailyBonusReceiveDate,
+          'recentQuestionBonusReceiveDate': args.recentQuestionBonusReceiveDate,
+          'questionInfos': args.questionInfos,
+          'answeredQuestions': args.answeredQuestions,
+          'currentQuestionId': args.currentQuestionId,
+          'serviceNeedsAgreement': args.serviceNeedsAgreement,
+          'privacyNeedsAgreement': args.privacyNeedsAgreement,
+        });
+        Get.to(TabPage(), arguments: uid);
+      } else {
+        final user = await kakao.UserApi.instance.me();
+        final newUser = await _authentication.createUserWithEmailAndPassword(
+            email: user.kakaoAccount!.email.toString(),
+            password: user.id.toString());
 
-      Get.to(TabPage(), arguments: uid);
+        final uid = newUser.user!.uid.toString();
+        print(uid);
+
+        final userRef = FirebaseFirestore.instance.collection('users');
+
+        await userRef.doc(uid).set({
+          'uid': uid,
+          "name": args.name,
+          "profileImage": args.profileImage,
+          'gender': args.gender,
+          'age': args.age,
+          'number': args.number,
+          'birthday': args.birthday,
+          'school': args.school,
+          'schoolCode': args.schoolCode,
+          'schoolOrg': args.schoolOrg,
+          'grade': args.grade,
+          'group': args.group,
+          'eyes': args.eyes,
+          'mbti': args.mbti,
+          'hobby': args.hobby,
+          "style": args.style,
+          'isSubscribe': args.isSubscribe,
+          'candyCount': args.candyCount,
+          'recentDailyBonusReceiveDate': args.recentDailyBonusReceiveDate,
+          'recentQuestionBonusReceiveDate': args.recentQuestionBonusReceiveDate,
+          'questionInfos': args.questionInfos,
+          'answeredQuestions': args.answeredQuestions,
+          'currentQuestionId': args.currentQuestionId,
+          'serviceNeedsAgreement': args.serviceNeedsAgreement,
+          'privacyNeedsAgreement': args.privacyNeedsAgreement,
+        });
+
+        Get.to(TabPage(), arguments: uid);
+      }
     } catch (e) {
       print(e);
     }

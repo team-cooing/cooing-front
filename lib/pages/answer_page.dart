@@ -10,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:get/get.dart';
 import 'dart:math';
 import 'dart:convert';
+import 'package:cooing_front/model/response/fcmController.dart';
 
 class AnswerPage extends StatefulWidget {
   final User user;
@@ -27,6 +28,7 @@ class AnswerPage extends StatefulWidget {
 
 class _AnswerPageState extends State<AnswerPage> {
   late Question question;
+  late String nickname;
 
   late String uid;
   late User _userData;
@@ -43,12 +45,13 @@ class _AnswerPageState extends State<AnswerPage> {
   late CollectionReference userCollectionRef;
 
   final TextEditingController _textController = TextEditingController();
+  final FCMController _fcmController = FCMController();
 
   @override
   void initState() {
     super.initState();
     // userData = widget.user;
-
+    nickname = getNickname(widget.user);
     //쿠키에 저장된 user 데이터 사용
     getCookie();
     question = widget.question;
@@ -155,7 +158,7 @@ class _AnswerPageState extends State<AnswerPage> {
           'contentId': question.contentId,
           'questionOwner': question.owner,
           'isAnonymous': _checkSecret,
-          'nickname': _checkSecret ? getNickname(_userData) : _userData.name,
+          'nickname': _checkSecret ? nickname : _userData.name,
           'hint': hintList,
           'isOpenedHint': [false, false, false], //bool List
           'isOpened': false,
@@ -492,6 +495,10 @@ class _AnswerPageState extends State<AnswerPage> {
                   showDialogMsg("textEmpty");
                 } else {
                   //firebase 에 업로드
+                  String name = _checkSecret ? nickname : _userData.name;
+                  String content = "${name}에게 메시지가 도착했어요!";
+                  _fcmController.sendMessage(
+                      userToken: question.fcmToken, title: '쿠잉', body: content);
                   _uploadUserToFirebase(question.owner, question.id);
 
                   Navigator.of(context).push(

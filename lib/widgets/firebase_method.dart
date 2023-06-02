@@ -130,18 +130,18 @@ Future<Question> getDocument(DocumentReference docRef) async {
     question = Question.fromJson(data);
   } else {
     question = Question(
-      id: '',
-      ownerProfileImage: '',
-      ownerName: '',
-      owner: '',
-      content: '',
-      contentId: '',
-      receiveTime: '',
-      openTime: '',
-      url: '',
-      schoolCode: '',
-      isOpen: false,
-    );
+        id: '',
+        ownerProfileImage: '',
+        ownerName: '',
+        owner: '',
+        content: '',
+        contentId: '',
+        receiveTime: '',
+        openTime: '',
+        url: '',
+        schoolCode: '',
+        isOpen: false,
+        fcmToken: '');
     // 문서가 존재하지 않습니다.
   }
 
