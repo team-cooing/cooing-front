@@ -165,6 +165,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 setState(() {
                                   button = true;
                                 });
+                              }else {
+                                setState(() {
+                                  button = false;
+                                });
                               }
                               setState(() {
                                 _name = value;
