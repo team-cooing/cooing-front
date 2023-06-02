@@ -4,6 +4,7 @@ import 'package:cooing_front/model/response/response.dart' as r;
 import 'package:cooing_front/pages/login/LoginScreen.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -234,13 +235,16 @@ class _SettingScreenState extends State<SettingScreen> {
       print(e.toString());
     }
 
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? appleLoginToken = prefs.getString('apple_login_token');
+    final userPlatform = await FlutterSecureStorage().read(key: "userPlatform");
 
     // 만약, 애플 로그인이라면
-    if(appleLoginToken!=null){
-      prefs.remove('apple_login_token');
+    if(userPlatform!=null&&userPlatform=='apple'){
+      await FlutterSecureStorage().delete(key: "userPlatform");
+      await FlutterSecureStorage().delete(key: "userId");
+      await FlutterSecureStorage().delete(key: "appleUserUid");
+      await FlutterSecureStorage().delete(key: "appleUserEmail");
     }
+
     // 만약, 카카오 로그인이라면
     else{
       // 토큰 정보 제거
@@ -269,12 +273,14 @@ class _SettingScreenState extends State<SettingScreen> {
               .questionInfos[widget.user.questionInfos.length - 1]['questionId']);
     }
 
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? appleLoginToken = prefs.getString('apple_login_token');
+    final userPlatform = await FlutterSecureStorage().read(key: "userPlatform");
 
     // 만약, 애플 로그인이라면
-    if(appleLoginToken!=null){
-      prefs.remove('apple_login_token');
+    if(userPlatform!=null&&userPlatform=='apple'){
+      await FlutterSecureStorage().delete(key: "userPlatform");
+      await FlutterSecureStorage().delete(key: "userId");
+      await FlutterSecureStorage().delete(key: "appleUserUid");
+      await FlutterSecureStorage().delete(key: "appleUserEmail");
     }
     // 만약, 카카오로그인이라면
     else{
@@ -294,7 +300,7 @@ class _SettingScreenState extends State<SettingScreen> {
 
     // 파베 Auth 회원 정보 삭제
     try {
-      fb.User? firebaseUser = fb.FirebaseAuth.instance.currentUser;
+      final firebaseUser = fb.FirebaseAuth.instance.currentUser;
       if (firebaseUser != null) {
         await firebaseUser.delete();
       }
