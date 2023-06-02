@@ -4,6 +4,9 @@ import 'package:cooing_front/model/util/hint.dart';
 import 'package:cooing_front/model/config/palette.dart';
 import 'package:cooing_front/pages/answer_complete_page.dart';
 import 'package:cooing_front/pages/tab_page.dart';
+import 'package:cooing_front/widgets/firebase_method.dart';
+import 'package:cooing_front/model/response/response.dart' as response;
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,11 +16,13 @@ import 'dart:convert';
 import 'package:cooing_front/model/response/fcmController.dart';
 
 class AnswerPage extends StatefulWidget {
-  final User user;
+  final User? user;
+  final String uid;
   final Question question;
   final bool isFromLink;
   const AnswerPage(
       {required this.user,
+      required this.uid,
       required this.question,
       required this.isFromLink,
       super.key});
@@ -30,11 +35,14 @@ class _AnswerPageState extends State<AnswerPage> {
   late Question question;
   late String nickname;
 
+  late Question? question;
+  late Question? updateQuestion;
   late String uid;
-  late User _userData;
+  late User? _userData;
   bool _checkSecret = true;
   late bool isFromLink;
   bool isLoading = true;
+  bool canLogin = true;
   late List<String> hintList;
   late DocumentReference userDocRef;
 
@@ -53,9 +61,12 @@ class _AnswerPageState extends State<AnswerPage> {
     // userData = widget.user;
     nickname = getNickname(widget.user);
     //쿠키에 저장된 user 데이터 사용
-    getCookie();
+    // getCookie();
     question = widget.question;
+    uid = widget.uid;
     isFromLink = widget.isFromLink;
+
+    settingData();
 
     _textController.addListener(() {
       setState(() {
@@ -64,22 +75,41 @@ class _AnswerPageState extends State<AnswerPage> {
     });
   }
 
-  getCookie() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+  Future<void> settingData() async {
+    question = await getQuestion(widget.question);
 
-    final String? userDataJson = prefs.getString('userData');
-
-    if (userDataJson != null) {
-      _userData = User.fromJson(json.decode(userDataJson));
-      hintList = generateHint(_userData);
-      print('쿠키 읽음.');
-      setState(() {
-        isLoading = false;
+    print("333333333333    $uid");
+    //링크를 통해 들어왔을 때
+    if (isFromLink) {
+      //user 데이터 불러오기
+      getUserData(uid).then((value) {
+        _userData = value;
+        hintList = generateHint(_userData!);
       });
     } else {
-      print('쿠키 없음.');
-      // TODO: 로그인페이지로 이동
+      _userData = widget.user;
+      hintList = generateHint(_userData!);
+      print("widget.user : ${_userData!.uid}");
     }
+
+    await Future.delayed(Duration(seconds: 3));
+
+    if (_userData != null && hintList.isNotEmpty && question != null) {
+      isLoading = false;
+    } else if (_userData == null) {
+      Navigator.pushReplacementNamed(context, '/initialRoute');
+    }
+
+    setState(() {});
+  }
+
+  getQuestion(Question? q) async {
+    question = await response.Response.readQuestion(
+      contentId: q!.contentId,
+      questionId: q.id,
+    ) as Question;
+
+    return question;
   }
 
   String getNickname(User user) {
@@ -94,25 +124,25 @@ class _AnswerPageState extends State<AnswerPage> {
     String newAnswerId;
     List<String>? answeredQuestions;
     try {
-      if (question.id.isNotEmpty) {
+      if (question!.id.isNotEmpty) {
         timeId = DateTime.now().toString();
         print("ownerId: $ownerId");
 
-        final DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(_userData.uid)
-            .get();
+        // final DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+        //     .collection('users')
+        //     .doc(_userData!.uid)
+        //     .get();
 
-        Map<String, dynamic>? data =
-            userSnapshot.data() as Map<String, dynamic>?;
+        // Map<String, dynamic>? data =
+        //     userSnapshot.data() as Map<String, dynamic>?;
 
-        if (data != null) {
-          answeredQuestions = List<String>.from(data['answeredQuestions']);
-        } else {
-          answeredQuestions = [];
-        }
+        // if (data != null) {
+        //   answeredQuestions = List<String>.from(data['answeredQuestions']);
+        // } else {
+        //   answeredQuestions = [];
+        // }
 
-        answeredQuestions.add(questionId);
+        _userData!.answeredQuestions.add(questionId);
 
         final userAnswerRef = FirebaseFirestore.instance
             .collection('answers')
@@ -147,26 +177,26 @@ class _AnswerPageState extends State<AnswerPage> {
           print('No documents found in answer collection');
           newAnswerId = '#000001_$questionId';
         }
+
         //Answer 데이터 업로드
         await userAnswerRef.doc(newAnswerId).set({
           'id': newAnswerId, // 마이크로세컨드까지 보낸 시간으로 사용
           'time': timeId,
-          'owner': _userData.uid,
-          'ownerGender': _userData.gender,
+          'owner': _userData!.uid,
+          'ownerGender': _userData!.gender,
           'questionId': questionId,
           'content': textValue,
-          'contentId': question.contentId,
-          'questionOwner': question.owner,
+          'contentId': question!.contentId,
+          'questionOwner': question!.owner,
           'isAnonymous': _checkSecret,
-          'nickname': _checkSecret ? nickname : _userData.name,
+          'nickname': _checkSecret ? nickname : _userData!.name,
           'hint': hintList,
           'isOpenedHint': [false, false, false], //bool List
           'isOpened': false,
         });
-        //user의 answeredQuestion 업로드
-        await FirebaseFirestore.instance.collection('users').doc(uid).update({
-          'answeredQuestions': answeredQuestions,
-        });
+
+        //user 업데이트
+        response.Response.createUser(newUser: _userData!);
       } else {
         print("userData is Null");
       }
@@ -175,55 +205,13 @@ class _AnswerPageState extends State<AnswerPage> {
     }
   }
 
-  void showDialogMsg(String type) {
-    late String title;
-    late String content;
-
-    if (type == "textEmpty") {
-      title = "입력된 답변이 없습니다.";
-      content = "답변을 입력하세요.";
-    }
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            backgroundColor: Colors.white,
-            title: Text(title,
-                style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20.0,
-                )),
-            content: Text(content,
-                style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14.0,
-                )),
-            actions: <Widget>[
-              OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                  fixedSize: Size.fromHeight(10),
-                  foregroundColor: Colors.white,
-                  backgroundColor: const Color(0xff9754FB),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14.0)),
-                ),
-                child: Text('확인'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        });
-  }
-
   Future<bool> _navigateBack() async {
+    hideKeyboard();
+
     return true;
   }
 
-  Widget mainView() {
+  Widget isNotOpenedView() {
     return Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -269,7 +257,7 @@ class _AnswerPageState extends State<AnswerPage> {
                 children: [
                   ElevatedButton(
                       onPressed: () {
-                        Get.offAll(TabPage(), arguments: _userData.uid);
+                        Get.offAll(TabPage(), arguments: _userData!.uid);
                       },
                       style: OutlinedButton.styleFrom(
                         fixedSize: Size.fromHeight(50),
@@ -288,53 +276,60 @@ class _AnswerPageState extends State<AnswerPage> {
                 ])));
   }
 
-  @override
-  Widget build(BuildContext context) {
-    if (isLoading) {
-      loadingView();
-    }
-    return question.isOpen
-        ? WillPopScope(
-            onWillPop: _navigateBack,
-            child: Scaffold(
-              appBar: AppBar(
-                automaticallyImplyLeading: false,
-                backgroundColor: Colors.transparent,
-                elevation: 0.0,
-                leading: IconButton(
-                  icon: const Icon(Icons.close_rounded),
-                  color: Colors.black54,
-                  onPressed: () {
-                    isFromLink
-                        ? Get.offAll(TabPage(), arguments: uid)
-                        : Navigator.pop(context, false);
-                  },
-                ),
-              ),
-              body: SingleChildScrollView(
-                  child: Column(children: [
-                _answerBody(),
-                Align(alignment: Alignment.bottomCenter, child: sendBtn())
-              ])),
-            ),
-          )
-        : Scaffold(
-            backgroundColor: Color(0xFFffffff),
-            body: SizedBox(
-                width: double.infinity,
-                child:
-                    Column(children: [Expanded(child: mainView()), okBtn()])),
-          );
+  void hideKeyboard() {
+    FocusScope.of(context).unfocus();
   }
 
-  Widget loadingView() {
-    return Scaffold(
-      body: Center(
-        child: CircularProgressIndicator(
-          color: Palette.mainPurple,
-        ),
-      ),
-    );
+  @override
+  Widget build(BuildContext context) {
+    return isLoading
+        ? loadingView()
+        : question!.isOpen
+            ? WillPopScope(
+                onWillPop: _navigateBack,
+                child: GestureDetector(
+                  onTap: () => hideKeyboard(),
+                  child: Scaffold(
+                    appBar: AppBar(
+                      automaticallyImplyLeading: false,
+                      backgroundColor: Colors.transparent,
+                      elevation: 0.0,
+                      leading: IconButton(
+                        icon: const Icon(Icons.close_rounded),
+                        color: Colors.black54,
+                        onPressed: () {
+                          isFromLink
+                              ? Get.offAll(TabPage(), arguments: _userData!.uid)
+                              : Navigator.pop(context, false);
+                        },
+                      ),
+                    ),
+                    body: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          _answerBody(),
+                          Align(
+                            alignment: Alignment.bottomCenter,
+                            child: sendBtn(),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            : Scaffold(
+                backgroundColor: Color(0xFFffffff),
+                body: SizedBox(
+                  width: double.infinity,
+                  child: Column(
+                    children: [
+                      Expanded(child: isNotOpenedView()),
+                      okBtn(),
+                    ],
+                  ),
+                ),
+              );
   }
 
   Widget _answerBody() {
@@ -356,7 +351,7 @@ class _AnswerPageState extends State<AnswerPage> {
       const Padding(padding: EdgeInsets.all(7.0)),
       Center(
         child: Text(
-          "${question.ownerName}에게",
+          "${question!.ownerName}에게",
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 18.0,
@@ -380,7 +375,7 @@ class _AnswerPageState extends State<AnswerPage> {
               color: const Color(0xff9754FB),
               child: Column(children: <Widget>[
                 const Padding(padding: EdgeInsets.all(15.0)),
-                question.ownerProfileImage.isEmpty
+                question!.ownerProfileImage.isEmpty
                     ? CircularProgressIndicator(
                         color: Palette.mainPurple,
                       )
@@ -389,14 +384,14 @@ class _AnswerPageState extends State<AnswerPage> {
                         height: 80.0,
                         child: CircleAvatar(
                           backgroundImage:
-                              NetworkImage(question.ownerProfileImage),
+                              NetworkImage(question!.ownerProfileImage),
                         ),
                       ),
                 Padding(
                   padding:
                       EdgeInsets.only(left: 25, right: 25, top: 20, bottom: 1),
                   child: Text(
-                    question.content,
+                    question!.content,
                     style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
@@ -410,7 +405,6 @@ class _AnswerPageState extends State<AnswerPage> {
 
   Widget answerTxtField() {
     // String textLength = "0 / maxLength";
-    print("question.isOpen? ???? ${question.isOpen}");
     return Container(
         width: double.infinity,
         padding: EdgeInsets.only(left: 20.0, right: 20.0, top: 15, bottom: 10),
@@ -450,6 +444,22 @@ class _AnswerPageState extends State<AnswerPage> {
         ]));
   }
 
+  Widget loadingView() {
+    return Scaffold(
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Expanded(
+            child: Center(
+                child: CircularProgressIndicator(
+              color: Palette.mainPurple,
+            )),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget checking() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -480,52 +490,62 @@ class _AnswerPageState extends State<AnswerPage> {
   }
 
   Widget sendBtn() {
-    return Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).systemGestureInsets.bottom + 10,
-          top: 15,
-          left: 20,
-          right: 20,
-        ),
-        child:
-            Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          ElevatedButton(
-              onPressed: () {
-                if (textValue.isEmpty) {
-                  showDialogMsg("textEmpty");
-                } else {
-                  //firebase 에 업로드
-                  String name = _checkSecret ? nickname : _userData.name;
-                  String content = "${name}에게 메시지가 도착했어요!";
-                  _fcmController.sendMessage(
-                      userToken: question.fcmToken, title: '쿠잉', body: content);
-                  _uploadUserToFirebase(question.owner, question.id);
+    bool isTextEmpty = textValue.isEmpty;
 
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (BuildContext context) => AnswerCompleteScreen(
-                        uid: _userData.uid,
-                        owner: question.ownerName,
-                        isFromLink: isFromLink,
-                      ),
-                    ),
-                  );
-                }
-              },
+    return Padding(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).systemGestureInsets.bottom + 10,
+        top: 15,
+        left: 20,
+        right: 20,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Opacity(
+            opacity: isTextEmpty ? 0.5 : 1.0,
+            child: ElevatedButton(
+              onPressed: isTextEmpty
+                  ? null
+                  : () {
+                      // Only execute the code when textValue is not empty
+                      String name = _checkSecret ? nickname : _userData!.name;
+                      String content = "${name}에게 메시지가 도착했어요!";
+                      _fcmController.sendMessage(
+                        userToken: question.fcmToken, title: '쿠잉', body: content);
+                      _uploadUserToFirebase(question!.owner, question!.id);
+
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (BuildContext context) =>
+                              AnswerCompleteScreen(
+                            uid: _userData!.uid,
+                            owner: question!.ownerName,
+                            isFromLink: isFromLink,
+                          ),
+                        ),
+                      );
+                    },
               style: OutlinedButton.styleFrom(
                 fixedSize: Size.fromHeight(50),
                 foregroundColor: Colors.white,
                 backgroundColor: const Color(0xff9754FB),
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14.0)),
+                  borderRadius: BorderRadius.circular(14.0),
+                ),
               ),
               child: const Text(
                 "보내기",
                 style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white),
-              ))
-        ]));
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

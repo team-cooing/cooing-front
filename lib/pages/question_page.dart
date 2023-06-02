@@ -345,12 +345,11 @@ class _QuestionPageState extends State<QuestionPage> {
   }
 
   Future<String> getUrl(Question question) async {
-    // TODO: 혜은 - url 생성한 걸 가져오는 코드 추가해야됨
     currentQuestionUrl = await getShortLink(question);
     return currentQuestionUrl;
   }
 
-  void _onShareButtonPressed(var path) {
+  void _onShareButtonPressed(String url, var path) {
     //공유 버튼 클릭시
     String facebookId = "617417756966237";
 
@@ -359,12 +358,12 @@ class _QuestionPageState extends State<QuestionPage> {
             imagePath: path,
             backgroundTopColor: "#ffffff",
             backgroundBottomColor: "#9754FB",
-            attributionURL: "www.naver.com")
+            attributionURL: url)
         .then((data) async {
       if (data == "error") {
         final reportUrl = Uri.parse(
             'https://we-cooing.notion.site/e802f6eaf1594ff6bd01dbd5ddcc3396');
-        print("Link로 이동");
+        print("notion Link로 이동");
 
         if (await canLaunchUrl(reportUrl)) {
           launchUrl(reportUrl, mode: LaunchMode.externalApplication);
@@ -464,7 +463,7 @@ class _QuestionPageState extends State<QuestionPage> {
                 } else {
                   //"공유" 버튼 클릭 시, pupleBox 사진 찍음
                   var path = await screenshot();
-                  _onShareButtonPressed(path);
+                  _onShareButtonPressed(widget.currentQuestion!.url, path);
                 }
               },
               style: OutlinedButton.styleFrom(

@@ -9,4 +9,11 @@
 		<string>Default</string>
 	</array>
 </dict>
+<!-- dynamicLink 관련 -->
+<dict>
+   <key>com.apple.developer.associated-domains</key>
+   <array>
+      <string>applinks:midascooing.page.link</string>
+   </array>
+</dict>
 </plist>

@@ -1,9 +1,9 @@
 import 'package:cooing_front/model/response/question.dart';
 import 'package:cooing_front/model/response/user.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
-import 'package:uni_links/uni_links.dart';
 import 'package:cooing_front/pages/answer_page.dart';
 import 'package:get/get.dart';
+import 'package:uni_links/uni_links.dart';
 
 class DynamicLink {
   Future<bool> setup(String uid) async {
@@ -13,47 +13,64 @@ class DynamicLink {
     try {
       _addListener(uid);
     } catch (e) {
-      print("In dynamicLink() : $e");
+      print("In dynamicLink() ERROR : $e");
     }
 
     return isExistDynamicLink;
   }
 
   Future<bool> _getInitialDynamicLink(String uid) async {
+    // final String? deepLink = await getInitialLink();
+    // print("deepLink ::: $deepLink");
+    // print("In dynamicLink() : link로 접속했는지 확인");
+    // if (deepLink != null && deepLink.isNotEmpty) {
+    //   PendingDynamicLinkData? dynamicLinkData = await FirebaseDynamicLinks
+    //       .instance
+    //       .getDynamicLink(Uri.parse(deepLink));
+
+    //   if (dynamicLinkData != null) {
+    //     print("dynamicLinkData = $dynamicLinkData");
+    //     _redirectScreen(dynamicLinkData);
+
+    //     return true;
+    //   }
+    // }
+
+    // return false;
+
+    final PendingDynamicLinkData? initialLink =
+        await FirebaseDynamicLinks.instance.getInitialLink();
+
+    if (initialLink != null) {
+      _redirectScreen(uid, initialLink);
+      return true;
+    }
+
     final String? deepLink = await getInitialLink();
-    print("In dynamicLink() : link로 접속했는지 확인");
-    if (deepLink != null) {
-      PendingDynamicLinkData? dynamicLinkData = await FirebaseDynamicLinks
-          .instance
-          .getDynamicLink(Uri.parse(deepLink));
-
-      if (dynamicLinkData != null) {
-        print("dynamicLinkData = $dynamicLinkData");
-        _redirectScreen(dynamicLinkData, uid);
-
-        return true;
-      }
+    if (deepLink != null && deepLink.isNotEmpty) {
+      FirebaseDynamicLinks.instance
+          .getDynamicLink(Uri.parse(deepLink))
+          .then((link) => _redirectScreen(uid, link!));
+      return true;
     }
 
     return false;
   }
 
   void _addListener(String uid) {
-    List urlData = [];
     FirebaseDynamicLinks.instance.onLink.listen((
       PendingDynamicLinkData dynamicLinkData,
     ) {
-      _redirectScreen(dynamicLinkData, uid);
+      _redirectScreen(uid, dynamicLinkData);
     }).onError((error) {
       print("In dynamicLink() - addListener : $error");
     });
   }
 
-  void _redirectScreen(PendingDynamicLinkData dynamicLinkData, String uid) {
+  void _redirectScreen(String uid, PendingDynamicLinkData dynamicLinkData) {
     print("In dynamicLink() - _redirectScreen : ${dynamicLinkData.link}");
     if (dynamicLinkData.link.queryParameters.containsKey('cid')) {
       // String? questionId
-      // TODO: 혜은 - question에 있는 변수 모두
       String questionId =
           dynamicLinkData.link.path.split('/').last; //questionId
 
@@ -70,36 +87,6 @@ class DynamicLink {
               ""; //ownerProfileImg
 
       // print("_redirectScreen: questionId-$questionId, contentId-$contentId");
-
-      // TODO: 혜은 - user, question 객체 만들어서 answer page에 전달
-      // 임시 User
-      User user = User(
-          uid: uid,
-          name: "",
-          profileImage: "",
-          gender: 0,
-          number: '',
-          age: '',
-          birthday: '',
-          school: '',
-          schoolCode: '',
-          schoolOrg: '',
-          grade: 1,
-          group: 1,
-          eyes: 0,
-          mbti: '',
-          hobby: '',
-          style: [],
-          isSubscribe: false,
-          candyCount: 0,
-          recentQuestionBonusReceiveDate: '',
-          recentDailyBonusReceiveDate: '',
-          questionInfos: [],
-          answeredQuestions: [],
-          currentQuestionId: '',
-          serviceNeedsAgreement: true,
-          privacyNeedsAgreement: true);
-
       // 임시 Question
       Question question = Question(
           id: questionId.replaceAll('%20', ' '), //url 에서의 %20 -> ' ' 공백으로 바꿈
@@ -117,7 +104,8 @@ class DynamicLink {
 
       Get.offAll(() => AnswerPage(
             question: question,
-            user: user,
+            user: null,
+            uid: uid,
             isFromLink: true,
           ));
     }

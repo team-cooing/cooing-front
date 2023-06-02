@@ -80,6 +80,17 @@ void main() async {
   if (defaultTargetPlatform == TargetPlatform.android) {
     InAppPurchaseAndroidPlatformAddition.enablePendingPurchases();
   }
+
+  // DynamicLink().setup("").then((value) {
+  //   print("Main ::::::::::: DynamicLink() ");
+  //   if (value) {
+  //     print(value);
+  //     print("dynamic link 로 접속");
+  //   } else {
+  //     print("dynamic link 로 접속하지 않음 ");
+  //   }
+  // });
+
   runApp(
     MultiProvider(
       providers: [
