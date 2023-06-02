@@ -9,10 +9,8 @@ import 'package:cooing_front/model/response/response.dart' as response;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:get/get.dart';
 import 'dart:math';
-import 'dart:convert';
 import 'package:cooing_front/model/response/fcmController.dart';
 
 class AnswerPage extends StatefulWidget {
@@ -88,12 +86,14 @@ class _AnswerPageState extends State<AnswerPage> {
     } else {
       _userData = widget.user;
       hintList = generateHint(_userData!);
+      nickname = getNickname(_userData!);
+
       print("widget.user : ${_userData!.uid}");
     }
 
-    await Future.delayed(Duration(seconds: 3));
+    await Future.delayed(Duration(seconds: 2));
 
-    if (_userData != null && hintList.isNotEmpty && question != null) {
+    if (_userData != null && hintList.isNotEmpty) {
       isLoading = false;
     } else if (_userData == null) {
       Navigator.pushReplacementNamed(context, '/initialRoute');
@@ -121,9 +121,8 @@ class _AnswerPageState extends State<AnswerPage> {
 
   Future<void> _uploadUserToFirebase(String ownerId, String questionId) async {
     String newAnswerId;
-    List<String>? answeredQuestions;
     try {
-      if (question!.id.isNotEmpty) {
+      if (question.id.isNotEmpty) {
         timeId = DateTime.now().toString();
         print("ownerId: $ownerId");
 
@@ -185,8 +184,8 @@ class _AnswerPageState extends State<AnswerPage> {
           'ownerGender': _userData!.gender,
           'questionId': questionId,
           'content': textValue,
-          'contentId': question!.contentId,
-          'questionOwner': question!.owner,
+          'contentId': question.contentId,
+          'questionOwner': question.owner,
           'isAnonymous': _checkSecret,
           'nickname': _checkSecret ? nickname : _userData!.name,
           'hint': hintList,
@@ -283,7 +282,7 @@ class _AnswerPageState extends State<AnswerPage> {
   Widget build(BuildContext context) {
     return isLoading
         ? loadingView()
-        : question!.isOpen
+        : question.isOpen
             ? WillPopScope(
                 onWillPop: _navigateBack,
                 child: GestureDetector(
@@ -350,7 +349,7 @@ class _AnswerPageState extends State<AnswerPage> {
       const Padding(padding: EdgeInsets.all(7.0)),
       Center(
         child: Text(
-          "${question!.ownerName}에게",
+          "${question.ownerName}에게",
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 18.0,
@@ -374,7 +373,7 @@ class _AnswerPageState extends State<AnswerPage> {
               color: const Color(0xff9754FB),
               child: Column(children: <Widget>[
                 const Padding(padding: EdgeInsets.all(15.0)),
-                question!.ownerProfileImage.isEmpty
+                question.ownerProfileImage.isEmpty
                     ? CircularProgressIndicator(
                         color: Palette.mainPurple,
                       )
@@ -383,14 +382,14 @@ class _AnswerPageState extends State<AnswerPage> {
                         height: 80.0,
                         child: CircleAvatar(
                           backgroundImage:
-                              NetworkImage(question!.ownerProfileImage),
+                              NetworkImage(question.ownerProfileImage),
                         ),
                       ),
                 Padding(
                   padding:
                       EdgeInsets.only(left: 25, right: 25, top: 20, bottom: 1),
                   child: Text(
-                    question!.content,
+                    question.content,
                     style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
@@ -509,17 +508,19 @@ class _AnswerPageState extends State<AnswerPage> {
                   : () {
                       // Only execute the code when textValue is not empty
                       String name = _checkSecret ? nickname : _userData!.name;
-                      String content = "${name}에게 메시지가 도착했어요!";
+                      String content = "$name에게 메시지가 도착했어요!";
                       _fcmController.sendMessage(
-                        userToken: question.fcmToken, title: '쿠잉', body: content);
-                      _uploadUserToFirebase(question!.owner, question!.id);
+                          userToken: question.fcmToken,
+                          title: '쿠잉',
+                          body: content);
+                      _uploadUserToFirebase(question.owner, question.id);
 
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (BuildContext context) =>
                               AnswerCompleteScreen(
                             uid: _userData!.uid,
-                            owner: question!.ownerName,
+                            owner: question.ownerName,
                             isFromLink: isFromLink,
                           ),
                         ),
