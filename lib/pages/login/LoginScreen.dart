@@ -85,8 +85,8 @@ class _LoginScreenState extends State<LoginScreen> {
       // 만약, appleSignInUser가 있다면
       final appleSignInUser = userCredential.user;
       if (appleSignInUser != null) {
-        final appleSignInUserInDB = await r.Response.readUser(
-            userUid: appleSignInUser.uid);
+        final appleSignInUserInDB =
+            await r.Response.readUser(userUid: appleSignInUser.uid);
         print(appleSignInUserInDB);
         // 만약, DB에 User가 없다면
         if (appleSignInUserInDB == null) {
@@ -138,8 +138,8 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  Future<void> firebaseLogin(String email, String uid, String name,
-      String profileImage) async {
+  Future<void> firebaseLogin(
+      String email, String uid, String name, String profileImage) async {
     try {
       firebase.UserCredential userCredential = await firebase
           .FirebaseAuth.instance
@@ -202,38 +202,44 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     scaffoldContext = context;
 
-    return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-        ),
-        backgroundColor: Color(0xFFffffff),
-        body: Container(
-            padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
-            child: Form(
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "당신을 몰래 좋아하는",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 22,
-                          color: Color.fromARGB(255, 51, 61, 75)),
-                    ),
-                    Text(
-                      "사람은 누굴까요?",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 22,
-                          color: Color.fromARGB(255, 51, 61, 75)),
-                    ),
-                    Spacer(),
-                    _kakaoLoginButton(),
-                    SizedBox(height: 20,),
-                    _appleLoginButton(),
-                  ]),
-            )));
+    return WillPopScope(
+        onWillPop: () async {
+          return false;
+        },
+        child: Scaffold(
+            appBar: AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+            ),
+            backgroundColor: Color(0xFFffffff),
+            body: Container(
+                padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
+                child: Form(
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "당신을 몰래 좋아하는",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 22,
+                              color: Color.fromARGB(255, 51, 61, 75)),
+                        ),
+                        Text(
+                          "사람은 누굴까요?",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 22,
+                              color: Color.fromARGB(255, 51, 61, 75)),
+                        ),
+                        Spacer(),
+                        _kakaoLoginButton(),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        _appleLoginButton(),
+                      ]),
+                ))));
   }
 
   Widget _appleLoginButton() {
@@ -246,19 +252,22 @@ class _LoginScreenState extends State<LoginScreen> {
         width: double.infinity,
         height: 60,
         decoration: BoxDecoration(
-            color: Color(0XFF000000),
-            borderRadius: BorderRadius.circular(12)
-        ),
+            color: Color(0XFF000000), borderRadius: BorderRadius.circular(12)),
         child: GestureDetector(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset('images/apple_symbol.png', height: 20,),
-              SizedBox(width: 10,),
-              Text('Apple로 로그인 ', style: TextStyle(
-                  fontSize: 15,
-                  color: Colors.white
-              ),)
+              Image.asset(
+                'images/apple_symbol.png',
+                height: 20,
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              Text(
+                'Apple로 로그인 ',
+                style: TextStyle(fontSize: 15, color: Colors.white),
+              )
             ],
           ),
         ),
@@ -276,19 +285,23 @@ class _LoginScreenState extends State<LoginScreen> {
         width: double.infinity,
         height: 60,
         decoration: BoxDecoration(
-            color: Color(0XFFFEE500),
-            borderRadius: BorderRadius.circular(12)
-        ),
+            color: Color(0XFFFEE500), borderRadius: BorderRadius.circular(12)),
         child: GestureDetector(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset('images/kakao_symbol.png', height: 20,),
-              SizedBox(width: 10,),
-              Text('카카오 로그인 ', style: TextStyle(
-                  fontSize: 15,
-                  color: Colors.black.withOpacity(0.85)
-              ),)
+              Image.asset(
+                'images/kakao_symbol.png',
+                height: 20,
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              Text(
+                '카카오 로그인 ',
+                style: TextStyle(
+                    fontSize: 15, color: Colors.black.withOpacity(0.85)),
+              )
             ],
           ),
         ),

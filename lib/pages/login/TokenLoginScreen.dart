@@ -75,36 +75,40 @@ class _TokenLoginScreenState extends State<TokenLoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-        ),
-        backgroundColor: Color(0xFFffffff),
-        body: Container(
-            padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
-            child: Form(
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "당신을 몰래 좋아하는",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 22,
-                          color: Color.fromARGB(255, 51, 61, 75)),
-                    ),
-                    Text(
-                      "사람은 누굴까요?",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 22,
-                          color: Color.fromARGB(255, 51, 61, 75)),
-                    ),
-                    Spacer(),
-                    _loginButton()
-                  ]),
-            )));
+    return WillPopScope(
+        onWillPop: () async {
+          return false;
+        },
+        child: Scaffold(
+            appBar: AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+            ),
+            backgroundColor: Color(0xFFffffff),
+            body: Container(
+                padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
+                child: Form(
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "당신을 몰래 좋아하는",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 22,
+                              color: Color.fromARGB(255, 51, 61, 75)),
+                        ),
+                        Text(
+                          "사람은 누굴까요?",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 22,
+                              color: Color.fromARGB(255, 51, 61, 75)),
+                        ),
+                        Spacer(),
+                        _loginButton()
+                      ]),
+                ))));
   }
 
   Widget _loginButton() {

@@ -130,176 +130,187 @@ class _MultiSelectscreenState extends State<MultiSelectscreen> {
     //   style.add(Style("호감형인", false));
     // }
 
-    return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          automaticallyImplyLeading: false, // 추가
-        ),
-        backgroundColor: Color(0xFFffffff),
-        body: SingleChildScrollView(
-            child: Column(children: [
-          Container(
-              padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      _textList[title],
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 22,
-                          color: Color.fromARGB(255, 51, 61, 75)),
-                    ),
-                    AnimatedOpacity(
-                        opacity: _style ? 1.0 : 0.0,
-                        duration: const Duration(milliseconds: 500),
-                        child: Visibility(
-                          visible: _style,
-                          child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.only(
-                                      top: 40, bottom: 10),
-                                  child: Text(
-                                    '스타일',
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        color: Color.fromARGB(255, 51, 61, 75)),
-                                  ),
-                                ),
-                                Container(
-                                  padding: const EdgeInsets.only(bottom: 10),
-                                  child: Text(
-                                    '3개를 선택해주세요.',
-                                    style: TextStyle(
-                                        fontSize: 14,
-                                        color: Color.fromRGBO(51, 61, 75, 0.4)),
-                                  ),
-                                ),
-                                SafeArea(
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      GridView.builder(
-                                        shrinkWrap: true,
-                                        physics: NeverScrollableScrollPhysics(),
-                                        itemBuilder: (ctx, index) {
-                                          return prepareStyle(index);
-                                        },
-                                        gridDelegate:
-                                            SliverGridDelegateWithFixedCrossAxisCount(
-                                          crossAxisCount: 3,
-                                          crossAxisSpacing: 10,
-                                          mainAxisSpacing: 10,
-                                        ),
-                                        itemCount: style.length,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ]),
-                        )),
-                    Container(
-                      padding: const EdgeInsets.only(top: 40, bottom: 20),
-                      child: Text(
-                        '취미',
-                        style: TextStyle(
-                            fontSize: 20,
-                            color: Color.fromARGB(255, 51, 61, 75)),
-                      ),
-                    ),
-                    SafeArea(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          GridView.builder(
-                            shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
-                            itemBuilder: (ctx, index) {
-                              return prepareHobby(index);
-                            },
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 3,
-                              crossAxisSpacing: 10,
-                              mainAxisSpacing: 10,
-                            ),
-                            itemCount: style.length,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ]))
-        ])),
-        bottomNavigationBar: AnimatedOpacity(
-            opacity: button ? 1.0 : 0.0,
-            duration: const Duration(milliseconds: 1000),
-            child: Visibility(
-              visible: button,
-              child: Padding(
-                padding: EdgeInsets.all(20),
-                child: SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          primary: Color.fromARGB(255, 151, 84, 251)),
-                      child: const Text('확인',
+    return WillPopScope(
+        onWillPop: () async {
+          return false;
+        },
+        child: Scaffold(
+            appBar: AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              automaticallyImplyLeading: false, // 추가
+            ),
+            backgroundColor: Color(0xFFffffff),
+            body: SingleChildScrollView(
+                child: Column(children: [
+              Container(
+                  padding:
+                      const EdgeInsets.only(left: 20, right: 20, bottom: 20),
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _textList[title],
                           style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 15)),
-                      onPressed: () async {
-                        for (int i = 0; i < style.length; i++) {
-                          if (style[i].selected) {
-                            _styleList.add(style[i].name);
-                          }
+                              fontWeight: FontWeight.bold,
+                              fontSize: 22,
+                              color: Color.fromARGB(255, 51, 61, 75)),
+                        ),
+                        AnimatedOpacity(
+                            opacity: _style ? 1.0 : 0.0,
+                            duration: const Duration(milliseconds: 500),
+                            child: Visibility(
+                              visible: _style,
+                              child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.only(
+                                          top: 40, bottom: 10),
+                                      child: Text(
+                                        '스타일',
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            color: Color.fromARGB(
+                                                255, 51, 61, 75)),
+                                      ),
+                                    ),
+                                    Container(
+                                      padding:
+                                          const EdgeInsets.only(bottom: 10),
+                                      child: Text(
+                                        '3개를 선택해주세요.',
+                                        style: TextStyle(
+                                            fontSize: 14,
+                                            color: Color.fromRGBO(
+                                                51, 61, 75, 0.4)),
+                                      ),
+                                    ),
+                                    SafeArea(
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          GridView.builder(
+                                            shrinkWrap: true,
+                                            physics:
+                                                NeverScrollableScrollPhysics(),
+                                            itemBuilder: (ctx, index) {
+                                              return prepareStyle(index);
+                                            },
+                                            gridDelegate:
+                                                SliverGridDelegateWithFixedCrossAxisCount(
+                                              crossAxisCount: 3,
+                                              crossAxisSpacing: 10,
+                                              mainAxisSpacing: 10,
+                                            ),
+                                            itemCount: style.length,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ]),
+                            )),
+                        Container(
+                          padding: const EdgeInsets.only(top: 40, bottom: 20),
+                          child: Text(
+                            '취미',
+                            style: TextStyle(
+                                fontSize: 20,
+                                color: Color.fromARGB(255, 51, 61, 75)),
+                          ),
+                        ),
+                        SafeArea(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              GridView.builder(
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                itemBuilder: (ctx, index) {
+                                  return prepareHobby(index);
+                                },
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 3,
+                                  crossAxisSpacing: 10,
+                                  mainAxisSpacing: 10,
+                                ),
+                                itemCount: style.length,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ]))
+            ])),
+            bottomNavigationBar: AnimatedOpacity(
+                opacity: button ? 1.0 : 0.0,
+                duration: const Duration(milliseconds: 1000),
+                child: Visibility(
+                  visible: button,
+                  child: Padding(
+                    padding: EdgeInsets.all(20),
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              primary: Color.fromARGB(255, 151, 84, 251)),
+                          child: const Text('확인',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 15)),
+                          onPressed: () async {
+                            for (int i = 0; i < style.length; i++) {
+                              if (style[i].selected) {
+                                _styleList.add(style[i].name);
+                              }
 
-                          for (int i = 0; i < hobby.length; i++) {
-                            if (hobby[i].selected) {
-                              _hobby = hobby[i].title;
+                              for (int i = 0; i < hobby.length; i++) {
+                                if (hobby[i].selected) {
+                                  _hobby = hobby[i].title;
+                                }
+                              }
+                              print(_styleList);
+
+                              Navigator.pushNamed(
+                                context,
+                                'agree',
+                                arguments: User(
+                                  uid: args.uid,
+                                  name: args.name,
+                                  profileImage: args.profileImage,
+                                  gender: args.gender,
+                                  number: args.number,
+                                  age: args.age,
+                                  birthday: args.birthday,
+                                  school: args.school,
+                                  schoolCode: args.schoolCode,
+                                  schoolOrg: args.schoolOrg,
+                                  grade: args.grade,
+                                  group: args.group,
+                                  eyes: args.eyes,
+                                  mbti: args.mbti,
+                                  hobby: _hobby,
+                                  style: _styleList,
+                                  isSubscribe: args.isSubscribe,
+                                  candyCount: args.candyCount,
+                                  recentDailyBonusReceiveDate:
+                                      args.recentDailyBonusReceiveDate,
+                                  recentQuestionBonusReceiveDate:
+                                      args.recentQuestionBonusReceiveDate,
+                                  questionInfos: args.questionInfos,
+                                  answeredQuestions: args.answeredQuestions,
+                                  currentQuestionId: args.currentQuestionId,
+                                  serviceNeedsAgreement:
+                                      args.serviceNeedsAgreement,
+                                  privacyNeedsAgreement:
+                                      args.privacyNeedsAgreement,
+                                ),
+                              );
                             }
-                          }
-                          print(_styleList);
-
-                          Navigator.pushNamed(
-                            context,
-                            'agree',
-                            arguments: User(
-                              uid: args.uid,
-                              name: args.name,
-                              profileImage: args.profileImage,
-                              gender: args.gender,
-                              number: args.number,
-                              age: args.age,
-                              birthday: args.birthday,
-                              school: args.school,
-                              schoolCode: args.schoolCode,
-                              schoolOrg: args.schoolOrg,
-                              grade: args.grade,
-                              group: args.group,
-                              eyes: args.eyes,
-                              mbti: args.mbti,
-                              hobby: _hobby,
-                              style: _styleList,
-                              isSubscribe: args.isSubscribe,
-                              candyCount: args.candyCount,
-                              recentDailyBonusReceiveDate:
-                                  args.recentDailyBonusReceiveDate,
-                              recentQuestionBonusReceiveDate:
-                                  args.recentQuestionBonusReceiveDate,
-                              questionInfos: args.questionInfos,
-                              answeredQuestions: args.answeredQuestions,
-                              currentQuestionId: args.currentQuestionId,
-                              serviceNeedsAgreement: args.serviceNeedsAgreement,
-                              privacyNeedsAgreement: args.privacyNeedsAgreement,
-                            ),
-                          );
-                        }
-                      }),
-                ),
-              ),
-            )));
+                          }),
+                    ),
+                  ),
+                ))));
   }
 
   Widget prepareHobby(int k) {

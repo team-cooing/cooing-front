@@ -79,20 +79,24 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-        ),
-        backgroundColor: Palette.mainPurple,
-        body: Container(
-            width: double.infinity,
-            height: double.infinity,
-            alignment: Alignment.topCenter,
-            decoration: BoxDecoration(
-                image: DecorationImage(
-                    alignment: Alignment.topCenter,
-                    fit: BoxFit.cover,
-                    image: AssetImage('images/splash.png')))));
+    return WillPopScope(
+        onWillPop: () async {
+          return false;
+        },
+        child: Scaffold(
+            appBar: AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+            ),
+            backgroundColor: Palette.mainPurple,
+            body: Container(
+                width: double.infinity,
+                height: double.infinity,
+                alignment: Alignment.topCenter,
+                decoration: BoxDecoration(
+                    image: DecorationImage(
+                        alignment: Alignment.topCenter,
+                        fit: BoxFit.cover,
+                        image: AssetImage('images/splash.png'))))));
   }
 }
