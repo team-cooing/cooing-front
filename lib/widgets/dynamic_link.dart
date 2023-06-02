@@ -1,5 +1,4 @@
 import 'package:cooing_front/model/response/question.dart';
-import 'package:cooing_front/model/response/user.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:cooing_front/pages/answer_page.dart';
 import 'package:get/get.dart';
@@ -122,10 +121,10 @@ Future<String> getShortLink(Question question) async {
       packageName: 'com.midas.cooing',
       minimumVersion: 0,
     ),
-    // iosParameters: const IOSParameters(
-    //   bundleId: packageName,
-    //   minimumVersion: '0',
-    // ),
+    iosParameters: const IOSParameters(
+      bundleId: 'com.midas.cooing',
+      minimumVersion: '0',
+    ),
   );
   final dynamicLink =
       await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
