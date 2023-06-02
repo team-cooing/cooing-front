@@ -4,9 +4,8 @@ import 'package:cooing_front/model/util/hint.dart';
 import 'package:cooing_front/model/config/palette.dart';
 import 'package:cooing_front/pages/answer_complete_page.dart';
 import 'package:cooing_front/pages/tab_page.dart';
-import 'package:cooing_front/widgets/firebase_method.dart';
 import 'package:cooing_front/model/response/response.dart' as response;
-
+import 'package:cooing_front/widgets/userData_method.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -73,14 +72,12 @@ class _AnswerPageState extends State<AnswerPage> {
   Future<void> settingData() async {
     question = await getQuestion(widget.question);
 
-    print("333333333333    $uid");
     //링크를 통해 들어왔을 때
     if (isFromLink) {
       //user 데이터 불러오기
       getUserData(uid).then((value) {
         _userData = value;
         hintList = generateHint(_userData!);
-        // userData = widget.user;
         nickname = getNickname(_userData!);
       });
     } else {
@@ -91,7 +88,7 @@ class _AnswerPageState extends State<AnswerPage> {
       print("widget.user : ${_userData!.uid}");
     }
 
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(Duration(seconds: 1));
 
     if (_userData != null && hintList.isNotEmpty) {
       isLoading = false;
@@ -125,21 +122,6 @@ class _AnswerPageState extends State<AnswerPage> {
       if (question.id.isNotEmpty) {
         timeId = DateTime.now().toString();
         print("ownerId: $ownerId");
-
-        // final DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
-        //     .collection('users')
-        //     .doc(_userData!.uid)
-        //     .get();
-
-        // Map<String, dynamic>? data =
-        //     userSnapshot.data() as Map<String, dynamic>?;
-
-        // if (data != null) {
-        //   answeredQuestions = List<String>.from(data['answeredQuestions']);
-        // } else {
-        //   answeredQuestions = [];
-        // }
-
         _userData!.answeredQuestions.add(questionId);
 
         final userAnswerRef = FirebaseFirestore.instance
