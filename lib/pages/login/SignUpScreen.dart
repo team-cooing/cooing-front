@@ -35,193 +35,218 @@ class _SignUpScreenState extends State<SignUpScreen> {
   String _number = '';
 
   // var thirdField = FocusNode();
+  void hideKeyboard() {
+    FocusScope.of(context).unfocus();
+  }
 
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as User;
 
-    return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-        ),
-        backgroundColor: Color(0xFFffffff),
-        body: Container(
-          padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
-          child: Form(
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(
-                _textList[title],
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 22,
-                    color: Color.fromARGB(255, 51, 61, 75)),
-              ),
-              Visibility(
-                visible: age,
-                child: TextField(
-                  keyboardType: TextInputType.number,
-                  inputFormatters: <TextInputFormatter>[
-                    FilteringTextInputFormatter.digitsOnly
-                  ],
-                  // focusNode: node1,
-                  onChanged: (text) {
-                    if (text.length == 2 &&
-                        _number.length == 11 &&
-                        _name.length > 0 &&
-                        int.parse(text) <= 19) {
-                      setState(() {
-                        button = true;
-                      });
-                    } else {
-                      setState(() {
-                        button = false;
-                      });
-                    }
-                    setState(() {
-                      _age = text;
-                    });
-
-                    // 현재 텍스트필드의 텍스트를 출력
-                  },
-                  maxLength: 2,
-                  focusNode: ageField,
-                  autofocus: true,
-                  decoration: InputDecoration(
-                      counterText: '',
-                      focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                              color: Color.fromARGB(255, 151, 84, 251))),
-                      labelText: "나이",
-                      labelStyle: new TextStyle(
-                          color: Color.fromARGB(255, 182, 183, 184))),
+    return WillPopScope(
+        onWillPop: () async {
+          return false;
+        },
+        child: GestureDetector(
+            onTap: hideKeyboard,
+            child: Scaffold(
+                appBar: AppBar(
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
                 ),
-              ),
-              Visibility(
-                visible: number,
-                child: TextField(
-                  autofocus: true,
-                  focusNode: numberField,
-                  maxLength: 11,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: <TextInputFormatter>[
-                    FilteringTextInputFormatter.digitsOnly
-                  ],
-                  onChanged: (text) {
-                    if (text.length == 11 && _name.length > 0) {
-                      setState(() {
-                        ageField.requestFocus();
-                        age = true;
-                        title = 2;
-                      });
-                    } else {
-                      setState(() {
-                        button = false;
-                      });
-                    }
-                    setState(() {
-                      _number = text;
-                    });
-                    // 현재 텍스트필드의 텍스트를 출력
-                  },
-                  decoration: InputDecoration(
-                      counterText: '',
-                      focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                              color: Color.fromARGB(255, 151, 84, 251))),
-                      labelText: "휴대폰 번호",
-                      labelStyle: new TextStyle(
-                          color: Color.fromARGB(255, 182, 183, 184))),
-                ),
-              ),
-              TextField(
-                focusNode: node1,
-                enabled: enable,
-                autofocus: true,
-                onChanged: (value) {
-                  print(value.length);
-                  if (value.length > 0) {
-                    setState(() {
-                      button = true;
-                    });
-                  }
-                  setState(() {
-                    _name = value;
-                  });
-                },
-                decoration: InputDecoration(
-                    focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Color.fromARGB(255, 151, 84, 251))),
-                    labelText: "이름",
-                    labelStyle: new TextStyle(
-                        color: Color.fromARGB(255, 182, 183, 184))),
-              ),
-              Spacer(),
-              Visibility(
-                  visible: button,
-                  child: SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            primary: Color.fromARGB(255, 151, 84, 251)),
-                        child: const Text('확인',
+                backgroundColor: Color(0xFFffffff),
+                body: Container(
+                  padding:
+                      const EdgeInsets.only(left: 20, right: 20, bottom: 20),
+                  child: Form(
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            _textList[title],
                             style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 15)),
-                        onPressed: () {
-                          if (!number) {
-                            setState(() {
-                              numberField.requestFocus();
-                              enable = false;
-                              button = false;
-                              number = true;
-                              // node1.unfocus();
-                              title = 1;
-                            });
-                          } else {
-                            Navigator.pushNamed(
-                              context,
-                              'school',
-                              arguments: User(
-                                uid: args.uid,
-                                name: _name,
-                                profileImage: args.profileImage,
-                                gender: args.gender,
-                                number: _number,
-                                age: _age,
-                                birthday: args.birthday,
-                                school: args.school,
-                                schoolCode: args.schoolCode,
-                                schoolOrg: args.schoolOrg,
-                                grade: args.grade,
-                                group: args.group,
-                                eyes: args.eyes,
-                                mbti: args.mbti,
-                                hobby: args.hobby,
-                                style: args.style,
-                                isSubscribe: args.isSubscribe,
-                                candyCount: args.candyCount,
-                                recentDailyBonusReceiveDate:
-                                    args.recentDailyBonusReceiveDate,
-                                recentQuestionBonusReceiveDate:
-                                    args.recentQuestionBonusReceiveDate,
-                                questionInfos: args.questionInfos,
-                                answeredQuestions: args.answeredQuestions,
-                                currentQuestionId: args.currentQuestionId,
-                                serviceNeedsAgreement:
-                                    args.serviceNeedsAgreement,
-                                privacyNeedsAgreement:
-                                    args.privacyNeedsAgreement,
-                              ),
-                            );
-                          }
-                        },
-                      )))
-            ]),
-          ),
-        ));
+                                fontWeight: FontWeight.bold,
+                                fontSize: 22,
+                                color: Color.fromARGB(255, 51, 61, 75)),
+                          ),
+                          Visibility(
+                            visible: age,
+                            child: TextField(
+                              keyboardType: TextInputType.number,
+                              inputFormatters: <TextInputFormatter>[
+                                FilteringTextInputFormatter.digitsOnly
+                              ],
+                              // focusNode: node1,
+                              onChanged: (text) {
+                                if (text.length == 2 &&
+                                    _number.length == 11 &&
+                                    _name.length > 0 &&
+                                    int.parse(text) <= 19) {
+                                  setState(() {
+                                    button = true;
+                                  });
+                                } else {
+                                  setState(() {
+                                    button = false;
+                                  });
+                                }
+                                setState(() {
+                                  _age = text;
+                                });
+
+                                // 현재 텍스트필드의 텍스트를 출력
+                              },
+                              maxLength: 2,
+                              focusNode: ageField,
+                              autofocus: true,
+                              decoration: InputDecoration(
+                                  errorText: _age.isNotEmpty
+                                      ? int.parse(_age) >= 20
+                                          ? '만 19세 이상의 서비스 이용이 제한됩니다.'
+                                          : null
+                                      : null,
+                                  counterText: '',
+                                  focusedBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Color.fromARGB(
+                                              255, 151, 84, 251))),
+                                  labelText: "나이",
+                                  labelStyle: new TextStyle(
+                                      color:
+                                          Color.fromARGB(255, 182, 183, 184))),
+                            ),
+                          ),
+                          Visibility(
+                            visible: number,
+                            child: TextField(
+                              autofocus: true,
+                              focusNode: numberField,
+                              maxLength: 11,
+                              keyboardType: TextInputType.number,
+                              inputFormatters: <TextInputFormatter>[
+                                FilteringTextInputFormatter.digitsOnly
+                              ],
+                              onChanged: (text) {
+                                if (text.length == 11 && _name.length > 0) {
+                                  setState(() {
+                                    ageField.requestFocus();
+                                    age = true;
+                                    title = 2;
+                                  });
+                                } else {
+                                  setState(() {
+                                    button = false;
+                                  });
+                                }
+                                setState(() {
+                                  _number = text;
+                                });
+                                // 현재 텍스트필드의 텍스트를 출력
+                              },
+                              decoration: InputDecoration(
+                                  counterText: '',
+                                  focusedBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Color.fromARGB(
+                                              255, 151, 84, 251))),
+                                  labelText: "휴대폰 번호",
+                                  labelStyle: new TextStyle(
+                                      color:
+                                          Color.fromARGB(255, 182, 183, 184))),
+                            ),
+                          ),
+                          TextField(
+                            focusNode: node1,
+                            enabled: enable,
+                            autofocus: true,
+                            onChanged: (value) {
+                              print(value.length);
+                              if (value.length > 0) {
+                                setState(() {
+                                  button = true;
+                                });
+                              }
+                              setState(() {
+                                _name = value;
+                              });
+                            },
+                            decoration: InputDecoration(
+                                focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color:
+                                            Color.fromARGB(255, 151, 84, 251))),
+                                labelText: "이름",
+                                labelStyle: new TextStyle(
+                                    color: Color.fromARGB(255, 182, 183, 184))),
+                          ),
+                          Spacer(),
+                          Visibility(
+                              visible: button,
+                              child: SizedBox(
+                                  width: double.infinity,
+                                  height: 50,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                        primary:
+                                            Color.fromARGB(255, 151, 84, 251)),
+                                    child: const Text('확인',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 15)),
+                                    onPressed: () {
+                                      if (!number) {
+                                        setState(() {
+                                          numberField.requestFocus();
+                                          enable = false;
+                                          button = false;
+                                          number = true;
+                                          // node1.unfocus();
+                                          title = 1;
+                                        });
+                                      } else {
+                                        Navigator.pushNamed(
+                                          context,
+                                          'school',
+                                          arguments: User(
+                                            uid: args.uid,
+                                            name: _name,
+                                            profileImage: args.profileImage,
+                                            gender: args.gender,
+                                            number: _number,
+                                            age: _age,
+                                            birthday: args.birthday,
+                                            school: args.school,
+                                            schoolCode: args.schoolCode,
+                                            schoolOrg: args.schoolOrg,
+                                            grade: args.grade,
+                                            group: args.group,
+                                            eyes: args.eyes,
+                                            mbti: args.mbti,
+                                            hobby: args.hobby,
+                                            style: args.style,
+                                            isSubscribe: args.isSubscribe,
+                                            candyCount: args.candyCount,
+                                            recentDailyBonusReceiveDate: args
+                                                .recentDailyBonusReceiveDate,
+                                            recentQuestionBonusReceiveDate: args
+                                                .recentQuestionBonusReceiveDate,
+                                            questionInfos: args.questionInfos,
+                                            answeredQuestions:
+                                                args.answeredQuestions,
+                                            currentQuestionId:
+                                                args.currentQuestionId,
+                                            serviceNeedsAgreement:
+                                                args.serviceNeedsAgreement,
+                                            privacyNeedsAgreement:
+                                                args.privacyNeedsAgreement,
+                                          ),
+                                        );
+                                      }
+                                    },
+                                  )))
+                        ]),
+                  ),
+                ))));
   }
 }
 
