@@ -13,7 +13,6 @@ import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class LoginScreen extends StatefulWidget {
