@@ -1,15 +1,18 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
+import 'package:cooing_front/model/data/my_user.dart';
 import 'package:cooing_front/model/response/response.dart' as r;
 import 'package:cooing_front/model/response/user.dart';
 import 'package:cooing_front/pages/tab_page.dart';
+import 'package:crypto/crypto.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:cooing_front/model/util/Login_platform.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -22,6 +25,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   late BuildContext scaffoldContext;
   LoginPlatform _loginPlatform = LoginPlatform.none;
+  String uid = '';
   String nickname = '';
   String profileImage = '';
 
@@ -63,41 +67,53 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  // TODO: Apple Login
   void signInWithApple() async {
-    try {
-      // Apple Credential 받기
-      final appleCredential = await SignInWithApple.getAppleIDCredential(
-          scopes: [
-            AppleIDAuthorizationScopes.email,
-            AppleIDAuthorizationScopes.fullName
-          ]);
+    final firebaseAuth = firebase.FirebaseAuth.instance;
 
-      // OAuth Credential 생성
-      final oauthCredential = firebase.OAuthProvider("apple.com").credential(
-        idToken: appleCredential.identityToken,
+    final appleCredential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+      AppleIDAuthorizationScopes.fullName
+    ]);
+
+    // 로그인 권한 여부 체크
+    try{
+      // 애플 로그인 인증 후, 결과값으로 Firebase Authentication 데이터 넣는 작업
+      final oAuthProvider = firebase.OAuthProvider('apple.com');
+      final credential = oAuthProvider.credential(
+          idToken: appleCredential.identityToken,
       );
 
-      // Firebase Credential 받기
-      final userCredential = await firebase.FirebaseAuth.instance
-          .signInWithCredential(oauthCredential);
+      // Firebase Auth로 인증
+      final authResult = await firebaseAuth.signInWithCredential(credential);
 
-      // 만약, appleSignInUser가 있다면
-      final appleSignInUser = userCredential.user;
-      if (appleSignInUser != null) {
-        final appleSignInUserInDB = await r.Response.readUser(
-            userUid: appleSignInUser.uid);
-        print(appleSignInUserInDB);
-        // 만약, DB에 User가 없다면
-        if (appleSignInUserInDB == null) {
+      // 인증 완료시, firebaseUser 값으로 변환
+      final firebaseUser = authResult.user;
+
+      // 만약, firebaseUser 값이 있다면
+      if(firebaseUser!=null){
+        var bytes = utf8.encode(appleCredential.userIdentifier!); // 비밀번호를 UTF-8 형식의 바이트 배열로 변환
+        var digest = sha256.convert(bytes); // SHA-256 알고리즘을 사용하여 해시화
+        String newPassword = digest.toString();
+        await firebase.FirebaseAuth.instance.currentUser!.updatePassword(newPassword);
+
+        // MyUser 세팅
+        MyUser.userPlatform = 'apple';
+        MyUser.userId = appleCredential.userIdentifier!;
+        MyUser.appleUserUid = firebaseUser.uid;
+        MyUser.appleUserEmail = firebaseUser.email!;
+        final appleUserInDB = await r.Response.readUser(userUid: firebaseUser.uid);
+
+        // 만약, FirebaseDB에 Apple 유저 정보가 없다면
+        if(appleUserInDB==null){
           print('Apple Login - Not User in DB');
           if (!mounted) return;
           Navigator.pushNamed(
             scaffoldContext,
             'signUp',
             arguments: User(
-              uid: appleSignInUser.uid,
-              name: 'apple_{appleCredential.identityToken}',
+              uid: firebaseUser.uid,
+              name: 'apple',
               profileImage: getRandomProfile(),
               gender: 0,
               number: '',
@@ -123,23 +139,25 @@ class _LoginScreenState extends State<LoginScreen> {
               privacyNeedsAgreement: false,
             ),
           );
-        } else {
-          // 애플 로그인 토큰 저장
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          String token = appleCredential.identityToken.toString();
-          await prefs.setString('apple_login_token', token);
-          print('Apple Login token saved: $token');
-          Get.offAll(TabPage(), arguments: appleSignInUser.uid);
+        }else{
+          // Store user Id (자동로그인을 위한 인증된 user 정보 저장)
+          await FlutterSecureStorage()
+              .write(key: "userId", value: appleCredential.userIdentifier!);
+          await FlutterSecureStorage()
+              .write(key: "userPlatform", value: 'apple');
+          await FlutterSecureStorage()
+              .write(key: "appleUserEmail", value: firebaseUser.email);
+          await FlutterSecureStorage().write(key: "appleUserUid", value: firebaseUser.uid);
+          Get.offAll(TabPage(), arguments: firebaseUser.uid);
         }
       }
-    } catch (e) {
-      // 로그인 실패 시 예외 처리를 수행합니다.
-      print('Apple 로그인 실패: $e');
+    }catch(e){
+      print('Apple SignIn Error - $e');
     }
   }
 
-  Future<void> firebaseLogin(String email, String uid, String name,
-      String profileImage) async {
+  Future<void> firebaseLogin(
+      String email, String uid, String name, String profileImage) async {
     try {
       firebase.UserCredential userCredential = await firebase
           .FirebaseAuth.instance
@@ -148,6 +166,8 @@ class _LoginScreenState extends State<LoginScreen> {
       print('파이어베이스 로그인 성공');
     } on firebase.FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
+        // MyUser 세팅
+        MyUser.userPlatform = 'kakao';
         Navigator.pushNamed(
           context,
           'signUp',
@@ -202,38 +222,44 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     scaffoldContext = context;
 
-    return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-        ),
-        backgroundColor: Color(0xFFffffff),
-        body: Container(
-            padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
-            child: Form(
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "당신을 몰래 좋아하는",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 22,
-                          color: Color.fromARGB(255, 51, 61, 75)),
-                    ),
-                    Text(
-                      "사람은 누굴까요?",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 22,
-                          color: Color.fromARGB(255, 51, 61, 75)),
-                    ),
-                    Spacer(),
-                    _kakaoLoginButton(),
-                    SizedBox(height: 20,),
-                    _appleLoginButton(),
-                  ]),
-            )));
+    return WillPopScope(
+        onWillPop: () async {
+          return false;
+        },
+        child: Scaffold(
+            appBar: AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+            ),
+            backgroundColor: Color(0xFFffffff),
+            body: Container(
+                padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
+                child: Form(
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "당신을 몰래 좋아하는",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 22,
+                              color: Color.fromARGB(255, 51, 61, 75)),
+                        ),
+                        Text(
+                          "사람은 누굴까요?",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 22,
+                              color: Color.fromARGB(255, 51, 61, 75)),
+                        ),
+                        Spacer(),
+                        _kakaoLoginButton(),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        _appleLoginButton(),
+                      ]),
+                ))));
   }
 
   Widget _appleLoginButton() {
@@ -246,19 +272,22 @@ class _LoginScreenState extends State<LoginScreen> {
         width: double.infinity,
         height: 60,
         decoration: BoxDecoration(
-            color: Color(0XFF000000),
-            borderRadius: BorderRadius.circular(12)
-        ),
+            color: Color(0XFF000000), borderRadius: BorderRadius.circular(12)),
         child: GestureDetector(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset('images/apple_symbol.png', height: 20,),
-              SizedBox(width: 10,),
-              Text('Apple로 로그인 ', style: TextStyle(
-                  fontSize: 15,
-                  color: Colors.white
-              ),)
+              Image.asset(
+                'images/apple_symbol.png',
+                height: 20,
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              Text(
+                'Apple로 로그인 ',
+                style: TextStyle(fontSize: 15, color: Colors.white),
+              )
             ],
           ),
         ),
@@ -276,19 +305,23 @@ class _LoginScreenState extends State<LoginScreen> {
         width: double.infinity,
         height: 60,
         decoration: BoxDecoration(
-            color: Color(0XFFFEE500),
-            borderRadius: BorderRadius.circular(12)
-        ),
+            color: Color(0XFFFEE500), borderRadius: BorderRadius.circular(12)),
         child: GestureDetector(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset('images/kakao_symbol.png', height: 20,),
-              SizedBox(width: 10,),
-              Text('카카오 로그인 ', style: TextStyle(
-                  fontSize: 15,
-                  color: Colors.black.withOpacity(0.85)
-              ),)
+              Image.asset(
+                'images/kakao_symbol.png',
+                height: 20,
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              Text(
+                '카카오 로그인 ',
+                style: TextStyle(
+                    fontSize: 15, color: Colors.black.withOpacity(0.85)),
+              )
             ],
           ),
         ),

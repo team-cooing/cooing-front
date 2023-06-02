@@ -4,15 +4,12 @@ import 'package:cooing_front/model/util/hint.dart';
 import 'package:cooing_front/model/config/palette.dart';
 import 'package:cooing_front/pages/answer_complete_page.dart';
 import 'package:cooing_front/pages/tab_page.dart';
-import 'package:cooing_front/widgets/firebase_method.dart';
 import 'package:cooing_front/model/response/response.dart' as response;
-
+import 'package:cooing_front/widgets/userData_method.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:get/get.dart';
 import 'dart:math';
-import 'dart:convert';
 import 'package:cooing_front/model/response/fcmController.dart';
 
 class AnswerPage extends StatefulWidget {
@@ -75,25 +72,25 @@ class _AnswerPageState extends State<AnswerPage> {
   Future<void> settingData() async {
     question = await getQuestion(widget.question);
 
-    print("333333333333    $uid");
     //링크를 통해 들어왔을 때
     if (isFromLink) {
       //user 데이터 불러오기
       getUserData(uid).then((value) {
         _userData = value;
         hintList = generateHint(_userData!);
-        // userData = widget.user;
         nickname = getNickname(_userData!);
       });
     } else {
       _userData = widget.user;
       hintList = generateHint(_userData!);
+      nickname = getNickname(_userData!);
+
       print("widget.user : ${_userData!.uid}");
     }
 
-    await Future.delayed(Duration(seconds: 3));
+    await Future.delayed(Duration(seconds: 1));
 
-    if (_userData != null && hintList.isNotEmpty && question != null) {
+    if (_userData != null && hintList.isNotEmpty) {
       isLoading = false;
     } else if (_userData == null) {
       Navigator.pushReplacementNamed(context, '/initialRoute');
@@ -121,26 +118,10 @@ class _AnswerPageState extends State<AnswerPage> {
 
   Future<void> _uploadUserToFirebase(String ownerId, String questionId) async {
     String newAnswerId;
-    List<String>? answeredQuestions;
     try {
-      if (question!.id.isNotEmpty) {
+      if (question.id.isNotEmpty) {
         timeId = DateTime.now().toString();
         print("ownerId: $ownerId");
-
-        // final DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
-        //     .collection('users')
-        //     .doc(_userData!.uid)
-        //     .get();
-
-        // Map<String, dynamic>? data =
-        //     userSnapshot.data() as Map<String, dynamic>?;
-
-        // if (data != null) {
-        //   answeredQuestions = List<String>.from(data['answeredQuestions']);
-        // } else {
-        //   answeredQuestions = [];
-        // }
-
         _userData!.answeredQuestions.add(questionId);
 
         final userAnswerRef = FirebaseFirestore.instance
@@ -185,8 +166,8 @@ class _AnswerPageState extends State<AnswerPage> {
           'ownerGender': _userData!.gender,
           'questionId': questionId,
           'content': textValue,
-          'contentId': question!.contentId,
-          'questionOwner': question!.owner,
+          'contentId': question.contentId,
+          'questionOwner': question.owner,
           'isAnonymous': _checkSecret,
           'nickname': _checkSecret ? nickname : _userData!.name,
           'hint': hintList,
@@ -283,7 +264,7 @@ class _AnswerPageState extends State<AnswerPage> {
   Widget build(BuildContext context) {
     return isLoading
         ? loadingView()
-        : question!.isOpen
+        : question.isOpen
             ? WillPopScope(
                 onWillPop: _navigateBack,
                 child: GestureDetector(
@@ -350,7 +331,7 @@ class _AnswerPageState extends State<AnswerPage> {
       const Padding(padding: EdgeInsets.all(7.0)),
       Center(
         child: Text(
-          "${question!.ownerName}에게",
+          "${question.ownerName}에게",
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 18.0,
@@ -374,7 +355,7 @@ class _AnswerPageState extends State<AnswerPage> {
               color: const Color(0xff9754FB),
               child: Column(children: <Widget>[
                 const Padding(padding: EdgeInsets.all(15.0)),
-                question!.ownerProfileImage.isEmpty
+                question.ownerProfileImage.isEmpty
                     ? CircularProgressIndicator(
                         color: Palette.mainPurple,
                       )
@@ -383,14 +364,14 @@ class _AnswerPageState extends State<AnswerPage> {
                         height: 80.0,
                         child: CircleAvatar(
                           backgroundImage:
-                              NetworkImage(question!.ownerProfileImage),
+                              NetworkImage(question.ownerProfileImage),
                         ),
                       ),
                 Padding(
                   padding:
                       EdgeInsets.only(left: 25, right: 25, top: 20, bottom: 1),
                   child: Text(
-                    question!.content,
+                    question.content,
                     style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
@@ -509,17 +490,19 @@ class _AnswerPageState extends State<AnswerPage> {
                   : () {
                       // Only execute the code when textValue is not empty
                       String name = _checkSecret ? nickname : _userData!.name;
-                      String content = "${name}에게 메시지가 도착했어요!";
+                      String content = "$name에게 메시지가 도착했어요!";
                       _fcmController.sendMessage(
-                        userToken: question.fcmToken, title: '쿠잉', body: content);
-                      _uploadUserToFirebase(question!.owner, question!.id);
+                          userToken: question.fcmToken,
+                          title: '쿠잉',
+                          body: content);
+                      _uploadUserToFirebase(question.owner, question.id);
 
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (BuildContext context) =>
                               AnswerCompleteScreen(
                             uid: _userData!.uid,
-                            owner: question!.ownerName,
+                            owner: question.ownerName,
                             isFromLink: isFromLink,
                           ),
                         ),

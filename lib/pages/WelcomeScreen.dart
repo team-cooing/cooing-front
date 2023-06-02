@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:cooing_front/model/data/my_user.dart';
 import 'package:cooing_front/pages/login/LoginScreen.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -69,6 +70,18 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           'serviceNeedsAgreement': args.serviceNeedsAgreement,
           'privacyNeedsAgreement': args.privacyNeedsAgreement,
         });
+
+        if(MyUser.userPlatform=='apple'){
+          // Store user Id (자동로그인을 위한 인증된 user 정보 저장)
+          await FlutterSecureStorage()
+              .write(key: "userId", value: MyUser.userId);
+          await FlutterSecureStorage()
+              .write(key: "userPlatform", value: MyUser.userPlatform);
+          await FlutterSecureStorage()
+              .write(key: "appleUserEmail", value: MyUser.appleUserEmail);
+          await FlutterSecureStorage().write(key: "appleUserUid", value: MyUser.appleUserUid);
+        }
+
         Get.to(TabPage(), arguments: uid);
       } else {
         final user = await kakao.UserApi.instance.me();
@@ -109,6 +122,17 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           'privacyNeedsAgreement': args.privacyNeedsAgreement,
         });
 
+        if(MyUser.userPlatform=='apple'){
+          // Store user Id (자동로그인을 위한 인증된 user 정보 저장)
+          await FlutterSecureStorage()
+              .write(key: "userId", value: MyUser.userId);
+          await FlutterSecureStorage()
+              .write(key: "userPlatform", value: MyUser.userPlatform);
+          await FlutterSecureStorage()
+              .write(key: "appleUserEmail", value: MyUser.appleUserEmail);
+          await FlutterSecureStorage().write(key: "appleUserUid", value: MyUser.appleUserUid);
+        }
+
         Get.to(TabPage(), arguments: uid);
       }
     } catch (e) {
@@ -119,38 +143,43 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as User;
 
-    return Scaffold(
-        backgroundColor: Color(0xFFffffff),
-        body: Container(
-            padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
-            child: Form(
-                child: Center(
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                  Container(
-                    padding: EdgeInsets.all(10),
-                    child: Text(
-                      "회원가입 완료!",
-                      style: TextStyle(
-                          fontSize: 16, color: Color.fromRGBO(51, 61, 75, 0.6)),
-                    ),
-                  ),
-                  Text(
-                    " ${args.name}님,",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 22,
-                        color: Color.fromARGB(255, 51, 61, 75)),
-                  ),
-                  Text(
-                    "환영합니다!",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 22,
-                        color: Color.fromARGB(255, 51, 61, 75)),
-                  ),
-                ])))));
+    return WillPopScope(
+        onWillPop: () async {
+          return false;
+        },
+        child: Scaffold(
+            backgroundColor: Color(0xFFffffff),
+            body: Container(
+                padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
+                child: Form(
+                    child: Center(
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                      Container(
+                        padding: EdgeInsets.all(10),
+                        child: Text(
+                          "회원가입 완료!",
+                          style: TextStyle(
+                              fontSize: 16,
+                              color: Color.fromRGBO(51, 61, 75, 0.6)),
+                        ),
+                      ),
+                      Text(
+                        " ${args.name}님,",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 22,
+                            color: Color.fromARGB(255, 51, 61, 75)),
+                      ),
+                      Text(
+                        "환영합니다!",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 22,
+                            color: Color.fromARGB(255, 51, 61, 75)),
+                      ),
+                    ]))))));
   }
 }
