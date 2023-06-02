@@ -1,3 +1,4 @@
+
 // Question 객체를 Firestore 문서로 변환하는 함수
 
 import 'package:cooing_front/model/response/user.dart';
@@ -9,13 +10,13 @@ Future<User?> getUserData(String uid) async {
   final prefs = await asyncPrefsOperation();
   final userDataJson = prefs.getString('userData');
   if (userDataJson != null) {
-    print("answer page : 쿠키 에서 UserData 로드");
+    print("<getUserData> cookie에서 UserData 로드");
     Map<String, dynamic> userDataMap = json.decode(userDataJson);
     return User.fromJson(userDataMap);
   } else {
     //쿠키없으면 서버에서 읽기
     User? user = await response.Response.readUser(userUid: uid);
-    print("서버에서 user 읽음");
+    print("<getUserData> firebase에서 UserData 로드");
     return user;
   }
 }
