@@ -34,8 +34,6 @@ class AnswerPage extends StatefulWidget {
 class _AnswerPageState extends State<AnswerPage> {
   late Question question;
   late String nickname;
-
-  late Question? question;
   late Question? updateQuestion;
   late String uid;
   late User? _userData;
@@ -58,8 +56,7 @@ class _AnswerPageState extends State<AnswerPage> {
   @override
   void initState() {
     super.initState();
-    // userData = widget.user;
-    nickname = getNickname(widget.user);
+
     //쿠키에 저장된 user 데이터 사용
     // getCookie();
     question = widget.question;
@@ -85,6 +82,8 @@ class _AnswerPageState extends State<AnswerPage> {
       getUserData(uid).then((value) {
         _userData = value;
         hintList = generateHint(_userData!);
+        // userData = widget.user;
+        nickname = getNickname(_userData!);
       });
     } else {
       _userData = widget.user;
