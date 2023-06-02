@@ -21,6 +21,14 @@ class UserDataProvider with ChangeNotifier {
     }
   }
 
+  void updateCurrentQuestionId(String currentId) {
+    if (_userData != null) {
+      _userData!.updateCurrentQuestionId(currentId);
+      _saveUserDataToCookie(_userData!);
+      notifyListeners();
+    }
+  }
+
   void updateCandyCount(int additionalCandyCount) {
     if (_userData != null) {
       _userData!.candyCount += additionalCandyCount;
@@ -62,7 +70,8 @@ class UserDataProvider with ChangeNotifier {
             isSubscribe: data['isSubscribe'],
             candyCount: data['candyCount'],
             recentDailyBonusReceiveDate: data['recentDailyBonusReceiveDate'],
-            recentQuestionBonusReceiveDate: data['recentQuestionBonusReceiveDate'],
+            recentQuestionBonusReceiveDate:
+                data['recentQuestionBonusReceiveDate'],
             questionInfos:
                 List<Map<String, dynamic>>.from(data['questionInfos']),
             answeredQuestions:

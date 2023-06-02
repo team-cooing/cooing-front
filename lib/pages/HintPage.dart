@@ -1,6 +1,7 @@
 import 'package:cooing_front/model/response/answer.dart';
 import 'package:cooing_front/model/response/user.dart';
 import 'package:cooing_front/pages/CandyScreen.dart';
+import 'package:cooing_front/providers/UserProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:cooing_front/model/response/response.dart';
 
@@ -17,6 +18,7 @@ class HintScreen extends StatefulWidget {
 class _HintScreenState extends State<HintScreen> {
   late List<dynamic> openHint;
   late bool goldenCandy;
+  UserDataProvider userProvider = UserDataProvider();
 
   @override
   void initState() {
@@ -39,6 +41,8 @@ class _HintScreenState extends State<HintScreen> {
             widget.answer.isOpenedHint = openHint;
             await Response.updateAnswer(newAnswer: widget.answer);
             await Response.updateUser(newUser: widget.user);
+            userProvider.updateCandyCount(widget.user.candyCount);
+
             Navigator.of(context).pop();
             // setState(() {});
           },
@@ -381,6 +385,7 @@ class _HintScreenState extends State<HintScreen> {
                 widget.answer.isOpenedHint = openHint;
                 await Response.updateAnswer(newAnswer: widget.answer);
                 await Response.updateUser(newUser: widget.user);
+                userProvider.updateCandyCount(widget.user.candyCount);
                 Navigator.of(context).pop();
                 setState(() {});
               }),

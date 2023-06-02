@@ -115,4 +115,6 @@ class User {
   void updateQuestionInfos(List<Map<String, dynamic>> questionInfos) {
     this.questionInfos = questionInfos;
   }
+
+  void updateCurrentQuestionId(String currentId) {}
 }

@@ -5,6 +5,7 @@ import 'package:cooing_front/pages/setting_page.dart';
 import 'package:cooing_front/pages/feed_page.dart';
 import 'package:cooing_front/pages/login/LoginScreen.dart';
 import 'package:cooing_front/pages/message_page.dart';
+import 'package:cooing_front/providers/UserProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:cooing_front/pages/question_page.dart';
 import 'package:get/get.dart';
@@ -34,7 +35,9 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
   List<Tab> myTabs = <Tab>[
     Tab(text: '질문'),
     Tab(text: '피드'),
-    Tab(text: '메시지',),
+    Tab(
+      text: '메시지',
+    ),
     Tab(
       icon: Icon(Icons.settings),
     ),
@@ -65,33 +68,33 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     myTabs[2] = Tab(
         icon: Stack(
-          children: [
-            SizedBox(
-              width: double.infinity,
-              height: double.infinity,
-            ),
-            Center(child: Text('메시지')),
-            isNewMessage
-                ? Positioned(
-              right: 0,
-              top: 5,
-              child: Container(
-                alignment: Alignment.center,
-                width: 18,
-                height: 18,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(100),
-                  color: Color(0XFFEF4452),
+      children: [
+        SizedBox(
+          width: double.infinity,
+          height: double.infinity,
+        ),
+        Center(child: Text('메시지')),
+        isNewMessage
+            ? Positioned(
+                right: 0,
+                top: 5,
+                child: Container(
+                  alignment: Alignment.center,
+                  width: 18,
+                  height: 18,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(100),
+                    color: Color(0XFFEF4452),
+                  ),
+                  child: Text(
+                    'N',
+                    style: TextStyle(fontSize: 12, color: Colors.white),
+                  ),
                 ),
-                child: Text(
-                  'N',
-                  style: TextStyle(fontSize: 12, color: Colors.white),
-                ),
-              ),
-            )
-                : SizedBox(),
-          ],
-        ));
+              )
+            : SizedBox(),
+      ],
+    ));
 
     return isLoading
         ? loadingView()
@@ -130,7 +133,10 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
                   user: user!,
                   answers: answers,
                 ),
-                SettingScreen(user: user!, currentQuestion: currentQuestion,),
+                SettingScreen(
+                  user: user!,
+                  currentQuestion: currentQuestion,
+                ),
               ]),
             ));
   }
@@ -175,7 +181,10 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
 
   getUserData() async {
     // Firebase DB에서 User 읽기
-    User? newUser = await response.Response.readUser(userUid: uid);
+    UserDataProvider userProvider = UserDataProvider();
+    await userProvider.loadData();
+    User? newUser = userProvider.userData;
+    // User? newUser = await response.Response.readUser(userUid: uid);
 
     return newUser;
   }
@@ -262,9 +271,9 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
         userId: user!.uid, limit: 10);
 
     // 최근 10개 중 안읽은 answer 있으면 New 표시
-    for(var answer in newAnswers){
-      if(answer!=null){
-        if(answer.isOpened==false){
+    for (var answer in newAnswers) {
+      if (answer != null) {
+        if (answer.isOpened == false) {
           isNewMessage = true;
         }
       }

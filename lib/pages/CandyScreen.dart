@@ -35,6 +35,7 @@ class _CandyScreenState extends State<CandyScreen> {
   String? latestPurchasedID;
   String content1 = "캔디가 부족해요!";
   String content2 = '캔디를 충전할까요?';
+  UserDataProvider userProvider = UserDataProvider();
 
   @override
   void initState() {
@@ -461,6 +462,7 @@ class _CandyScreenState extends State<CandyScreen> {
     widget.user.candyCount += number;
 
     await Response.updateUser(newUser: widget.user);
+    userProvider.updateCandyCount(widget.user.candyCount);
 
     final uid = widget.user.uid;
     // final userRef = FirebaseFirestore.instance.collection('users').doc(uid);

@@ -3,6 +3,7 @@ import 'package:cooing_front/model/data/question_list.dart';
 import 'package:cooing_front/model/response/question.dart';
 import 'package:cooing_front/model/response/response.dart';
 import 'package:cooing_front/model/response/user.dart';
+import 'package:cooing_front/providers/UserProvider.dart';
 import 'package:cooing_front/widgets/dynamic_link.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -37,6 +38,7 @@ class _QuestionPageState extends State<QuestionPage> {
   bool hasQuestionCloseTimePassed = false;
   late String currentQuestionUrl;
   var token;
+  UserDataProvider userProvider = UserDataProvider();
 
   @override
   void initState() {
@@ -283,6 +285,10 @@ class _QuestionPageState extends State<QuestionPage> {
       await Response.updateUser(newUser: widget.user);
       // 2-2. Firebase > Contents > Questions > Question 생성
       await Response.createQuestion(newQuestion: newQuestion);
+      // 2-3. 기기 내 캐시 반영
+      userProvider
+          .updateQuestionInfos(newQuestion as List<Map<String, dynamic>>);
+      userProvider.updateCurrentQuestionId(widget.user.currentQuestionId);
     } else {
       // 만약, 질문을 오픈하지 않은 상태라면
       if (!isQuestionOpen) {
@@ -293,6 +299,8 @@ class _QuestionPageState extends State<QuestionPage> {
           widget.user.currentQuestionId = '';
           // 2-1. Firebase Users > User 업데이트
           await Response.updateUser(newUser: widget.user);
+          //2-2. 기기 내 캐시 반영
+          userProvider.updateCurrentQuestionId(widget.user.currentQuestionId);
           widget.currentQuestion = null;
         } else {
           // 주요 기능: 질문 오픈하기
@@ -336,6 +344,9 @@ class _QuestionPageState extends State<QuestionPage> {
             questionId: widget.currentQuestion!.id);
 
         widget.currentQuestion = null;
+
+        // 3-1 기기내 캐시 반영
+        userProvider.updateCurrentQuestionId(widget.user.currentQuestionId);
       }
     }
 

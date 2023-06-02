@@ -59,7 +59,7 @@
 	</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
-	<string>instagram-stories</string>
+		<string>instagram-stories</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>

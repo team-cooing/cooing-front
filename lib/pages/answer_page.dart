@@ -5,6 +5,7 @@ import 'package:cooing_front/model/config/palette.dart';
 import 'package:cooing_front/pages/answer_complete_page.dart';
 import 'package:cooing_front/pages/tab_page.dart';
 import 'package:cooing_front/model/response/response.dart' as response;
+import 'package:cooing_front/providers/UserProvider.dart';
 import 'package:cooing_front/widgets/userData_method.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -75,11 +76,20 @@ class _AnswerPageState extends State<AnswerPage> {
     //링크를 통해 들어왔을 때
     if (isFromLink) {
       //user 데이터 불러오기
-      getUserData(uid).then((value) {
-        _userData = value;
-        hintList = generateHint(_userData!);
-        nickname = getNickname(_userData!);
-      });
+      UserDataProvider userProvider = UserDataProvider();
+      await userProvider.loadData();
+      _userData = userProvider.userData;
+
+      hintList = generateHint(_userData!);
+      nickname = getNickname(_userData!);
+      print(hintList);
+      print(nickname);
+
+      // getUserData(uid).then((value) {
+      //   _userData = value;
+      //   hintList = generateHint(_userData!);
+      //   nickname = getNickname(_userData!);
+      // });
     } else {
       _userData = widget.user;
       hintList = generateHint(_userData!);
