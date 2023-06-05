@@ -36,7 +36,7 @@ class DynamicLink {
     // }
 
     // return false;
-
+    await Future.delayed(Duration(seconds: 3));
     final PendingDynamicLinkData? initialLink =
         await FirebaseDynamicLinks.instance.getInitialLink();
 
@@ -114,18 +114,20 @@ class DynamicLink {
 Future<String> getShortLink(Question question) async {
   String dynamicLinkPrefix = 'https://midascooing.page.link';
   final dynamicLinkParams = DynamicLinkParameters(
-    uriPrefix: dynamicLinkPrefix,
-    link: Uri.parse(
-        '$dynamicLinkPrefix/${question.id}?cid=${question.contentId}&content=${question.content}&ownerId=${question.owner}&ownerName=${question.ownerName}&imgUrl=${question.ownerProfileImage}'),
-    androidParameters: const AndroidParameters(
-      packageName: 'com.midas.cooing',
-      minimumVersion: 0,
-    ),
-    iosParameters: const IOSParameters(
-      bundleId: 'com.midas.cooing',
-      minimumVersion: '0',
-    ),
-  );
+      uriPrefix: dynamicLinkPrefix,
+      link: Uri.parse(
+          '$dynamicLinkPrefix/${question.id}?cid=${question.contentId}&content=${question.content}&ownerId=${question.owner}&ownerName=${question.ownerName}&imgUrl=${question.ownerProfileImage}'),
+      androidParameters: const AndroidParameters(
+        packageName: 'com.midas.cooing',
+        minimumVersion: 0,
+      ),
+      iosParameters: const IOSParameters(
+        bundleId: 'com.midas.cooing',
+        appStoreId: '6448777284',
+        minimumVersion: '0',
+      ),
+      navigationInfoParameters:
+          NavigationInfoParameters(forcedRedirectEnabled: true));
   final dynamicLink =
       await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
 

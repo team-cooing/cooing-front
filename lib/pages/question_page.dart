@@ -286,8 +286,7 @@ class _QuestionPageState extends State<QuestionPage> {
       // 2-2. Firebase > Contents > Questions > Question 생성
       await Response.createQuestion(newQuestion: newQuestion);
       // 2-3. 기기 내 캐시 반영
-      userProvider
-          .updateQuestionInfos(newQuestion as List<Map<String, dynamic>>);
+      userProvider.updateQuestionInfos(widget.user.questionInfos);
       userProvider.updateCurrentQuestionId(widget.user.currentQuestionId);
     } else {
       // 만약, 질문을 오픈하지 않은 상태라면
