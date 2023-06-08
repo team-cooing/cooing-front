@@ -9,52 +9,49 @@ class DynamicLink {
     bool isExistDynamicLink = await _getInitialDynamicLink(uid);
     print("In dynamicLink() : $isExistDynamicLink");
 
-    try {
       _addListener(uid);
-    } catch (e) {
-      print("In dynamicLink() ERROR : $e");
-    }
 
     return isExistDynamicLink;
   }
 
   Future<bool> _getInitialDynamicLink(String uid) async {
-    // final String? deepLink = await getInitialLink();
-    // print("deepLink ::: $deepLink");
-    // print("In dynamicLink() : link로 접속했는지 확인");
-    // if (deepLink != null && deepLink.isNotEmpty) {
-    //   PendingDynamicLinkData? dynamicLinkData = await FirebaseDynamicLinks
-    //       .instance
-    //       .getDynamicLink(Uri.parse(deepLink));
+      final String? deepLink = await getInitialLink();
 
-    //   if (dynamicLinkData != null) {
-    //     print("dynamicLinkData = $dynamicLinkData");
-    //     _redirectScreen(dynamicLinkData);
+      if (deepLink != null) {
+        PendingDynamicLinkData? dynamicLinkData = await FirebaseDynamicLinks
+            .instance
+            .getDynamicLink(Uri.parse(deepLink));
 
-    //     return true;
-    //   }
-    // }
+        if (dynamicLinkData != null) {
+          _redirectScreen(uid, dynamicLinkData);
 
-    // return false;
-    await Future.delayed(Duration(seconds: 3));
-    final PendingDynamicLinkData? initialLink =
-        await FirebaseDynamicLinks.instance.getInitialLink();
+          return true;
+        }
+      }
 
-    if (initialLink != null) {
-      _redirectScreen(uid, initialLink);
-      return true;
-    }
-
-    final String? deepLink = await getInitialLink();
-    if (deepLink != null && deepLink.isNotEmpty) {
-      FirebaseDynamicLinks.instance
-          .getDynamicLink(Uri.parse(deepLink))
-          .then((link) => _redirectScreen(uid, link!));
-      return true;
-    }
-
-    return false;
-  }
+      return false;}
+  //   }
+  //   await Future.delayed(Duration(seconds: 1));
+  //   final PendingDynamicLinkData? initialLink =
+  //       await FirebaseDynamicLinks.instance.getInitialLink();
+  //
+  //   if (initialLink != null) {
+  //     _redirectScreen(uid, initialLink);
+  //     return true;
+  //   }
+  //
+  //   _addListener(uid);
+  //
+  //   final String? deepLink = await getInitialLink();
+  //   if (deepLink != null && deepLink.isNotEmpty) {
+  //     FirebaseDynamicLinks.instance
+  //         .getDynamicLink(Uri.parse(deepLink))
+  //         .then((link) => _redirectScreen(uid, link!));
+  //     return true;
+  //   }
+  //
+  //   return false;
+  // }
 
   void _addListener(String uid) {
     FirebaseDynamicLinks.instance.onLink.listen((
@@ -127,9 +124,11 @@ Future<String> getShortLink(Question question) async {
         minimumVersion: '0',
       ),
       navigationInfoParameters:
-          NavigationInfoParameters(forcedRedirectEnabled: true));
+          NavigationInfoParameters(forcedRedirectEnabled: false)
+  );
+
   final dynamicLink =
-      await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
+      await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams, shortLinkType: ShortDynamicLinkType.unguessable);
 
   return dynamicLink.shortUrl.toString();
 }

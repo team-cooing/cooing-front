@@ -48,10 +48,6 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>FacebookAppID</key>
 	<string>617417756966237</string>
-	<key>FirebaseDynamicLinksCustomDomains</key>
-	<array>
-		<string>https://midascooing.page.link</string>
-	</array>
 	<key>KAKAO_APP_KEY</key>
 	<string>010e5977ad5bf0cfbc9ab47ebfaa14a2
 	010e5977ad5bf0cfbc9ab47ebfaa14a2

@@ -387,6 +387,8 @@ class _QuestionPageState extends State<QuestionPage> {
 
   void _onCopyButtonPressed(String url) {
     //복사 버튼 클릭시 클립보드에 복사
+
+    if(url != null){
     Clipboard.setData(ClipboardData(text: url));
 
     //하단에 "링크복사완료!" 메시지 스낵바
@@ -405,7 +407,7 @@ class _QuestionPageState extends State<QuestionPage> {
         ),
         duration: Duration(seconds: 2),
       ),
-    );
+    );}
   }
 
   Widget shareCard() {
