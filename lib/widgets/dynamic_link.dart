@@ -32,28 +32,6 @@ class DynamicLink {
       }
 
       return false;}
-  //   }
-  //   await Future.delayed(Duration(seconds: 1));
-  //   final PendingDynamicLinkData? initialLink =
-  //       await FirebaseDynamicLinks.instance.getInitialLink();
-  //
-  //   if (initialLink != null) {
-  //     _redirectScreen(uid, initialLink);
-  //     return true;
-  //   }
-  //
-  //   _addListener(uid);
-  //
-  //   final String? deepLink = await getInitialLink();
-  //   if (deepLink != null && deepLink.isNotEmpty) {
-  //     FirebaseDynamicLinks.instance
-  //         .getDynamicLink(Uri.parse(deepLink))
-  //         .then((link) => _redirectScreen(uid, link!));
-  //     return true;
-  //   }
-  //
-  //   return false;
-  // }
 
   void _addListener(String uid) {
     FirebaseDynamicLinks.instance.onLink.listen((
