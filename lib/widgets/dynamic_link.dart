@@ -15,7 +15,9 @@ class DynamicLink {
   }
 
   Future<bool> _getInitialDynamicLink(String uid) async {
-      final String? deepLink = await getInitialLink();
+      await Future.delayed(Duration(seconds: 1));
+
+    final String? deepLink = await getInitialLink();
 
       if (deepLink != null) {
         PendingDynamicLinkData? dynamicLinkData = await FirebaseDynamicLinks
