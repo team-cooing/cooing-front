@@ -26,6 +26,7 @@ import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print('Handling a background message ${message.messageId}');
@@ -148,6 +149,10 @@ class _MyAppState extends State<MyApp> {
   }
 
   Widget build(BuildContext context) {
+    return ScreenUtilInit(
+        designSize: const Size(390, 844),
+    minTextAdapt: true,
+    builder: (context , child) {
     return GetMaterialApp(
       initialRoute: SplashScreen.routeName,
       routes: {
@@ -166,6 +171,6 @@ class _MyAppState extends State<MyApp> {
         // 'candy': (context) => const CandyScreen(),
         '_working': (context) => const TabPage(),
       },
-    );
+    );});
   }
 }

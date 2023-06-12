@@ -2,6 +2,7 @@ import 'package:cooing_front/model/response/user.dart';
 import 'package:flutter/material.dart';
 import 'package:cooing_front/model/response/school.dart';
 import 'package:cooing_front/providers/schools_providers.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class SchoolScreen extends StatefulWidget {
   const SchoolScreen({super.key});
@@ -85,7 +86,7 @@ class _SchoolScreenState extends State<SchoolScreen> {
                             '우리 학교를 검색해주세요.',
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize: 22,
+                                fontSize: 22.sp,
                                 color: Color.fromARGB(255, 51, 61, 75)),
                           ),
                           Container(
@@ -129,20 +130,19 @@ class _SchoolScreenState extends State<SchoolScreen> {
                                 '검색 결과가 없습니다.',
                                 style: TextStyle(
                                     color: Color.fromRGBO(51, 61, 75, 0.4),
-                                    fontSize: 16),
+                                    fontSize: 16.sp),
                               )),
                           Visibility(visible: button, child: Spacer()),
                           Visibility(
                               visible: button,
                               child: SizedBox(
                                 width: double.infinity,
-                                height: 50,
+                                height: 50.h,
                                 child: ElevatedButton(
                                     style: ElevatedButton.styleFrom(
-                                        primary:
+                                        backgroundColor:
                                             Color.fromARGB(255, 151, 84, 251),
-                                        onSurface:
-                                            Color.fromRGBO(151, 84, 251, 0.2)),
+                                        disabledForegroundColor: Color.fromRGBO(151, 84, 251, 0.2).withOpacity(0.38), disabledBackgroundColor: Color.fromRGBO(151, 84, 251, 0.2).withOpacity(0.12)),
                                     onPressed:
                                         disableButton ? searchButton : null,
                                     child: Text('검색',
@@ -168,7 +168,7 @@ class _SchoolScreenState extends State<SchoolScreen> {
                                             decoration: BoxDecoration(
                                                 border: Border(
                                               bottom: BorderSide(
-                                                  width: 2.0,
+                                                  width: 2.0.w,
                                                   color: Color.fromRGBO(
                                                       51, 61, 75, 0.2)),
                                             )),
@@ -232,7 +232,7 @@ class _SchoolScreenState extends State<SchoolScreen> {
                                                       child: Text(
                                                         schools[index].name,
                                                         style: TextStyle(
-                                                            fontSize: 15,
+                                                            fontSize: 15.sp,
                                                             color:
                                                                 Color.fromRGBO(
                                                                     51,
@@ -245,8 +245,8 @@ class _SchoolScreenState extends State<SchoolScreen> {
                                                       Container(
                                                         margin: const EdgeInsets
                                                             .only(right: 10),
-                                                        width: 40,
-                                                        height: 20,
+                                                        width: 40.w,
+                                                        height: 20.h,
                                                         decoration:
                                                             BoxDecoration(
                                                           color: Color.fromRGBO(
@@ -264,7 +264,7 @@ class _SchoolScreenState extends State<SchoolScreen> {
                                                             child: Text(
                                                           '주소',
                                                           style: TextStyle(
-                                                              fontSize: 12,
+                                                              fontSize: 12.sp,
                                                               color: Color
                                                                   .fromRGBO(
                                                                       151,
@@ -276,7 +276,7 @@ class _SchoolScreenState extends State<SchoolScreen> {
                                                       Text(
                                                         schools[index].location,
                                                         style: TextStyle(
-                                                            fontSize: 12,
+                                                            fontSize: 12.sp,
                                                             fontWeight:
                                                                 FontWeight.w300,
                                                             color:
