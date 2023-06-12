@@ -1,7 +1,9 @@
 import 'package:cooing_front/model/config/palette.dart';
 import 'package:cooing_front/model/data/question_list.dart';
+import 'package:cooing_front/model/response/answer.dart';
 import 'package:cooing_front/model/response/question.dart';
 import 'package:cooing_front/model/response/response.dart';
+import 'package:cooing_front/model/response/response_optimization.dart';
 import 'package:cooing_front/model/response/user.dart';
 import 'package:cooing_front/providers/UserProvider.dart';
 import 'package:cooing_front/widgets/dynamic_link.dart';
@@ -11,7 +13,6 @@ import 'dart:async';
 import 'package:screenshot/screenshot.dart';
 import 'dart:io';
 import 'package:url_launcher/url_launcher.dart';
-
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/services.dart';
 import 'package:social_share/social_share.dart';
@@ -22,11 +23,10 @@ class QuestionPage extends StatefulWidget {
   Question? currentQuestion;
   final List<Question?> feed;
 
-  QuestionPage(
-      {required this.user,
-      required this.currentQuestion,
-      required this.feed,
-      super.key});
+  QuestionPage({required this.user,
+    required this.currentQuestion,
+    required this.feed,
+    super.key});
 
   @override
   State<QuestionPage> createState() => _QuestionPageState();
@@ -52,8 +52,8 @@ class _QuestionPageState extends State<QuestionPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: SingleChildScrollView(
-      child: _buildQuestionPage(),
-    ));
+          child: _buildQuestionPage(),
+        ));
   }
 
   Future<String?> screenshot() async {
@@ -76,12 +76,14 @@ class _QuestionPageState extends State<QuestionPage> {
         child: SafeArea(
             child: Center(
                 child: Column(children: [
-          Screenshot(
-            controller: screenshotController,
-            child: purpleBox(),
-          ),
-          (isQuestionReceived & isQuestionOpen) ? shareCard() : SizedBox(),
-        ]))));
+                  Screenshot(
+                    controller: screenshotController,
+                    child: purpleBox(),
+                  ),
+                  (isQuestionReceived & isQuestionOpen)
+                      ? shareCard()
+                      : SizedBox(),
+                ]))));
   }
 
   Widget purpleBox() {
@@ -114,19 +116,19 @@ class _QuestionPageState extends State<QuestionPage> {
               // 프로필 이미지
               widget.user.profileImage.isEmpty
                   ? const CircularProgressIndicator(
-                      color: Palette.mainPurple,
-                    )
+                color: Palette.mainPurple,
+              )
                   : Container(
-                      width: 80,
-                      height: 80,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        image: DecorationImage(
-                          fit: BoxFit.cover,
-                          image: NetworkImage(widget.user.profileImage),
-                        ),
-                      ),
-                    ),
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                    fit: BoxFit.cover,
+                    image: NetworkImage(widget.user.profileImage),
+                  ),
+                ),
+              ),
               SizedBox(
                 height: 20,
               ),
@@ -149,8 +151,8 @@ class _QuestionPageState extends State<QuestionPage> {
                 onPressed: () async {
                   // 만약, 지금이 오픈한 질문의 Close Time 전이라면
                   if (isQuestionReceived &
-                      isQuestionOpen &
-                      !hasQuestionCloseTimePassed) {
+                  isQuestionOpen &
+                  !hasQuestionCloseTimePassed) {
                     return;
                   }
 
@@ -160,8 +162,8 @@ class _QuestionPageState extends State<QuestionPage> {
                 style: OutlinedButton.styleFrom(
                   padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                   backgroundColor: (isQuestionReceived &
-                          isQuestionOpen &
-                          !hasQuestionCloseTimePassed)
+                  isQuestionOpen &
+                  !hasQuestionCloseTimePassed)
                       ? Colors.white.withOpacity(0.7)
                       : Colors.white,
                   shape: RoundedRectangleBorder(
@@ -172,13 +174,16 @@ class _QuestionPageState extends State<QuestionPage> {
                 child: Text(
                   isQuestionReceived
                       ? isQuestionOpen
-                          ? '질문 닫기'
-                          : (DateTime.now().day >
-                                  DateTime.parse(
-                                          widget.currentQuestion!.receiveTime)
-                                      .day)
-                              ? '새로운 질문 받기'
-                              : '답변 받기'
+                      ? '질문 닫기'
+                      : (DateTime
+                      .now()
+                      .day >
+                      DateTime
+                          .parse(
+                          widget.currentQuestion!.receiveTime)
+                          .day)
+                      ? '새로운 질문 받기'
+                      : '답변 받기'
                       : '질문 받기',
                   style: const TextStyle(
                       fontWeight: FontWeight.bold,
@@ -193,15 +198,19 @@ class _QuestionPageState extends State<QuestionPage> {
               Text(
                 isQuestionReceived
                     ? isQuestionOpen
-                        ? hasQuestionCloseTimePassed
-                            ? '새로운 질문이 도착했어요!'
-                            : '해당 질문은 ${closeTime!.day}일 ${closeTime.hour}시 ${closeTime.minute}분부터 닫을 수 있습니다.'
-                        : (DateTime.now().day >
-                                DateTime.parse(
-                                        widget.currentQuestion!.receiveTime)
-                                    .day)
-                            ? '새로운 질문이 도착했어요!'
-                            : '다음 질문 도착은 ${nextReceiveTime!.day}일 00시 00분입니다.'
+                    ? hasQuestionCloseTimePassed
+                    ? '새로운 질문이 도착했어요!'
+                    : '해당 질문은 ${closeTime!.day}일 ${closeTime.hour}시 ${closeTime
+                    .minute}분부터 닫을 수 있습니다.'
+                    : (DateTime
+                    .now()
+                    .day >
+                    DateTime
+                        .parse(
+                        widget.currentQuestion!.receiveTime)
+                        .day)
+                    ? '새로운 질문이 도착했어요!'
+                    : '다음 질문 도착은 ${nextReceiveTime!.day}일 00시 00분입니다.'
                     : '',
                 style: TextStyle(color: Colors.white, fontSize: 10),
               ),
@@ -255,7 +264,7 @@ class _QuestionPageState extends State<QuestionPage> {
           .toList();
       questionDataIds.shuffle();
       String newContentId =
-          questionDataIds.firstWhere((id) => !receivedContentIds.contains(id));
+      questionDataIds.firstWhere((id) => !receivedContentIds.contains(id));
 
       // 새로운 질문 객체 생성
       DateTime now = DateTime.now();
@@ -265,7 +274,7 @@ class _QuestionPageState extends State<QuestionPage> {
           ownerName: widget.user.name,
           owner: widget.user.uid,
           content: QuestionList.questionList[int.parse(newContentId)]
-              ['question'],
+          ['question'],
           contentId: newContentId,
           receiveTime: now.toString(),
           openTime: '',
@@ -292,8 +301,12 @@ class _QuestionPageState extends State<QuestionPage> {
       // 만약, 질문을 오픈하지 않은 상태라면
       if (!isQuestionOpen) {
         // 만약, 질문 받은 시간 다음날이라면
-        if (DateTime.now().day >
-            DateTime.parse(widget.currentQuestion!.receiveTime).day) {
+        if (DateTime
+            .now()
+            .day >
+            DateTime
+                .parse(widget.currentQuestion!.receiveTime)
+                .day) {
           // 1-1. User 반영
           widget.user.currentQuestionId = '';
           // 2-1. Firebase Users > User 업데이트
@@ -364,11 +377,11 @@ class _QuestionPageState extends State<QuestionPage> {
     String facebookId = "617417756966237";
 
     SocialShare.shareInstagramStory(
-            appId: facebookId,
-            imagePath: path,
-            backgroundTopColor: "#ffffff",
-            backgroundBottomColor: "#9754FB",
-            attributionURL: url)
+        appId: facebookId,
+        imagePath: path,
+        backgroundTopColor: "#ffffff",
+        backgroundBottomColor: "#9754FB",
+        attributionURL: url)
         .then((data) async {
       if (data == "error") {
         final reportUrl = Uri.parse(
@@ -419,8 +432,8 @@ class _QuestionPageState extends State<QuestionPage> {
     ]));
   }
 
-  Widget shareBlock(
-      AssetImage assetImage, String level, String title, String buttonTxt) {
+  Widget shareBlock(AssetImage assetImage, String level, String title,
+      String buttonTxt) {
     return Container(
       padding: const EdgeInsets.only(top: 20),
       child: SizedBox(
@@ -432,7 +445,7 @@ class _QuestionPageState extends State<QuestionPage> {
               color: Color(0xffF2F3F3),
               borderRadius: BorderRadius.circular(20)),
           child:
-              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
