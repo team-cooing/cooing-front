@@ -3,6 +3,7 @@ import 'package:cooing_front/model/response/answer.dart';
 import 'package:cooing_front/model/response/user.dart';
 import 'package:cooing_front/model/data/question_list.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:social_share/social_share.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
@@ -117,7 +118,7 @@ class AnswerDetailPageState extends State<AnswerDetailPage> {
             "답변 확인",
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              fontSize: 22.0,
+              fontSize: 22.sp,
             ),
             textAlign: TextAlign.center,
           ),
@@ -136,7 +137,7 @@ class AnswerDetailPageState extends State<AnswerDetailPage> {
                     Text(
                       "${answerData.nickname}이 보낸 메시지",
                       style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
                     ),
                     _answerDetailCard(),
                   ],
@@ -160,8 +161,8 @@ class AnswerDetailPageState extends State<AnswerDetailPage> {
             imgUrl.isEmpty
                 ? const CircularProgressIndicator()
                 : Container(
-                    width: 80,
-                    height: 80,
+                    width: 80.w,
+                    height: 80.h,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       image: DecorationImage(
@@ -176,7 +177,7 @@ class AnswerDetailPageState extends State<AnswerDetailPage> {
                 questionContent,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 16,
+                  fontSize: 16.sp,
                   color: Colors.white,
                 ),
               ),
@@ -211,7 +212,7 @@ class AnswerDetailPageState extends State<AnswerDetailPage> {
   Widget bottomBtns(bool? isAnony) {
     var fromWhoButton = SizedBox(
       width: double.infinity,
-      height: 50,
+      height: 50.h,
       child: ElevatedButton(
           onPressed: () async {
             await Navigator.of(context).push(MaterialPageRoute(
@@ -226,16 +227,16 @@ class AnswerDetailPageState extends State<AnswerDetailPage> {
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0)),
           ),
-          child: const Text(
+          child: Text(
             "누가 보냈는지 확인하기",
             style: TextStyle(
-                fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                fontSize: 16.sp, fontWeight: FontWeight.bold, color: Colors.white),
           )),
     );
 
     var replyBtn = SizedBox(
       width: double.infinity,
-      height: 50,
+      height: 50.h,
       child: ElevatedButton(
           onPressed: () async {
             var path = await screenshot();
@@ -255,10 +256,10 @@ class AnswerDetailPageState extends State<AnswerDetailPage> {
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0)),
           ),
-          child: const Text(
+          child: Text(
             "답장하기",
             style: TextStyle(
-                fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                fontSize: 16.sp, fontWeight: FontWeight.bold, color: Colors.white),
           )),
     );
 
@@ -272,7 +273,7 @@ class AnswerDetailPageState extends State<AnswerDetailPage> {
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
-                  (isAnony!) ? fromWhoButton : SizedBox(height: 25),
+                  (isAnony!) ? fromWhoButton : SizedBox(height: 25.h),
                   Padding(padding: EdgeInsets.all(8)),
                   replyBtn
                 ])));

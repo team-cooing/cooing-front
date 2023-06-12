@@ -1,5 +1,6 @@
 import 'package:cooing_front/pages/tab_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 class AnswerCompleteScreen extends StatefulWidget {
@@ -45,8 +46,8 @@ class AnswerCompleteScreenState extends State<AnswerCompleteScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SizedBox(
-              width: 120.0,
-              height: 120.0,
+              width: 120.w,
+              height: 120.w,
               child: Image(image: AssetImage('images/icon_complete_send.png'))),
           Container(
             padding: EdgeInsets.only(top: 50, bottom: 7),
@@ -54,7 +55,7 @@ class AnswerCompleteScreenState extends State<AnswerCompleteScreen> {
               "성공적으로 $owner님께",
               style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 22,
+                  fontSize: 22.sp,
                   color: Color.fromARGB(255, 51, 61, 75)),
             ),
           ),
@@ -62,7 +63,7 @@ class AnswerCompleteScreenState extends State<AnswerCompleteScreen> {
             "답변을 전달했어요",
             style: TextStyle(
                 fontWeight: FontWeight.bold,
-                fontSize: 22,
+                fontSize: 22.sp,
                 color: Color.fromARGB(255, 51, 61, 75)),
           ),
         ]);
@@ -95,10 +96,10 @@ class AnswerCompleteScreenState extends State<AnswerCompleteScreen> {
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14.0)),
                       ),
-                      child: const Text(
+                      child: Text(
                         "확인",
                         style: TextStyle(
-                            fontSize: 18,
+                            fontSize: 18.sp,
                             fontWeight: FontWeight.bold,
                             color: Colors.white),
                       )),

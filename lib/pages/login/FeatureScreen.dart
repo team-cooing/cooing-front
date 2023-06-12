@@ -174,7 +174,7 @@ class _FeatureScreenState extends State<FeatureScreen> {
                                           padding:
                                               const EdgeInsets.only(bottom: 20),
                                           child: SizedBox(
-                                            height: 60,
+                                            height: 60.h,
                                             child: Container(
                                                 padding: EdgeInsets.zero,
                                                 decoration: BoxDecoration(
@@ -386,7 +386,7 @@ class _FeatureScreenState extends State<FeatureScreen> {
                                                           style: TextStyle(
                                                             fontWeight:
                                                                 FontWeight.bold,
-                                                            fontSize: 20,
+                                                            fontSize: 20.sp,
                                                             // color:
                                                             //     Color.fromRGBO(51, 61, 75, 0.4)
                                                           )),
@@ -431,7 +431,7 @@ class _FeatureScreenState extends State<FeatureScreen> {
                                         child: Text(
                                           '눈',
                                           style: TextStyle(
-                                              fontSize: 20,
+                                              fontSize: 20.sp,
                                               color: Color.fromARGB(
                                                   255, 51, 61, 75)),
                                         ),

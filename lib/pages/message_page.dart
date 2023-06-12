@@ -6,6 +6,7 @@ import 'package:cooing_front/model/response/user.dart';
 import 'package:cooing_front/pages/answer_detail_page.dart';
 import 'package:custom_refresh_indicator/custom_refresh_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class MessagePage extends StatefulWidget {
   final User user;
@@ -136,12 +137,12 @@ class _MessagePageState extends State<MessagePage> {
                   Text(
                     '#${widget.user.questionInfos.length - questionIndex}번째 질문',
                     textAlign: TextAlign.left,
-                    style: TextStyle(fontSize: 14),
+                    style: TextStyle(fontSize: 14.sp),
                   ),
                   Padding(padding: EdgeInsets.all(3)),
                   Text(
                     '"${QuestionList.questionList.elementAt(int.parse(widget.user.questionInfos.reversed.toList()[questionIndex]['contentId']))['question'] as String}"',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
                   ),
                 ],
               )),
@@ -162,7 +163,7 @@ class _MessagePageState extends State<MessagePage> {
                       child: Text(
                         '이 질문에 대한 답변이 없습니다.',
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 16.sp,
                           color: Color(0xff333D4B),
                         ),
                       ))))
@@ -192,13 +193,13 @@ class _MessagePageState extends State<MessagePage> {
                           Text(
                             '#${widget.user.questionInfos.length - questionIndex}번째 질문',
                             textAlign: TextAlign.left,
-                            style: TextStyle(fontSize: 14),
+                            style: TextStyle(fontSize: 14.sp),
                           ),
                           Padding(padding: EdgeInsets.all(3)),
                           Text(
                             '"${QuestionList.questionList.elementAt(int.parse(widget.user.questionInfos.reversed.toList()[questionIndex]['contentId']))['question'] as String}"',
                             style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
+                                fontSize: 16.sp, fontWeight: FontWeight.bold),
                           ),
                         ],
                       )),
@@ -261,8 +262,8 @@ class _MessagePageState extends State<MessagePage> {
                               clipBehavior: Clip.none,
                               children: [
                                 SizedBox(
-                                    width: 25.0,
-                                    height: 25.0,
+                                    width: 25.w,
+                                    height: 25.h,
                                     child: widget.answers[index]!.ownerGender ==
                                         0
                                         ? Image(
@@ -275,8 +276,8 @@ class _MessagePageState extends State<MessagePage> {
                                   bottom: 10,
                                   left: 15,
                                   child: SizedBox(
-                                      width: 18.0,
-                                      height: 18.0,
+                                      width: 18.w,
+                                      height: 18.h,
                                       child: widget.answers[index]!.isOpened
                                           ? Image(
                                           image: AssetImage(
@@ -289,14 +290,14 @@ class _MessagePageState extends State<MessagePage> {
                             Text(
                               widget.answers[index]!.nickname,
                               style: TextStyle(
-                                  fontSize: 16,
+                                  fontSize: 16.sp,
                                   color: Color(0xff333D4B),
                                   fontWeight: FontWeight.bold),
                             ),
                             Text(
                               '으로부터',
                               style: TextStyle(
-                                fontSize: 16,
+                                fontSize: 16.sp,
                                 color: Color(0xff333D4B),
                               ),
                             ),

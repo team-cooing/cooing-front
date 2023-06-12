@@ -8,6 +8,7 @@ import 'package:cooing_front/pages/message_page.dart';
 import 'package:cooing_front/providers/UserProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:cooing_front/pages/question_page.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:cooing_front/model/response/response.dart' as response;
 import 'package:cooing_front/model/config/palette.dart';
@@ -80,15 +81,15 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
                 top: 5,
                 child: Container(
                   alignment: Alignment.center,
-                  width: 18,
-                  height: 18,
+                  width: 18.w,
+                  height: 18.h,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(100),
                     color: Color(0XFFEF4452),
                   ),
                   child: Text(
                     'N',
-                    style: TextStyle(fontSize: 12, color: Colors.white),
+                    style: TextStyle(fontSize: 12.sp, color: Colors.white),
                   ),
                 ),
               )
@@ -109,8 +110,8 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
                   children: [
                     TabBar(
                         controller: _tabController,
-                        labelStyle: const TextStyle(
-                            fontSize: 18.0, fontWeight: FontWeight.bold),
+                        labelStyle: TextStyle(
+                            fontSize: 18.sp, fontWeight: FontWeight.bold),
                         labelColor: Colors.black,
                         indicatorColor: Colors.transparent,
                         unselectedLabelColor: Colors.grey,

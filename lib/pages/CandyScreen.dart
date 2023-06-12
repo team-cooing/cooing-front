@@ -9,6 +9,7 @@ import 'package:cooing_front/pages/candy_complete_page.dart';
 
 import 'package:cooing_front/providers/UserProvider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
@@ -83,19 +84,19 @@ class _CandyScreenState extends State<CandyScreen> {
                   widget.number == 1 ? content1 : content2,
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 22,
+                      fontSize: 22.sp,
                       color: Color.fromARGB(255, 51, 61, 75)),
                 )),
                 Padding(padding: EdgeInsets.all(2.0)),
                 Text(
                   "누가 보냈는지 확인해보세요!",
                   style: TextStyle(
-                      fontSize: 16, color: Color.fromRGBO(151, 84, 251, 1)),
+                      fontSize: 16.sp, color: Color.fromRGBO(151, 84, 251, 1)),
                 ),
                 Padding(padding: EdgeInsets.all(15.0)),
                 SizedBox(
                   width: double.infinity,
-                  height: 90.0,
+                  height: 100.h,
                   child: Container(
                     padding: EdgeInsets.all(25.0),
                     decoration: BoxDecoration(
@@ -110,8 +111,8 @@ class _CandyScreenState extends State<CandyScreen> {
                               Row(
                                 children: [
                                   SizedBox(
-                                      width: 25.0,
-                                      height: 25.0,
+                                      width: 25.w,
+                                      height: 25.h,
                                       child: Image(
                                           image:
                                               AssetImage('images/candy1.png'))),
@@ -120,7 +121,7 @@ class _CandyScreenState extends State<CandyScreen> {
                                   Text(
                                     "캔디 25개",
                                     style: TextStyle(
-                                        fontSize: 16,
+                                        fontSize: 16.sp,
                                         color: Color(0xff333D4B),
                                         fontWeight: FontWeight.bold),
                                   )
@@ -142,10 +143,10 @@ class _CandyScreenState extends State<CandyScreen> {
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10.0)),
                               ),
-                              child: const Text(
+                              child: Text(
                                 "3,000원",
                                 style: TextStyle(
-                                    fontSize: 14,
+                                    fontSize: 14.sp,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white),
                               ))
@@ -155,7 +156,7 @@ class _CandyScreenState extends State<CandyScreen> {
                 Padding(padding: EdgeInsets.all(10.0)),
                 SizedBox(
                   width: double.infinity,
-                  height: 90.0,
+                  height: 100.h,
                   child: Container(
                     padding: EdgeInsets.all(25.0),
                     decoration: BoxDecoration(
@@ -170,8 +171,8 @@ class _CandyScreenState extends State<CandyScreen> {
                               Row(
                                 children: [
                                   SizedBox(
-                                      width: 25.0,
-                                      height: 25.0,
+                                      width: 25.w,
+                                      height: 25.h,
                                       child: Image(
                                           image:
                                               AssetImage('images/candy1.png'))),
@@ -180,7 +181,7 @@ class _CandyScreenState extends State<CandyScreen> {
                                   Text(
                                     "캔디 50개",
                                     style: TextStyle(
-                                        fontSize: 16,
+                                        fontSize: 16.sp,
                                         color: Color(0xff333D4B),
                                         fontWeight: FontWeight.bold),
                                   )
@@ -202,10 +203,10 @@ class _CandyScreenState extends State<CandyScreen> {
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10.0)),
                               ),
-                              child: const Text(
+                              child: Text(
                                 "6,000원",
                                 style: TextStyle(
-                                    fontSize: 14,
+                                    fontSize: 14.sp,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white),
                               ))
@@ -215,7 +216,7 @@ class _CandyScreenState extends State<CandyScreen> {
                 Padding(padding: EdgeInsets.all(10.0)),
                 SizedBox(
                   width: double.infinity,
-                  height: 90.0,
+                  height: 100.h,
                   child: Container(
                     padding: EdgeInsets.all(25.0),
                     decoration: BoxDecoration(
@@ -230,8 +231,8 @@ class _CandyScreenState extends State<CandyScreen> {
                               Row(
                                 children: [
                                   SizedBox(
-                                      width: 25.0,
-                                      height: 25.0,
+                                      width: 25.w,
+                                      height: 25.h,
                                       child: Image(
                                           image:
                                               AssetImage('images/candy1.png'))),
@@ -240,7 +241,7 @@ class _CandyScreenState extends State<CandyScreen> {
                                   Text(
                                     "캔디 100개",
                                     style: TextStyle(
-                                        fontSize: 16,
+                                        fontSize: 16.sp,
                                         color: Color(0xff333D4B),
                                         fontWeight: FontWeight.bold),
                                   )
@@ -263,10 +264,10 @@ class _CandyScreenState extends State<CandyScreen> {
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10.0)),
                               ),
-                              child: const Text(
+                              child: Text(
                                 "12,000원",
                                 style: TextStyle(
-                                    fontSize: 13,
+                                    fontSize: 13.sp,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white),
                               ))

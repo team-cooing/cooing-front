@@ -4,6 +4,7 @@ import 'package:cooing_front/model/response/response.dart' as r;
 import 'package:cooing_front/pages/login/LoginScreen.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -67,7 +68,7 @@ class _SettingScreenState extends State<SettingScreen> {
             padding: const EdgeInsets.all(20),
             child: SizedBox(
               width: double.infinity,
-              height: 90.0,
+              height: 100.h,
               child: Container(
                 padding: EdgeInsets.all(25.0),
                 decoration: BoxDecoration(
@@ -82,8 +83,8 @@ class _SettingScreenState extends State<SettingScreen> {
                           Row(
                             children: [
                               SizedBox(
-                                  width: 25.0,
-                                  height: 25.0,
+                                  width: 25,
+                                  height: 25,
                                   child: Image(
                                       image: AssetImage('images/candy1.png'))),
                               Padding(padding: EdgeInsets.only(right: 10.0)),
@@ -93,14 +94,14 @@ class _SettingScreenState extends State<SettingScreen> {
                                   Text(
                                     "내가 가진 캔디",
                                     style: TextStyle(
-                                      fontSize: 12,
+                                      fontSize: 12.sp,
                                       color: Color(0xff333D4B),
                                     ),
                                   ),
                                   Text(
                                     '${widget.user.candyCount}개',
                                     style: TextStyle(
-                                      fontSize: 16,
+                                      fontSize: 16.sp,
                                       color: Color(0xff333D4B),
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -129,10 +130,10 @@ class _SettingScreenState extends State<SettingScreen> {
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10.0)),
                           ),
-                          child: const Text(
+                          child: Text(
                             "채우기",
                             style: TextStyle(
-                                fontSize: 13,
+                                fontSize: 13.sp,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white),
                           ))
@@ -166,7 +167,7 @@ class _SettingScreenState extends State<SettingScreen> {
                             Text(
                               '회원 탈퇴',
                               style: TextStyle(
-                                fontSize: 16,
+                                fontSize: 16.sp,
                                 color: Color(0xffB6B7B8),
                               ),
                             ),
@@ -174,7 +175,7 @@ class _SettingScreenState extends State<SettingScreen> {
                             Text(
                               '탈퇴한 뒤에는 데이터를 복구할 수 없으니 신중히 진행해 주세요.',
                               style: TextStyle(
-                                fontSize: 12,
+                                fontSize: 12.sp,
                                 color: Color(0xffB6B7B8),
                               ),
                             ),
@@ -189,7 +190,7 @@ class _SettingScreenState extends State<SettingScreen> {
                       child: Text(
                         "${settingElements[index]['title']}",
                         style: TextStyle(
-                            fontSize: 16,
+                            fontSize: 16.sp,
                             color: Color(0xff333D4B),
                             fontWeight: FontWeight.bold),
                       ),

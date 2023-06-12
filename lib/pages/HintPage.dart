@@ -4,6 +4,7 @@ import 'package:cooing_front/pages/CandyScreen.dart';
 import 'package:cooing_front/providers/UserProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:cooing_front/model/response/response.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class HintScreen extends StatefulWidget {
   final User user;
@@ -64,14 +65,14 @@ class _HintScreenState extends State<HintScreen> {
                           "힌트보기",
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize: 22,
+                              fontSize: 22.sp,
                               color: Color.fromARGB(255, 51, 61, 75)),
                         )),
                         Padding(padding: EdgeInsets.all(15.0)),
                         Text(
                           "내가 가진 캔디",
                           style: TextStyle(
-                              fontSize: 12,
+                              fontSize: 12.sp,
                               color: Color.fromRGBO(51, 61, 75, 1)),
                         ),
                         Container(
@@ -79,7 +80,7 @@ class _HintScreenState extends State<HintScreen> {
                           decoration: BoxDecoration(
                               border: Border(
                                   bottom: BorderSide(
-                                      width: 1.0,
+                                      width: 1.0.w,
                                       color:
                                           Color.fromRGBO(217, 217, 217, 1)))),
                           child: Row(
@@ -89,7 +90,7 @@ class _HintScreenState extends State<HintScreen> {
                                   "${widget.user.candyCount}개",
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 22,
+                                      fontSize: 22.sp,
                                       color: Color.fromARGB(255, 51, 61, 75)),
                                 ),
                                 ElevatedButton(
@@ -112,10 +113,10 @@ class _HintScreenState extends State<HintScreen> {
                                           borderRadius:
                                               BorderRadius.circular(10.0)),
                                     ),
-                                    child: const Text(
+                                    child: Text(
                                       "채우기",
                                       style: TextStyle(
-                                        fontSize: 14,
+                                        fontSize: 14.sp,
                                         fontWeight: FontWeight.bold,
                                         color: Color.fromRGBO(151, 84, 251, 1),
                                       ),
@@ -128,7 +129,7 @@ class _HintScreenState extends State<HintScreen> {
                           duration: Duration(milliseconds: 1),
                           child: SizedBox(
                             width: double.infinity,
-                            height: 90.0,
+                            height: 90.h,
                             child: Container(
                               padding: EdgeInsets.all(25.0),
                               decoration: BoxDecoration(
@@ -143,7 +144,7 @@ class _HintScreenState extends State<HintScreen> {
                                           ? widget.answer.hint[0]
                                           : "첫번째 힌트",
                                       style: TextStyle(
-                                          fontSize: 16,
+                                          fontSize: 16.sp,
                                           color: Color(0xff333D4B),
                                           fontWeight: FontWeight.bold),
                                     ),
@@ -193,7 +194,7 @@ class _HintScreenState extends State<HintScreen> {
                                         child: Text(
                                           goldenCandy ? '황금 캔디' : "캔디 3개",
                                           style: TextStyle(
-                                              fontSize: 14,
+                                              fontSize: 14.sp,
                                               fontWeight: FontWeight.bold,
                                               color: Colors.white),
                                         ))
@@ -210,7 +211,7 @@ class _HintScreenState extends State<HintScreen> {
                             duration: Duration(milliseconds: 1),
                             child: SizedBox(
                               width: double.infinity,
-                              height: 90.0,
+                              height: 90.h,
                               child: Container(
                                   padding: EdgeInsets.all(25.0),
                                   decoration: BoxDecoration(
@@ -227,7 +228,7 @@ class _HintScreenState extends State<HintScreen> {
                                               : "두번째 힌트",
                                           softWrap: true,
                                           style: TextStyle(
-                                              fontSize: 16,
+                                              fontSize: 16.sp,
                                               color: Color(0xff333D4B),
                                               fontWeight: FontWeight.bold),
                                         )),
@@ -278,7 +279,7 @@ class _HintScreenState extends State<HintScreen> {
                                             child: Text(
                                               goldenCandy ? '황금 캔디' : "캔디 3개",
                                               style: TextStyle(
-                                                  fontSize: 14,
+                                                  fontSize: 14.sp,
                                                   fontWeight: FontWeight.bold,
                                                   color: Colors.white),
                                             ))
@@ -294,7 +295,7 @@ class _HintScreenState extends State<HintScreen> {
                             duration: Duration(milliseconds: 1),
                             child: SizedBox(
                               width: double.infinity,
-                              height: 90.0,
+                              height: 90.h,
                               child: Container(
                                 padding: EdgeInsets.all(25.0),
                                 decoration: BoxDecoration(
@@ -310,7 +311,7 @@ class _HintScreenState extends State<HintScreen> {
                                             ? widget.answer.hint[2]
                                             : "세번째 힌트",
                                         style: TextStyle(
-                                            fontSize: 16,
+                                            fontSize: 16.sp,
                                             color: Color(0xff333D4B),
                                             fontWeight: FontWeight.bold),
                                       ),
@@ -361,7 +362,7 @@ class _HintScreenState extends State<HintScreen> {
                                           child: Text(
                                             goldenCandy ? '황금 캔디' : "캔디 3개",
                                             style: TextStyle(
-                                                fontSize: 14,
+                                                fontSize: 14.sp,
                                                 fontWeight: FontWeight.bold,
                                                 color: Colors.white),
                                           ))
@@ -375,12 +376,12 @@ class _HintScreenState extends State<HintScreen> {
         padding: EdgeInsets.all(20),
         child: SizedBox(
           width: double.infinity,
-          height: 50,
+          height: 50.h,
           child: ElevatedButton(
               style: ElevatedButton.styleFrom(
                   backgroundColor: Color.fromARGB(255, 151, 84, 251)),
-              child: const Text('확인',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+              child: Text('확인',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.sp)),
               onPressed: () async {
                 widget.answer.isOpenedHint = openHint;
                 await Response.updateAnswer(newAnswer: widget.answer);

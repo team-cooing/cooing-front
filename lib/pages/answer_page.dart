@@ -9,6 +9,7 @@ import 'package:cooing_front/providers/UserProvider.dart';
 import 'package:cooing_front/widgets/userData_method.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'dart:math';
 import 'package:cooing_front/model/response/fcmController.dart';
@@ -207,8 +208,8 @@ class _AnswerPageState extends State<AnswerPage> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SizedBox(
-              width: 120.0,
-              height: 120.0,
+              width: 120.0.w,
+              height: 120.0.h,
               child: Icon(
                 Icons.cancel,
                 size: 120,
@@ -220,7 +221,7 @@ class _AnswerPageState extends State<AnswerPage> {
               "이 질문은",
               style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 22,
+                  fontSize: 22.sp,
                   color: Color.fromARGB(255, 51, 61, 75)),
             ),
           ),
@@ -228,7 +229,7 @@ class _AnswerPageState extends State<AnswerPage> {
             "답변을 할 수 없습니다.",
             style: TextStyle(
                 fontWeight: FontWeight.bold,
-                fontSize: 22,
+                fontSize: 22.sp,
                 color: Color.fromARGB(255, 51, 61, 75)),
           ),
         ]);
@@ -256,10 +257,10 @@ class _AnswerPageState extends State<AnswerPage> {
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14.0)),
                       ),
-                      child: const Text(
+                      child: Text(
                         "확인",
                         style: TextStyle(
-                            fontSize: 18,
+                            fontSize: 18.sp,
                             fontWeight: FontWeight.bold,
                             color: Colors.white),
                       )),
@@ -331,7 +332,7 @@ class _AnswerPageState extends State<AnswerPage> {
             "답변 작성",
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              fontSize: 22.0,
+              fontSize: 22.0.sp,
             ),
             textAlign: TextAlign.center,
           ),
@@ -344,7 +345,7 @@ class _AnswerPageState extends State<AnswerPage> {
           "${question.ownerName}에게",
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            fontSize: 18.0,
+            fontSize: 18.0.sp,
           ),
           textAlign: TextAlign.center,
         ),
@@ -370,8 +371,8 @@ class _AnswerPageState extends State<AnswerPage> {
                         color: Palette.mainPurple,
                       )
                     : SizedBox(
-                        width: 80.0,
-                        height: 80.0,
+                        width: 80.0.w,
+                        height: 80.0.h,
                         child: CircleAvatar(
                           backgroundImage:
                               NetworkImage(question.ownerProfileImage),
@@ -382,9 +383,9 @@ class _AnswerPageState extends State<AnswerPage> {
                       EdgeInsets.only(left: 25, right: 25, top: 20, bottom: 1),
                   child: Text(
                     question.content,
-                    style: const TextStyle(
+                    style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 16,
+                        fontSize: 16.sp,
                         color: Colors.white),
                   ),
                 ),
@@ -416,8 +417,8 @@ class _AnswerPageState extends State<AnswerPage> {
               filled: true,
               fillColor: Colors.white24,
               hintText: '당신의 진심을 담은 답변을 적어주세요',
-              hintStyle: const TextStyle(
-                fontSize: 14,
+              hintStyle: TextStyle(
+                fontSize: 14.sp,
                 color: Colors.white38,
               ),
             ),
@@ -428,7 +429,7 @@ class _AnswerPageState extends State<AnswerPage> {
               child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
                 Text(
                   "${textValue.length} / $maxLength",
-                  style: const TextStyle(color: Colors.white54, fontSize: 13),
+                  style: TextStyle(color: Colors.white54, fontSize: 13.sp),
                 )
               ])),
         ]));
@@ -471,9 +472,9 @@ class _AnswerPageState extends State<AnswerPage> {
             },
           ),
         ),
-        const Text(
+        Text(
           '익명',
-          style: TextStyle(fontSize: 14, color: Color(0xff333D4B)),
+          style: TextStyle(fontSize: 14.sp, color: Color(0xff333D4B)),
         )
       ],
     );
@@ -526,10 +527,10 @@ class _AnswerPageState extends State<AnswerPage> {
                   borderRadius: BorderRadius.circular(14.0),
                 ),
               ),
-              child: const Text(
+              child: Text(
                 "보내기",
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: 18.sp,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),

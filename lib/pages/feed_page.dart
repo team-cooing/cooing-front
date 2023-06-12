@@ -8,6 +8,7 @@ import 'package:cooing_front/pages/answer_page.dart';
 import 'package:cooing_front/pages/lottery_complete_page.dart';
 import 'package:custom_refresh_indicator/custom_refresh_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class FeedPage extends StatefulWidget {
   final User user;
@@ -104,8 +105,8 @@ class _FeedPageState extends State<FeedPage> {
                           if (controller.isLoading)
                             Container(
                               margin: const EdgeInsets.only(bottom: 8.0),
-                              width: 16,
-                              height: 16,
+                              width: 16.w,
+                              height: 16.h,
                               child: const CircularProgressIndicator(
                                 color: Palette.mainPurple,
                                 strokeWidth: 2,
@@ -175,8 +176,8 @@ class _FeedPageState extends State<FeedPage> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         SizedBox(
-                          width: 42.0,
-                          height: 42.0,
+                          width: 42.0.w,
+                          height: 42.0.h,
                           child: CircleAvatar(
                             backgroundImage: index == -1
                                 ? AssetImage('images/logo_128.png')
@@ -201,7 +202,7 @@ class _FeedPageState extends State<FeedPage> {
                                   maxLines: 2,
                                   softWrap: true,
                                   style: TextStyle(
-                                    fontSize: 12,
+                                    fontSize: 12.sp,
                                     color: Color(0xff333D4B),
                                   ),
                                 ),
@@ -215,7 +216,7 @@ class _FeedPageState extends State<FeedPage> {
                                         : widget.feed[index]!.content,
                                     softWrap: true,
                                     style: TextStyle(
-                                      fontSize: 14,
+                                      fontSize: 14.sp,
                                       color: Color(0xff333D4B),
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -258,7 +259,7 @@ class _FeedPageState extends State<FeedPage> {
           setState(() {});
         },
         child: Container(
-          width: 75,
+          width: 75.w,
           alignment: Alignment.center,
           child: ElevatedButton(
               onPressed: null,
@@ -272,7 +273,7 @@ class _FeedPageState extends State<FeedPage> {
               child: Text('받기',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 11,
+                    fontSize: 11.sp,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ))),
@@ -318,7 +319,7 @@ class _FeedPageState extends State<FeedPage> {
           }
         },
         child: Container(
-          width: 75,
+          width: 75.w,
           alignment: Alignment.center,
           child: ElevatedButton(
               onPressed: null,
@@ -338,17 +339,17 @@ class _FeedPageState extends State<FeedPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                           SizedBox(
-                              width: 14.0,
-                              height: 14.0,
+                              width: 14.w,
+                              height: 14.h,
                               child: Image(
                                   image: AssetImage('images/candy1.png'))),
                           SizedBox(
-                            width: 6,
+                            width: 6.w,
                           ),
                           Text(
                             '3',
                             style: TextStyle(
-                                fontSize: 12,
+                                fontSize: 12.sp,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white),
                           )
@@ -359,7 +360,7 @@ class _FeedPageState extends State<FeedPage> {
                           : '답변하기',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 11,
+                        fontSize: 11.sp,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),

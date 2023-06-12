@@ -7,6 +7,7 @@ import 'package:cooing_front/providers/UserProvider.dart';
 import 'package:cooing_front/widgets/dynamic_link.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'dart:async';
 import 'package:screenshot/screenshot.dart';
 import 'dart:io';
@@ -109,7 +110,7 @@ class _QuestionPageState extends State<QuestionPage> {
           child: Column(
             children: <Widget>[
               SizedBox(
-                height: 30,
+                height: 30.h,
               ),
               // 프로필 이미지
               widget.user.profileImage.isEmpty
@@ -117,8 +118,8 @@ class _QuestionPageState extends State<QuestionPage> {
                       color: Palette.mainPurple,
                     )
                   : Container(
-                      width: 80,
-                      height: 80,
+                      width: 80.w,
+                      height: 80.h,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         image: DecorationImage(
@@ -128,7 +129,7 @@ class _QuestionPageState extends State<QuestionPage> {
                       ),
                     ),
               SizedBox(
-                height: 20,
+                height: 20.h,
               ),
               // 질문 텍스트
               Text(
@@ -136,13 +137,13 @@ class _QuestionPageState extends State<QuestionPage> {
                     ? widget.currentQuestion!.content
                     : '똑똑똑! 오늘의 질문이 도착했어요.',
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 16,
+                    fontSize: 16.sp,
                     color: Colors.white),
               ),
               SizedBox(
-                height: 40,
+                height: 40.h,
               ),
               // 버튼
               OutlinedButton(
@@ -180,14 +181,14 @@ class _QuestionPageState extends State<QuestionPage> {
                               ? '새로운 질문 받기'
                               : '답변 받기'
                       : '질문 받기',
-                  style: const TextStyle(
+                  style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                      fontSize: 16.sp,
                       color: Palette.mainPurple),
                 ),
               ),
               SizedBox(
-                height: isQuestionReceived ? 20 : 0,
+                height: isQuestionReceived ? 20.h : 0,
               ),
               // 안내 코멘트
               Text(
@@ -203,10 +204,10 @@ class _QuestionPageState extends State<QuestionPage> {
                             ? '새로운 질문이 도착했어요!'
                             : '다음 질문 도착은 ${nextReceiveTime!.day}일 00시 00분입니다.'
                     : '',
-                style: TextStyle(color: Colors.white, fontSize: 10),
+                style: TextStyle(color: Colors.white, fontSize: 10.sp),
               ),
               SizedBox(
-                height: 30,
+                height: 30.h,
               )
             ],
           ),
@@ -400,7 +401,7 @@ class _QuestionPageState extends State<QuestionPage> {
         content: Text(
           '링크 복사완료!',
           style: TextStyle(
-            fontSize: 15,
+            fontSize: 15.sp,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
@@ -427,7 +428,7 @@ class _QuestionPageState extends State<QuestionPage> {
       padding: const EdgeInsets.only(top: 20),
       child: SizedBox(
         width: double.infinity,
-        height: 85.0,
+        height: 85.h,
         child: Container(
           padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20),
           decoration: BoxDecoration(
@@ -441,8 +442,8 @@ class _QuestionPageState extends State<QuestionPage> {
                 Row(
                   children: [
                     SizedBox(
-                        width: 25.0,
-                        height: 25.0,
+                        width: 25.w,
+                        height: 25.h,
                         child: Image(image: assetImage)),
                     Padding(padding: EdgeInsets.only(right: 15.0)),
                     Column(
@@ -451,14 +452,14 @@ class _QuestionPageState extends State<QuestionPage> {
                         Text(
                           level,
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: 12.sp,
                             color: Color(0xff333D4B),
                           ),
                         ),
                         Text(
                           title,
                           style: TextStyle(
-                              fontSize: 16,
+                              fontSize: 16.sp,
                               color: Color(0xff333D4B),
                               fontWeight: FontWeight.bold),
                         ),
@@ -488,7 +489,7 @@ class _QuestionPageState extends State<QuestionPage> {
               child: Text(
                 buttonTxt,
                 style: TextStyle(
-                  fontSize: 13,
+                  fontSize: 13.sp,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
