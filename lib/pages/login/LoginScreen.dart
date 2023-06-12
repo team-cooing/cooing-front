@@ -257,6 +257,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         SizedBox(
                           height: 20,
                         ),
+                        if(!Platform.isAndroid)
                         _appleLoginButton(),
                       ]),
                 ))));
