@@ -1,37 +1,48 @@
 import 'package:cooing_front/model/response/question.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:cooing_front/pages/answer_page.dart';
-import 'package:get/get.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:uni_links/uni_links.dart';
+import 'package:get/get.dart';
+
 
 class DynamicLink {
   Future<bool> setup(String uid) async {
     bool isExistDynamicLink = await _getInitialDynamicLink(uid);
     print("In dynamicLink() : $isExistDynamicLink");
 
-      _addListener(uid);
+    _addListener(uid);
 
     return isExistDynamicLink;
   }
 
   Future<bool> _getInitialDynamicLink(String uid) async {
-      await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(Duration(seconds: 2));
+
+    final PendingDynamicLinkData? initialLink =
+        await FirebaseDynamicLinks.instance.getInitialLink();
+
+    if (initialLink != null) {
+      _redirectScreen(uid, initialLink);
+      return true;
+    }
 
     final String? deepLink = await getInitialLink();
 
-      if (deepLink != null) {
-        PendingDynamicLinkData? dynamicLinkData = await FirebaseDynamicLinks
-            .instance
-            .getDynamicLink(Uri.parse(deepLink));
+    if (deepLink != null) {
+      PendingDynamicLinkData? dynamicLinkData = await FirebaseDynamicLinks
+          .instance
+          .getDynamicLink(Uri.parse(deepLink));
 
-        if (dynamicLinkData != null) {
-          _redirectScreen(uid, dynamicLinkData);
-
-          return true;
-        }
+      if (dynamicLinkData != null) {
+        _redirectScreen(uid, dynamicLinkData);
+        return true;
       }
+    }
 
-      return false;}
+    return false;
+  }
 
   void _addListener(String uid) {
     FirebaseDynamicLinks.instance.onLink.listen((
@@ -79,11 +90,22 @@ class DynamicLink {
           fcmToken: '');
 
       Get.offAll(() => AnswerPage(
-            question: question,
-            user: null,
-            uid: uid,
-            isFromLink: true,
-          ));
+        question: question,
+        user: null,
+        uid: uid,
+        isFromLink: true,
+      ));
+      // Navigator.push(
+      //   context,
+      //   MaterialPageRoute(
+      //     builder: (context) => AnswerPage(
+      //       question: question,
+      //       user: null,
+      //       uid: uid,
+      //       isFromLink: true,
+      //     ),
+      //   ),
+      // );
     }
   }
 }
@@ -104,11 +126,11 @@ Future<String> getShortLink(Question question) async {
         minimumVersion: '0',
       ),
       navigationInfoParameters:
-          NavigationInfoParameters(forcedRedirectEnabled: false)
-  );
+          NavigationInfoParameters(forcedRedirectEnabled: false));
 
-  final dynamicLink =
-      await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams, shortLinkType: ShortDynamicLinkType.unguessable);
+  final dynamicLink = await FirebaseDynamicLinks.instance.buildShortLink(
+      dynamicLinkParams,
+      shortLinkType: ShortDynamicLinkType.unguessable);
 
   return dynamicLink.shortUrl.toString();
 }
