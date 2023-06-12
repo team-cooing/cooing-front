@@ -650,7 +650,6 @@ class _FeatureScreenState extends State<FeatureScreen> {
                                     args.recentQuestionBonusReceiveDate,
                                 questionInfos: args.questionInfos,
                                 answeredQuestions: args.answeredQuestions,
-                                currentQuestionId: args.currentQuestionId,
                                 currentQuestion: args.currentQuestion,
                                 serviceNeedsAgreement:
                                     args.serviceNeedsAgreement,

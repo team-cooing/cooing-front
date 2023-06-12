@@ -234,8 +234,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                             questionInfos: args.questionInfos,
                                             answeredQuestions:
                                                 args.answeredQuestions,
-                                            currentQuestionId:
-                                                args.currentQuestionId,
                                             currentQuestion: args.currentQuestion,
                                             serviceNeedsAgreement:
                                                 args.serviceNeedsAgreement,

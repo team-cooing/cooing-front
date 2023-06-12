@@ -205,8 +205,6 @@ class _SchoolScreenState extends State<SchoolScreen> {
                                                         args.questionInfos,
                                                     answeredQuestions:
                                                         args.answeredQuestions,
-                                                    currentQuestionId:
-                                                        args.currentQuestionId,
                                                     currentQuestion: args.currentQuestion,
                                                     serviceNeedsAgreement: args
                                                         .serviceNeedsAgreement,

@@ -293,7 +293,8 @@ class _QuestionPageState extends State<QuestionPage> {
       // 1-1. User 반영
       widget.user.questionInfos.add(
           {'contentId': newQuestion.contentId, 'questionId': newQuestion.id});
-      widget.user.currentQuestionId = '#${newContentId}_${now.toString()}';
+      widget.user.currentQuestion = newQuestion.toJson();
+
       // 1-2. Question 반영
       widget.currentQuestion = newQuestion;
 
@@ -303,7 +304,7 @@ class _QuestionPageState extends State<QuestionPage> {
       await Response.createQuestion(newQuestion: newQuestion);
       // 2-3. 기기 내 캐시 반영
       userProvider.updateQuestionInfos(widget.user.questionInfos);
-      userProvider.updateCurrentQuestionId(widget.user.currentQuestionId);
+      userProvider.updateCurrentQuestion();
     } else {
       // 만약, 질문을 오픈하지 않은 상태라면
       if (!isQuestionOpen) {
@@ -315,11 +316,11 @@ class _QuestionPageState extends State<QuestionPage> {
                 .parse(widget.currentQuestion!.receiveTime)
                 .day) {
           // 1-1. User 반영
-          widget.user.currentQuestionId = '';
+          widget.user.currentQuestion = {};
           // 2-1. Firebase Users > User 업데이트
           await Response.updateUser(newUser: widget.user);
-          //2-2. 기기 내 캐시 반영
-          userProvider.updateCurrentQuestionId(widget.user.currentQuestionId);
+          // 2-2. 기기 내 캐시 반영
+          userProvider.updateCurrentQuestion();
           widget.currentQuestion = null;
         } else {
           // 주요 기능: 질문 오픈하기
@@ -327,19 +328,27 @@ class _QuestionPageState extends State<QuestionPage> {
           widget.currentQuestion!.isOpen = true;
           widget.currentQuestion!.openTime = DateTime.now().toString();
           widget.currentQuestion!.url = await getUrl(widget.currentQuestion!);
+
           // 1-2. Feed 반영
           widget.feed.insert(0, widget.currentQuestion);
+
+          // 1-3. User 반영
+          widget.user.currentQuestion = widget.currentQuestion!.toJson();
 
           // 2-1. Firebase Contents > Questions > Question 업데이트
           await Response.updateQuestion(newQuestion: widget.currentQuestion!);
           // 2-2. Firebase Schools > Feed > Question 생성
           await Response.createQuestionInFeed(
               newQuestion: widget.currentQuestion!);
+          // 2-3. Firebase Users > User 업데이트
+          await Response.updateUser(newUser: widget.user);
+          // 2-4. 기기 내 캐시 반영
+          userProvider.updateCurrentQuestion();
         }
       } else {
         // 주요 기능: 질문 닫기
         // 1-1. User 반영
-        widget.user.currentQuestionId = '';
+        widget.user.currentQuestion = {};
         // 1-2. Question 반영
         widget.currentQuestion!.isOpen = false;
         // 1-3. Feed 반영
@@ -365,7 +374,7 @@ class _QuestionPageState extends State<QuestionPage> {
         widget.currentQuestion = null;
 
         // 3-1 기기내 캐시 반영
-        userProvider.updateCurrentQuestionId(widget.user.currentQuestionId);
+        userProvider.updateCurrentQuestion();
       }
     }
 

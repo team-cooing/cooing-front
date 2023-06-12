@@ -258,7 +258,6 @@ class _MultiSelectscreenState extends State<MultiSelectscreen> {
                                       args.recentQuestionBonusReceiveDate,
                                   questionInfos: args.questionInfos,
                                   answeredQuestions: args.answeredQuestions,
-                                  currentQuestionId: args.currentQuestionId,
                                   currentQuestion: args.currentQuestion,
                                   serviceNeedsAgreement:
                                       args.serviceNeedsAgreement,
