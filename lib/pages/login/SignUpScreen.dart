@@ -1,14 +1,12 @@
 import 'package:cooing_front/model/response/user.dart';
-import 'package:cooing_front/pages/login/schoolScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get/get.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
 
   @override
-  _SignUpScreenState createState() => _SignUpScreenState();
+  State<SignUpScreen> createState() => _SignUpScreenState();
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
@@ -80,7 +78,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               onChanged: (text) {
                                 if (text.length == 2 &&
                                     _number.length == 11 &&
-                                    _name.length > 0 &&
+                                    _name.isNotEmpty &&
                                     int.parse(text) <= 19) {
                                   setState(() {
                                     button = true;
@@ -111,7 +109,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                           color: Color.fromARGB(
                                               255, 151, 84, 251))),
                                   labelText: "나이",
-                                  labelStyle: new TextStyle(
+                                  labelStyle: TextStyle(
                                       color:
                                           Color.fromARGB(255, 182, 183, 184))),
                             ),
@@ -127,7 +125,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 FilteringTextInputFormatter.digitsOnly
                               ],
                               onChanged: (text) {
-                                if (text.length == 11 && _name.length > 0) {
+                                if (text.length == 11 && _name.isNotEmpty) {
                                   setState(() {
                                     ageField.requestFocus();
                                     age = true;
@@ -150,7 +148,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                           color: Color.fromARGB(
                                               255, 151, 84, 251))),
                                   labelText: "휴대폰 번호",
-                                  labelStyle: new TextStyle(
+                                  labelStyle: TextStyle(
                                       color:
                                           Color.fromARGB(255, 182, 183, 184))),
                             ),
@@ -161,7 +159,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             autofocus: true,
                             onChanged: (value) {
                               print(value.length);
-                              if (value.length > 0) {
+                              if (value.isNotEmpty) {
                                 setState(() {
                                   button = true;
                                 });
@@ -180,7 +178,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                         color:
                                             Color.fromARGB(255, 151, 84, 251))),
                                 labelText: "이름",
-                                labelStyle: new TextStyle(
+                                labelStyle: TextStyle(
                                     color: Color.fromARGB(255, 182, 183, 184))),
                           ),
                           Spacer(),
@@ -191,8 +189,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   height: 50,
                                   child: ElevatedButton(
                                     style: ElevatedButton.styleFrom(
-                                        primary:
-                                            Color.fromARGB(255, 151, 84, 251)),
+                                        backgroundColor: Color.fromARGB(255, 151, 84, 251)),
                                     child: const Text('확인',
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
@@ -239,6 +236,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                                 args.answeredQuestions,
                                             currentQuestionId:
                                                 args.currentQuestionId,
+                                            currentQuestion: args.currentQuestion,
                                             serviceNeedsAgreement:
                                                 args.serviceNeedsAgreement,
                                             privacyNeedsAgreement:

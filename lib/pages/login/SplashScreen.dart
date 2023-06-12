@@ -1,8 +1,6 @@
 import 'dart:convert';
-
 import 'package:cooing_front/model/config/palette.dart';
 import 'package:cooing_front/widgets/dynamic_link.dart';
-
 import 'package:cooing_front/pages/tab_page.dart';
 import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
@@ -10,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -104,6 +101,7 @@ class _SplashScreenState extends State<SplashScreen> {
     if (initialRoute == 'tab') {
       Get.offAll(TabPage(), arguments: newUserUid);
     } else {
+      // ignore: use_build_context_synchronously
       Navigator.pushReplacementNamed(context, initialRoute);
     }
   }

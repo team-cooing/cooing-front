@@ -22,6 +22,7 @@ class User {
   List<Map<String, dynamic>> questionInfos;
   List<String> answeredQuestions;
   String currentQuestionId;
+  Map currentQuestion;
   bool serviceNeedsAgreement;
   bool privacyNeedsAgreement;
 
@@ -49,6 +50,7 @@ class User {
     required this.questionInfos,
     required this.answeredQuestions,
     required this.currentQuestionId,
+    required this.currentQuestion,
     required this.serviceNeedsAgreement,
     required this.privacyNeedsAgreement,
   });
@@ -78,6 +80,7 @@ class User {
         questionInfos: List<Map<String, dynamic>>.from(json['questionInfos']),
         answeredQuestions: List<String>.from(json['answeredQuestions']),
         currentQuestionId: json['currentQuestionId'],
+        currentQuestion: json['currentQuestion'],
         serviceNeedsAgreement: json['serviceNeedsAgreement'],
         privacyNeedsAgreement: json['privacyNeedsAgreement']);
   }
@@ -107,6 +110,7 @@ class User {
       'questionInfos': questionInfos,
       'answeredQuestions': answeredQuestions,
       'currentQuestionId': currentQuestionId,
+      'currentQuestion': currentQuestion,
       'serviceNeedsAgreement': serviceNeedsAgreement,
       'privacyNeedsAgreement': privacyNeedsAgreement,
     };

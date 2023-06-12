@@ -1,6 +1,4 @@
 import 'package:cooing_front/model/response/user.dart';
-import 'package:cooing_front/pages/login/FeatureScreen.dart';
-import 'package:cooing_front/pages/login/schoolScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -8,14 +6,14 @@ class ClassScreen extends StatefulWidget {
   const ClassScreen({super.key});
 
   @override
-  _ClassScreenState createState() => _ClassScreenState();
+  State<ClassScreen> createState() => _ClassScreenState();
 }
 
 class _ClassScreenState extends State<ClassScreen> {
   final List<String> _textList = ['몇 학년인가요?', '몇 반인가요?'];
 
-  FocusNode _gradeFocus = FocusNode();
-  FocusNode _groupFocus = FocusNode();
+  final FocusNode _gradeFocus = FocusNode();
+  final FocusNode _groupFocus = FocusNode();
 
   bool grade = false;
   bool group = false;
@@ -72,7 +70,7 @@ class _ClassScreenState extends State<ClassScreen> {
                                 FilteringTextInputFormatter.digitsOnly
                               ],
                               onChanged: (text) {
-                                if (text.length >= 1 && _grade.length > 0) {
+                                if (text.isNotEmpty && _grade.isNotEmpty) {
                                   setState(() {
                                     button = true;
                                     // FocusScope.of(context).requestFocus(ageField);
@@ -93,7 +91,7 @@ class _ClassScreenState extends State<ClassScreen> {
                                           color: Color.fromARGB(
                                               255, 151, 84, 251))),
                                   labelText: "반",
-                                  labelStyle: new TextStyle(
+                                  labelStyle: TextStyle(
                                       color:
                                           Color.fromARGB(255, 182, 183, 184))),
                             ),
@@ -113,7 +111,7 @@ class _ClassScreenState extends State<ClassScreen> {
                                         color:
                                             Color.fromARGB(255, 151, 84, 251))),
                                 labelText: "학년",
-                                labelStyle: new TextStyle(
+                                labelStyle: TextStyle(
                                     color: Color.fromARGB(255, 182, 183, 184))),
                             onChanged: (text) {
                               if (text.length == 1) {
@@ -123,7 +121,7 @@ class _ClassScreenState extends State<ClassScreen> {
                                   title = 1;
                                 });
                               }
-                              if (text.length == 1 && _group.length > 0) {
+                              if (text.length == 1 && _group.isNotEmpty) {
                                 setState(() {
                                   button = true;
                                 });
@@ -145,7 +143,7 @@ class _ClassScreenState extends State<ClassScreen> {
                                   height: 50,
                                   child: ElevatedButton(
                                       style: ElevatedButton.styleFrom(
-                                          primary: Color.fromARGB(
+                                          backgroundColor: Color.fromARGB(
                                               255, 151, 84, 251)),
                                       child: const Text('확인',
                                           style: TextStyle(
@@ -183,6 +181,7 @@ class _ClassScreenState extends State<ClassScreen> {
                                                 args.answeredQuestions,
                                             currentQuestionId:
                                                 args.currentQuestionId,
+                                            currentQuestion: args.currentQuestion,
                                             serviceNeedsAgreement:
                                                 args.serviceNeedsAgreement,
                                             privacyNeedsAgreement:

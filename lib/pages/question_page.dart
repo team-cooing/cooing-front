@@ -110,6 +110,13 @@ class _QuestionPageState extends State<QuestionPage> {
           padding: EdgeInsets.symmetric(horizontal: 40),
           child: Column(
             children: <Widget>[
+              // TODO: 지우기
+              GestureDetector(
+                onTap: () async{
+
+                },
+                child: Text('테스트 버튼'),
+              ),
               SizedBox(
                 height: 30,
               ),

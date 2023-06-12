@@ -1,12 +1,11 @@
 import 'package:cooing_front/model/response/user.dart';
-import 'package:cooing_front/pages/login/MultiSelectscreen.dart';
 import 'package:flutter/material.dart';
 
 class FeatureScreen extends StatefulWidget {
   const FeatureScreen({super.key});
 
   @override
-  _FeatureScreenState createState() => _FeatureScreenState();
+  State<FeatureScreen> createState() => _FeatureScreenState();
 }
 
 class _FeatureScreenState extends State<FeatureScreen> {
@@ -32,7 +31,7 @@ class _FeatureScreenState extends State<FeatureScreen> {
 
   int gender = 0;
   int eyes = 0;
-  List<String> _mbti = <String>[];
+  final List<String> _mbti = <String>[];
 
   @override
   Widget build(BuildContext context) {
@@ -118,6 +117,18 @@ class _FeatureScreenState extends State<FeatureScreen> {
                                                       Colors.transparent,
                                                   selectedBorderColor:
                                                       Colors.transparent,
+                                                  isSelected: _mbti1,
+                                                  onPressed: (int index) {
+                                                    setState(() {
+                                                      // The button that is tapped is set to true, and the others to false.
+                                                      for (int i = 0;
+                                                          i < _mbti1.length;
+                                                          i++) {
+                                                        _mbti1[i] = i == index;
+                                                      }
+                                                      _button[0] = true;
+                                                    });
+                                                  },
                                                   children: <Widget>[
                                                     Container(
                                                       alignment:
@@ -154,18 +165,6 @@ class _FeatureScreenState extends State<FeatureScreen> {
                                                           )),
                                                     ),
                                                   ],
-                                                  isSelected: _mbti1,
-                                                  onPressed: (int index) {
-                                                    setState(() {
-                                                      // The button that is tapped is set to true, and the others to false.
-                                                      for (int i = 0;
-                                                          i < _mbti1.length;
-                                                          i++) {
-                                                        _mbti1[i] = i == index;
-                                                      }
-                                                      _button[0] = true;
-                                                    });
-                                                  },
                                                 )),
                                           ),
                                         ),
@@ -199,6 +198,18 @@ class _FeatureScreenState extends State<FeatureScreen> {
                                                       Colors.transparent,
                                                   selectedBorderColor:
                                                       Colors.transparent,
+                                                  isSelected: _mbti2,
+                                                  onPressed: (int index) {
+                                                    setState(() {
+                                                      // The button that is tapped is set to true, and the others to false.
+                                                      for (int i = 0;
+                                                          i < _mbti2.length;
+                                                          i++) {
+                                                        _mbti2[i] = i == index;
+                                                      }
+                                                      _button[1] = true;
+                                                    });
+                                                  },
                                                   children: <Widget>[
                                                     Container(
                                                       alignment:
@@ -235,18 +246,6 @@ class _FeatureScreenState extends State<FeatureScreen> {
                                                           )),
                                                     ),
                                                   ],
-                                                  isSelected: _mbti2,
-                                                  onPressed: (int index) {
-                                                    setState(() {
-                                                      // The button that is tapped is set to true, and the others to false.
-                                                      for (int i = 0;
-                                                          i < _mbti2.length;
-                                                          i++) {
-                                                        _mbti2[i] = i == index;
-                                                      }
-                                                      _button[1] = true;
-                                                    });
-                                                  },
                                                 )),
                                           ),
                                         ),
@@ -280,6 +279,18 @@ class _FeatureScreenState extends State<FeatureScreen> {
                                                       Colors.transparent,
                                                   selectedBorderColor:
                                                       Colors.transparent,
+                                                  isSelected: _mbti3,
+                                                  onPressed: (int index) {
+                                                    setState(() {
+                                                      // The button that is tapped is set to true, and the others to false.
+                                                      for (int i = 0;
+                                                          i < _mbti3.length;
+                                                          i++) {
+                                                        _mbti3[i] = i == index;
+                                                      }
+                                                      _button[2] = true;
+                                                    });
+                                                  },
                                                   children: <Widget>[
                                                     Container(
                                                       alignment:
@@ -316,99 +327,85 @@ class _FeatureScreenState extends State<FeatureScreen> {
                                                           )),
                                                     ),
                                                   ],
-                                                  isSelected: _mbti3,
-                                                  onPressed: (int index) {
-                                                    setState(() {
-                                                      // The button that is tapped is set to true, and the others to false.
-                                                      for (int i = 0;
-                                                          i < _mbti3.length;
-                                                          i++) {
-                                                        _mbti3[i] = i == index;
-                                                      }
-                                                      _button[2] = true;
-                                                    });
-                                                  },
                                                 )),
                                           ),
                                         ),
-                                        Container(
-                                          child: SizedBox(
-                                            height: 60,
-                                            child: Container(
-                                                padding: EdgeInsets.zero,
-                                                decoration: BoxDecoration(
-                                                  color: Color.fromRGBO(
-                                                      243, 243, 243, 1),
-                                                  borderRadius:
-                                                      BorderRadius.all(
-                                                          Radius.circular(10)),
-                                                ),
-                                                child: ToggleButtons(
-                                                  color: Color.fromRGBO(
-                                                      51, 61, 75, 0.4),
-                                                  selectedColor: Color.fromARGB(
-                                                      255, 151, 84, 251),
-                                                  fillColor: Color.fromRGBO(
-                                                      151, 84, 251, 0.4),
-                                                  disabledColor: Color.fromRGBO(
-                                                      243, 243, 243, 1),
-                                                  borderRadius:
-                                                      BorderRadius.all(
-                                                          Radius.circular(10)),
-                                                  borderColor:
-                                                      Colors.transparent,
-                                                  selectedBorderColor:
-                                                      Colors.transparent,
-                                                  children: <Widget>[
-                                                    Container(
-                                                      alignment:
-                                                          Alignment.center,
-                                                      width: (MediaQuery.of(
-                                                                      context)
-                                                                  .size
-                                                                  .width -
-                                                              43) /
-                                                          2,
-                                                      child: Text('J',
-                                                          style: TextStyle(
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            fontSize: 20,
-                                                            // color:
-                                                            //     Color.fromRGBO(51, 61, 75, 0.4)
-                                                          )),
-                                                    ),
-                                                    Container(
-                                                      alignment:
-                                                          Alignment.center,
-                                                      width: (MediaQuery.of(
-                                                                      context)
-                                                                  .size
-                                                                  .width -
-                                                              43) /
-                                                          2,
-                                                      child: Text('P',
-                                                          style: TextStyle(
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            fontSize: 20,
-                                                          )),
-                                                    ),
-                                                  ],
-                                                  isSelected: _mbti4,
-                                                  onPressed: (int index) {
-                                                    setState(() {
-                                                      // The button that is tapped is set to true, and the others to false.
-                                                      for (int i = 0;
-                                                          i < _mbti4.length;
-                                                          i++) {
-                                                        _mbti4[i] = i == index;
-                                                      }
-                                                      _button[3] = true;
-                                                    });
-                                                  },
-                                                )),
-                                          ),
+                                        SizedBox(
+                                          height: 60,
+                                          child: Container(
+                                              padding: EdgeInsets.zero,
+                                              decoration: BoxDecoration(
+                                                color: Color.fromRGBO(
+                                                    243, 243, 243, 1),
+                                                borderRadius:
+                                                    BorderRadius.all(
+                                                        Radius.circular(10)),
+                                              ),
+                                              child: ToggleButtons(
+                                                color: Color.fromRGBO(
+                                                    51, 61, 75, 0.4),
+                                                selectedColor: Color.fromARGB(
+                                                    255, 151, 84, 251),
+                                                fillColor: Color.fromRGBO(
+                                                    151, 84, 251, 0.4),
+                                                disabledColor: Color.fromRGBO(
+                                                    243, 243, 243, 1),
+                                                borderRadius:
+                                                    BorderRadius.all(
+                                                        Radius.circular(10)),
+                                                borderColor:
+                                                    Colors.transparent,
+                                                selectedBorderColor:
+                                                    Colors.transparent,
+                                                isSelected: _mbti4,
+                                                onPressed: (int index) {
+                                                  setState(() {
+                                                    // The button that is tapped is set to true, and the others to false.
+                                                    for (int i = 0;
+                                                        i < _mbti4.length;
+                                                        i++) {
+                                                      _mbti4[i] = i == index;
+                                                    }
+                                                    _button[3] = true;
+                                                  });
+                                                },
+                                                children: <Widget>[
+                                                  Container(
+                                                    alignment:
+                                                        Alignment.center,
+                                                    width: (MediaQuery.of(
+                                                                    context)
+                                                                .size
+                                                                .width -
+                                                            43) /
+                                                        2,
+                                                    child: Text('J',
+                                                        style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          fontSize: 20,
+                                                          // color:
+                                                          //     Color.fromRGBO(51, 61, 75, 0.4)
+                                                        )),
+                                                  ),
+                                                  Container(
+                                                    alignment:
+                                                        Alignment.center,
+                                                    width: (MediaQuery.of(
+                                                                    context)
+                                                                .size
+                                                                .width -
+                                                            43) /
+                                                        2,
+                                                    child: Text('P',
+                                                        style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          fontSize: 20,
+                                                        )),
+                                                  ),
+                                                ],
+                                              )),
                                         ),
                                       ]),
                                     ],
@@ -459,6 +456,21 @@ class _FeatureScreenState extends State<FeatureScreen> {
                                               borderColor: Colors.transparent,
                                               selectedBorderColor:
                                                   Colors.transparent,
+                                              isSelected: _eyes,
+                                              onPressed: (int index) {
+                                                setState(() {
+                                                  // The button that is tapped is set to true, and the others to false.
+                                                  for (int i = 0;
+                                                      i < _eyes.length;
+                                                      i++) {
+                                                    _eyes[i] = i == index;
+                                                  }
+                                                  eyes = index;
+                                                  print(eyes);
+                                                  title = 1;
+                                                  visibleMbti = true;
+                                                });
+                                              },
                                               children: <Widget>[
                                                 Container(
                                                   alignment: Alignment.center,
@@ -491,21 +503,6 @@ class _FeatureScreenState extends State<FeatureScreen> {
                                                       )),
                                                 ),
                                               ],
-                                              isSelected: _eyes,
-                                              onPressed: (int index) {
-                                                setState(() {
-                                                  // The button that is tapped is set to true, and the others to false.
-                                                  for (int i = 0;
-                                                      i < _eyes.length;
-                                                      i++) {
-                                                    _eyes[i] = i == index;
-                                                  }
-                                                  eyes = index;
-                                                  print(eyes);
-                                                  title = 1;
-                                                  visibleMbti = true;
-                                                });
-                                              },
                                             )),
                                       )
                                     ],
@@ -541,6 +538,20 @@ class _FeatureScreenState extends State<FeatureScreen> {
                                       BorderRadius.all(Radius.circular(10)),
                                   borderColor: Colors.transparent,
                                   selectedBorderColor: Colors.transparent,
+                                  isSelected: _gender,
+                                  onPressed: (int index) {
+                                    setState(() {
+                                      // The button that is tapped is set to true, and the others to false.
+                                      for (int i = 0; i < _gender.length; i++) {
+                                        _gender[i] = i == index;
+                                      }
+                                      gender = index;
+
+                                      print(gender);
+                                      title = 2;
+                                      visibleEyes = true;
+                                    });
+                                  },
                                   children: <Widget>[
                                     Container(
                                       alignment: Alignment.center,
@@ -569,20 +580,6 @@ class _FeatureScreenState extends State<FeatureScreen> {
                                           )),
                                     ),
                                   ],
-                                  isSelected: _gender,
-                                  onPressed: (int index) {
-                                    setState(() {
-                                      // The button that is tapped is set to true, and the others to false.
-                                      for (int i = 0; i < _gender.length; i++) {
-                                        _gender[i] = i == index;
-                                      }
-                                      gender = index;
-
-                                      print(gender);
-                                      title = 2;
-                                      visibleEyes = true;
-                                    });
-                                  },
                                 )),
                           )
                         ]),
@@ -600,7 +597,7 @@ class _FeatureScreenState extends State<FeatureScreen> {
                       height: 50,
                       child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                              primary: Color.fromARGB(255, 151, 84, 251)),
+                              backgroundColor: Color.fromARGB(255, 151, 84, 251)),
                           child: const Text('확인',
                               style: TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 15)),
@@ -654,6 +651,7 @@ class _FeatureScreenState extends State<FeatureScreen> {
                                 questionInfos: args.questionInfos,
                                 answeredQuestions: args.answeredQuestions,
                                 currentQuestionId: args.currentQuestionId,
+                                currentQuestion: args.currentQuestion,
                                 serviceNeedsAgreement:
                                     args.serviceNeedsAgreement,
                                 privacyNeedsAgreement:

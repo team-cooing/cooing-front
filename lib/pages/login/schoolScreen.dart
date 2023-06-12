@@ -139,10 +139,7 @@ class _SchoolScreenState extends State<SchoolScreen> {
                                 height: 50,
                                 child: ElevatedButton(
                                     style: ElevatedButton.styleFrom(
-                                        primary:
-                                            Color.fromARGB(255, 151, 84, 251),
-                                        onSurface:
-                                            Color.fromRGBO(151, 84, 251, 0.2)),
+                                        backgroundColor: Color.fromARGB(255, 151, 84, 251), disabledForegroundColor: Color.fromRGBO(151, 84, 251, 0.2).withOpacity(0.38), disabledBackgroundColor: Color.fromRGBO(151, 84, 251, 0.2).withOpacity(0.12)),
                                     onPressed:
                                         disableButton ? searchButton : null,
                                     child: Text('검색',
@@ -210,6 +207,7 @@ class _SchoolScreenState extends State<SchoolScreen> {
                                                         args.answeredQuestions,
                                                     currentQuestionId:
                                                         args.currentQuestionId,
+                                                    currentQuestion: args.currentQuestion,
                                                     serviceNeedsAgreement: args
                                                         .serviceNeedsAgreement,
                                                     privacyNeedsAgreement: args

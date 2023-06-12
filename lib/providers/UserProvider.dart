@@ -77,6 +77,7 @@ class UserDataProvider with ChangeNotifier {
             answeredQuestions:
                 List<String>.from(data['answeredQuestions'] ?? []),
             currentQuestionId: data['currentQuestionId'],
+            currentQuestion: data['currentQuestion'],
             serviceNeedsAgreement: data['serviceNeedsAgreement'],
             privacyNeedsAgreement: data['privacyNeedsAgreement']);
         _isDataLoaded = true;

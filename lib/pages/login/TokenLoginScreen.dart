@@ -1,14 +1,8 @@
-import 'dart:convert';
 import 'dart:io';
-import 'package:cooing_front/model/response/user.dart';
-
-import 'package:cooing_front/pages/login/SignUpScreen.dart';
 import 'package:cooing_front/model/util/Login_platform.dart';
-import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
-// import 'package:parameters/';
 
 class TokenLoginScreen extends StatefulWidget {
   const TokenLoginScreen({Key? key}) : super(key: key);
@@ -122,16 +116,4 @@ class _TokenLoginScreenState extends State<TokenLoginScreen> {
       ),
     );
   }
-
-  // Widget _logoutButton() {
-  //   return ElevatedButton(
-  //     onPressed: signOut,
-  //     style: ButtonStyle(
-  //       backgroundColor: MaterialStateProperty.all(
-  //         const Color(0xff0165E1),
-  //       ),
-  //     ),
-  //     child: const Text('로그아웃'),
-  //   );
-  // }
 }
