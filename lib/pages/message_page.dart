@@ -148,10 +148,9 @@ class _MessagePageState extends State<MessagePage> {
           SizedBox(
               width: double.infinity,
               child: Container(
-                  margin: EdgeInsets.only(
-                      left: 20, right: 20, top: 20, bottom: 0),
-                  padding:
-                  EdgeInsets.symmetric(horizontal: 25, vertical: 30),
+                  margin:
+                      EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 0),
+                  padding: EdgeInsets.symmetric(horizontal: 25, vertical: 30),
                   decoration: BoxDecoration(
                       color: Color(0xffF2F3F3),
                       borderRadius: BorderRadius.only(
@@ -160,12 +159,12 @@ class _MessagePageState extends State<MessagePage> {
                           bottomRight: Radius.circular(20))),
                   child: Center(
                       child: Text(
-                        '이 질문에 대한 답변이 없습니다.',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Color(0xff333D4B),
-                        ),
-                      ))))
+                    '이 질문에 대한 답변이 없습니다.',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Color(0xff333D4B),
+                    ),
+                  ))))
         ],
       );
     } else {
@@ -264,13 +263,13 @@ class _MessagePageState extends State<MessagePage> {
                                     width: 25.0,
                                     height: 25.0,
                                     child: widget.answers[index]!.ownerGender ==
-                                        0
+                                            0
                                         ? Image(
-                                        image: AssetImage(
-                                            'images/icon_msg_boy.png'))
+                                            image: AssetImage(
+                                                'images/icon_msg_boy.png'))
                                         : Image(
-                                        image: AssetImage(
-                                            'images/icon_msg_girl.png'))),
+                                            image: AssetImage(
+                                                'images/icon_msg_girl.png'))),
                                 Positioned(
                                   bottom: 10,
                                   left: 15,
@@ -279,8 +278,8 @@ class _MessagePageState extends State<MessagePage> {
                                       height: 18.0,
                                       child: widget.answers[index]!.isOpened
                                           ? Image(
-                                          image: AssetImage(
-                                              'images/icon_msg_opened.png'))
+                                              image: AssetImage(
+                                                  'images/icon_msg_opened.png'))
                                           : null),
                                 )
                               ],
@@ -308,8 +307,7 @@ class _MessagePageState extends State<MessagePage> {
                   ]),
             ),
           ),
-        )
-        );
+        ));
   }
 
   String getFormattedAnswerTime(Answer answer) {
@@ -344,7 +342,7 @@ class _MessagePageState extends State<MessagePage> {
   Future<void> _handleRefresh() async {
     // Firebase Answers > Answers > Answer 5개 추가로 읽기
     List<Answer?> newAnswers =
-        await Response.readAnswersWithLimit(userId: widget.user.uid, limit: 5);
+        await Response.getAnswersWithLimit(1, widget.user.uid);
     widget.answers.addAll(newAnswers);
 
     if (newAnswers.isEmpty) {

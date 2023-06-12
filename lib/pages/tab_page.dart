@@ -46,6 +46,8 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    response.Response.readQuestionInFeed(schoolCode: '7530128');
+    response.Response.readAnswerInMessage(userId: uid);
 
     // 1. 인자로 전달 받은 uid 가져오기
     uid = Get.arguments.toString();
@@ -205,19 +207,24 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
       // Firebase DB에서 Question 읽기
       Question? newQuestion = await response.Response.readQuestion(
           contentId: contentId, questionId: questionId);
+      print('불러옴');
+      print(newQuestion!.isOpen);
+      print(user!.currentQuestionId);
 
       return newQuestion;
     } else {
+      print('없어?');
       return null;
     }
   }
 
   getFeedQuestionsInSetOfTen() async {
     // Firebase DB에서 feedQuestion 10개 읽기
+    // await response.Response.readQuestionInFeed(schoolCode: '7530128');
     List<Question?> newFeedQuestions =
-        await response.Response.readQuestionsInFeedWithLimit(
-            schoolCode: user!.schoolCode, limit: 10);
-
+        await response.Response.getQuestionsWithLimit(1, '7530128');
+    print('왜 안찍혀?');
+    print(newFeedQuestions);
     // 보너스 질문 id 구하기
     // 가장 적은 질문을 가진 question 찾기
     String questionIdWithMinAnswersNum = '';
@@ -267,8 +274,8 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
 
   getAnswersInSetOfTen() async {
     // Firevase DB에서 feedQuestion 10개 읽기
-    List<Answer?> newAnswers = await response.Response.readAnswersWithLimit(
-        userId: user!.uid, limit: 10);
+    List<Answer?> newAnswers =
+        await response.Response.getAnswersWithLimit(1, uid);
 
     // 최근 10개 중 안읽은 answer 있으면 New 표시
     for (var answer in newAnswers) {

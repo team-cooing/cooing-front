@@ -16,7 +16,7 @@ class HintScreen extends StatefulWidget {
 }
 
 class _HintScreenState extends State<HintScreen> {
-  late List<dynamic> openHint;
+  late List<bool> openHint;
   late bool goldenCandy;
   UserDataProvider userProvider = UserDataProvider();
 
@@ -24,7 +24,12 @@ class _HintScreenState extends State<HintScreen> {
   void initState() {
     super.initState();
     print(widget.answer.hint);
-    openHint = widget.answer.isOpenedHint;
+    openHint = [
+      widget.answer.isOpenedHint[0] == 'true' ? true : false,
+      widget.answer.isOpenedHint[1] == 'true' ? true : false,
+      widget.answer.isOpenedHint[2] == 'true' ? true : false
+    ];
+    widget.answer.isOpenedHint;
     goldenCandy = widget.user.isSubscribe;
   }
 
