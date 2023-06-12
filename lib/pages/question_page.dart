@@ -1,6 +1,5 @@
 import 'package:cooing_front/model/config/palette.dart';
 import 'package:cooing_front/model/data/question_list.dart';
-import 'package:cooing_front/model/response/answer.dart';
 import 'package:cooing_front/model/response/question.dart';
 import 'package:cooing_front/model/response/response.dart';
 import 'package:cooing_front/model/response/response_optimization.dart';
@@ -333,9 +332,8 @@ class _QuestionPageState extends State<QuestionPage> {
           // 1-3. User 반영
           widget.user.currentQuestion = widget.currentQuestion!.toJson();
 
-          // 2-1. Firebase Schools > Feed > Question 생성
-          await Response.createQuestionInFeed(
-              newQuestion: widget.currentQuestion!);
+          // 2-1. Firebase Requests > QuestionUploadRequest 생성
+          await ResponseOptimization.createQuestionUploadRequest(newQuestion: widget.currentQuestion!);
           // 2-2. Firebase Users > User 업데이트
           await Response.updateUser(newUser: widget.user);
           // 2-4. 기기 내 캐시 반영
@@ -360,10 +358,8 @@ class _QuestionPageState extends State<QuestionPage> {
         }
         // 2-1. Firebase Users > User 업데이트
         await Response.updateUser(newUser: widget.user);
-        // 2-2. Firebase Schools > Feed > Question 삭제
-        await Response.deleteQuestionInFeed(
-            schoolCode: widget.currentQuestion!.schoolCode,
-            questionId: widget.currentQuestion!.id);
+        // 2-2. Firebase Requests > QuestionDeleteRequest 생성
+        await ResponseOptimization.createQuestionDeleteRequest(newQuestion: widget.currentQuestion!);
 
         widget.currentQuestion = null;
 

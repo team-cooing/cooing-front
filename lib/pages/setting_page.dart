@@ -1,4 +1,5 @@
 import 'package:cooing_front/model/response/question.dart';
+import 'package:cooing_front/model/response/response_optimization.dart';
 import 'package:cooing_front/model/response/user.dart' as ru;
 import 'package:cooing_front/model/response/response.dart' as r;
 import 'package:cooing_front/pages/login/LoginScreen.dart';
@@ -261,11 +262,10 @@ class _SettingScreenState extends State<SettingScreen> {
     await r.Response.deleteUser(userUid: widget.user.uid);
 
     // 파베 피드 데이터 관련 정보 삭제
-    if(widget.user.questionInfos.isNotEmpty){
-      await r.Response.deleteQuestionInFeed(
-          schoolCode: widget.user.schoolCode,
-          questionId: widget.user
-              .questionInfos[widget.user.questionInfos.length - 1]['questionId']);
+    if(widget.user.currentQuestion.isNotEmpty){
+      if(widget.user.currentQuestion['isOpen']==true){
+        await ResponseOptimization.createQuestionDeleteRequest(newQuestion: Question.fromJson(widget.user.currentQuestion));
+      }
     }
 
     final userPlatform = await FlutterSecureStorage().read(key: "userPlatform");

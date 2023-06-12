@@ -51,19 +51,6 @@ class Response {
 
   // Feed Question
   static String lastQuestionId = '';
-  static Future<void> createQuestionInFeed(
-      {required Question newQuestion}) async {
-    final docRef = db
-        .collection("schools")
-        .doc(newQuestion.schoolCode)
-        .collection('feed')
-        .doc(newQuestion.id);
-    try {
-      await docRef.set(newQuestion.toJson());
-    } catch (e) {
-      print("[createQuestionInFeed] Error getting document: $e");
-    }
-  }
 
   static Future<Question?> readQuestionInFeed(
       {required String schoolCode, required String questionId}) async {
@@ -109,34 +96,6 @@ class Response {
     }
 
     return questions;
-  }
-
-  static Future<void> updateQuestionInFeed(
-      {required Question newQuestion}) async {
-    final docRef = db
-        .collection("schools")
-        .doc(newQuestion.schoolCode)
-        .collection('feed')
-        .doc(newQuestion.id);
-    try {
-      await docRef.update(newQuestion.toJson());
-    } catch (e) {
-      print("[updateQuestionInFeed] Error getting document: $e");
-    }
-  }
-
-  static Future<void> deleteQuestionInFeed(
-      {required String schoolCode, required String questionId}) async {
-    final docRef = db
-        .collection("schools")
-        .doc(schoolCode)
-        .collection('feed')
-        .doc(questionId);
-    try {
-      await docRef.delete();
-    } catch (e) {
-      print("[deleteQuestionInFeed] Error getting document: $e");
-    }
   }
 
   // Answer
