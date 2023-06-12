@@ -300,9 +300,7 @@ class _QuestionPageState extends State<QuestionPage> {
 
       // 2-1. Firebase > Users > User 업데이트
       await Response.updateUser(newUser: widget.user);
-      // 2-2. Firebase > Contents > Questions > Question 생성
-      await Response.createQuestion(newQuestion: newQuestion);
-      // 2-3. 기기 내 캐시 반영
+      // 2-2. 기기 내 캐시 반영
       userProvider.updateQuestionInfos(widget.user.questionInfos);
       userProvider.updateCurrentQuestion();
     } else {
@@ -335,12 +333,10 @@ class _QuestionPageState extends State<QuestionPage> {
           // 1-3. User 반영
           widget.user.currentQuestion = widget.currentQuestion!.toJson();
 
-          // 2-1. Firebase Contents > Questions > Question 업데이트
-          await Response.updateQuestion(newQuestion: widget.currentQuestion!);
-          // 2-2. Firebase Schools > Feed > Question 생성
+          // 2-1. Firebase Schools > Feed > Question 생성
           await Response.createQuestionInFeed(
               newQuestion: widget.currentQuestion!);
-          // 2-3. Firebase Users > User 업데이트
+          // 2-2. Firebase Users > User 업데이트
           await Response.updateUser(newUser: widget.user);
           // 2-4. 기기 내 캐시 반영
           userProvider.updateCurrentQuestion();
@@ -364,9 +360,7 @@ class _QuestionPageState extends State<QuestionPage> {
         }
         // 2-1. Firebase Users > User 업데이트
         await Response.updateUser(newUser: widget.user);
-        // 2-2. Firebase Contents > Questions > Question 업데이트
-        await Response.updateQuestion(newQuestion: widget.currentQuestion!);
-        // 2-3. Firebase Schools > Feed > Question 삭제
+        // 2-2. Firebase Schools > Feed > Question 삭제
         await Response.deleteQuestionInFeed(
             schoolCode: widget.currentQuestion!.schoolCode,
             questionId: widget.currentQuestion!.id);

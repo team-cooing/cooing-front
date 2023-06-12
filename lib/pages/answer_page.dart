@@ -6,7 +6,6 @@ import 'package:cooing_front/pages/answer_complete_page.dart';
 import 'package:cooing_front/pages/tab_page.dart';
 import 'package:cooing_front/model/response/response.dart' as response;
 import 'package:cooing_front/providers/UserProvider.dart';
-import 'package:cooing_front/widgets/userData_method.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -71,7 +70,7 @@ class _AnswerPageState extends State<AnswerPage> {
   }
 
   Future<void> settingData() async {
-    question = await getQuestion(widget.question);
+    // question = await getQuestion(widget.question);
 
     //링크를 통해 들어왔을 때
     if (isFromLink) {
@@ -109,14 +108,14 @@ class _AnswerPageState extends State<AnswerPage> {
     setState(() {});
   }
 
-  getQuestion(Question? q) async {
-    question = await response.Response.readQuestion(
-      contentId: q!.contentId,
-      questionId: q.id,
-    ) as Question;
-
-    return question;
-  }
+  // getQuestion(Question? q) async {
+  //   question = await response.Response.readQuestion(
+  //     contentId: q!.contentId,
+  //     questionId: q.id,
+  //   ) as Question;
+  //
+  //   return question;
+  // }
 
   String getNickname(User user) {
     List styles = user.style;
