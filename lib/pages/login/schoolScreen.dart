@@ -77,7 +77,7 @@ class _SchoolScreenState extends State<SchoolScreen> {
                 backgroundColor: Color(0xFFffffff),
                 body: Container(
                   padding:
-                      const EdgeInsets.only(left: 20, right: 20, bottom: 20),
+                      const EdgeInsets.only(left: 20, right: 20, bottom: 20).r,
                   child: Form(
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -90,7 +90,7 @@ class _SchoolScreenState extends State<SchoolScreen> {
                                 color: Color.fromARGB(255, 51, 61, 75)),
                           ),
                           Container(
-                              padding: const EdgeInsets.only(bottom: 10),
+                              padding: const EdgeInsets.only(bottom: 10).r,
                               child: TextField(
                                 onChanged: (text) {
                                   setState(() {
