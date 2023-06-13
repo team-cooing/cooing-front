@@ -25,7 +25,7 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
   late User? user;
   late Question? currentQuestion;
   late List<Question?> feed = [];
-  late String bonusQuestionId;
+  late String bonusQuestionId = '2023-06-08 16:12:16.416970';
   late List<Answer?> answers = [];
   late bool isNewMessage = false;
 
@@ -162,15 +162,20 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
   getInitialDataFromFirebase() async {
     // 1. User 데이터 가져오기
     user = await getUserData();
-
     // 만약, 유저가 있다면
     if (user != null) {
       // 2. Current Question 데이터 가져오기
       currentQuestion = await getCurrentQuestionData();
+      print(currentQuestion);
+      print('----위는 퀘스천---');
+
       // 3. Feed Questions 데이터 가져오기
       feed = await getFeedQuestionsInSetOfTen();
+
       // 4. Answer 데이터 가져오기
       answers = await getAnswersInSetOfTen();
+      print(answers);
+      print('---위는 엔설----');
 
       setState(() {
         isLoading = false;
@@ -227,47 +232,47 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
     print(newFeedQuestions);
     // 보너스 질문 id 구하기
     // 가장 적은 질문을 가진 question 찾기
-    String questionIdWithMinAnswersNum = '';
-    int minAnswersNum = 999;
+    // String questionIdWithMinAnswersNum = '';
+    // int minAnswersNum = 999;
 
-    for (var question in newFeedQuestions) {
-      // 만약, 질문이 있다면
-      if (question != null) {
-        // 만약, 이미 답변한 질문이라면
-        if (user!.answeredQuestions.contains(question.id) ||
-            question.owner == user!.uid) {
-          continue;
-        }
+    // for (var question in newFeedQuestions) {
+    //   // 만약, 질문이 있다면
+    //   if (question != null) {
+    //     // 만약, 이미 답변한 질문이라면
+    //     if (user!.answeredQuestions.contains(question.id) ||
+    //         question.owner == user!.uid) {
+    //       continue;
+    //     }
 
-        // 만약, '가장 적은 질문을 가진 question'이 없다면
-        if (questionIdWithMinAnswersNum.isEmpty) {
-          questionIdWithMinAnswersNum = question.id;
-        }
+    //     // 만약, '가장 적은 질문을 가진 question'이 없다면
+    //     if (questionIdWithMinAnswersNum.isEmpty) {
+    //       questionIdWithMinAnswersNum = question.id;
+    //     }
 
-        Answer? lastAnswer =
-            await response.Response.readLastAnswer(userId: question.owner);
+    //     Answer? lastAnswer =
+    //         await response.Response.readLastAnswer(userId: question.owner);
 
-        // 만약, 마지막 답변이 있다면
-        if (lastAnswer != null) {
-          // 만약, 마지막 답변이 지금 질문에 대한 것이 아니라면
-          if (lastAnswer.questionId != question.id) {
-            continue;
-          }
-          // 만약, 마지막 답변이 지금 질문에 대한 것이라면
-          else {
-            String extractedNumber = lastAnswer.id.substring(1, 7);
-            int result = int.parse(extractedNumber);
+    //     // 만약, 마지막 답변이 있다면
+    //     if (lastAnswer != null) {
+    //       // 만약, 마지막 답변이 지금 질문에 대한 것이 아니라면
+    //       if (lastAnswer.questionId != question.id) {
+    //         continue;
+    //       }
+    //       // 만약, 마지막 답변이 지금 질문에 대한 것이라면
+    //       else {
+    //         String extractedNumber = lastAnswer.id.substring(1, 7);
+    //         int result = int.parse(extractedNumber);
 
-            if (result < minAnswersNum) {
-              questionIdWithMinAnswersNum = question.id;
-              minAnswersNum = result;
-            }
-          }
-        }
-      }
-    }
+    //         if (result < minAnswersNum) {
+    //           questionIdWithMinAnswersNum = question.id;
+    //           minAnswersNum = result;
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
 
-    bonusQuestionId = questionIdWithMinAnswersNum;
+    // bonusQuestionId = questionIdWithMinAnswersNum;
 
     return newFeedQuestions;
   }

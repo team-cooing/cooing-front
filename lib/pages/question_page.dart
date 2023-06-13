@@ -43,9 +43,6 @@ class _QuestionPageState extends State<QuestionPage> {
   @override
   void initState() {
     super.initState();
-    print(widget.currentQuestion!.receiveTime);
-    print(widget.currentQuestion!.isOpen);
-    print(widget.currentQuestion!);
 
     // Question에 대힌 변수 값 세팅
     setQuestionState();
