@@ -150,7 +150,8 @@ class _MessagePageState extends State<MessagePage> {
                   Padding(padding: EdgeInsets.all(3)),
                   Text(
                     '"${QuestionList.questionList.elementAt(int.parse(widget.user.questionInfos.reversed.toList()[questionIndex]['contentId']))['question'] as String}"',
-                    style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
+                    style:
+                        TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
                   ),
                 ],
               )),
@@ -168,14 +169,12 @@ class _MessagePageState extends State<MessagePage> {
                           bottomRight: Radius.circular(20))),
                   child: Center(
                       child: Text(
-(font&valid_click)
-                        '이 질문에 대한 답변이 없습니다.',
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                          color: Color(0xff333D4B),
-                        ),
-                      ))))
-
+                    '이 질문에 대한 답변이 없습니다.',
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      color: Color(0xff333D4B),
+                    ),
+                  ))))
         ],
       );
     } else {
@@ -195,7 +194,8 @@ class _MessagePageState extends State<MessagePage> {
                 children: [
                   Padding(
                       padding: const EdgeInsets.only(
-                          left: 20, right: 20, top: 30, bottom: 0).r,
+                              left: 20, right: 20, top: 30, bottom: 0)
+                          .r,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -291,7 +291,6 @@ class _MessagePageState extends State<MessagePage> {
                                             image: AssetImage(
                                                 'images/icon_msg_girl.png'))),
                                 Positioned(
-
                                     bottom: 10,
                                     left: 15,
                                     child: SizedBox(
