@@ -148,7 +148,7 @@ class _SchoolScreenState extends State<SchoolScreen> {
                                     child: Text('검색',
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
-                                            fontSize: 15))),
+                                            fontSize: 15.sp))),
                               )),
                           isLoading
                               ? Container()
@@ -164,7 +164,7 @@ class _SchoolScreenState extends State<SchoolScreen> {
                                       itemBuilder: (context, index) {
                                         return Container(
                                             padding: const EdgeInsets.only(
-                                                top: 5, bottom: 5),
+                                                top: 5, bottom: 5).r,
                                             decoration: BoxDecoration(
                                                 border: Border(
                                               bottom: BorderSide(
@@ -225,7 +225,7 @@ class _SchoolScreenState extends State<SchoolScreen> {
                                                       margin:
                                                           const EdgeInsets.only(
                                                               top: 5,
-                                                              bottom: 5),
+                                                              bottom: 5).r,
 
                                                       // padding:
                                                       //     const EdgeInsets.only(bottom: 10),
@@ -244,7 +244,7 @@ class _SchoolScreenState extends State<SchoolScreen> {
                                                     children: [
                                                       Container(
                                                         margin: const EdgeInsets
-                                                            .only(right: 10),
+                                                            .only(right: 10).r,
                                                         width: 40.w,
                                                         height: 20.h,
                                                         decoration:
@@ -264,7 +264,7 @@ class _SchoolScreenState extends State<SchoolScreen> {
                                                             child: Text(
                                                           '주소',
                                                           style: TextStyle(
-                                                              fontSize: 12.sp,
+                                                              fontSize: 13.sp,
                                                               color: Color
                                                                   .fromRGBO(
                                                                       151,
@@ -276,7 +276,7 @@ class _SchoolScreenState extends State<SchoolScreen> {
                                                       Text(
                                                         schools[index].location,
                                                         style: TextStyle(
-                                                            fontSize: 12.sp,
+                                                            fontSize: 13.sp,
                                                             fontWeight:
                                                                 FontWeight.w300,
                                                             color:

@@ -68,7 +68,7 @@ class _HintScreenState extends State<HintScreen> {
                               fontSize: 22.sp,
                               color: Color.fromARGB(255, 51, 61, 75)),
                         )),
-                        Padding(padding: EdgeInsets.all(15.0)),
+                        Padding(padding: EdgeInsets.all(15.0).w),
                         Text(
                           "내가 가진 캔디",
                           style: TextStyle(
@@ -76,7 +76,7 @@ class _HintScreenState extends State<HintScreen> {
                               color: Color.fromRGBO(51, 61, 75, 1)),
                         ),
                         Container(
-                          padding: EdgeInsets.only(bottom: 15.0),
+                          padding: EdgeInsets.only(bottom: 15.0).r,
                           decoration: BoxDecoration(
                               border: Border(
                                   bottom: BorderSide(
@@ -131,7 +131,7 @@ class _HintScreenState extends State<HintScreen> {
                             width: double.infinity,
                             height: 90.h,
                             child: Container(
-                              padding: EdgeInsets.all(25.0),
+                              padding: EdgeInsets.all(25.0).w,
                               decoration: BoxDecoration(
                                   color: Color(0xffF2F3F3),
                                   borderRadius: BorderRadius.circular(20)),
@@ -285,7 +285,7 @@ class _HintScreenState extends State<HintScreen> {
                                             ))
                                       ])),
                             )),
-                        Padding(padding: EdgeInsets.all(10.0)),
+                        Padding(padding: EdgeInsets.all(10.0).w),
                         AnimatedOpacity(
                             opacity: (openHint[0] == true &&
                                     openHint[1] == true &&

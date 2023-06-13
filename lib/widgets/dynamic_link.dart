@@ -53,7 +53,7 @@ class DynamicLink {
       String contentId =
           dynamicLinkData.link.queryParameters['cid'] ?? ""; //contentId
       String ownerId =
-          dynamicLinkData.link.queryParameters['ownerId'] ?? ""; //contentId
+          dynamicLinkData.link.queryParameters['ownerId'] ?? ""; //ownerId
       String content =
           dynamicLinkData.link.queryParameters['content'] ?? ""; //content
       String ownerName =

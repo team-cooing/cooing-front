@@ -167,7 +167,7 @@ class _MultiSelectscreenState extends State<MultiSelectscreen> {
                                   children: [
                                     Container(
                                       padding: const EdgeInsets.only(
-                                          top: 40, bottom: 10),
+                                          top: 40, bottom: 10).r,
                                       child: Text(
                                         '스타일',
                                         style: TextStyle(
@@ -178,7 +178,7 @@ class _MultiSelectscreenState extends State<MultiSelectscreen> {
                                     ),
                                     Container(
                                       padding:
-                                          const EdgeInsets.only(bottom: 10),
+                                          const EdgeInsets.only(bottom: 10).r,
                                       child: Text(
                                         '3개를 선택해주세요.',
                                         style: TextStyle(
@@ -212,7 +212,7 @@ class _MultiSelectscreenState extends State<MultiSelectscreen> {
                                   ]),
                             )),
                         Container(
-                          padding: const EdgeInsets.only(top: 40, bottom: 20),
+                          padding: const EdgeInsets.only(top: 40, bottom: 20).r,
                           child: Text(
                             '취미',
                             style: TextStyle(
@@ -249,7 +249,7 @@ class _MultiSelectscreenState extends State<MultiSelectscreen> {
                 child: Visibility(
                   visible: button,
                   child: Padding(
-                    padding: EdgeInsets.all(20),
+                    padding: EdgeInsets.all(20).w,
                     child: SizedBox(
                       width: double.infinity,
                       height: 50.h,
