@@ -6,6 +6,7 @@ import 'package:cooing_front/model/response/user.dart';
 import 'package:cooing_front/pages/answer_detail_page.dart';
 import 'package:custom_refresh_indicator/custom_refresh_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MessagePage extends StatefulWidget {
@@ -144,12 +145,12 @@ class _MessagePageState extends State<MessagePage> {
                   Text(
                     '#${widget.user.questionInfos.length - questionIndex}번째 질문',
                     textAlign: TextAlign.left,
-                    style: TextStyle(fontSize: 14),
+                    style: TextStyle(fontSize: 14.sp),
                   ),
                   Padding(padding: EdgeInsets.all(3)),
                   Text(
                     '"${QuestionList.questionList.elementAt(int.parse(widget.user.questionInfos.reversed.toList()[questionIndex]['contentId']))['question'] as String}"',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
                   ),
                 ],
               )),
@@ -167,12 +168,14 @@ class _MessagePageState extends State<MessagePage> {
                           bottomRight: Radius.circular(20))),
                   child: Center(
                       child: Text(
-                    '이 질문에 대한 답변이 없습니다.',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Color(0xff333D4B),
-                    ),
-                  ))))
+(font&valid_click)
+                        '이 질문에 대한 답변이 없습니다.',
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          color: Color(0xff333D4B),
+                        ),
+                      ))))
+
         ],
       );
     } else {
@@ -192,20 +195,20 @@ class _MessagePageState extends State<MessagePage> {
                 children: [
                   Padding(
                       padding: const EdgeInsets.only(
-                          left: 20, right: 20, top: 30, bottom: 0),
+                          left: 20, right: 20, top: 30, bottom: 0).r,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             '#${widget.user.questionInfos.length - questionIndex}번째 질문',
                             textAlign: TextAlign.left,
-                            style: TextStyle(fontSize: 14),
+                            style: TextStyle(fontSize: 14.sp),
                           ),
                           Padding(padding: EdgeInsets.all(3)),
                           Text(
                             '"${QuestionList.questionList.elementAt(int.parse(widget.user.questionInfos.reversed.toList()[questionIndex]['contentId']))['question'] as String}"',
                             style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
+                                fontSize: 16.sp, fontWeight: FontWeight.bold),
                           ),
                         ],
                       )),
@@ -254,11 +257,11 @@ class _MessagePageState extends State<MessagePage> {
             left: 20.0,
             right: 20.0,
             top: 20,
-          ),
+          ).r,
           child: SizedBox(
             width: double.infinity,
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 25, vertical: 30),
+              padding: EdgeInsets.symmetric(horizontal: 25, vertical: 30).r,
               decoration: BoxDecoration(
                   color: Color(0xffF2F3F3),
                   borderRadius: BorderRadius.only(
@@ -277,8 +280,8 @@ class _MessagePageState extends State<MessagePage> {
                               clipBehavior: Clip.none,
                               children: [
                                 SizedBox(
-                                    width: 25.0,
-                                    height: 25.0,
+                                    width: 25.w,
+                                    height: 25.h,
                                     child: widget.answers[index]!.ownerGender ==
                                             0
                                         ? Image(
@@ -288,6 +291,7 @@ class _MessagePageState extends State<MessagePage> {
                                             image: AssetImage(
                                                 'images/icon_msg_girl.png'))),
                                 Positioned(
+
                                     bottom: 10,
                                     left: 15,
                                     child: SizedBox(
@@ -303,18 +307,18 @@ class _MessagePageState extends State<MessagePage> {
                                     ))
                               ],
                             ),
-                            Padding(padding: EdgeInsets.only(right: 20.0)),
+                            Padding(padding: EdgeInsets.only(right: 20.0).r),
                             Text(
                               widget.answers[index]!.nickname,
                               style: TextStyle(
-                                  fontSize: 16,
+                                  fontSize: 16.sp,
                                   color: Color(0xff333D4B),
                                   fontWeight: FontWeight.bold),
                             ),
                             Text(
                               '으로부터',
                               style: TextStyle(
-                                fontSize: 16,
+                                fontSize: 16.sp,
                                 color: Color(0xff333D4B),
                               ),
                             ),

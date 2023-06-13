@@ -3,6 +3,7 @@ import 'package:cooing_front/model/response/answer.dart';
 import 'package:cooing_front/model/response/user.dart';
 import 'package:cooing_front/model/data/question_list.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:social_share/social_share.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
@@ -97,6 +98,7 @@ class AnswerDetailPageState extends State<AnswerDetailPage> {
         body: LayoutBuilder(
           builder: (context, constraints) {
             return SingleChildScrollView(
+                physics: BouncingScrollPhysics(),
                 child: ConstrainedBox(
                     constraints: BoxConstraints(
                       minHeight: constraints.maxHeight,
@@ -134,21 +136,21 @@ class AnswerDetailPageState extends State<AnswerDetailPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: EdgeInsets.only(left: 20, top: 20.0),
+          padding: EdgeInsets.only(left: 20, top: 15.0).r,
           child: Text(
             "답변 확인",
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              fontSize: 22.0,
+              fontSize: 22.sp,
             ),
             textAlign: TextAlign.center,
           ),
         ),
-        const Padding(padding: EdgeInsets.all(12.0)),
+        Padding(padding: EdgeInsets.all(10).r),
         Screenshot(
             controller: screenshotController,
             child: Container(
-                padding: EdgeInsets.only(top: 15, bottom: 5),
+                padding: EdgeInsets.only(top: 10, bottom: 10).r,
                 decoration: BoxDecoration(
                   color: Colors.transparent,
                   borderRadius: BorderRadius.circular(20),
@@ -158,7 +160,7 @@ class AnswerDetailPageState extends State<AnswerDetailPage> {
                     Text(
                       "${answerData.nickname}이 보낸 메시지",
                       style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
                     ),
                     _answerDetailCard(),
                   ],
@@ -170,7 +172,7 @@ class AnswerDetailPageState extends State<AnswerDetailPage> {
   Widget _answerDetailCard() {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 10),
+      padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 20).r,
       child: Card(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30),
@@ -178,12 +180,12 @@ class AnswerDetailPageState extends State<AnswerDetailPage> {
         color: const Color(0xff9754FB),
         child: Column(
           children: <Widget>[
-            const Padding(padding: EdgeInsets.all(15.0)),
+            Padding(padding: EdgeInsets.all(15.0).w),
             imgUrl.isEmpty
                 ? const CircularProgressIndicator()
                 : Container(
-                    width: 80,
-                    height: 80,
+                    width: 80.w,
+                    height: 80.h,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       image: DecorationImage(
@@ -193,12 +195,12 @@ class AnswerDetailPageState extends State<AnswerDetailPage> {
                     ),
                   ),
             Padding(
-              padding: EdgeInsets.only(left: 20.0, right: 20.0, top: 20),
+              padding: EdgeInsets.only(left: 25.0, right: 25.0, top: 20).r,
               child: Text(
                 questionContent,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 16,
+                  fontSize: 16.sp,
                   color: Colors.white,
                 ),
               ),
@@ -245,7 +247,7 @@ class AnswerDetailPageState extends State<AnswerDetailPage> {
 
     var fromWhoButton = SizedBox(
       width: double.infinity,
-      height: 50,
+      height: 50.h,
       child: ElevatedButton(
           onPressed: () async {
             await Navigator.of(context).push(MaterialPageRoute(
@@ -263,16 +265,16 @@ class AnswerDetailPageState extends State<AnswerDetailPage> {
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0)),
           ),
-          child: const Text(
+          child: Text(
             "누가 보냈는지 확인하기",
             style: TextStyle(
-                fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                fontSize: 16.sp, fontWeight: FontWeight.bold, color: Colors.white),
           )),
     );
 
     var replyBtn = SizedBox(
       width: double.infinity,
-      height: 50,
+      height: 50.h,
       child: ElevatedButton(
           onPressed: () async {
             var path = await screenshot();
@@ -292,10 +294,10 @@ class AnswerDetailPageState extends State<AnswerDetailPage> {
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0)),
           ),
-          child: const Text(
+          child: Text(
             "답장하기",
             style: TextStyle(
-                fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                fontSize: 16.sp, fontWeight: FontWeight.bold, color: Colors.white),
           )),
     );
 
@@ -303,13 +305,13 @@ class AnswerDetailPageState extends State<AnswerDetailPage> {
         child: Padding(
             padding: EdgeInsets.only(
               bottom: MediaQuery.of(context).systemGestureInsets.bottom + 15,
-              left: 20,
-              right: 20,
+              left: 25,
+              right: 25,
             ),
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
-                  (isAnony!) ? fromWhoButton : SizedBox(height: 25),
+                  (isAnony!) ? fromWhoButton : SizedBox(height: 25.h),
                   Padding(padding: EdgeInsets.all(8)),
                   replyBtn
                 ])));

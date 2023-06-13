@@ -6,6 +6,7 @@ import 'package:cooing_front/pages/login/SignUpScreen.dart';
 import 'package:cooing_front/model/util/Login_platform.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
 // import 'package:parameters/';
@@ -95,14 +96,14 @@ class _TokenLoginScreenState extends State<TokenLoginScreen> {
                           "당신을 몰래 좋아하는",
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize: 22,
+                              fontSize: 22.sp,
                               color: Color.fromARGB(255, 51, 61, 75)),
                         ),
                         Text(
                           "사람은 누굴까요?",
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize: 22,
+                              fontSize: 22.sp,
                               color: Color.fromARGB(255, 51, 61, 75)),
                         ),
                         Spacer(),

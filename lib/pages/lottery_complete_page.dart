@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CandyCompletePage extends StatefulWidget {
   final int num;
@@ -26,17 +27,17 @@ class _CandyCompletePageState extends State<CandyCompletePage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                   SizedBox(
-                      width: 120.0,
-                      height: 120.0,
+                      width: 120.w,
+                      height: 120.h,
                       child: Image(
                           image: AssetImage('images/icon_complete_send.png'))),
                   Container(
-                    padding: EdgeInsets.only(top: 50, bottom: 7),
+                    padding: EdgeInsets.only(top: 50, bottom: 7).r,
                     child: Text(
                       "캔디 ${widget.num}개 당첨!",
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 22,
+                          fontSize: 22.sp,
                           color: Color.fromARGB(255, 51, 61, 75)),
                     ),
                   ),
@@ -46,10 +47,10 @@ class _CandyCompletePageState extends State<CandyCompletePage> {
                     padding: EdgeInsets.only(
                       bottom:
                           MediaQuery.of(context).systemGestureInsets.bottom +
-                              20,
-                      left: 20,
-                      right: 20,
-                    ),
+                              25,
+                      left: 25,
+                      right: 25,
+                    ).r,
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
@@ -64,10 +65,10 @@ class _CandyCompletePageState extends State<CandyCompletePage> {
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(14.0)),
                               ),
-                              child: const Text(
+                              child: Text(
                                 "확인",
                                 style: TextStyle(
-                                    fontSize: 18,
+                                    fontSize: 18.sp,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white),
                               )),

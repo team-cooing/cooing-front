@@ -6,6 +6,7 @@ import 'package:cooing_front/pages/login/FeatureScreen.dart';
 import 'package:cooing_front/pages/login/schoolScreen.dart';
 import 'package:cooing_front/pages/WelcomeScreen.dart';
 import 'package:cooing_front/providers/UserProvider.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:flutter/cupertino.dart';
@@ -153,7 +154,7 @@ class _MultiSelectscreenState extends State<MultiSelectscreen> {
                           _textList[title],
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize: 22,
+                              fontSize: 22.sp,
                               color: Color.fromARGB(255, 51, 61, 75)),
                         ),
                         AnimatedOpacity(
@@ -166,22 +167,22 @@ class _MultiSelectscreenState extends State<MultiSelectscreen> {
                                   children: [
                                     Container(
                                       padding: const EdgeInsets.only(
-                                          top: 40, bottom: 10),
+                                          top: 40, bottom: 10).r,
                                       child: Text(
                                         '스타일',
                                         style: TextStyle(
-                                            fontSize: 20,
+                                            fontSize: 20.sp,
                                             color: Color.fromARGB(
                                                 255, 51, 61, 75)),
                                       ),
                                     ),
                                     Container(
                                       padding:
-                                          const EdgeInsets.only(bottom: 10),
+                                          const EdgeInsets.only(bottom: 10).r,
                                       child: Text(
                                         '3개를 선택해주세요.',
                                         style: TextStyle(
-                                            fontSize: 14,
+                                            fontSize: 14.sp,
                                             color: Color.fromRGBO(
                                                 51, 61, 75, 0.4)),
                                       ),
@@ -211,11 +212,11 @@ class _MultiSelectscreenState extends State<MultiSelectscreen> {
                                   ]),
                             )),
                         Container(
-                          padding: const EdgeInsets.only(top: 40, bottom: 20),
+                          padding: const EdgeInsets.only(top: 40, bottom: 20).r,
                           child: Text(
                             '취미',
                             style: TextStyle(
-                                fontSize: 20,
+                                fontSize: 20.sp,
                                 color: Color.fromARGB(255, 51, 61, 75)),
                           ),
                         ),
@@ -248,16 +249,16 @@ class _MultiSelectscreenState extends State<MultiSelectscreen> {
                 child: Visibility(
                   visible: button,
                   child: Padding(
-                    padding: EdgeInsets.all(20),
+                    padding: EdgeInsets.all(20).w,
                     child: SizedBox(
                       width: double.infinity,
-                      height: 50,
+                      height: 50.h,
                       child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                              primary: Color.fromARGB(255, 151, 84, 251)),
-                          child: const Text('확인',
+                              backgroundColor: Color.fromARGB(255, 151, 84, 251)),
+                          child: Text('확인',
                               style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 15)),
+                                  fontWeight: FontWeight.bold, fontSize: 15.sp)),
                           onPressed: () async {
                             for (int i = 0; i < style.length; i++) {
                               if (style[i].selected) {
@@ -336,7 +337,7 @@ class _MultiSelectscreenState extends State<MultiSelectscreen> {
                       child: Container(
                         decoration: BoxDecoration(
                           border: Border.all(
-                            width: 1.5,
+                            width: 1.5.w,
                             color: Color.fromRGBO(151, 84, 251, 1),
                           ),
                           color: Color.fromRGBO(151, 84, 251, 0.2),
@@ -352,13 +353,13 @@ class _MultiSelectscreenState extends State<MultiSelectscreen> {
                                   hobby[k].icon,
                                   style: TextStyle(
                                       color: Color.fromRGBO(51, 61, 75, 1),
-                                      fontSize: 28),
+                                      fontSize: 28.sp),
                                 ),
                                 Text(
                                   hobby[k].title,
                                   style: TextStyle(
                                       color: Color.fromRGBO(151, 84, 251, 1),
-                                      fontSize: 17),
+                                      fontSize: 17.sp),
                                 ),
                               ],
                             ))
@@ -379,7 +380,7 @@ class _MultiSelectscreenState extends State<MultiSelectscreen> {
                       child: Container(
                         decoration: BoxDecoration(
                           border: Border.all(
-                            width: 1.5,
+                            width: 1.5.w,
                             color: Color.fromRGBO(51, 61, 71, 0.2),
                           ),
                           borderRadius: BorderRadius.all(Radius.circular(5.0)),
@@ -394,13 +395,13 @@ class _MultiSelectscreenState extends State<MultiSelectscreen> {
                                   hobby[k].icon,
                                   style: TextStyle(
                                       color: Color.fromRGBO(51, 61, 75, 1),
-                                      fontSize: 28),
+                                      fontSize: 28.sp),
                                 ),
                                 Text(
                                   hobby[k].title,
                                   style: TextStyle(
                                       color: Color.fromRGBO(51, 61, 75, 1),
-                                      fontSize: 17),
+                                      fontSize: 17.sp),
                                 ),
                               ],
                             ))
@@ -443,7 +444,7 @@ class _MultiSelectscreenState extends State<MultiSelectscreen> {
                       child: Container(
                         decoration: BoxDecoration(
                           border: Border.all(
-                            width: 1.5,
+                            width: 1.5.w,
                             color: Color.fromRGBO(151, 84, 251, 1),
                           ),
                           color: Color.fromRGBO(151, 84, 251, 0.2),
@@ -459,7 +460,7 @@ class _MultiSelectscreenState extends State<MultiSelectscreen> {
                                   style[k].name,
                                   style: TextStyle(
                                       color: Color.fromRGBO(151, 84, 251, 1),
-                                      fontSize: 17),
+                                      fontSize: 17.sp),
                                 ),
                               ],
                             ))
@@ -487,7 +488,7 @@ class _MultiSelectscreenState extends State<MultiSelectscreen> {
                       child: Container(
                         decoration: BoxDecoration(
                           border: Border.all(
-                            width: 1.5,
+                            width: 1.5.w,
                             color: Color.fromRGBO(51, 61, 71, 0.2),
                           ),
                           borderRadius: BorderRadius.all(Radius.circular(5.0)),
@@ -502,7 +503,7 @@ class _MultiSelectscreenState extends State<MultiSelectscreen> {
                                   style[k].name,
                                   style: TextStyle(
                                       color: Color.fromRGBO(51, 61, 75, 1),
-                                      fontSize: 17),
+                                      fontSize: 17.sp),
                                 ),
                               ],
                             ))

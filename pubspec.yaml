@@ -32,6 +32,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  firebase_analytics: ^10.4.2
+  flutter_screenutil: ^5.7.0
   in_app_purchase: ^3.0.0
   toggle_switch: ^2.0.1
   multi_select_item: ^1.0.3

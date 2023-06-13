@@ -3,6 +3,7 @@ import 'package:cooing_front/pages/login/FeatureScreen.dart';
 import 'package:cooing_front/pages/login/schoolScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
@@ -57,14 +58,14 @@ class _AgreeScreenState extends State<AgreeScreen> {
                         '항목에 동의해주세요',
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 22,
+                            fontSize: 22.sp,
                             color: Color.fromARGB(255, 51, 61, 75)),
                       ),
                       Padding(padding: EdgeInsets.all(5)),
                       Text(
                         '서비스 이용을 위한 필수 동의 항목입니다',
                         style: TextStyle(
-                            fontSize: 14,
+                            fontSize: 14.sp,
                             color: Color.fromARGB(122, 51, 61, 75)),
                       ),
                       Padding(padding: EdgeInsets.all(15)),
@@ -90,7 +91,7 @@ class _AgreeScreenState extends State<AgreeScreen> {
                                 Text(
                                   '[필수] 서비스 이용약관',
                                   style: TextStyle(
-                                      fontSize: 14,
+                                      fontSize: 14.sp,
                                       color: Color.fromARGB(255, 51, 61, 75)),
                                 ),
                                 Icon(
@@ -137,7 +138,7 @@ class _AgreeScreenState extends State<AgreeScreen> {
                                 Text(
                                   '[필수] 개인정보처리 방침',
                                   style: TextStyle(
-                                      fontSize: 14,
+                                      fontSize: 14.sp,
                                       color: Color.fromARGB(255, 51, 61, 75)),
                                 ),
                                 Icon(
@@ -164,13 +165,10 @@ class _AgreeScreenState extends State<AgreeScreen> {
                       Spacer(),
                       SizedBox(
                           width: double.infinity,
-                          height: 50,
+                          height: 50.h,
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                                primary: Color.fromARGB(255, 151, 84, 251)),
-                            child: const Text('모두 동의하기',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 15)),
+                                backgroundColor: Color.fromARGB(255, 151, 84, 251)),
                             onPressed: check[0] & check[1]
                                 ? () {
                                     Navigator.pushNamed(
@@ -210,6 +208,9 @@ class _AgreeScreenState extends State<AgreeScreen> {
                                     );
                                   }
                                 : null,
+                            child: Text('모두 동의하기',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 15.sp)),
                           ))
                     ]),
               ),

@@ -7,6 +7,7 @@ import 'package:cooing_front/providers/UserProvider.dart';
 import 'package:cooing_front/widgets/dynamic_link.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'dart:async';
 import 'package:screenshot/screenshot.dart';
 import 'dart:io';
@@ -72,7 +73,7 @@ class _QuestionPageState extends State<QuestionPage> {
 
   Widget _buildQuestionPage() {
     return Padding(
-        padding: const EdgeInsets.all(25.0),
+        padding: const EdgeInsets.all(25.0).w,
         child: SafeArea(
             child: Center(
                 child: Column(children: [
@@ -105,11 +106,11 @@ class _QuestionPageState extends State<QuestionPage> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
         color: Palette.mainPurple,
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 40),
+          padding: EdgeInsets.symmetric(horizontal: 40).r,
           child: Column(
             children: <Widget>[
               SizedBox(
-                height: 30,
+                height: 30.h,
               ),
               // 프로필 이미지
               widget.user.profileImage.isEmpty
@@ -117,8 +118,8 @@ class _QuestionPageState extends State<QuestionPage> {
                       color: Palette.mainPurple,
                     )
                   : Container(
-                      width: 80,
-                      height: 80,
+                      width: 80.w,
+                      height: 80.h,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         image: DecorationImage(
@@ -128,7 +129,7 @@ class _QuestionPageState extends State<QuestionPage> {
                       ),
                     ),
               SizedBox(
-                height: 20,
+                height: 25.h,
               ),
               // 질문 텍스트
               Text(
@@ -136,13 +137,13 @@ class _QuestionPageState extends State<QuestionPage> {
                     ? widget.currentQuestion!.content
                     : '똑똑똑! 오늘의 질문이 도착했어요.',
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 16,
+                    fontSize: 16.sp,
                     color: Colors.white),
               ),
               SizedBox(
-                height: 40,
+                height: 25.h,
               ),
               // 버튼
               OutlinedButton(
@@ -158,7 +159,7 @@ class _QuestionPageState extends State<QuestionPage> {
                   onButtonInPurpleBoxClicked();
                 },
                 style: OutlinedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15).r,
                   backgroundColor: (isQuestionReceived &
                           isQuestionOpen &
                           !hasQuestionCloseTimePassed)
@@ -180,14 +181,14 @@ class _QuestionPageState extends State<QuestionPage> {
                               ? '새로운 질문 받기'
                               : '답변 받기'
                       : '질문 받기',
-                  style: const TextStyle(
+                  style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                      fontSize: 16.sp,
                       color: Palette.mainPurple),
                 ),
               ),
               SizedBox(
-                height: isQuestionReceived ? 20 : 0,
+                height: isQuestionReceived ? 20.h : 0,
               ),
               // 안내 코멘트
               Text(
@@ -203,10 +204,10 @@ class _QuestionPageState extends State<QuestionPage> {
                             ? '새로운 질문이 도착했어요!'
                             : '다음 질문 도착은 ${nextReceiveTime!.day}일 00시 00분입니다.'
                     : '',
-                style: TextStyle(color: Colors.white, fontSize: 10),
+                style: TextStyle(color: Colors.white, fontSize: 10.sp),
               ),
               SizedBox(
-                height: 30,
+                height: 30.h,
               )
             ],
           ),
@@ -387,6 +388,8 @@ class _QuestionPageState extends State<QuestionPage> {
 
   void _onCopyButtonPressed(String url) {
     //복사 버튼 클릭시 클립보드에 복사
+
+    if(url != null){
     Clipboard.setData(ClipboardData(text: url));
 
     //하단에 "링크복사완료!" 메시지 스낵바
@@ -398,14 +401,14 @@ class _QuestionPageState extends State<QuestionPage> {
         content: Text(
           '링크 복사완료!',
           style: TextStyle(
-            fontSize: 15,
+            fontSize: 15.sp,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
         ),
         duration: Duration(seconds: 2),
       ),
-    );
+    );}
   }
 
   Widget shareCard() {
@@ -422,12 +425,12 @@ class _QuestionPageState extends State<QuestionPage> {
   Widget shareBlock(
       AssetImage assetImage, String level, String title, String buttonTxt) {
     return Container(
-      padding: const EdgeInsets.only(top: 20),
+      padding: const EdgeInsets.only(top: 20).r,
       child: SizedBox(
         width: double.infinity,
-        height: 85.0,
+        height: 85.h,
         child: Container(
-          padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20),
+          padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20).r,
           decoration: BoxDecoration(
               color: Color(0xffF2F3F3),
               borderRadius: BorderRadius.circular(20)),
@@ -439,24 +442,24 @@ class _QuestionPageState extends State<QuestionPage> {
                 Row(
                   children: [
                     SizedBox(
-                        width: 25.0,
-                        height: 25.0,
+                        width: 25.w,
+                        height: 25.h,
                         child: Image(image: assetImage)),
-                    Padding(padding: EdgeInsets.only(right: 15.0)),
+                    Padding(padding: EdgeInsets.only(right: 15.0).r),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           level,
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: 12.sp,
                             color: Color(0xff333D4B),
                           ),
                         ),
                         Text(
                           title,
                           style: TextStyle(
-                              fontSize: 16,
+                              fontSize: 16.sp,
                               color: Color(0xff333D4B),
                               fontWeight: FontWeight.bold),
                         ),
@@ -486,7 +489,7 @@ class _QuestionPageState extends State<QuestionPage> {
               child: Text(
                 buttonTxt,
                 style: TextStyle(
-                  fontSize: 13,
+                  fontSize: 13.sp,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),

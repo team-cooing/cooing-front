@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:cooing_front/model/data/my_user.dart';
 import 'package:cooing_front/pages/login/LoginScreen.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -162,7 +163,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                         child: Text(
                           "회원가입 완료!",
                           style: TextStyle(
-                              fontSize: 16,
+                              fontSize: 16.sp,
                               color: Color.fromRGBO(51, 61, 75, 0.6)),
                         ),
                       ),
@@ -170,14 +171,14 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                         " ${args.name}님,",
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 22,
+                            fontSize: 22.sp,
                             color: Color.fromARGB(255, 51, 61, 75)),
                       ),
                       Text(
                         "환영합니다!",
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 22,
+                            fontSize: 22.sp,
                             color: Color.fromARGB(255, 51, 61, 75)),
                       ),
                     ]))))));

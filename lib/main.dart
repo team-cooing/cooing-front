@@ -13,6 +13,8 @@ import 'package:cooing_front/pages/question_page.dart';
 import 'package:cooing_front/pages/tab_page.dart';
 import 'package:cooing_front/providers/FeedProvider.dart';
 import 'package:cooing_front/providers/UserProvider.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cooing_front/pages/login/FeatureScreen.dart';
@@ -22,10 +24,10 @@ import 'package:get/get_navigation/get_navigation.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
 import 'package:firebase_core/firebase_core.dart';
-import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print('Handling a background message ${message.messageId}');
@@ -110,6 +112,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+
   @override
   void initState() {
     print('sss');
@@ -141,11 +144,24 @@ class _MyAppState extends State<MyApp> {
     FirebaseMessaging.onMessageOpenedApp.listen((message) {
       print(message);
     });
+
+
     super.initState();
   }
 
+  static FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+  static FirebaseAnalyticsObserver observer =
+  FirebaseAnalyticsObserver(analytics: analytics);
+
   Widget build(BuildContext context) {
+    return ScreenUtilInit(
+        designSize: const Size(360, 690),
+    minTextAdapt: true,
+    builder: (context , child) {
     return GetMaterialApp(
+      navigatorObservers:<NavigatorObserver>[
+        observer
+      ],
       initialRoute: SplashScreen.routeName,
       routes: {
         SplashScreen.routeName: (context) => SplashScreen(),
@@ -163,6 +179,6 @@ class _MyAppState extends State<MyApp> {
         // 'candy': (context) => const CandyScreen(),
         '_working': (context) => const TabPage(),
       },
-    );
+    );});
   }
 }

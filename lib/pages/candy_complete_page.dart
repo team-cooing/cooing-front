@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:cooing_front/pages/tab_page.dart';
 
@@ -31,8 +32,8 @@ class CandyCompleteScreenState extends State<CandyCompleteScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SizedBox(
-              width: 120.0,
-              height: 120.0,
+              width: 120.w,
+              height: 120.h,
               child: Image(image: AssetImage('images/icon_complete_send.png'))),
           Container(
             padding: EdgeInsets.only(top: 50, bottom: 7),
@@ -40,7 +41,7 @@ class CandyCompleteScreenState extends State<CandyCompleteScreen> {
               "성공적으로 캔디 충전이",
               style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 22,
+                  fontSize: 22.sp,
                   color: Color.fromARGB(255, 51, 61, 75)),
             ),
           ),
@@ -48,7 +49,7 @@ class CandyCompleteScreenState extends State<CandyCompleteScreen> {
             "완료되었어요",
             style: TextStyle(
                 fontWeight: FontWeight.bold,
-                fontSize: 22,
+                fontSize: 22.sp,
                 color: Color.fromARGB(255, 51, 61, 75)),
           ),
         ]);
@@ -76,10 +77,10 @@ class CandyCompleteScreenState extends State<CandyCompleteScreen> {
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14.0)),
                       ),
-                      child: const Text(
+                      child: Text(
                         "확인",
                         style: TextStyle(
-                            fontSize: 18,
+                            fontSize: 18.sp,
                             fontWeight: FontWeight.bold,
                             color: Colors.white),
                       )),

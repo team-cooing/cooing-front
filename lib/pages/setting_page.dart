@@ -4,6 +4,7 @@ import 'package:cooing_front/model/response/response.dart' as r;
 import 'package:cooing_front/pages/login/LoginScreen.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -64,15 +65,15 @@ class _SettingScreenState extends State<SettingScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(20).h,
             child: SizedBox(
               width: double.infinity,
-              height: 90.0,
+              height: 100.h,
               child: Container(
-                padding: EdgeInsets.all(25.0),
+                padding: EdgeInsets.all(25.0).w,
                 decoration: BoxDecoration(
                     color: Color(0xffF2F3F3),
-                    borderRadius: BorderRadius.circular(20)),
+                    borderRadius: BorderRadius.circular(20).w),
                 child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -82,25 +83,25 @@ class _SettingScreenState extends State<SettingScreen> {
                           Row(
                             children: [
                               SizedBox(
-                                  width: 25.0,
-                                  height: 25.0,
+                                  width: 27.w,
+                                  height: 27.h,
                                   child: Image(
                                       image: AssetImage('images/candy1.png'))),
-                              Padding(padding: EdgeInsets.only(right: 10.0)),
+                              Padding(padding: EdgeInsets.only(right: 10.0).r),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     "내가 가진 캔디",
                                     style: TextStyle(
-                                      fontSize: 12,
+                                      fontSize: 13.sp,
                                       color: Color(0xff333D4B),
                                     ),
                                   ),
                                   Text(
                                     '${widget.user.candyCount}개',
                                     style: TextStyle(
-                                      fontSize: 16,
+                                      fontSize: 17.sp,
                                       color: Color(0xff333D4B),
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -129,10 +130,10 @@ class _SettingScreenState extends State<SettingScreen> {
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10.0)),
                           ),
-                          child: const Text(
+                          child: Text(
                             "채우기",
                             style: TextStyle(
-                                fontSize: 13,
+                                fontSize: 13.sp,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white),
                           ))
@@ -158,7 +159,7 @@ class _SettingScreenState extends State<SettingScreen> {
                               (route) => false);
                     },
                     child: Padding(
-                        padding: EdgeInsets.only(left: 25.0, top: 20),
+                        padding: EdgeInsets.only(left: 25.0, top: 20).w,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -166,7 +167,7 @@ class _SettingScreenState extends State<SettingScreen> {
                             Text(
                               '회원 탈퇴',
                               style: TextStyle(
-                                fontSize: 16,
+                                fontSize: 16.sp,
                                 color: Color(0xffB6B7B8),
                               ),
                             ),
@@ -174,7 +175,7 @@ class _SettingScreenState extends State<SettingScreen> {
                             Text(
                               '탈퇴한 뒤에는 데이터를 복구할 수 없으니 신중히 진행해 주세요.',
                               style: TextStyle(
-                                fontSize: 12,
+                                fontSize: 12.sp,
                                 color: Color(0xffB6B7B8),
                               ),
                             ),
@@ -184,12 +185,12 @@ class _SettingScreenState extends State<SettingScreen> {
                 }
                 return Padding(
                     padding: EdgeInsets.only(
-                        left: 25.0, top: 20.0, bottom: 20),
+                        left: 25.0, top: 20.0, bottom: 20).r,
                     child: GestureDetector(
                       child: Text(
                         "${settingElements[index]['title']}",
                         style: TextStyle(
-                            fontSize: 16,
+                            fontSize: 16.sp,
                             color: Color(0xff333D4B),
                             fontWeight: FontWeight.bold),
                       ),

@@ -2,6 +2,7 @@ import 'package:cooing_front/model/response/user.dart';
 import 'package:cooing_front/pages/login/schoolScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -57,7 +58,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 backgroundColor: Color(0xFFffffff),
                 body: Container(
                   padding:
-                      const EdgeInsets.only(left: 20, right: 20, bottom: 20),
+                      const EdgeInsets.only(left: 20, right: 20, bottom: 20).r,
                   child: Form(
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -66,7 +67,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             _textList[title],
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize: 22,
+                                fontSize: 22.sp,
                                 color: Color.fromARGB(255, 51, 61, 75)),
                           ),
                           Visibility(
@@ -80,7 +81,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               onChanged: (text) {
                                 if (text.length == 2 &&
                                     _number.length == 11 &&
-                                    _name.length > 0 &&
+                                    _name.isNotEmpty &&
                                     int.parse(text) <= 19) {
                                   setState(() {
                                     button = true;
@@ -111,7 +112,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                           color: Color.fromARGB(
                                               255, 151, 84, 251))),
                                   labelText: "나이",
-                                  labelStyle: new TextStyle(
+                                  labelStyle: TextStyle(
                                       color:
                                           Color.fromARGB(255, 182, 183, 184))),
                             ),
@@ -127,7 +128,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 FilteringTextInputFormatter.digitsOnly
                               ],
                               onChanged: (text) {
-                                if (text.length == 11 && _name.length > 0) {
+                                if (text.length == 11 && _name.isNotEmpty) {
                                   setState(() {
                                     ageField.requestFocus();
                                     age = true;
@@ -150,7 +151,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                           color: Color.fromARGB(
                                               255, 151, 84, 251))),
                                   labelText: "휴대폰 번호",
-                                  labelStyle: new TextStyle(
+                                  labelStyle: TextStyle(
                                       color:
                                           Color.fromARGB(255, 182, 183, 184))),
                             ),
@@ -161,7 +162,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             autofocus: true,
                             onChanged: (value) {
                               print(value.length);
-                              if (value.length > 0) {
+                              if (value.isNotEmpty) {
                                 setState(() {
                                   button = true;
                                 });
@@ -180,7 +181,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                         color:
                                             Color.fromARGB(255, 151, 84, 251))),
                                 labelText: "이름",
-                                labelStyle: new TextStyle(
+                                labelStyle: TextStyle(
                                     color: Color.fromARGB(255, 182, 183, 184))),
                           ),
                           Spacer(),
@@ -188,15 +189,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               visible: button,
                               child: SizedBox(
                                   width: double.infinity,
-                                  height: 50,
+                                  height: 50.h,
                                   child: ElevatedButton(
                                     style: ElevatedButton.styleFrom(
-                                        primary:
+                                        backgroundColor:
                                             Color.fromARGB(255, 151, 84, 251)),
-                                    child: const Text('확인',
+                                    child: Text('확인',
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
-                                            fontSize: 15)),
+                                            fontSize: 15.sp)),
                                     onPressed: () {
                                       if (!number) {
                                         setState(() {

@@ -6,6 +6,7 @@ import 'package:cooing_front/model/response/response.dart' as r;
 import 'package:cooing_front/model/response/user.dart';
 import 'package:cooing_front/pages/tab_page.dart';
 import 'package:crypto/crypto.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:cooing_front/model/util/Login_platform.dart';
@@ -233,7 +234,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             backgroundColor: Color(0xFFffffff),
             body: Container(
-                padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
+                padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20).r,
                 child: Form(
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -242,20 +243,20 @@ class _LoginScreenState extends State<LoginScreen> {
                           "당신을 몰래 좋아하는",
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize: 22,
+                              fontSize: 22.sp,
                               color: Color.fromARGB(255, 51, 61, 75)),
                         ),
                         Text(
                           "사람은 누굴까요?",
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize: 22,
+                              fontSize: 22.sp,
                               color: Color.fromARGB(255, 51, 61, 75)),
                         ),
                         Spacer(),
                         _kakaoLoginButton(),
                         SizedBox(
-                          height: 20,
+                          height: 20.h,
                         ),
                         _appleLoginButton(),
                       ]),
@@ -270,7 +271,7 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Container(
         alignment: Alignment.center,
         width: double.infinity,
-        height: 60,
+        height: 60.h,
         decoration: BoxDecoration(
             color: Color(0XFF000000), borderRadius: BorderRadius.circular(12)),
         child: GestureDetector(
@@ -279,14 +280,14 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               Image.asset(
                 'images/apple_symbol.png',
-                height: 20,
+                height: 20.h,
               ),
               SizedBox(
-                width: 10,
+                width: 10.w,
               ),
               Text(
                 'Apple로 로그인 ',
-                style: TextStyle(fontSize: 15, color: Colors.white),
+                style: TextStyle(fontSize: 15.sp, color: Colors.white),
               )
             ],
           ),
@@ -303,7 +304,7 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Container(
         alignment: Alignment.center,
         width: double.infinity,
-        height: 60,
+        height: 60.h,
         decoration: BoxDecoration(
             color: Color(0XFFFEE500), borderRadius: BorderRadius.circular(12)),
         child: GestureDetector(
@@ -312,15 +313,15 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               Image.asset(
                 'images/kakao_symbol.png',
-                height: 20,
+                height: 20.h,
               ),
               SizedBox(
-                width: 10,
+                width: 10.w,
               ),
               Text(
                 '카카오 로그인 ',
                 style: TextStyle(
-                    fontSize: 15, color: Colors.black.withOpacity(0.85)),
+                    fontSize: 15.sp, color: Colors.black.withOpacity(0.85)),
               )
             ],
           ),

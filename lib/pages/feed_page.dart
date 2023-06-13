@@ -8,6 +8,7 @@ import 'package:cooing_front/pages/answer_page.dart';
 import 'package:cooing_front/pages/lottery_complete_page.dart';
 import 'package:custom_refresh_indicator/custom_refresh_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class FeedPage extends StatefulWidget {
   final User user;
@@ -99,15 +100,15 @@ class _FeedPageState extends State<FeedPage> {
                     height: 150,
                     child: Container(
                       transform: Matrix4.translationValues(0.0, dy, 0.0),
-                      padding: const EdgeInsets.only(top: 30.0),
+                      padding: const EdgeInsets.only(top: 30.0).r,
                       constraints: const BoxConstraints.expand(),
                       child: Column(
                         children: [
                           if (controller.isLoading)
                             Container(
-                              margin: const EdgeInsets.only(bottom: 8.0),
-                              width: 16,
-                              height: 16,
+                              margin: const EdgeInsets.only(bottom: 8.0).h,
+                              width: 16.w,
+                              height: 16.h,
                               child: const CircularProgressIndicator(
                                 color: Palette.mainPurple,
                                 strokeWidth: 2,
@@ -141,7 +142,7 @@ class _FeedPageState extends State<FeedPage> {
           borderRadius: BorderRadius.only(
               topLeft: Radius.circular(20),
               topRight: Radius.circular(20),
-              bottomRight: Radius.circular(20))),
+              bottomRight: Radius.circular(20)).w),
       elevation: 0,
       margin: EdgeInsets.only(
           left: 20,
@@ -153,17 +154,17 @@ class _FeedPageState extends State<FeedPage> {
                   index == -1
               ? 30
               : 10,
-          bottom: index == widget.feed.length - 1 ? 30 : 10),
+          bottom: index == widget.feed.length - 1 ? 30 : 10).w,
       child: SizedBox(
         width: double.infinity,
         child: Container(
-          padding: EdgeInsets.all(25.0),
+          padding: EdgeInsets.all(18.0).w,
           decoration: BoxDecoration(
               color: Color(0xffF2F3F3),
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(20),
                   topRight: Radius.circular(20),
-                  bottomRight: Radius.circular(20))),
+                  bottomRight: Radius.circular(20)).w),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -177,8 +178,8 @@ class _FeedPageState extends State<FeedPage> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         SizedBox(
-                          width: 42.0,
-                          height: 42.0,
+                          width: 42.0.w,
+                          height: 42.0.h,
                           child: CircleAvatar(
                             backgroundImage: index == -1
                                 ? AssetImage('images/logo_128.png')
@@ -188,7 +189,7 @@ class _FeedPageState extends State<FeedPage> {
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsets.only(right: 14.0),
+                          padding: EdgeInsets.only(right: 15.0).r,
                         ),
                         Expanded(
                           child: Column(
@@ -203,12 +204,12 @@ class _FeedPageState extends State<FeedPage> {
                                   maxLines: 2,
                                   softWrap: true,
                                   style: TextStyle(
-                                    fontSize: 12,
+                                    fontSize: 12.sp,
                                     color: Color(0xff333D4B),
                                   ),
                                 ),
                                 Padding(
-                                  padding: EdgeInsets.all(3),
+                                  padding: EdgeInsets.all(3).w,
                                 ),
                                 Flexible(
                                   child: Text(
@@ -217,12 +218,13 @@ class _FeedPageState extends State<FeedPage> {
                                         : widget.feed[index]!.content,
                                     softWrap: true,
                                     style: TextStyle(
-                                      fontSize: 14,
+                                      fontSize: 14.sp,
                                       color: Color(0xff333D4B),
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                 ),
+
                               ]),
                         ),
                       ],
@@ -260,7 +262,7 @@ class _FeedPageState extends State<FeedPage> {
           setState(() {});
         },
         child: Container(
-          width: 75,
+          width: 70.w,
           alignment: Alignment.center,
           child: ElevatedButton(
               onPressed: null,
@@ -274,7 +276,7 @@ class _FeedPageState extends State<FeedPage> {
               child: Text('받기',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 11,
+                    fontSize: 11.sp,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ))),
@@ -320,7 +322,7 @@ class _FeedPageState extends State<FeedPage> {
           }
         },
         child: Container(
-          width: 75,
+          width: 70.w,
           alignment: Alignment.center,
           child: ElevatedButton(
               onPressed: null,
@@ -340,17 +342,17 @@ class _FeedPageState extends State<FeedPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                           SizedBox(
-                              width: 14.0,
-                              height: 14.0,
+                              width: 15.w,
+                              height: 15.h,
                               child: Image(
                                   image: AssetImage('images/candy1.png'))),
                           SizedBox(
-                            width: 6,
+                            width: 6.w,
                           ),
                           Text(
                             '3',
                             style: TextStyle(
-                                fontSize: 12,
+                                fontSize: 12.sp,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white),
                           )
@@ -361,7 +363,7 @@ class _FeedPageState extends State<FeedPage> {
                           : '답변하기',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 11,
+                        fontSize: 11.sp,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),

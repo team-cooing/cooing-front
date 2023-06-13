@@ -1,6 +1,9 @@
 import 'package:cooing_front/pages/tab_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+// import 'package:firebase_analytics/firebase_analytics.dart';
+// import 'package:cooing_front/widgets/google_analytics_widget.dart';
 
 class AnswerCompleteScreen extends StatefulWidget {
   final String owner;
@@ -45,16 +48,16 @@ class AnswerCompleteScreenState extends State<AnswerCompleteScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SizedBox(
-              width: 120.0,
-              height: 120.0,
+              width: 100.w,
+              height: 100.w,
               child: Image(image: AssetImage('images/icon_complete_send.png'))),
           Container(
-            padding: EdgeInsets.only(top: 50, bottom: 7),
+            padding: EdgeInsets.only(top: 50, bottom: 7).r,
             child: Text(
               "성공적으로 $owner님께",
               style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 22,
+                  fontSize: 22.sp,
                   color: Color.fromARGB(255, 51, 61, 75)),
             ),
           ),
@@ -62,7 +65,7 @@ class AnswerCompleteScreenState extends State<AnswerCompleteScreen> {
             "답변을 전달했어요",
             style: TextStyle(
                 fontWeight: FontWeight.bold,
-                fontSize: 22,
+                fontSize: 22.sp,
                 color: Color.fromARGB(255, 51, 61, 75)),
           ),
         ]);
@@ -72,9 +75,9 @@ class AnswerCompleteScreenState extends State<AnswerCompleteScreen> {
     return SafeArea(
         child: Padding(
             padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).systemGestureInsets.bottom + 20,
-              left: 20,
-              right: 20,
+              bottom: MediaQuery.of(context).systemGestureInsets.bottom + 25,
+              left: 25,
+              right: 25,
             ),
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -87,6 +90,9 @@ class AnswerCompleteScreenState extends State<AnswerCompleteScreen> {
                           Navigator.of(context).pop();
                           Navigator.of(context).pop(true);
                         }
+
+                        // final FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+                        // setCurrentScreen(analytics, 'answer_complete');
                       },
                       style: OutlinedButton.styleFrom(
                         fixedSize: Size.fromHeight(50),
@@ -95,10 +101,10 @@ class AnswerCompleteScreenState extends State<AnswerCompleteScreen> {
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14.0)),
                       ),
-                      child: const Text(
+                      child: Text(
                         "확인",
                         style: TextStyle(
-                            fontSize: 18,
+                            fontSize: 18.sp,
                             fontWeight: FontWeight.bold,
                             color: Colors.white),
                       )),

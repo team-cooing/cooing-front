@@ -3,6 +3,7 @@ import 'package:cooing_front/pages/login/FeatureScreen.dart';
 import 'package:cooing_front/pages/login/schoolScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ClassScreen extends StatefulWidget {
   const ClassScreen({super.key});
@@ -58,7 +59,7 @@ class _ClassScreenState extends State<ClassScreen> {
                             _textList[title],
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize: 22,
+                                fontSize: 22.sp,
                                 color: Color.fromARGB(255, 51, 61, 75)),
                           ),
                           Visibility(
@@ -93,7 +94,7 @@ class _ClassScreenState extends State<ClassScreen> {
                                           color: Color.fromARGB(
                                               255, 151, 84, 251))),
                                   labelText: "반",
-                                  labelStyle: new TextStyle(
+                                  labelStyle: TextStyle(
                                       color:
                                           Color.fromARGB(255, 182, 183, 184))),
                             ),
@@ -113,7 +114,7 @@ class _ClassScreenState extends State<ClassScreen> {
                                         color:
                                             Color.fromARGB(255, 151, 84, 251))),
                                 labelText: "학년",
-                                labelStyle: new TextStyle(
+                                labelStyle: TextStyle(
                                     color: Color.fromARGB(255, 182, 183, 184))),
                             onChanged: (text) {
                               if (text.length == 1) {
@@ -142,15 +143,15 @@ class _ClassScreenState extends State<ClassScreen> {
                               visible: button,
                               child: SizedBox(
                                   width: double.infinity,
-                                  height: 50,
+                                  height: 50.h,
                                   child: ElevatedButton(
                                       style: ElevatedButton.styleFrom(
-                                          primary: Color.fromARGB(
+                                          backgroundColor: Color.fromARGB(
                                               255, 151, 84, 251)),
-                                      child: const Text('확인',
+                                      child: Text('확인',
                                           style: TextStyle(
                                               fontWeight: FontWeight.bold,
-                                              fontSize: 15)),
+                                              fontSize: 15.sp)),
                                       onPressed: () {
                                         Navigator.pushNamed(
                                           context,

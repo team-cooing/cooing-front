@@ -9,52 +9,29 @@ class DynamicLink {
     bool isExistDynamicLink = await _getInitialDynamicLink(uid);
     print("In dynamicLink() : $isExistDynamicLink");
 
-    try {
       _addListener(uid);
-    } catch (e) {
-      print("In dynamicLink() ERROR : $e");
-    }
 
     return isExistDynamicLink;
   }
 
   Future<bool> _getInitialDynamicLink(String uid) async {
-    // final String? deepLink = await getInitialLink();
-    // print("deepLink ::: $deepLink");
-    // print("In dynamicLink() : link로 접속했는지 확인");
-    // if (deepLink != null && deepLink.isNotEmpty) {
-    //   PendingDynamicLinkData? dynamicLinkData = await FirebaseDynamicLinks
-    //       .instance
-    //       .getDynamicLink(Uri.parse(deepLink));
-
-    //   if (dynamicLinkData != null) {
-    //     print("dynamicLinkData = $dynamicLinkData");
-    //     _redirectScreen(dynamicLinkData);
-
-    //     return true;
-    //   }
-    // }
-
-    // return false;
-    await Future.delayed(Duration(seconds: 3));
-    final PendingDynamicLinkData? initialLink =
-        await FirebaseDynamicLinks.instance.getInitialLink();
-
-    if (initialLink != null) {
-      _redirectScreen(uid, initialLink);
-      return true;
-    }
+      await Future.delayed(Duration(seconds: 1));
 
     final String? deepLink = await getInitialLink();
-    if (deepLink != null && deepLink.isNotEmpty) {
-      FirebaseDynamicLinks.instance
-          .getDynamicLink(Uri.parse(deepLink))
-          .then((link) => _redirectScreen(uid, link!));
-      return true;
-    }
 
-    return false;
-  }
+      if (deepLink != null) {
+        PendingDynamicLinkData? dynamicLinkData = await FirebaseDynamicLinks
+            .instance
+            .getDynamicLink(Uri.parse(deepLink));
+
+        if (dynamicLinkData != null) {
+          _redirectScreen(uid, dynamicLinkData);
+
+          return true;
+        }
+      }
+
+      return false;}
 
   void _addListener(String uid) {
     FirebaseDynamicLinks.instance.onLink.listen((
@@ -76,7 +53,7 @@ class DynamicLink {
       String contentId =
           dynamicLinkData.link.queryParameters['cid'] ?? ""; //contentId
       String ownerId =
-          dynamicLinkData.link.queryParameters['ownerId'] ?? ""; //contentId
+          dynamicLinkData.link.queryParameters['ownerId'] ?? ""; //ownerId
       String content =
           dynamicLinkData.link.queryParameters['content'] ?? ""; //content
       String ownerName =
@@ -127,9 +104,11 @@ Future<String> getShortLink(Question question) async {
         minimumVersion: '0',
       ),
       navigationInfoParameters:
-          NavigationInfoParameters(forcedRedirectEnabled: true));
+          NavigationInfoParameters(forcedRedirectEnabled: false)
+  );
+
   final dynamicLink =
-      await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
+      await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams, shortLinkType: ShortDynamicLinkType.unguessable);
 
   return dynamicLink.shortUrl.toString();
 }
