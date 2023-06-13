@@ -76,6 +76,7 @@ class AnswerDetailPageState extends State<AnswerDetailPage> {
         body: LayoutBuilder(
           builder: (context, constraints) {
             return SingleChildScrollView(
+                physics: BouncingScrollPhysics(),
                 child: ConstrainedBox(
                     constraints: BoxConstraints(
                       minHeight: constraints.maxHeight,
@@ -113,7 +114,7 @@ class AnswerDetailPageState extends State<AnswerDetailPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: EdgeInsets.only(left: 20, top: 20.0),
+          padding: EdgeInsets.only(left: 20, top: 15.0).r,
           child: Text(
             "답변 확인",
             style: TextStyle(
@@ -123,11 +124,11 @@ class AnswerDetailPageState extends State<AnswerDetailPage> {
             textAlign: TextAlign.center,
           ),
         ),
-        const Padding(padding: EdgeInsets.all(12.0)),
+        Padding(padding: EdgeInsets.all(10).r),
         Screenshot(
             controller: screenshotController,
             child: Container(
-                padding: EdgeInsets.only(top: 15, bottom: 5),
+                padding: EdgeInsets.only(top: 10, bottom: 10).r,
                 decoration: BoxDecoration(
                   color: Colors.transparent,
                   borderRadius: BorderRadius.circular(20),
@@ -149,7 +150,7 @@ class AnswerDetailPageState extends State<AnswerDetailPage> {
   Widget _answerDetailCard() {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 10),
+      padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 20).r,
       child: Card(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30),
@@ -157,7 +158,7 @@ class AnswerDetailPageState extends State<AnswerDetailPage> {
         color: const Color(0xff9754FB),
         child: Column(
           children: <Widget>[
-            const Padding(padding: EdgeInsets.all(15.0)),
+            Padding(padding: EdgeInsets.all(15.0).w),
             imgUrl.isEmpty
                 ? const CircularProgressIndicator()
                 : Container(
@@ -172,7 +173,7 @@ class AnswerDetailPageState extends State<AnswerDetailPage> {
                     ),
                   ),
             Padding(
-              padding: EdgeInsets.only(left: 20.0, right: 20.0, top: 20),
+              padding: EdgeInsets.only(left: 25.0, right: 25.0, top: 20).r,
               child: Text(
                 questionContent,
                 style: TextStyle(
@@ -267,8 +268,8 @@ class AnswerDetailPageState extends State<AnswerDetailPage> {
         child: Padding(
             padding: EdgeInsets.only(
               bottom: MediaQuery.of(context).systemGestureInsets.bottom + 15,
-              left: 20,
-              right: 20,
+              left: 25,
+              right: 25,
             ),
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,

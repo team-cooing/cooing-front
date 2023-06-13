@@ -73,7 +73,7 @@ class _QuestionPageState extends State<QuestionPage> {
 
   Widget _buildQuestionPage() {
     return Padding(
-        padding: const EdgeInsets.all(25.0),
+        padding: const EdgeInsets.all(25.0).w,
         child: SafeArea(
             child: Center(
                 child: Column(children: [
@@ -106,7 +106,7 @@ class _QuestionPageState extends State<QuestionPage> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
         color: Palette.mainPurple,
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 40),
+          padding: EdgeInsets.symmetric(horizontal: 40).r,
           child: Column(
             children: <Widget>[
               SizedBox(
@@ -129,7 +129,7 @@ class _QuestionPageState extends State<QuestionPage> {
                       ),
                     ),
               SizedBox(
-                height: 20.h,
+                height: 25.h,
               ),
               // 질문 텍스트
               Text(
@@ -143,7 +143,7 @@ class _QuestionPageState extends State<QuestionPage> {
                     color: Colors.white),
               ),
               SizedBox(
-                height: 40.h,
+                height: 25.h,
               ),
               // 버튼
               OutlinedButton(
@@ -159,7 +159,7 @@ class _QuestionPageState extends State<QuestionPage> {
                   onButtonInPurpleBoxClicked();
                 },
                 style: OutlinedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15).r,
                   backgroundColor: (isQuestionReceived &
                           isQuestionOpen &
                           !hasQuestionCloseTimePassed)
@@ -425,12 +425,12 @@ class _QuestionPageState extends State<QuestionPage> {
   Widget shareBlock(
       AssetImage assetImage, String level, String title, String buttonTxt) {
     return Container(
-      padding: const EdgeInsets.only(top: 20),
+      padding: const EdgeInsets.only(top: 20).r,
       child: SizedBox(
         width: double.infinity,
         height: 85.h,
         child: Container(
-          padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20),
+          padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20).r,
           decoration: BoxDecoration(
               color: Color(0xffF2F3F3),
               borderRadius: BorderRadius.circular(20)),
@@ -445,7 +445,7 @@ class _QuestionPageState extends State<QuestionPage> {
                         width: 25.w,
                         height: 25.h,
                         child: Image(image: assetImage)),
-                    Padding(padding: EdgeInsets.only(right: 15.0)),
+                    Padding(padding: EdgeInsets.only(right: 15.0).r),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

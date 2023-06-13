@@ -186,7 +186,7 @@ class _MessagePageState extends State<MessagePage> {
                 children: [
                   Padding(
                       padding: const EdgeInsets.only(
-                          left: 20, right: 20, top: 30, bottom: 0),
+                          left: 20, right: 20, top: 30, bottom: 0).r,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -239,11 +239,11 @@ class _MessagePageState extends State<MessagePage> {
             left: 20.0,
             right: 20.0,
             top: 20,
-          ),
+          ).r,
           child: SizedBox(
             width: double.infinity,
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 25, vertical: 30),
+              padding: EdgeInsets.symmetric(horizontal: 25, vertical: 30).r,
               decoration: BoxDecoration(
                   color: Color(0xffF2F3F3),
                   borderRadius: BorderRadius.only(
@@ -286,7 +286,7 @@ class _MessagePageState extends State<MessagePage> {
                                 )
                               ],
                             ),
-                            Padding(padding: EdgeInsets.only(right: 20.0)),
+                            Padding(padding: EdgeInsets.only(right: 20.0).r),
                             Text(
                               widget.answers[index]!.nickname,
                               style: TextStyle(

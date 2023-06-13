@@ -52,7 +52,7 @@ class _HintScreenState extends State<HintScreen> {
       ),
       backgroundColor: Color(0xFFffffff),
       body: Container(
-        padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
+        padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20).r,
         child: Form(
           child: Center(
               child: SingleChildScrollView(
@@ -80,7 +80,7 @@ class _HintScreenState extends State<HintScreen> {
                           decoration: BoxDecoration(
                               border: Border(
                                   bottom: BorderSide(
-                                      width: 1.0.w,
+                                      width: 1.w,
                                       color:
                                           Color.fromRGBO(217, 217, 217, 1)))),
                           child: Row(
@@ -123,7 +123,7 @@ class _HintScreenState extends State<HintScreen> {
                                     ))
                               ]),
                         ),
-                        Padding(padding: EdgeInsets.all(15.0)),
+                        Padding(padding: EdgeInsets.all(15.0).w),
                         AnimatedOpacity(
                           opacity: !openHint[0] ? 1 : 0.6,
                           duration: Duration(milliseconds: 1),
@@ -202,7 +202,7 @@ class _HintScreenState extends State<HintScreen> {
                             ),
                           ),
                         ),
-                        Padding(padding: EdgeInsets.all(10.0)),
+                        Padding(padding: EdgeInsets.all(10.0).w),
                         AnimatedOpacity(
                             opacity:
                                 (openHint[0] == true && openHint[1] == false)
@@ -213,7 +213,7 @@ class _HintScreenState extends State<HintScreen> {
                               width: double.infinity,
                               height: 90.h,
                               child: Container(
-                                  padding: EdgeInsets.all(25.0),
+                                  padding: EdgeInsets.all(25.0).w,
                                   decoration: BoxDecoration(
                                       color: Color(0xffF2F3F3),
                                       borderRadius: BorderRadius.circular(20)),
@@ -297,7 +297,7 @@ class _HintScreenState extends State<HintScreen> {
                               width: double.infinity,
                               height: 90.h,
                               child: Container(
-                                padding: EdgeInsets.all(25.0),
+                                padding: EdgeInsets.all(25.0).w,
                                 decoration: BoxDecoration(
                                     color: Color(0xffF2F3F3),
                                     borderRadius: BorderRadius.circular(20)),
@@ -373,7 +373,7 @@ class _HintScreenState extends State<HintScreen> {
         ),
       ),
       bottomNavigationBar: Padding(
-        padding: EdgeInsets.all(20),
+        padding: EdgeInsets.all(20).w,
         child: SizedBox(
           width: double.infinity,
           height: 50.h,

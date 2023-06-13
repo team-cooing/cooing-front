@@ -46,11 +46,11 @@ class AnswerCompleteScreenState extends State<AnswerCompleteScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SizedBox(
-              width: 120.w,
-              height: 120.w,
+              width: 100.w,
+              height: 100.w,
               child: Image(image: AssetImage('images/icon_complete_send.png'))),
           Container(
-            padding: EdgeInsets.only(top: 50, bottom: 7),
+            padding: EdgeInsets.only(top: 50, bottom: 7).r,
             child: Text(
               "성공적으로 $owner님께",
               style: TextStyle(
@@ -73,9 +73,9 @@ class AnswerCompleteScreenState extends State<AnswerCompleteScreen> {
     return SafeArea(
         child: Padding(
             padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).systemGestureInsets.bottom + 20,
-              left: 20,
-              right: 20,
+              bottom: MediaQuery.of(context).systemGestureInsets.bottom + 25,
+              left: 25,
+              right: 25,
             ),
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,

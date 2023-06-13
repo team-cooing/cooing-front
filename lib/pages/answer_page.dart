@@ -6,7 +6,6 @@ import 'package:cooing_front/pages/answer_complete_page.dart';
 import 'package:cooing_front/pages/tab_page.dart';
 import 'package:cooing_front/model/response/response.dart' as response;
 import 'package:cooing_front/providers/UserProvider.dart';
-import 'package:cooing_front/widgets/userData_method.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -212,11 +211,10 @@ class _AnswerPageState extends State<AnswerPage> {
               height: 120.0.h,
               child: Icon(
                 Icons.cancel,
-                size: 120,
                 color: Palette.mainPurple,
               )),
           Container(
-            padding: EdgeInsets.only(top: 50, bottom: 7),
+            padding: EdgeInsets.only(top: 50, bottom: 7).r,
             child: Text(
               "이 질문은",
               style: TextStyle(
@@ -239,10 +237,10 @@ class _AnswerPageState extends State<AnswerPage> {
     return SafeArea(
         child: Padding(
             padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).systemGestureInsets.bottom + 20,
-              left: 20,
-              right: 20,
-            ),
+              bottom: MediaQuery.of(context).systemGestureInsets.bottom + 25,
+              left: 25,
+              right: 25,
+            ).r,
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -281,6 +279,7 @@ class _AnswerPageState extends State<AnswerPage> {
                 child: GestureDetector(
                   onTap: () => hideKeyboard(),
                   child: Scaffold(
+                    resizeToAvoidBottomInset : false,
                     appBar: AppBar(
                       automaticallyImplyLeading: false,
                       backgroundColor: Colors.transparent,
@@ -295,16 +294,13 @@ class _AnswerPageState extends State<AnswerPage> {
                         },
                       ),
                     ),
-                    body: SingleChildScrollView(
-                      child: Column(
+                    body:
+                       Column(
                         children: [
-                          _answerBody(),
-                          Align(
-                            alignment: Alignment.bottomCenter,
-                            child: sendBtn(),
-                          ),
-                        ],
-                      ),
+                          Expanded( child : _answerBody()),
+                          Align(alignment: Alignment.bottomCenter,child:sendBtn()),
+                   ],
+
                     ),
                   ),
                 ),
@@ -327,7 +323,7 @@ class _AnswerPageState extends State<AnswerPage> {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Row(
         children: [
-          Padding(padding: EdgeInsets.all(15.0)),
+          Padding(padding: EdgeInsets.all(15.0).w),
           Text(
             "답변 작성",
             style: TextStyle(
@@ -358,11 +354,11 @@ class _AnswerPageState extends State<AnswerPage> {
   Widget _answerCard() {
     return Center(
         child: Container(
-            padding: EdgeInsets.all(15.0),
+            padding: EdgeInsets.all(15.0).w,
             width: double.infinity,
             child: Card(
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30)),
+                  borderRadius: BorderRadius.circular(30).w),
               color: const Color(0xff9754FB),
               child: Column(children: <Widget>[
                 const Padding(padding: EdgeInsets.all(15.0)),
@@ -380,7 +376,7 @@ class _AnswerPageState extends State<AnswerPage> {
                       ),
                 Padding(
                   padding:
-                      EdgeInsets.only(left: 25, right: 25, top: 20, bottom: 1),
+                      EdgeInsets.only(left: 25, right: 25, top: 20, bottom: 1).r,
                   child: Text(
                     question.content,
                     style: TextStyle(
@@ -398,34 +394,35 @@ class _AnswerPageState extends State<AnswerPage> {
     // String textLength = "0 / maxLength";
     return Container(
         width: double.infinity,
-        padding: EdgeInsets.only(left: 20.0, right: 20.0, top: 15, bottom: 10),
+        padding: EdgeInsets.only(left: 20.0, right: 20.0, top: 15, bottom: 10).r,
         child: Column(children: [
           TextField(
             enableSuggestions: false,
             autocorrect: false,
-            style: const TextStyle(color: Colors.white70),
+            style: TextStyle(color: Colors.white70, fontSize: 14.sp),
             controller: _textController,
             maxLines: 5,
             maxLength: 100,
             decoration: InputDecoration(
               counterText: "",
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10.0),
+                borderRadius: BorderRadius.circular(15.0).w,
                 borderSide: const BorderSide(width: 0, style: BorderStyle.none),
               ),
-              contentPadding: const EdgeInsets.all(10),
+              contentPadding: const EdgeInsets.all(10).w,
               filled: true,
               fillColor: Colors.white24,
               hintText: '당신의 진심을 담은 답변을 적어주세요',
               hintStyle: TextStyle(
-                fontSize: 14.sp,
+                fontSize: 12.sp,
                 color: Colors.white38,
               ),
+
             ),
           ),
           const Padding(padding: EdgeInsets.all(4)),
           Container(
-              padding: EdgeInsets.only(top: 6, right: 15),
+              padding: EdgeInsets.only(top: 6, right: 15).r,
               child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
                 Text(
                   "${textValue.length} / $maxLength",
@@ -485,11 +482,10 @@ class _AnswerPageState extends State<AnswerPage> {
 
     return Padding(
       padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).systemGestureInsets.bottom + 10,
-        top: 15,
-        left: 20,
-        right: 20,
-      ),
+        bottom: MediaQuery.of(context).systemGestureInsets.bottom + 25,
+        left: 25,
+        right: 25,
+      ).r,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

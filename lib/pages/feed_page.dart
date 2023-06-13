@@ -98,13 +98,13 @@ class _FeedPageState extends State<FeedPage> {
                     height: 150,
                     child: Container(
                       transform: Matrix4.translationValues(0.0, dy, 0.0),
-                      padding: const EdgeInsets.only(top: 30.0),
+                      padding: const EdgeInsets.only(top: 30.0).r,
                       constraints: const BoxConstraints.expand(),
                       child: Column(
                         children: [
                           if (controller.isLoading)
                             Container(
-                              margin: const EdgeInsets.only(bottom: 8.0),
+                              margin: const EdgeInsets.only(bottom: 8.0).h,
                               width: 16.w,
                               height: 16.h,
                               child: const CircularProgressIndicator(
@@ -140,7 +140,7 @@ class _FeedPageState extends State<FeedPage> {
           borderRadius: BorderRadius.only(
               topLeft: Radius.circular(20),
               topRight: Radius.circular(20),
-              bottomRight: Radius.circular(20))),
+              bottomRight: Radius.circular(20)).w),
       elevation: 0,
       margin: EdgeInsets.only(
           left: 20,
@@ -152,17 +152,17 @@ class _FeedPageState extends State<FeedPage> {
                   index == -1
               ? 30
               : 10,
-          bottom: index == widget.feed.length - 1 ? 30 : 10),
+          bottom: index == widget.feed.length - 1 ? 30 : 10).w,
       child: SizedBox(
         width: double.infinity,
         child: Container(
-          padding: EdgeInsets.all(25.0),
+          padding: EdgeInsets.all(18.0).w,
           decoration: BoxDecoration(
               color: Color(0xffF2F3F3),
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(20),
                   topRight: Radius.circular(20),
-                  bottomRight: Radius.circular(20))),
+                  bottomRight: Radius.circular(20)).w),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -187,7 +187,7 @@ class _FeedPageState extends State<FeedPage> {
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsets.only(right: 14.0),
+                          padding: EdgeInsets.only(right: 15.0).r,
                         ),
                         Expanded(
                           child: Column(
@@ -207,7 +207,7 @@ class _FeedPageState extends State<FeedPage> {
                                   ),
                                 ),
                                 Padding(
-                                  padding: EdgeInsets.all(3),
+                                  padding: EdgeInsets.all(3).w,
                                 ),
                                 Flexible(
                                   child: Text(
@@ -222,6 +222,7 @@ class _FeedPageState extends State<FeedPage> {
                                     ),
                                   ),
                                 ),
+
                               ]),
                         ),
                       ],
@@ -259,7 +260,7 @@ class _FeedPageState extends State<FeedPage> {
           setState(() {});
         },
         child: Container(
-          width: 75.w,
+          width: 70.w,
           alignment: Alignment.center,
           child: ElevatedButton(
               onPressed: null,
@@ -319,7 +320,7 @@ class _FeedPageState extends State<FeedPage> {
           }
         },
         child: Container(
-          width: 75.w,
+          width: 70.w,
           alignment: Alignment.center,
           child: ElevatedButton(
               onPressed: null,
@@ -339,8 +340,8 @@ class _FeedPageState extends State<FeedPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                           SizedBox(
-                              width: 14.w,
-                              height: 14.h,
+                              width: 15.w,
+                              height: 15.h,
                               child: Image(
                                   image: AssetImage('images/candy1.png'))),
                           SizedBox(

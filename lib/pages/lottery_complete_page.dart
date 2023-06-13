@@ -32,7 +32,7 @@ class _CandyCompletePageState extends State<CandyCompletePage> {
                       child: Image(
                           image: AssetImage('images/icon_complete_send.png'))),
                   Container(
-                    padding: EdgeInsets.only(top: 50, bottom: 7),
+                    padding: EdgeInsets.only(top: 50, bottom: 7).r,
                     child: Text(
                       "캔디 ${widget.num}개 당첨!",
                       style: TextStyle(
@@ -47,10 +47,10 @@ class _CandyCompletePageState extends State<CandyCompletePage> {
                     padding: EdgeInsets.only(
                       bottom:
                           MediaQuery.of(context).systemGestureInsets.bottom +
-                              20,
-                      left: 20,
-                      right: 20,
-                    ),
+                              25,
+                      left: 25,
+                      right: 25,
+                    ).r,
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [

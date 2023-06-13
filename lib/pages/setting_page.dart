@@ -65,15 +65,15 @@ class _SettingScreenState extends State<SettingScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(20).h,
             child: SizedBox(
               width: double.infinity,
               height: 100.h,
               child: Container(
-                padding: EdgeInsets.all(25.0),
+                padding: EdgeInsets.all(25.0).w,
                 decoration: BoxDecoration(
                     color: Color(0xffF2F3F3),
-                    borderRadius: BorderRadius.circular(20)),
+                    borderRadius: BorderRadius.circular(20).w),
                 child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -83,25 +83,25 @@ class _SettingScreenState extends State<SettingScreen> {
                           Row(
                             children: [
                               SizedBox(
-                                  width: 25,
-                                  height: 25,
+                                  width: 27.w,
+                                  height: 27.h,
                                   child: Image(
                                       image: AssetImage('images/candy1.png'))),
-                              Padding(padding: EdgeInsets.only(right: 10.0)),
+                              Padding(padding: EdgeInsets.only(right: 10.0).r),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     "내가 가진 캔디",
                                     style: TextStyle(
-                                      fontSize: 12.sp,
+                                      fontSize: 13.sp,
                                       color: Color(0xff333D4B),
                                     ),
                                   ),
                                   Text(
                                     '${widget.user.candyCount}개',
                                     style: TextStyle(
-                                      fontSize: 16.sp,
+                                      fontSize: 17.sp,
                                       color: Color(0xff333D4B),
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -159,7 +159,7 @@ class _SettingScreenState extends State<SettingScreen> {
                               (route) => false);
                     },
                     child: Padding(
-                        padding: EdgeInsets.only(left: 25.0, top: 20),
+                        padding: EdgeInsets.only(left: 25.0, top: 20).w,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -185,7 +185,7 @@ class _SettingScreenState extends State<SettingScreen> {
                 }
                 return Padding(
                     padding: EdgeInsets.only(
-                        left: 25.0, top: 20.0, bottom: 20),
+                        left: 25.0, top: 20.0, bottom: 20).r,
                     child: GestureDetector(
                       child: Text(
                         "${settingElements[index]['title']}",

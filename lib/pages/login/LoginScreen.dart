@@ -234,7 +234,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             backgroundColor: Color(0xFFffffff),
             body: Container(
-                padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
+                padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20).r,
                 child: Form(
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
