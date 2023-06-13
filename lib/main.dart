@@ -97,10 +97,7 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => UserDataProvider()),
-        // ChangeNotifierProvider<SchoolFeedProvider>(
-        //   create: (_) => SchoolFeedProvider(),
-        //   lazy: false,
-        // ),
+        // ChangeNotifierProvider(create: (_) => SchoolFeedProvider(), lazy: false),
       ],
       child: MyApp(),
     ),

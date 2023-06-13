@@ -12,6 +12,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:cooing_front/model/response/response.dart' as response;
 import 'package:cooing_front/model/config/palette.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TabPage extends StatefulWidget {
   const TabPage({super.key});
@@ -26,12 +27,14 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
   late User? user;
   late Question? currentQuestion;
   late List<Question?> feed = [];
-  late String bonusQuestionId;
+  late String bonusQuestionId = '2023-06-08 16:12:16.416970';
   late List<Answer?> answers = [];
   late bool isNewMessage = false;
-
+  late SharedPreferences prefs;
   bool isUserDataGetting = true;
   bool isLoading = true;
+  late List<dynamic> openedIds = [];
+  late Map<String, dynamic>? hint;
 
   List<Tab> myTabs = <Tab>[
     Tab(text: '질문'),
@@ -51,6 +54,9 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
     // 1. 인자로 전달 받은 uid 가져오기
     uid = Get.arguments.toString();
     print('로그인 유저 UID: $uid');
+
+    response.Response.readQuestionInFeed(schoolCode: '7530128');
+    response.Response.readAnswerInMessage(userId: uid);
 
     // 2. Firebase에서 Data 가져오기
     getInitialDataFromFirebase();
@@ -131,9 +137,10 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
                   bonusQuestionId: bonusQuestionId,
                 ),
                 MessagePage(
-                  user: user!,
-                  answers: answers,
-                ),
+                    user: user!,
+                    answers: answers,
+                    hint: hint,
+                    cache: openedIds),
                 SettingScreen(
                   user: user!,
                   currentQuestion: currentQuestion,
@@ -158,18 +165,43 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
     );
   }
 
+  Future<void> _loadIsOpenedFromCookie() async {
+    prefs = await SharedPreferences.getInstance();
+    final value = prefs.get('AnswerId');
+
+    if (value is List<dynamic>) {
+      openedIds = value.cast<String>().toList();
+      print('openedId');
+
+      print(openedIds);
+    } else {
+      // Handle the case when the value is not a list
+    }
+  }
+
   getInitialDataFromFirebase() async {
     // 1. User 데이터 가져오기
-    user = await getUserData();
 
+    await _loadIsOpenedFromCookie();
+    hint = (await response.Response.readHint(ownerId: uid))
+        as Map<String, dynamic>?;
+    print(hint.runtimeType);
+    print(hint);
+    user = await getUserData();
     // 만약, 유저가 있다면
     if (user != null) {
       // 2. Current Question 데이터 가져오기
       currentQuestion = await getCurrentQuestionData();
+      print(currentQuestion);
+      print('----위는 퀘스천---');
+
       // 3. Feed Questions 데이터 가져오기
       feed = await getFeedQuestionsInSetOfTen();
+
       // 4. Answer 데이터 가져오기
       answers = await getAnswersInSetOfTen();
+      print(answers);
+      print('---위는 엔설----');
 
       setState(() {
         isLoading = false;
@@ -206,70 +238,75 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
       // Firebase DB에서 Question 읽기
       Question? newQuestion = await response.Response.readQuestion(
           contentId: contentId, questionId: questionId);
+      print('불러옴');
+      print(newQuestion!.isOpen);
+      print(user!.currentQuestionId);
 
       return newQuestion;
     } else {
+      print('없어?');
       return null;
     }
   }
 
   getFeedQuestionsInSetOfTen() async {
     // Firebase DB에서 feedQuestion 10개 읽기
+    // await response.Response.readQuestionInFeed(schoolCode: '7530128');
     List<Question?> newFeedQuestions =
-        await response.Response.readQuestionsInFeedWithLimit(
-            schoolCode: user!.schoolCode, limit: 10);
-
+        await response.Response.getQuestionsWithLimit(1, '7530128');
+    print('왜 안찍혀?');
+    print(newFeedQuestions);
     // 보너스 질문 id 구하기
     // 가장 적은 질문을 가진 question 찾기
-    String questionIdWithMinAnswersNum = '';
-    int minAnswersNum = 999;
+    // String questionIdWithMinAnswersNum = '';
+    // int minAnswersNum = 999;
 
-    for (var question in newFeedQuestions) {
-      // 만약, 질문이 있다면
-      if (question != null) {
-        // 만약, 이미 답변한 질문이라면
-        if (user!.answeredQuestions.contains(question.id) ||
-            question.owner == user!.uid) {
-          continue;
-        }
+    // for (var question in newFeedQuestions) {
+    //   // 만약, 질문이 있다면
+    //   if (question != null) {
+    //     // 만약, 이미 답변한 질문이라면
+    //     if (user!.answeredQuestions.contains(question.id) ||
+    //         question.owner == user!.uid) {
+    //       continue;
+    //     }
 
-        // 만약, '가장 적은 질문을 가진 question'이 없다면
-        if (questionIdWithMinAnswersNum.isEmpty) {
-          questionIdWithMinAnswersNum = question.id;
-        }
+    //     // 만약, '가장 적은 질문을 가진 question'이 없다면
+    //     if (questionIdWithMinAnswersNum.isEmpty) {
+    //       questionIdWithMinAnswersNum = question.id;
+    //     }
 
-        Answer? lastAnswer =
-            await response.Response.readLastAnswer(userId: question.owner);
+    //     Answer? lastAnswer =
+    //         await response.Response.readLastAnswer(userId: question.owner);
 
-        // 만약, 마지막 답변이 있다면
-        if (lastAnswer != null) {
-          // 만약, 마지막 답변이 지금 질문에 대한 것이 아니라면
-          if (lastAnswer.questionId != question.id) {
-            continue;
-          }
-          // 만약, 마지막 답변이 지금 질문에 대한 것이라면
-          else {
-            String extractedNumber = lastAnswer.id.substring(1, 7);
-            int result = int.parse(extractedNumber);
+    //     // 만약, 마지막 답변이 있다면
+    //     if (lastAnswer != null) {
+    //       // 만약, 마지막 답변이 지금 질문에 대한 것이 아니라면
+    //       if (lastAnswer.questionId != question.id) {
+    //         continue;
+    //       }
+    //       // 만약, 마지막 답변이 지금 질문에 대한 것이라면
+    //       else {
+    //         String extractedNumber = lastAnswer.id.substring(1, 7);
+    //         int result = int.parse(extractedNumber);
 
-            if (result < minAnswersNum) {
-              questionIdWithMinAnswersNum = question.id;
-              minAnswersNum = result;
-            }
-          }
-        }
-      }
-    }
+    //         if (result < minAnswersNum) {
+    //           questionIdWithMinAnswersNum = question.id;
+    //           minAnswersNum = result;
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
 
-    bonusQuestionId = questionIdWithMinAnswersNum;
+    // bonusQuestionId = questionIdWithMinAnswersNum;
 
     return newFeedQuestions;
   }
 
   getAnswersInSetOfTen() async {
     // Firevase DB에서 feedQuestion 10개 읽기
-    List<Answer?> newAnswers = await response.Response.readAnswersWithLimit(
-        userId: user!.uid, limit: 10);
+    List<Answer?> newAnswers =
+        await response.Response.getAnswersWithLimit(1, uid);
 
     // 최근 10개 중 안읽은 answer 있으면 New 표시
     for (var answer in newAnswers) {

@@ -1,10 +1,24 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cooing_front/model/response/question.dart';
 import 'package:cooing_front/model/response/user.dart';
 import 'package:cooing_front/model/response/answer.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:get/get_rx/src/rx_types/rx_types.dart';
+import 'package:provider/provider.dart';
 
 class Response {
   static FirebaseFirestore db = FirebaseFirestore.instance;
+  static List<Question> _questions = [];
+  static List<Answer> _answers = [];
+  static List<dynamic> _hints = [];
+
+  static int _nextQuestionIndex = 0;
+  static int _nextFeedContentStringIndex = 0;
+
+  static int _nextMsgIndex = 0;
+  static int _nextMsgContentStringIndex = 0;
 
   // user
   static Future<void> createUser({required User newUser}) async {
@@ -83,6 +97,31 @@ class Response {
     return question;
   }
 
+  static Future<Object?> readHint({required String ownerId}) async {
+    try {
+      Map<String, dynamic>? hints;
+      final docRef = await FirebaseFirestore.instance
+          .collection('openStatus')
+          .doc(ownerId)
+          .get();
+
+      if (docRef.exists) {
+        hints = {};
+
+        docRef.data()?.entries.toList().forEach((entry) {
+          hints![entry.key] = entry.value;
+        });
+
+        print(hints);
+      }
+
+      return hints;
+    } catch (e) {
+      print("[readHint] Error getting document: $e");
+      return [];
+    }
+  }
+
   static Future<void> updateQuestion({required Question newQuestion}) async {
     final docRef = db
         .collection("contents")
@@ -126,51 +165,99 @@ class Response {
     }
   }
 
-  static Future<Question?> readQuestionInFeed(
-      {required String schoolCode, required String questionId}) async {
-    Question? question;
-    final docRef = db
-        .collection("schools")
+  static Future<bool> readQuestionInFeed({required String schoolCode}) async {
+    List<Question> newQuestions = [];
+
+    final feedsSnapshot = await db
+        .collection("feeds")
         .doc(schoolCode)
-        .collection('feed')
-        .doc(questionId);
-    try {
-      await docRef.get().then((DocumentSnapshot doc) {
-        final data = doc.data() as Map<String, dynamic>;
-        question = Question.fromJson(data);
-      });
-    } catch (e) {
-      print("[readQuestionInFeed] Error getting document: $e");
-    }
+        .collection('feed_strings')
+        .limit(1)
+        .get();
 
-    return question;
-  }
+    if (feedsSnapshot.docs.isNotEmpty) {
+      final latestFeedDoc = feedsSnapshot.docs.first;
 
-  static Future<List<Question?>> readQuestionsInFeedWithLimit(
-      {required String schoolCode, required int limit}) async {
-    List<Question?> questions = [];
-    try {
-      final middleQuery = db
-          .collection('schools')
-          .doc(schoolCode)
-          .collection('feed')
-          .orderBy('id', descending: true);
-      final finalQuery = lastQuestionId.isNotEmpty
-          ? middleQuery.startAfter([lastQuestionId]).limit(limit)
-          : middleQuery.limit(limit);
-      await finalQuery.get().then((documentSnapshots) {
-        lastQuestionId = documentSnapshots.docs.last.data()['id'] as String;
+      final contentSnapshot =
+          await latestFeedDoc.reference.collection('content_strings').get();
 
-        for (var i in documentSnapshots.docs) {
-          questions.add(Question.fromJson(i.data()));
+      if (contentSnapshot.docs.isNotEmpty) {
+        final contentDocs = contentSnapshot.docs;
+        print('contentDocs.length');
+        print(contentDocs.length);
+        // contentDocs.length
+        if (_nextFeedContentStringIndex < contentDocs.length) {
+          final latestContentDoc = contentDocs[_nextFeedContentStringIndex];
+          final contentData = latestContentDoc.data()['content'];
+
+          for (var data in contentData) {
+            final waht = List<Map<String, dynamic>>.from(jsonDecode(data));
+
+            for (var item in waht) {
+              Question question = Question.fromJson(item);
+              _questions.add(question);
+            }
+          }
+
+          _nextFeedContentStringIndex += 1;
+          return true; // 다음 content_string이 존재함
+        } else {
+          print('No more content_strings to fetch');
         }
-      });
-    } catch (e) {
-      print("[readQuestionsInFeedWithLimit] Error getting document: $e");
+      } else {
+        print('content_strings collection is empty');
+      }
+    } else {
+      print('feed_strings collection is empty');
     }
 
-    return questions;
+    return false; // 다음 content_string이 존재하지 않음
   }
+
+  static Future<List<Question>> getQuestionsWithLimit(
+      int limit, schoolCode) async {
+    final startIndex = _nextQuestionIndex;
+    final endIndex = startIndex + limit;
+
+    if (startIndex >= _questions.length) {
+      final a = await Response.readQuestionInFeed(schoolCode: schoolCode);
+      if (!a) {
+        return [];
+      }
+    }
+
+    _nextQuestionIndex = endIndex;
+    return _questions.sublist(startIndex, endIndex);
+  }
+
+  // static Future<List<Question?>> readQuestionsInFeedWithLimit(
+  //     {required String schoolCode, required int limit}) async {
+  //   List<Question?> questions = [];
+  //   try {
+  //     final middleQuery = db
+  //         .collection('schools')
+  //         .doc(schoolCode)
+  //         .collection('feed')
+  //         .orderBy('id', descending: true);
+  //     final finalQuery = lastQuestionId.isNotEmpty
+  //         ? middleQuery.startAfter([lastQuestionId]).limit(limit)
+  //         : middleQuery.limit(limit);
+  //     await finalQuery.get().then((documentSnapshots) {
+  //       lastQuestionId = documentSnapshots.docs.last.data()['id'] as String;
+
+  //       for (var i in documentSnapshots.docs) {
+  //         print('i.data');
+  //         print(i.data().runtimeType);
+  //         questions.add(Question.fromJson(i.data()));
+  //       }
+  //       // print(questions);
+  //     });
+  //   } catch (e) {
+  //     print("[readQuestionsInFeedWithLimit] Error getting document: $e");
+  //   }
+
+  //   return questions;
+  // }
 
   static Future<void> updateQuestionInFeed(
       {required Question newQuestion}) async {
@@ -180,6 +267,7 @@ class Response {
         .collection('feed')
         .doc(newQuestion.id);
     try {
+      // print(newQuestion.toJson());
       await docRef.update(newQuestion.toJson());
     } catch (e) {
       print("[updateQuestionInFeed] Error getting document: $e");
@@ -215,52 +303,95 @@ class Response {
     }
   }
 
-  static Future<Answer?> readAnswer(
-      {required String userId, required String answerId}) async {
+  static Future<bool> readAnswerInMessage({required String userId}) async {
+    // List<Answer?> _answers = [];
+
     Answer? answer;
-    final docRef = db
-        .collection("answers")
+    final msgsSnapshot = await db
+        .collection("messages")
         .doc(userId)
-        .collection('answers')
-        .doc(answerId);
-    try {
-      await docRef.get().then((DocumentSnapshot doc) {
-        final data = doc.data() as Map<String, dynamic>;
-        answer = Answer.fromJson(data);
-      });
-    } catch (e) {
-      print("[readAnswer] Error getting document: $e");
-    }
+        .collection('message_strings')
+        .limit(1)
+        .get();
 
-    return answer;
-  }
+    if (msgsSnapshot.docs.isNotEmpty) {
+      final latestMsgDoc = msgsSnapshot.docs.first;
 
-  static Future<List<Answer?>> readAnswersWithLimit(
-      {required String userId, required int limit}) async {
-    List<Answer?> answers = [];
+      final contentSnapshot =
+          await latestMsgDoc.reference.collection("content_strings").get();
 
-    try {
-      final middleQuery = db
-          .collection('answers')
-          .doc(userId)
-          .collection('answers')
-          .orderBy('time', descending: true);
-      final finalQuery = lastAnswerId.isNotEmpty
-          ? middleQuery.startAfter([lastAnswerId]).limit(limit)
-          : middleQuery.limit(limit);
-      await finalQuery.get().then((documentSnapshots) {
-        lastAnswerId = documentSnapshots.docs.last.data()['time'] as String;
+      if (contentSnapshot.docs.isNotEmpty) {
+        final contentDocs = contentSnapshot.docs;
 
-        for (var i in documentSnapshots.docs) {
-          answers.add(Answer.fromJson(i.data()));
+        if (_nextMsgContentStringIndex < contentDocs.length) {
+          final latestContentDoc = contentDocs[_nextMsgContentStringIndex];
+          final contentData = latestContentDoc.data()['content'];
+
+          for (var data in contentData) {
+            final waht = List<Map<String, dynamic>>.from(jsonDecode(data));
+
+            for (var item in waht) {
+              Answer answer = Answer.fromJson(item);
+              _answers.add(answer);
+            }
+          }
+          _nextMsgContentStringIndex += 1;
+          return true;
+        } else {
+          print('No more msg content_strings to fetch');
         }
-      });
-    } catch (e) {
-      print("[readAnswersWithLimit] Error getting document: $e");
+      } else {
+        print('msg content_strings collection is empty');
+      }
+    } else {
+      print('msg_strings collection is empty');
     }
 
-    return answers;
+    return false;
   }
+
+  static Future<List<Answer>> getAnswersWithLimit(int limit, userId) async {
+    final startIndex = _nextMsgIndex;
+    final endIndex = startIndex + limit;
+
+    if (startIndex >= _answers.length) {
+      final a = await Response.readAnswerInMessage(userId: userId);
+      if (!a) {
+        return [];
+      }
+    }
+
+    _nextMsgIndex = endIndex;
+    return _answers.sublist(startIndex, endIndex);
+  }
+
+  // static Future<List<Answer?>> readAnswersWithLimit(
+  //     {required String userId, required int limit}) async {
+  //   List<Answer?> answers = [];
+
+  //   try {
+  //     final middleQuery = db
+  //         .collection('answers')
+  //         .doc(userId)
+  //         .collection('answers')
+  //         .orderBy('time', descending: true);
+  //     final finalQuery = lastAnswerId.isNotEmpty
+  //         ? middleQuery.startAfter([lastAnswerId]).limit(limit)
+  //         : middleQuery.limit(limit);
+  //     await finalQuery.get().then((documentSnapshots) {
+  //       lastAnswerId = documentSnapshots.docs.last.data()['time'] as String;
+
+  //       for (var i in documentSnapshots.docs) {
+  //         answers.add(Answer.fromJson(i.data()));
+  //         print(i.data());
+  //       }
+  //     });
+  //   } catch (e) {
+  //     print("[readAnswersWithLimit] Error getting document: $e");
+  //   }
+
+  //   return answers;
+  // }
 
   static Future<Answer?> readLastAnswer({required String userId}) async {
     Answer? answer;
@@ -282,18 +413,29 @@ class Response {
     return answer;
   }
 
-  static Future<void> updateAnswer({required Answer newAnswer}) async {
-    final docRef = db
-        .collection("answers")
-        .doc(newAnswer.questionOwner)
-        .collection('answers')
-        .doc(newAnswer.id);
+  static Future<void> updateHint(
+      {required Map<String, dynamic> newHint, required ownerId}) async {
+    final docRef = db.collection('openStatus').doc(ownerId);
+
     try {
-      await docRef.update(newAnswer.toJson());
+      await docRef.set(newHint);
     } catch (e) {
       print("[updateAnswer] Error getting document: $e");
     }
   }
+
+  // static Future<void> updateAnswer({required Answer newAnswer}) async {
+  //   final docRef = db
+  //       .collection("answers")
+  //       .doc(newAnswer.questionOwner)
+  //       .collection('answers')
+  //       .doc(newAnswer.id);
+  //   try {
+  //     await docRef.update(newAnswer.toJson());
+  //   } catch (e) {
+  //     print("[updateAnswer] Error getting document: $e");
+  //   }
+  // }
 
   static Future<void> deleteAnswer(
       {required String userId, required String answerId}) async {
