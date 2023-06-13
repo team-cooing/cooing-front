@@ -31,6 +31,8 @@ class _FeedPageState extends State<FeedPage> {
   void initState() {
     super.initState();
 
+    // Response.readQuestionInFeed(schoolCode: '7530128');
+
     // 만약, 유저 데이터에 recentDailyBonusReceiveDate가 없다면
     if (widget.user.recentDailyBonusReceiveDate.isEmpty) {
       widget.user.recentDailyBonusReceiveDate = '2000-01-01 00:00:00.000000';
@@ -368,9 +370,9 @@ class _FeedPageState extends State<FeedPage> {
   }
 
   Future<void> _handleRefresh() async {
-    // Firebase Schools > Questions > Question 5개 추가로 읽기
-    List<Question?> newQuestions = await Response.readQuestionsInFeedWithLimit(
-        schoolCode: widget.user.schoolCode, limit: 5);
+    // Firebase Schools > Questions > Question 1개 추가로 읽기
+    List<Question?> newQuestions =
+        await Response.getQuestionsWithLimit(1, widget.user.schoolCode);
     widget.feed.addAll(newQuestions);
 
     if (newQuestions.isEmpty) {

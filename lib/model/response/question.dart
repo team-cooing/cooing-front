@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class Question {
   String id; // 마이크로세컨드까지 보낸 시간으로 사용
   String ownerProfileImage;
@@ -27,6 +29,9 @@ class Question {
       required this.fcmToken});
 
   factory Question.fromJson(Map<String, dynamic> json) {
+    print('---');
+    print(json['isOpen'] == 'true' ? true : false);
+    print(json['isOpen'].runtimeType);
     return Question(
         id: json['id'],
         ownerProfileImage: json['ownerProfileImage'],
@@ -38,7 +43,11 @@ class Question {
         openTime: json['openTime'], //질문받기 누른 시간
         url: json['url'],
         schoolCode: json['schoolCode'],
-        isOpen: json['isOpen'],
+        isOpen: json['isOpen'] is bool
+            ? json['isOpen']
+            : json['isOpen'] == 'true'
+                ? true
+                : false,
         fcmToken: json['fcmToken']);
   }
 

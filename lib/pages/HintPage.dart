@@ -8,23 +8,39 @@ import 'package:cooing_front/model/response/response.dart';
 class HintScreen extends StatefulWidget {
   final User user;
   final Answer answer;
+  final Map<String, dynamic>? hint;
+  final String targetKey;
+  final dynamic? targetValue;
 
-  const HintScreen({required this.user, required this.answer, super.key});
+  const HintScreen(
+      {required this.user,
+      required this.answer,
+      required this.hint,
+      required this.targetValue,
+      required this.targetKey,
+      super.key});
 
   @override
   State<HintScreen> createState() => _HintScreenState();
 }
 
 class _HintScreenState extends State<HintScreen> {
-  late List<dynamic> openHint;
+  late List<bool> openHint;
   late bool goldenCandy;
   UserDataProvider userProvider = UserDataProvider();
 
   @override
   void initState() {
     super.initState();
-    print(widget.answer.hint);
-    openHint = widget.answer.isOpenedHint;
+    print('-----');
+    print(widget.hint);
+    openHint = [
+      widget.targetValue['is_hint_openeds'][0],
+      widget.targetValue['is_hint_openeds'][1],
+      widget.targetValue['is_hint_openeds'][2],
+    ];
+    print(openHint);
+    widget.answer.isOpenedHint;
     goldenCandy = widget.user.isSubscribe;
   }
 
@@ -38,8 +54,16 @@ class _HintScreenState extends State<HintScreen> {
         leading: BackButton(
           color: Color.fromRGBO(51, 61, 75, 1),
           onPressed: () async {
-            widget.answer.isOpenedHint = openHint;
-            await Response.updateAnswer(newAnswer: widget.answer);
+            widget.hint![widget.targetKey] = {"is_hint_openeds": openHint};
+            widget.targetValue['is_hint_openeds'][0] = openHint[0];
+            widget.targetValue['is_hint_openeds'][1] = openHint[1];
+            widget.targetValue['is_hint_openeds'][2] = openHint[2];
+
+            print(widget.hint);
+            await Response.updateHint(
+                newHint: widget.hint!, ownerId: widget.user.uid);
+            // widget.answer.isOpenedHint = openHint;
+            // await Response.updateAnswer(newAnswer: widget.answer);
             await Response.updateUser(newUser: widget.user);
             userProvider.updateCandyCount(widget.user.candyCount);
 
@@ -382,8 +406,15 @@ class _HintScreenState extends State<HintScreen> {
               child: const Text('확인',
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
               onPressed: () async {
-                widget.answer.isOpenedHint = openHint;
-                await Response.updateAnswer(newAnswer: widget.answer);
+                widget.hint![widget.targetKey] = {"is_hint_openeds": openHint};
+                print(widget.hint);
+                widget.targetValue['is_hint_openeds'][0] = openHint[0];
+                widget.targetValue['is_hint_openeds'][1] = openHint[1];
+                widget.targetValue['is_hint_openeds'][2] = openHint[2];
+                // widget.answer.isOpenedHint = openHint;
+                await Response.updateHint(
+                    newHint: widget.hint!, ownerId: widget.user.uid);
+                // await Response.updateAnswer(newAnswer: widget.answer);
                 await Response.updateUser(newUser: widget.user);
                 userProvider.updateCandyCount(widget.user.candyCount);
                 Navigator.of(context).pop();

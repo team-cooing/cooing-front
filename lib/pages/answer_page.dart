@@ -71,7 +71,8 @@ class _AnswerPageState extends State<AnswerPage> {
   }
 
   Future<void> settingData() async {
-    question = await getQuestion(widget.question);
+    // question = await getQuestion(widget.question);
+    question = question;
 
     //링크를 통해 들어왔을 때
     if (isFromLink) {
@@ -109,14 +110,14 @@ class _AnswerPageState extends State<AnswerPage> {
     setState(() {});
   }
 
-  getQuestion(Question? q) async {
-    question = await response.Response.readQuestion(
-      contentId: q!.contentId,
-      questionId: q.id,
-    ) as Question;
+  // getQuestion(Question? q) async {
+  //   question = await response.Response.readQuestion(
+  //     contentId: q!.contentId,
+  //     questionId: q.id,
+  //   ) as Question;
 
-    return question;
-  }
+  //   return question;
+  // }
 
   String getNickname(User user) {
     List styles = user.style;
@@ -135,54 +136,18 @@ class _AnswerPageState extends State<AnswerPage> {
         _userData!.answeredQuestions.add(questionId);
 
         final userAnswerRef = FirebaseFirestore.instance
-            .collection('answers')
-            .doc(ownerId) //question 주인 answer collection 가져오기
-            .collection('answers');
-        final QuerySnapshot snapshot = await userAnswerRef
-            .orderBy('time', descending: true)
-            .limit(1)
-            .get();
-
-        if (snapshot.docs.isNotEmpty) {
-          final String lastDocumentId = snapshot.docs.last.id; //가장 최근 answer Id
-          // print("last Answer document id : $lastDocumentId");
-          // print("Current question Id : $questionId");
-
-          if (lastDocumentId.split('_').last != questionId) {
-            print("${lastDocumentId.split('_').last} ???? $questionId");
-            //가장 최근 답변이 이전 질문에 대한 답변일 때
-            newAnswerId = '#000001_$questionId';
-          } else {
-            //현재 질문에 대한 답변일 때
-            final int lastNumber =
-                int.tryParse(lastDocumentId.split('_')[0].substring(1)) ??
-                    0; // 가장 최근 document의 번호
-            newAnswerId =
-                '#${(lastNumber + 1).toString().padLeft(6, '0')}_$questionId';
-          }
-
-          // 새 document의 ID 생성
-        } else {
-          //answer 데이터가 아예 없을 때
-          print('No documents found in answer collection');
-          newAnswerId = '#000001_$questionId';
-        }
+            .collection('openStatus')
+            .doc(ownerId); //question 주인 answer collection 가져오기
 
         //Answer 데이터 업로드
-        await userAnswerRef.doc(newAnswerId).set({
-          'id': newAnswerId, // 마이크로세컨드까지 보낸 시간으로 사용
-          'time': timeId,
-          'owner': _userData!.uid,
-          'ownerGender': _userData!.gender,
-          'questionId': questionId,
-          'content': textValue,
-          'contentId': question.contentId,
-          'questionOwner': question.owner,
-          'isAnonymous': _checkSecret,
-          'nickname': _checkSecret ? nickname : _userData!.name,
-          'hint': hintList,
-          'isOpenedHint': [false, false, false], //bool List
-          'isOpened': false,
+        userAnswerRef.set({
+          timeId: {
+            'is_hint_openeds': [false, false, false], //bool List
+          }
+        }).then((value) {
+          print('업데이트 성공');
+        }).catchError((error) {
+          print('업데이트 실패: $error');
         });
 
         //user 업데이트
