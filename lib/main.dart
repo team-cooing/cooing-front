@@ -13,6 +13,8 @@ import 'package:cooing_front/pages/question_page.dart';
 import 'package:cooing_front/pages/tab_page.dart';
 import 'package:cooing_front/providers/FeedProvider.dart';
 import 'package:cooing_front/providers/UserProvider.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cooing_front/pages/login/FeatureScreen.dart';
@@ -149,11 +151,13 @@ class _MyAppState extends State<MyApp> {
   }
 
   Widget build(BuildContext context) {
+
     return ScreenUtilInit(
-        designSize: const Size(390, 940),
+        designSize: const Size(360, 690),
     minTextAdapt: true,
     builder: (context , child) {
     return GetMaterialApp(
+      navigatorObservers: [FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance)],
       initialRoute: SplashScreen.routeName,
       routes: {
         SplashScreen.routeName: (context) => SplashScreen(),
