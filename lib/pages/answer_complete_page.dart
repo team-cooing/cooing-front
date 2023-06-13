@@ -2,6 +2,8 @@ import 'package:cooing_front/pages/tab_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+// import 'package:firebase_analytics/firebase_analytics.dart';
+// import 'package:cooing_front/widgets/google_analytics_widget.dart';
 
 class AnswerCompleteScreen extends StatefulWidget {
   final String owner;
@@ -88,6 +90,9 @@ class AnswerCompleteScreenState extends State<AnswerCompleteScreen> {
                           Navigator.of(context).pop();
                           Navigator.of(context).pop(true);
                         }
+
+                        // final FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+                        // setCurrentScreen(analytics, 'answer_complete');
                       },
                       style: OutlinedButton.styleFrom(
                         fixedSize: Size.fromHeight(50),
