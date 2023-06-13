@@ -12,6 +12,7 @@ class Response {
   static FirebaseFirestore db = FirebaseFirestore.instance;
   static List<Question> _questions = [];
   static List<Answer> _answers = [];
+  static List<dynamic> _hints = [];
 
   static int _nextQuestionIndex = 0;
   static int _nextFeedContentStringIndex = 0;
@@ -94,6 +95,31 @@ class Response {
     }
 
     return question;
+  }
+
+  static Future<Object?> readHint({required String ownerId}) async {
+    try {
+      Map<String, dynamic>? hints;
+      final docRef = await FirebaseFirestore.instance
+          .collection('openStatus')
+          .doc(ownerId)
+          .get();
+
+      if (docRef.exists) {
+        hints = {};
+
+        docRef.data()?.entries.toList().forEach((entry) {
+          hints![entry.key] = entry.value;
+        });
+
+        print(hints);
+      }
+
+      return hints;
+    } catch (e) {
+      print("[readHint] Error getting document: $e");
+      return [];
+    }
   }
 
   static Future<void> updateQuestion({required Question newQuestion}) async {
@@ -387,18 +413,29 @@ class Response {
     return answer;
   }
 
-  static Future<void> updateAnswer({required Answer newAnswer}) async {
-    final docRef = db
-        .collection("answers")
-        .doc(newAnswer.questionOwner)
-        .collection('answers')
-        .doc(newAnswer.id);
+  static Future<void> updateHint(
+      {required Map<String, dynamic> newHint, required ownerId}) async {
+    final docRef = db.collection('openStatus').doc(ownerId);
+
     try {
-      await docRef.update(newAnswer.toJson());
+      await docRef.set(newHint);
     } catch (e) {
       print("[updateAnswer] Error getting document: $e");
     }
   }
+
+  // static Future<void> updateAnswer({required Answer newAnswer}) async {
+  //   final docRef = db
+  //       .collection("answers")
+  //       .doc(newAnswer.questionOwner)
+  //       .collection('answers')
+  //       .doc(newAnswer.id);
+  //   try {
+  //     await docRef.update(newAnswer.toJson());
+  //   } catch (e) {
+  //     print("[updateAnswer] Error getting document: $e");
+  //   }
+  // }
 
   static Future<void> deleteAnswer(
       {required String userId, required String answerId}) async {

@@ -10,8 +10,13 @@ import 'package:flutter/material.dart';
 class MessagePage extends StatefulWidget {
   final User user;
   final List<Answer?> answers;
+  final Map<String, dynamic>? hint;
 
-  const MessagePage({super.key, required this.user, required this.answers});
+  const MessagePage(
+      {super.key,
+      required this.user,
+      required this.answers,
+      required this.hint});
 
   @override
   State<MessagePage> createState() => _MessagePageState();
@@ -223,11 +228,12 @@ class _MessagePageState extends State<MessagePage> {
               builder: (BuildContext context) => AnswerDetailPage(
                     user: widget.user,
                     answer: widget.answers[index]!,
+                    hint: widget.hint,
                   )));
 
           if (!widget.answers[index]!.isOpened) {
-            widget.answers[index]!.isOpened = true;
-            await Response.updateAnswer(newAnswer: widget.answers[index]!);
+            // widget.answers[index]!.isOpened = true;
+            // await Response.updateAnswer(newAnswer: widget.answers[index]!);
           }
 
           setState(() {});

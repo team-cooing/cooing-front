@@ -32,6 +32,8 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
   bool isUserDataGetting = true;
   bool isLoading = true;
 
+  late Map<String, dynamic>? hint;
+
   List<Tab> myTabs = <Tab>[
     Tab(text: '질문'),
     Tab(text: '피드'),
@@ -46,12 +48,13 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    response.Response.readQuestionInFeed(schoolCode: '7530128');
-    response.Response.readAnswerInMessage(userId: uid);
 
     // 1. 인자로 전달 받은 uid 가져오기
     uid = Get.arguments.toString();
     print('로그인 유저 UID: $uid');
+
+    response.Response.readQuestionInFeed(schoolCode: '7530128');
+    response.Response.readAnswerInMessage(userId: uid);
 
     // 2. Firebase에서 Data 가져오기
     getInitialDataFromFirebase();
@@ -131,10 +134,7 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
                   feed: feed,
                   bonusQuestionId: bonusQuestionId,
                 ),
-                MessagePage(
-                  user: user!,
-                  answers: answers,
-                ),
+                MessagePage(user: user!, answers: answers, hint: hint),
                 SettingScreen(
                   user: user!,
                   currentQuestion: currentQuestion,
@@ -161,6 +161,10 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
 
   getInitialDataFromFirebase() async {
     // 1. User 데이터 가져오기
+    hint = (await response.Response.readHint(ownerId: uid))
+        as Map<String, dynamic>?;
+    print(hint.runtimeType);
+    print(hint);
     user = await getUserData();
     // 만약, 유저가 있다면
     if (user != null) {

@@ -14,7 +14,13 @@ import 'dart:io';
 class AnswerDetailPage extends StatefulWidget {
   final User user;
   final Answer answer;
-  const AnswerDetailPage({required this.user, required this.answer, super.key});
+  final Map<String, dynamic>? hint;
+
+  const AnswerDetailPage(
+      {required this.user,
+      required this.answer,
+      super.key,
+      required this.hint});
 
   @override
   AnswerDetailPageState createState() => AnswerDetailPageState();
@@ -30,7 +36,8 @@ class AnswerDetailPageState extends State<AnswerDetailPage> {
   late User userData;
   late Answer answerData;
   late String imgUrl = '';
-
+  late String targetKey;
+  late dynamic? targetValue;
   @override
   void initState() {
     super.initState();
@@ -40,6 +47,21 @@ class AnswerDetailPageState extends State<AnswerDetailPage> {
         .elementAt(int.parse(widget.answer.contentId))['question'] as String;
 
     imgUrl = userData.profileImage;
+
+    targetKey = answerData.id;
+    List<String> parts = targetKey.split('_');
+
+    if (parts.length > 1) {
+      targetKey = parts[1];
+      print(targetKey);
+    }
+    // 찾고자 하는 키
+    // 키에 해당하는 값
+    print(widget.hint);
+    if (widget.hint!.containsKey(targetKey)) {
+      targetValue = widget.hint![targetKey];
+      print(targetValue);
+    }
   }
 
   int maxLength = 100;
@@ -209,6 +231,18 @@ class AnswerDetailPageState extends State<AnswerDetailPage> {
   }
 
   Widget bottomBtns(bool? isAnony) {
+    // for (dynamic element in widget.hint) {
+    //   print(element);
+    //   print(element.containsKey);
+    //   if (element is Map<String, dynamic> && element.containsKey(targetKey)) {
+    //     targetValue = element[targetKey];
+
+    //     print(element.keys);
+    //     print(targetValue);
+    //     break; // 값을 찾았으므로 순회 중단
+    //   }
+    // }
+
     var fromWhoButton = SizedBox(
       width: double.infinity,
       height: 50,
@@ -218,6 +252,9 @@ class AnswerDetailPageState extends State<AnswerDetailPage> {
                 builder: (BuildContext context) => HintScreen(
                       user: widget.user,
                       answer: widget.answer,
+                      hint: widget.hint,
+                      targetKey: targetKey,
+                      targetValue: targetValue,
                     )));
           },
           style: OutlinedButton.styleFrom(
