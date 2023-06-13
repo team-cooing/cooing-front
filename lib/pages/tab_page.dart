@@ -11,6 +11,7 @@ import 'package:cooing_front/pages/question_page.dart';
 import 'package:get/get.dart';
 import 'package:cooing_front/model/response/response.dart' as response;
 import 'package:cooing_front/model/config/palette.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TabPage extends StatefulWidget {
   const TabPage({super.key});
@@ -28,10 +29,10 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
   late String bonusQuestionId = '2023-06-08 16:12:16.416970';
   late List<Answer?> answers = [];
   late bool isNewMessage = false;
-
+  late SharedPreferences prefs;
   bool isUserDataGetting = true;
   bool isLoading = true;
-
+  late List<dynamic> openedIds = [];
   late Map<String, dynamic>? hint;
 
   List<Tab> myTabs = <Tab>[
@@ -134,7 +135,11 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
                   feed: feed,
                   bonusQuestionId: bonusQuestionId,
                 ),
-                MessagePage(user: user!, answers: answers, hint: hint),
+                MessagePage(
+                    user: user!,
+                    answers: answers,
+                    hint: hint,
+                    cache: openedIds),
                 SettingScreen(
                   user: user!,
                   currentQuestion: currentQuestion,
@@ -159,8 +164,24 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
     );
   }
 
+  Future<void> _loadIsOpenedFromCookie() async {
+    prefs = await SharedPreferences.getInstance();
+    final value = prefs.get('AnswerId');
+
+    if (value is List<dynamic>) {
+      openedIds = value.cast<String>().toList();
+      print('openedId');
+
+      print(openedIds);
+    } else {
+      // Handle the case when the value is not a list
+    }
+  }
+
   getInitialDataFromFirebase() async {
     // 1. User 데이터 가져오기
+
+    await _loadIsOpenedFromCookie();
     hint = (await response.Response.readHint(ownerId: uid))
         as Map<String, dynamic>?;
     print(hint.runtimeType);

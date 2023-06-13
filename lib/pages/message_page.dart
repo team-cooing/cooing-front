@@ -6,17 +6,20 @@ import 'package:cooing_front/model/response/user.dart';
 import 'package:cooing_front/pages/answer_detail_page.dart';
 import 'package:custom_refresh_indicator/custom_refresh_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MessagePage extends StatefulWidget {
   final User user;
   final List<Answer?> answers;
   final Map<String, dynamic>? hint;
+  final List<dynamic>? cache;
 
   const MessagePage(
       {super.key,
       required this.user,
       required this.answers,
-      required this.hint});
+      required this.hint,
+      required this.cache});
 
   @override
   State<MessagePage> createState() => _MessagePageState();
@@ -224,19 +227,27 @@ class _MessagePageState extends State<MessagePage> {
   Widget answerItem(int index) {
     return GestureDetector(
         onTap: () async {
-          await Navigator.of(context).push(MaterialPageRoute(
-              builder: (BuildContext context) => AnswerDetailPage(
-                    user: widget.user,
-                    answer: widget.answers[index]!,
-                    hint: widget.hint,
-                  )));
+          if (!(widget.cache!.contains(widget.answers[index]!.id))) {
+            widget.cache!.add(widget.answers[index]!.id);
 
-          if (!widget.answers[index]!.isOpened) {
-            // widget.answers[index]!.isOpened = true;
-            // await Response.updateAnswer(newAnswer: widget.answers[index]!);
+            final prefs = await SharedPreferences.getInstance();
+
+            // 캐시 값을 업데이트하고 싶은 경우
+            await prefs.setStringList('AnswerId', widget.cache!.cast<String>());
+
+            print(prefs);
+            // 다른 setXXX() 메서드를 사용하여 필요한 값들을 업데이트할 수 있습니다.
+
+            setState(() {});
           }
 
-          setState(() {});
+          await Navigator.of(context).push(MaterialPageRoute(
+            builder: (BuildContext context) => AnswerDetailPage(
+              user: widget.user,
+              answer: widget.answers[index]!,
+              hint: widget.hint,
+            ),
+          ));
         },
         child: Container(
           margin: EdgeInsets.only(
@@ -277,17 +288,19 @@ class _MessagePageState extends State<MessagePage> {
                                             image: AssetImage(
                                                 'images/icon_msg_girl.png'))),
                                 Positioned(
-                                  bottom: 10,
-                                  left: 15,
-                                  child: SizedBox(
+                                    bottom: 10,
+                                    left: 15,
+                                    child: SizedBox(
                                       width: 18.0,
                                       height: 18.0,
-                                      child: widget.answers[index]!.isOpened
+                                      child: (widget.cache!.contains(
+                                              widget.answers[index]!.id))
                                           ? Image(
                                               image: AssetImage(
-                                                  'images/icon_msg_opened.png'))
-                                          : null),
-                                )
+                                                  'images/icon_msg_opened.png'),
+                                            )
+                                          : null,
+                                    ))
                               ],
                             ),
                             Padding(padding: EdgeInsets.only(right: 20.0)),
