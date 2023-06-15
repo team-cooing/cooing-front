@@ -601,7 +601,7 @@ class _FeatureScreenState extends State<FeatureScreen> {
                       child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                               backgroundColor: Color.fromARGB(255, 151, 84, 251)),
-                          child: const Text('확인',
+                          child: Text('확인',
                               style: TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 15.sp)),
                           onPressed: () {

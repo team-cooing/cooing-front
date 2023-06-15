@@ -64,38 +64,6 @@ class Response {
   }
 
   // Question
-  static Future<void> createQuestion({required Question newQuestion}) async {
-    final docRef = db
-        .collection("contents")
-        .doc(newQuestion.contentId)
-        .collection('questions')
-        .doc(newQuestion.id);
-    try {
-      await docRef.set(newQuestion.toJson());
-    } catch (e) {
-      print("[createQuestion] Error getting document: $e");
-    }
-  }
-
-  static Future<Question?> readQuestion(
-      {required String contentId, required String questionId}) async {
-    Question? question;
-    final docRef = db
-        .collection("contents")
-        .doc(contentId)
-        .collection('questions')
-        .doc(questionId);
-    try {
-      await docRef.get().then((DocumentSnapshot doc) {
-        final data = doc.data() as Map<String, dynamic>;
-        question = Question.fromJson(data);
-      });
-    } catch (e) {
-      print("[readQuestion] Error getting document: $e");
-    }
-
-    return question;
-  }
 
   static Future<Object?> readHint({required String ownerId}) async {
     try {
@@ -122,48 +90,7 @@ class Response {
     }
   }
 
-  static Future<void> updateQuestion({required Question newQuestion}) async {
-    final docRef = db
-        .collection("contents")
-        .doc(newQuestion.contentId)
-        .collection('questions')
-        .doc(newQuestion.id);
-    try {
-      await docRef.update(newQuestion.toJson());
-    } catch (e) {
-      print("[updateQuestion] Error getting document: $e");
-    }
-  }
 
-  static Future<void> deleteQuestion(
-      {required String contentId, required String questionId}) async {
-    final docRef = db
-        .collection("contents")
-        .doc(contentId)
-        .collection('questions')
-        .doc(questionId);
-    try {
-      await docRef.delete();
-    } catch (e) {
-      print("[deleteQuestion] Error getting document: $e");
-    }
-  }
-
-  // Feed Question
-  static String lastQuestionId = '';
-  static Future<void> createQuestionInFeed(
-      {required Question newQuestion}) async {
-    final docRef = db
-        .collection("schools")
-        .doc(newQuestion.schoolCode)
-        .collection('feed')
-        .doc(newQuestion.id);
-    try {
-      await docRef.set(newQuestion.toJson());
-    } catch (e) {
-      print("[createQuestionInFeed] Error getting document: $e");
-    }
-  }
 
   static Future<bool> readQuestionInFeed({required String schoolCode}) async {
     List<Question> newQuestions = [];
@@ -259,49 +186,7 @@ class Response {
   //   return questions;
   // }
 
-  static Future<void> updateQuestionInFeed(
-      {required Question newQuestion}) async {
-    final docRef = db
-        .collection("schools")
-        .doc(newQuestion.schoolCode)
-        .collection('feed')
-        .doc(newQuestion.id);
-    try {
-      // print(newQuestion.toJson());
-      await docRef.update(newQuestion.toJson());
-    } catch (e) {
-      print("[updateQuestionInFeed] Error getting document: $e");
-    }
-  }
 
-  static Future<void> deleteQuestionInFeed(
-      {required String schoolCode, required String questionId}) async {
-    final docRef = db
-        .collection("schools")
-        .doc(schoolCode)
-        .collection('feed')
-        .doc(questionId);
-    try {
-      await docRef.delete();
-    } catch (e) {
-      print("[deleteQuestionInFeed] Error getting document: $e");
-    }
-  }
-
-  // Answer
-  static String lastAnswerId = '';
-  static Future<void> createAnswer({required Answer newAnswer}) async {
-    final docRef = db
-        .collection("answers")
-        .doc(newAnswer.questionOwner)
-        .collection('answers')
-        .doc(newAnswer.id);
-    try {
-      await docRef.set(newAnswer.toJson());
-    } catch (e) {
-      print("[createAnswer] Error getting document: $e");
-    }
-  }
 
   static Future<bool> readAnswerInMessage({required String userId}) async {
     // List<Answer?> _answers = [];
@@ -393,25 +278,6 @@ class Response {
   //   return answers;
   // }
 
-  static Future<Answer?> readLastAnswer({required String userId}) async {
-    Answer? answer;
-
-    try {
-      final middleQuery = db
-          .collection('answers')
-          .doc(userId)
-          .collection('answers')
-          .orderBy('time', descending: false);
-      final finalQuery = middleQuery.limit(1);
-      await finalQuery.get().then((documentSnapshots) {
-        answer = Answer.fromJson(documentSnapshots.docs[0].data());
-      });
-    } catch (e) {
-      print("[readLastAnswer] Error getting document: $e");
-    }
-
-    return answer;
-  }
 
   static Future<void> updateHint(
       {required Map<String, dynamic> newHint, required ownerId}) async {
@@ -437,17 +303,4 @@ class Response {
   //   }
   // }
 
-  static Future<void> deleteAnswer(
-      {required String userId, required String answerId}) async {
-    final docRef = db
-        .collection("answers")
-        .doc(userId)
-        .collection('answers')
-        .doc(answerId);
-    try {
-      await docRef.delete();
-    } catch (e) {
-      print("[deleteAnswer] Error getting document: $e");
-    }
-  }
 }

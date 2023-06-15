@@ -3,6 +3,7 @@ import 'package:cooing_front/model/data/my_user.dart';
 import 'package:cooing_front/model/response/user.dart';
 import 'package:cooing_front/pages/tab_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
 import 'package:firebase_auth/firebase_auth.dart' as firebase;

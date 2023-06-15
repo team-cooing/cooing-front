@@ -1,4 +1,6 @@
+import 'package:cooing_front/model/response/answer.dart';
 import 'package:cooing_front/model/response/question.dart';
+import 'package:cooing_front/model/response/response_optimization.dart';
 import 'package:cooing_front/model/response/user.dart';
 import 'package:cooing_front/model/util/hint.dart';
 import 'package:cooing_front/model/config/palette.dart';
@@ -18,12 +20,12 @@ class AnswerPage extends StatefulWidget {
   final String uid;
   final Question question;
   final bool isFromLink;
-  const AnswerPage(
-      {required this.user,
-      required this.uid,
-      required this.question,
-      required this.isFromLink,
-      super.key});
+
+  const AnswerPage({required this.user,
+    required this.uid,
+    required this.question,
+    required this.isFromLink,
+    super.key});
 
   @override
   State<AnswerPage> createState() => _AnswerPageState();
@@ -119,7 +121,6 @@ class _AnswerPageState extends State<AnswerPage> {
   }
 
   Future<void> _uploadUserToFirebase(String ownerId, String questionId) async {
-    String newAnswerId;
     try {
       if (question.id.isNotEmpty) {
         timeId = DateTime.now().toString();
@@ -170,7 +171,9 @@ class _AnswerPageState extends State<AnswerPage> {
                 color: Palette.mainPurple,
               )),
           Container(
-            padding: EdgeInsets.only(top: 50, bottom: 7).r,
+            padding: EdgeInsets
+                .only(top: 50, bottom: 7)
+                .r,
             child: Text(
               "이 질문은",
               style: TextStyle(
@@ -192,11 +195,16 @@ class _AnswerPageState extends State<AnswerPage> {
   Widget okBtn() {
     return SafeArea(
         child: Padding(
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).systemGestureInsets.bottom + 25,
+            padding: EdgeInsets
+                .only(
+              bottom: MediaQuery
+                  .of(context)
+                  .systemGestureInsets
+                  .bottom + 25,
               left: 25,
               right: 25,
-            ).r,
+            )
+                .r,
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -230,56 +238,58 @@ class _AnswerPageState extends State<AnswerPage> {
     return isLoading
         ? loadingView()
         : question.isOpen
-            ? WillPopScope(
-                onWillPop: _navigateBack,
-                child: GestureDetector(
-                  onTap: () => hideKeyboard(),
-                  child: Scaffold(
-                    resizeToAvoidBottomInset : false,
-                    appBar: AppBar(
-                      automaticallyImplyLeading: false,
-                      backgroundColor: Colors.transparent,
-                      elevation: 0.0,
-                      leading: IconButton(
-                        icon: const Icon(Icons.close_rounded),
-                        color: Colors.black54,
-                        onPressed: () {
-                          isFromLink
-                              ? Get.offAll(TabPage(), arguments: _userData!.uid)
-                              : Navigator.pop(context, false);
-                        },
-                      ),
-                    ),
-                    body:
-                       Column(
-                        children: [
-                          Expanded( child : _answerBody()),
-                          Align(alignment: Alignment.bottomCenter,child:sendBtn()),
-                   ],
+        ? WillPopScope(
+      onWillPop: _navigateBack,
+      child: GestureDetector(
+        onTap: () => hideKeyboard(),
+        child: Scaffold(
+          resizeToAvoidBottomInset: false,
+          appBar: AppBar(
+            automaticallyImplyLeading: false,
+            backgroundColor: Colors.transparent,
+            elevation: 0.0,
+            leading: IconButton(
+              icon: const Icon(Icons.close_rounded),
+              color: Colors.black54,
+              onPressed: () {
+                isFromLink
+                    ? Get.offAll(TabPage(), arguments: _userData!.uid)
+                    : Navigator.pop(context, false);
+              },
+            ),
+          ),
+          body:
+          Column(
+            children: [
+              Expanded(child: _answerBody()),
+              Align(alignment: Alignment.bottomCenter, child: sendBtn()),
+            ],
 
-                    ),
-                  ),
-                ),
-              )
-            : Scaffold(
-                backgroundColor: Color(0xFFffffff),
-                body: SizedBox(
-                  width: double.infinity,
-                  child: Column(
-                    children: [
-                      Expanded(child: isNotOpenedView()),
-                      okBtn(),
-                    ],
-                  ),
-                ),
-              );
+          ),
+        ),
+      ),
+    )
+        : Scaffold(
+      backgroundColor: Color(0xFFffffff),
+      body: SizedBox(
+        width: double.infinity,
+        child: Column(
+          children: [
+            Expanded(child: isNotOpenedView()),
+            okBtn(),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _answerBody() {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Row(
         children: [
-          Padding(padding: EdgeInsets.all(15.0).w),
+          Padding(padding: EdgeInsets
+              .all(15.0)
+              .w),
           Text(
             "답변 작성",
             style: TextStyle(
@@ -310,29 +320,35 @@ class _AnswerPageState extends State<AnswerPage> {
   Widget _answerCard() {
     return Center(
         child: Container(
-            padding: EdgeInsets.all(15.0).w,
+            padding: EdgeInsets
+                .all(15.0)
+                .w,
             width: double.infinity,
             child: Card(
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30).w),
+                  borderRadius: BorderRadius
+                      .circular(30)
+                      .w),
               color: const Color(0xff9754FB),
               child: Column(children: <Widget>[
                 const Padding(padding: EdgeInsets.all(15.0)),
                 question.ownerProfileImage.isEmpty
                     ? CircularProgressIndicator(
-                        color: Palette.mainPurple,
-                      )
+                  color: Palette.mainPurple,
+                )
                     : SizedBox(
-                        width: 80.0.w,
-                        height: 80.0.h,
-                        child: CircleAvatar(
-                          backgroundImage:
-                              NetworkImage(question.ownerProfileImage),
-                        ),
-                      ),
+                  width: 80.0.w,
+                  height: 80.0.h,
+                  child: CircleAvatar(
+                    backgroundImage:
+                    NetworkImage(question.ownerProfileImage),
+                  ),
+                ),
                 Padding(
                   padding:
-                      EdgeInsets.only(left: 25, right: 25, top: 20, bottom: 1).r,
+                  EdgeInsets
+                      .only(left: 25, right: 25, top: 20, bottom: 1)
+                      .r,
                   child: Text(
                     question.content,
                     style: TextStyle(
@@ -350,7 +366,9 @@ class _AnswerPageState extends State<AnswerPage> {
     // String textLength = "0 / maxLength";
     return Container(
         width: double.infinity,
-        padding: EdgeInsets.only(left: 20.0, right: 20.0, top: 15, bottom: 10).r,
+        padding: EdgeInsets
+            .only(left: 20.0, right: 20.0, top: 15, bottom: 10)
+            .r,
         child: Column(children: [
           TextField(
             enableSuggestions: false,
@@ -362,7 +380,9 @@ class _AnswerPageState extends State<AnswerPage> {
             decoration: InputDecoration(
               counterText: "",
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(15.0).w,
+                borderRadius: BorderRadius
+                    .circular(15.0)
+                    .w,
                 borderSide: const BorderSide(width: 0, style: BorderStyle.none),
               ),
               contentPadding: const EdgeInsets.all(10).w,
@@ -378,7 +398,9 @@ class _AnswerPageState extends State<AnswerPage> {
           ),
           const Padding(padding: EdgeInsets.all(4)),
           Container(
-              padding: EdgeInsets.only(top: 6, right: 15).r,
+              padding: EdgeInsets
+                  .only(top: 6, right: 15)
+                  .r,
               child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
                 Text(
                   "${textValue.length} / $maxLength",
@@ -396,8 +418,8 @@ class _AnswerPageState extends State<AnswerPage> {
           Expanded(
             child: Center(
                 child: CircularProgressIndicator(
-              color: Palette.mainPurple,
-            )),
+                  color: Palette.mainPurple,
+                )),
           ),
         ],
       ),
@@ -412,7 +434,7 @@ class _AnswerPageState extends State<AnswerPage> {
           scale: 1.4,
           child: Checkbox(
             shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
             activeColor: const Color(0xff9754FB),
             focusColor: const Color(0xff9754FB),
             value: _checkSecret,
@@ -437,11 +459,16 @@ class _AnswerPageState extends State<AnswerPage> {
     bool isTextEmpty = textValue.isEmpty;
 
     return Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).systemGestureInsets.bottom + 25,
+      padding: EdgeInsets
+          .only(
+        bottom: MediaQuery
+            .of(context)
+            .systemGestureInsets
+            .bottom + 25,
         left: 25,
         right: 25,
-      ).r,
+      )
+          .r,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -450,27 +477,46 @@ class _AnswerPageState extends State<AnswerPage> {
             child: ElevatedButton(
               onPressed: isTextEmpty
                   ? null
-                  : () {
-                      // Only execute the code when textValue is not empty
-                      String name = _checkSecret ? nickname : _userData!.name;
-                      String content = "$name에게 메시지가 도착했어요!";
-                      _fcmController.sendMessage(
-                          userToken: question.fcmToken,
-                          title: '쿠잉',
-                          body: content);
-                      _uploadUserToFirebase(question.owner, question.id);
+                  : () async {
+                // Only execute the code when textValue is not empty
+                String name = _checkSecret ? nickname : _userData!.name;
+                String content = "$name에게 메시지가 도착했어요!";
+                _fcmController.sendMessage(
+                    userToken: question.fcmToken,
+                    title: '쿠잉',
+                    body: content);
+                await _uploadUserToFirebase(question.owner, question.id);
 
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (BuildContext context) =>
-                              AnswerCompleteScreen(
-                            uid: _userData!.uid,
-                            owner: question.ownerName,
-                            isFromLink: isFromLink,
-                          ),
+                String now_str = DateTime.now().toString();
+                Answer newAnswer = Answer(
+                    id: now_str,
+                    time: now_str,
+                    owner: _userData!.uid,
+                    ownerGender: _userData!.gender,
+                    content: textValue,
+                    contentId: question.contentId,
+                    questionId: question.id,
+                    questionOwner: question.owner,
+                    isAnonymous: _checkSecret,
+                    nickname: nickname,
+                    hint: hintList,
+                    isOpenedHint: [false, false, false],
+                    isOpened: false);
+
+                await ResponseOptimization.createMessageUploadRequest(
+                    newAnswer: newAnswer);
+
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (BuildContext context) =>
+                        AnswerCompleteScreen(
+                          uid: _userData!.uid,
+                          owner: question.ownerName,
+                          isFromLink: isFromLink,
                         ),
-                      );
-                    },
+                  ),
+                );
+              },
               style: OutlinedButton.styleFrom(
                 fixedSize: Size.fromHeight(50),
                 foregroundColor: Colors.white,

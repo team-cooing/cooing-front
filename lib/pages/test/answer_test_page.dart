@@ -23,5 +23,4 @@ sendAnswer(User toUser, User fromUser, Question question) async {
       isOpenedHint: [false, false, false],
       isOpened: false);
 
-  await Response.createAnswer(newAnswer: newAnswer);
 }
