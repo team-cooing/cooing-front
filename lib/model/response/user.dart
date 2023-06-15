@@ -1,3 +1,5 @@
+import 'package:cooing_front/model/response/question.dart';
+
 class User {
   String uid;
   String name;
@@ -114,5 +116,9 @@ class User {
 
   void updateQuestionInfos(List<Map<String, dynamic>> questionInfos) {
     this.questionInfos = questionInfos;
+  }
+
+  void updateCurrentQuestion(Map<String, dynamic> currentQuestion) {
+    this.currentQuestion = currentQuestion;
   }
 }

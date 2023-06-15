@@ -10,6 +10,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:screenshot/screenshot.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:path_provider/path_provider.dart';
@@ -41,6 +42,7 @@ class _QuestionPageState extends State<QuestionPage> {
 
   @override
   void initState() {
+
     super.initState();
 
     // Question에 대힌 변수 값 세팅
@@ -49,6 +51,7 @@ class _QuestionPageState extends State<QuestionPage> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
         body: SingleChildScrollView(
           child: _buildQuestionPage(),
@@ -294,7 +297,8 @@ class _QuestionPageState extends State<QuestionPage> {
       await Response.updateUser(newUser: widget.user);
       // 2-2. 기기 내 캐시 반영
       userProvider.updateQuestionInfos(widget.user.questionInfos);
-      userProvider.updateCurrentQuestion();
+      userProvider.updateCurrentQuestion(newQuestion.toJson());
+
     } else {
       // 만약, 질문을 오픈하지 않은 상태라면
       if (!isQuestionOpen) {
@@ -310,7 +314,7 @@ class _QuestionPageState extends State<QuestionPage> {
           // 2-1. Firebase Users > User 업데이트
           await Response.updateUser(newUser: widget.user);
           // 2-2. 기기 내 캐시 반영
-          userProvider.updateCurrentQuestion();
+          userProvider.updateCurrentQuestion({});
           widget.currentQuestion = null;
         } else {
           // 주요 기능: 질문 오픈하기
@@ -330,7 +334,7 @@ class _QuestionPageState extends State<QuestionPage> {
           // 2-2. Firebase Users > User 업데이트
           await Response.updateUser(newUser: widget.user);
           // 2-4. 기기 내 캐시 반영
-          userProvider.updateCurrentQuestion();
+          userProvider.updateCurrentQuestion(widget.currentQuestion!.toJson());
         }
       } else {
         // 주요 기능: 질문 닫기
@@ -357,7 +361,7 @@ class _QuestionPageState extends State<QuestionPage> {
         widget.currentQuestion = null;
 
         // 3-1 기기내 캐시 반영
-        userProvider.updateCurrentQuestion();
+        userProvider.updateCurrentQuestion({});
       }
     }
 

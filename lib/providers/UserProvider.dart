@@ -21,8 +21,9 @@ class UserDataProvider with ChangeNotifier {
     }
   }
 
-  void updateCurrentQuestion() {
+  void updateCurrentQuestion(Map<String, dynamic> currentQuestion) {
     if (_userData != null) {
+      _userData!.updateCurrentQuestion(currentQuestion);
       _saveUserDataToCookie(_userData!);
       notifyListeners();
     }
