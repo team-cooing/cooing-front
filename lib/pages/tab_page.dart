@@ -191,10 +191,7 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
     // 만약, 유저가 있다면
     if (user != null) {
       // 2. Current Question 데이터 가져오기
-      currentQuestion = await getCurrentQuestionData();
-      print(currentQuestion);
-      print('----위는 퀘스천---');
-
+      currentQuestion = user!.currentQuestion.isNotEmpty ? Question.fromJson(user!.currentQuestion) : null;
       // 3. Feed Questions 데이터 가져오기
       feed = await getFeedQuestionsInSetOfTen();
 
@@ -220,33 +217,6 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
     // User? newUser = await response.Response.readUser(userUid: uid);
 
     return newUser;
-  }
-
-  getCurrentQuestionData() async {
-    // 만약, currentQuestionId가 있다면
-    if (user!.currentQuestionId.isNotEmpty) {
-      String currentQuestionId = user!.currentQuestionId;
-
-      // currentQuestionId = '#{contentId}_{questionId}'
-      // currentQuestionId를 contentId와 questionId로 분리
-      String strippedVariable = currentQuestionId.replaceAll('#', ''); // # 제거
-      List<String> ids = strippedVariable.split('_'); // _로 분리
-
-      String contentId = ids[0];
-      String questionId = ids[1];
-
-      // Firebase DB에서 Question 읽기
-      Question? newQuestion = await response.Response.readQuestion(
-          contentId: contentId, questionId: questionId);
-      print('불러옴');
-      print(newQuestion!.isOpen);
-      print(user!.currentQuestionId);
-
-      return newQuestion;
-    } else {
-      print('없어?');
-      return null;
-    }
   }
 
   getFeedQuestionsInSetOfTen() async {

@@ -1,3 +1,5 @@
+import 'package:cooing_front/model/response/question.dart';
+
 class User {
   String uid;
   String name;
@@ -21,7 +23,7 @@ class User {
   String recentDailyBonusReceiveDate;
   List<Map<String, dynamic>> questionInfos;
   List<String> answeredQuestions;
-  String currentQuestionId;
+  Map<String, dynamic> currentQuestion;
   bool serviceNeedsAgreement;
   bool privacyNeedsAgreement;
 
@@ -48,7 +50,7 @@ class User {
     required this.recentDailyBonusReceiveDate,
     required this.questionInfos,
     required this.answeredQuestions,
-    required this.currentQuestionId,
+    required this.currentQuestion,
     required this.serviceNeedsAgreement,
     required this.privacyNeedsAgreement,
   });
@@ -77,7 +79,7 @@ class User {
         recentDailyBonusReceiveDate: json['recentDailyBonusReceiveDate'],
         questionInfos: List<Map<String, dynamic>>.from(json['questionInfos']),
         answeredQuestions: List<String>.from(json['answeredQuestions']),
-        currentQuestionId: json['currentQuestionId'],
+        currentQuestion: json['currentQuestion'],
         serviceNeedsAgreement: json['serviceNeedsAgreement'],
         privacyNeedsAgreement: json['privacyNeedsAgreement']);
   }
@@ -106,7 +108,7 @@ class User {
       'recentDailyBonusReceiveDate': recentDailyBonusReceiveDate,
       'questionInfos': questionInfos,
       'answeredQuestions': answeredQuestions,
-      'currentQuestionId': currentQuestionId,
+      'currentQuestion': currentQuestion,
       'serviceNeedsAgreement': serviceNeedsAgreement,
       'privacyNeedsAgreement': privacyNeedsAgreement,
     };
@@ -116,5 +118,7 @@ class User {
     this.questionInfos = questionInfos;
   }
 
-  void updateCurrentQuestionId(String currentId) {}
+  void updateCurrentQuestion(Map<String, dynamic> currentQuestion) {
+    this.currentQuestion = currentQuestion;
+  }
 }

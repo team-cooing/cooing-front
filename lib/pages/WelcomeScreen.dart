@@ -1,20 +1,13 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:cooing_front/model/data/my_user.dart';
-import 'package:cooing_front/pages/login/LoginScreen.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cooing_front/model/response/user.dart';
-import 'package:cooing_front/model/util/hint.dart';
-import 'package:cooing_front/pages/question_page.dart';
 import 'package:cooing_front/pages/tab_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:cooing_front/model/response/response.dart' as r;
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({Key? key}) : super(key: key);
@@ -43,34 +36,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
       if (firebaseUser != null) {
         final uid = firebaseUser.uid.toString();
-        final userRef = FirebaseFirestore.instance.collection('users');
-        await userRef.doc(uid).set({
-          "uid": uid,
-          "name": args.name,
-          "profileImage": args.profileImage,
-          'gender': args.gender,
-          'age': args.age,
-          'number': args.number,
-          'birthday': args.birthday,
-          'school': args.school,
-          'schoolCode': args.schoolCode,
-          'schoolOrg': args.schoolOrg,
-          'grade': args.grade,
-          'group': args.group,
-          'eyes': args.eyes,
-          'mbti': args.mbti,
-          'hobby': args.hobby,
-          "style": args.style,
-          'isSubscribe': args.isSubscribe,
-          'candyCount': args.candyCount,
-          'recentDailyBonusReceiveDate': args.recentDailyBonusReceiveDate,
-          'recentQuestionBonusReceiveDate': args.recentQuestionBonusReceiveDate,
-          'questionInfos': args.questionInfos,
-          'answeredQuestions': args.answeredQuestions,
-          'currentQuestionId': args.currentQuestionId,
-          'serviceNeedsAgreement': args.serviceNeedsAgreement,
-          'privacyNeedsAgreement': args.privacyNeedsAgreement,
-        });
+        args.uid = uid;
+
+        await r.Response.createUser(newUser: args);
 
         if(MyUser.userPlatform=='apple'){
           // Store user Id (자동로그인을 위한 인증된 user 정보 저장)
@@ -91,37 +59,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             password: user.id.toString());
 
         final uid = newUser.user!.uid.toString();
-        print(uid);
+        args.uid = uid;
 
-        final userRef = FirebaseFirestore.instance.collection('users');
-
-        await userRef.doc(uid).set({
-          'uid': uid,
-          "name": args.name,
-          "profileImage": args.profileImage,
-          'gender': args.gender,
-          'age': args.age,
-          'number': args.number,
-          'birthday': args.birthday,
-          'school': args.school,
-          'schoolCode': args.schoolCode,
-          'schoolOrg': args.schoolOrg,
-          'grade': args.grade,
-          'group': args.group,
-          'eyes': args.eyes,
-          'mbti': args.mbti,
-          'hobby': args.hobby,
-          "style": args.style,
-          'isSubscribe': args.isSubscribe,
-          'candyCount': args.candyCount,
-          'recentDailyBonusReceiveDate': args.recentDailyBonusReceiveDate,
-          'recentQuestionBonusReceiveDate': args.recentQuestionBonusReceiveDate,
-          'questionInfos': args.questionInfos,
-          'answeredQuestions': args.answeredQuestions,
-          'currentQuestionId': args.currentQuestionId,
-          'serviceNeedsAgreement': args.serviceNeedsAgreement,
-          'privacyNeedsAgreement': args.privacyNeedsAgreement,
-        });
+        await r.Response.createUser(newUser: args);
 
         if(MyUser.userPlatform=='apple'){
           // Store user Id (자동로그인을 위한 인증된 user 정보 저장)
@@ -141,6 +81,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     }
   }
 
+  @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as User;
 

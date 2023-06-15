@@ -12,22 +12,17 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'dart:math';
 import 'package:cooing_front/model/response/fcmController.dart';
-// import 'package:firebase_analytics/firebase_analytics.dart';
-// import 'package:cooing_front/widgets/google_analytics_widget.dart';
 
 class AnswerPage extends StatefulWidget {
   final User? user;
   final String uid;
   final Question question;
   final bool isFromLink;
-
-
   const AnswerPage(
       {required this.user,
       required this.uid,
       required this.question,
       required this.isFromLink,
-
       super.key});
 
   @override
@@ -59,8 +54,6 @@ class _AnswerPageState extends State<AnswerPage> {
   @override
   void initState() {
     super.initState();
-    // final FirebaseAnalytics analytics = FirebaseAnalytics.instance;
-    // setCurrentScreen(analytics, 'answer_page');
 
     //쿠키에 저장된 user 데이터 사용
     // getCookie();
@@ -78,7 +71,6 @@ class _AnswerPageState extends State<AnswerPage> {
   }
 
   Future<void> settingData() async {
-    // question = await getQuestion(widget.question);
     question = question;
 
     //링크를 통해 들어왔을 때
@@ -117,14 +109,6 @@ class _AnswerPageState extends State<AnswerPage> {
     setState(() {});
   }
 
-  // getQuestion(Question? q) async {
-  //   question = await response.Response.readQuestion(
-  //     contentId: q!.contentId,
-  //     questionId: q.id,
-  //   ) as Question;
-
-  //   return question;
-  // }
 
   String getNickname(User user) {
     List styles = user.style;

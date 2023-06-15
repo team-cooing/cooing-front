@@ -1,4 +1,5 @@
 import 'package:cooing_front/model/response/question.dart';
+import 'package:cooing_front/model/response/response_optimization.dart';
 import 'package:cooing_front/model/response/user.dart' as ru;
 import 'package:cooing_front/model/response/response.dart' as r;
 import 'package:cooing_front/pages/login/LoginScreen.dart';
@@ -258,20 +259,14 @@ class _SettingScreenState extends State<SettingScreen> {
   }
 
   Future deleteUser() async {
-    // 만약, 현재 열린 질문이 있다면
-    if(widget.currentQuestion!=null){
-      // 질문 닫기
-      widget.currentQuestion!.isOpen = false;
-      await r.Response.updateQuestion(newQuestion: widget.currentQuestion!);
-    }
-
-    // 파베 유저 데이터 관련 정보 삭제 - 유저 데이터, 피드 데이터 삭제
+    // 파베 유저 데이터 관련 정보 삭제
     await r.Response.deleteUser(userUid: widget.user.uid);
-    if(widget.user.questionInfos.isNotEmpty){
-      await r.Response.deleteQuestionInFeed(
-          schoolCode: widget.user.schoolCode,
-          questionId: widget.user
-              .questionInfos[widget.user.questionInfos.length - 1]['questionId']);
+
+    // 파베 피드 데이터 관련 정보 삭제
+    if(widget.user.currentQuestion.isNotEmpty){
+      if(widget.user.currentQuestion['isOpen']==true){
+        await ResponseOptimization.createQuestionDeleteRequest(newQuestion: Question.fromJson(widget.user.currentQuestion));
+      }
     }
 
     final userPlatform = await FlutterSecureStorage().read(key: "userPlatform");

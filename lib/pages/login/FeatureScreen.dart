@@ -1,5 +1,4 @@
 import 'package:cooing_front/model/response/user.dart';
-import 'package:cooing_front/pages/login/MultiSelectscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -7,7 +6,7 @@ class FeatureScreen extends StatefulWidget {
   const FeatureScreen({super.key});
 
   @override
-  _FeatureScreenState createState() => _FeatureScreenState();
+  State<FeatureScreen> createState() => _FeatureScreenState();
 }
 
 class _FeatureScreenState extends State<FeatureScreen> {
@@ -33,7 +32,7 @@ class _FeatureScreenState extends State<FeatureScreen> {
 
   int gender = 0;
   int eyes = 0;
-  List<String> _mbti = <String>[];
+  final List<String> _mbti = <String>[];
 
   @override
   Widget build(BuildContext context) {
@@ -602,7 +601,7 @@ class _FeatureScreenState extends State<FeatureScreen> {
                       child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                               backgroundColor: Color.fromARGB(255, 151, 84, 251)),
-                          child: Text('확인',
+                          child: const Text('확인',
                               style: TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 15.sp)),
                           onPressed: () {
@@ -654,7 +653,7 @@ class _FeatureScreenState extends State<FeatureScreen> {
                                     args.recentQuestionBonusReceiveDate,
                                 questionInfos: args.questionInfos,
                                 answeredQuestions: args.answeredQuestions,
-                                currentQuestionId: args.currentQuestionId,
+                                currentQuestion: args.currentQuestion,
                                 serviceNeedsAgreement:
                                     args.serviceNeedsAgreement,
                                 privacyNeedsAgreement:

@@ -1,37 +1,23 @@
 import 'package:cooing_front/model/response/user.dart';
-import 'package:cooing_front/pages/login/FeatureScreen.dart';
-import 'package:cooing_front/pages/login/schoolScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
-import 'package:firebase_auth/firebase_auth.dart' as firebase;
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AgreeScreen extends StatefulWidget {
   const AgreeScreen({super.key});
 
   @override
-  _AgreeScreenState createState() => _AgreeScreenState();
+  State<AgreeScreen> createState() => _AgreeScreenState();
 }
 
 class _AgreeScreenState extends State<AgreeScreen> {
-  FocusNode _gradeFocus = FocusNode();
-  FocusNode _groupFocus = FocusNode();
   final List<bool> check = <bool>[true, true];
-  final _authentication = firebase.FirebaseAuth.instance;
 
   bool grade = false;
   bool group = false;
   bool button = false;
   int title = 0;
-
-  int _grade = 0;
-  int _group = 0;
-
-  // var thirdField = FocusNode();
 
   @override
   Widget build(BuildContext context) {
@@ -200,8 +186,7 @@ class _AgreeScreenState extends State<AgreeScreen> {
                                         questionInfos: args.questionInfos,
                                         answeredQuestions:
                                             args.answeredQuestions,
-                                        currentQuestionId:
-                                            args.currentQuestionId,
+                                        currentQuestion: args.currentQuestion,
                                         serviceNeedsAgreement: check[0],
                                         privacyNeedsAgreement: check[1],
                                       ),

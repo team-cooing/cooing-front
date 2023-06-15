@@ -1,25 +1,12 @@
-import 'dart:convert';
-import 'dart:io';
 import 'package:cooing_front/model/response/user.dart';
-import 'package:cooing_front/model/util/firebase_auth_remote_data_source.dart';
-import 'package:cooing_front/pages/login/FeatureScreen.dart';
-import 'package:cooing_front/pages/login/schoolScreen.dart';
-import 'package:cooing_front/pages/WelcomeScreen.dart';
-import 'package:cooing_front/providers/UserProvider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:get/get.dart';
-import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MultiSelectscreen extends StatefulWidget {
   const MultiSelectscreen({super.key});
   @override
-  _MultiSelectscreenState createState() => _MultiSelectscreenState();
+  State<MultiSelectscreen> createState() => _MultiSelectscreenState();
 }
 
 class _MultiSelectscreenState extends State<MultiSelectscreen> {
@@ -102,34 +89,6 @@ class _MultiSelectscreenState extends State<MultiSelectscreen> {
     if (args.gender == 1) {
       style = femaleStyle;
     }
-    // if (args.gender == 0) {
-    //   style.add(Style('귀여운', false));
-    //   style.add(Style('잘생긴', false));
-    //   style.add(Style('어른스러운', false));
-    //   style.add(Style('상냥한', false));
-    //   style.add(Style('훈훈한', false));
-    //   style.add(Style('댕댕이 같은', false));
-    //   style.add(Style('애교 많은', false));
-    //   style.add(Style("배려 있는", false));
-    //   style.add(Style("듬직한", false));
-    //   style.add(Style("매너 있는", false));
-    //   style.add(Style("순진한", false));
-    //   style.add(Style("호감형인", false));
-    // }
-    // if (args.gender == 1) {
-    //   style.add(Style('귀여운', false));
-    //   style.add(Style('예쁜', false));
-    //   style.add(Style('해맑은', false));
-    //   style.add(Style('상큼한', false));
-    //   style.add(Style('사랑스러운', false));
-    //   style.add(Style('훈훈한', false));
-    //   style.add(Style('다정한', false));
-    //   style.add(Style("청순한", false));
-    //   style.add(Style("애교 많은", false));
-    //   style.add(Style("마음 여린", false));
-    //   style.add(Style("순진한", false));
-    //   style.add(Style("호감형인", false));
-    // }
 
     return WillPopScope(
         onWillPop: () async {
@@ -300,7 +259,7 @@ class _MultiSelectscreenState extends State<MultiSelectscreen> {
                                       args.recentQuestionBonusReceiveDate,
                                   questionInfos: args.questionInfos,
                                   answeredQuestions: args.answeredQuestions,
-                                  currentQuestionId: args.currentQuestionId,
+                                  currentQuestion: args.currentQuestion,
                                   serviceNeedsAgreement:
                                       args.serviceNeedsAgreement,
                                   privacyNeedsAgreement:

@@ -1,15 +1,13 @@
 import 'package:cooing_front/model/response/user.dart';
-import 'package:cooing_front/pages/login/schoolScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
 
   @override
-  _SignUpScreenState createState() => _SignUpScreenState();
+  State<SignUpScreen> createState() => _SignUpScreenState();
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
@@ -238,8 +236,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                             questionInfos: args.questionInfos,
                                             answeredQuestions:
                                                 args.answeredQuestions,
-                                            currentQuestionId:
-                                                args.currentQuestionId,
+                                            currentQuestion: args.currentQuestion,
                                             serviceNeedsAgreement:
                                                 args.serviceNeedsAgreement,
                                             privacyNeedsAgreement:

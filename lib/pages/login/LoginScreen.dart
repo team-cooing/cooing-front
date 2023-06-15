@@ -135,7 +135,7 @@ class _LoginScreenState extends State<LoginScreen> {
               recentQuestionBonusReceiveDate: '',
               questionInfos: [],
               answeredQuestions: [],
-              currentQuestionId: '',
+              currentQuestion: {},
               serviceNeedsAgreement: false,
               privacyNeedsAgreement: false,
             ),
@@ -195,7 +195,7 @@ class _LoginScreenState extends State<LoginScreen> {
             recentQuestionBonusReceiveDate: '',
             questionInfos: [],
             answeredQuestions: [],
-            currentQuestionId: '',
+            currentQuestion: {},
             serviceNeedsAgreement: false,
             privacyNeedsAgreement: false,
           ),
@@ -258,6 +258,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         SizedBox(
                           height: 20.h,
                         ),
+                        if(!Platform.isAndroid)
                         _appleLoginButton(),
                       ]),
                 ))));

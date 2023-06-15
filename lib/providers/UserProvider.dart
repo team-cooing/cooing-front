@@ -21,9 +21,9 @@ class UserDataProvider with ChangeNotifier {
     }
   }
 
-  void updateCurrentQuestionId(String currentId) {
+  void updateCurrentQuestion(Map<String, dynamic> currentQuestion) {
     if (_userData != null) {
-      _userData!.updateCurrentQuestionId(currentId);
+      _userData!.updateCurrentQuestion(currentQuestion);
       _saveUserDataToCookie(_userData!);
       notifyListeners();
     }
@@ -76,7 +76,7 @@ class UserDataProvider with ChangeNotifier {
                 List<Map<String, dynamic>>.from(data['questionInfos']),
             answeredQuestions:
                 List<String>.from(data['answeredQuestions'] ?? []),
-            currentQuestionId: data['currentQuestionId'],
+            currentQuestion: data['currentQuestion'],
             serviceNeedsAgreement: data['serviceNeedsAgreement'],
             privacyNeedsAgreement: data['privacyNeedsAgreement']);
         _isDataLoaded = true;
