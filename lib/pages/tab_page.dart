@@ -55,9 +55,6 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
     uid = Get.arguments.toString();
     print('로그인 유저 UID: $uid');
 
-    response.Response.readQuestionInFeed(schoolCode: '7530128');
-    response.Response.readAnswerInMessage(userId: uid);
-
     // 2. Firebase에서 Data 가져오기
     getInitialDataFromFirebase();
 
@@ -180,8 +177,10 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
   }
 
   getInitialDataFromFirebase() async {
-    // 1. User 데이터 가져오기
+    await response.Response.readQuestionInFeed(schoolCode: '7530128');
+    await response.Response.readAnswerInMessage(userId: uid);
 
+    // 1. User 데이터 가져오기
     await _loadIsOpenedFromCookie();
     hint = (await response.Response.readHint(ownerId: uid))
         as Map<String, dynamic>?;
@@ -191,7 +190,9 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
     // 만약, 유저가 있다면
     if (user != null) {
       // 2. Current Question 데이터 가져오기
-      currentQuestion = user!.currentQuestion.isNotEmpty ? Question.fromJson(user!.currentQuestion) : null;
+      currentQuestion = user!.currentQuestion.isNotEmpty
+          ? Question.fromJson(user!.currentQuestion)
+          : null;
       // 3. Feed Questions 데이터 가져오기
       feed = await getFeedQuestionsInSetOfTen();
 
@@ -223,7 +224,7 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
     // Firebase DB에서 feedQuestion 10개 읽기
     // await response.Response.readQuestionInFeed(schoolCode: '7530128');
     List<Question?> newFeedQuestions =
-        await response.Response.getQuestionsWithLimit(1, '7530128');
+        await response.Response.getQuestionsWithLimit(10, '7530128');
     print('왜 안찍혀?');
     print(newFeedQuestions);
     // 보너스 질문 id 구하기
@@ -276,7 +277,7 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
   getAnswersInSetOfTen() async {
     // Firevase DB에서 feedQuestion 10개 읽기
     List<Answer?> newAnswers =
-        await response.Response.getAnswersWithLimit(1, uid);
+        await response.Response.getAnswersWithLimit(10, uid);
 
     // 최근 10개 중 안읽은 answer 있으면 New 표시
     for (var answer in newAnswers) {

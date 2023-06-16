@@ -18,12 +18,16 @@ class CandyCompleteScreenState extends State<CandyCompleteScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Color(0xFFffffff),
-      body: SizedBox(
-          width: double.infinity,
-          child: Column(children: [Expanded(child: mainView()), okBtn()])),
-    );
+    return WillPopScope(
+        onWillPop: () async {
+          return false;
+        },
+        child: Scaffold(
+          backgroundColor: Color(0xFFffffff),
+          body: SizedBox(
+              width: double.infinity,
+              child: Column(children: [Expanded(child: mainView()), okBtn()])),
+        ));
   }
 
   Widget mainView() {
