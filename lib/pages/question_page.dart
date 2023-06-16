@@ -325,9 +325,6 @@ class _QuestionPageState extends State<QuestionPage> {
           widget.currentQuestion!.openTime = DateTime.now().toString();
           widget.currentQuestion!.url = await getUrl(widget.currentQuestion!);
 
-          // 1-2. Feed 반영
-          widget.feed.insert(0, widget.currentQuestion);
-
           // 1-3. User 반영
           widget.user.currentQuestion = widget.currentQuestion!.toJson();
 

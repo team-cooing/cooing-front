@@ -74,6 +74,7 @@ class AnswerCompleteScreenState extends State<AnswerCompleteScreen> {
             padding: EdgeInsets.only(top: 50, bottom: 7).r,
             child: Text(
               messageContent,
+              textAlign: TextAlign.center,
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 22.sp,

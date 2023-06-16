@@ -116,7 +116,7 @@ class _AgreeScreenState extends State<AgreeScreen> {
                             checkColor: Colors.white,
                             activeColor: Color(0xff9754FB),
                             materialTapTargetSize:
-                                MaterialTapTargetSize.shrinkWrap,
+                            MaterialTapTargetSize.shrinkWrap,
                           ),
                           GestureDetector(
                             child: Row(
@@ -157,41 +157,41 @@ class _AgreeScreenState extends State<AgreeScreen> {
                                 backgroundColor: Color.fromARGB(255, 151, 84, 251)),
                             onPressed: check[0] & check[1]
                                 ? () {
-                                    Navigator.pushNamed(
-                                      context,
-                                      'welcome',
-                                      arguments: User(
-                                        uid: args.uid,
-                                        name: args.name,
-                                        profileImage: args.profileImage,
-                                        gender: args.gender,
-                                        number: args.number,
-                                        age: args.age,
-                                        birthday: args.birthday,
-                                        school: args.school,
-                                        schoolCode: args.schoolCode,
-                                        schoolOrg: args.schoolOrg,
-                                        grade: args.grade,
-                                        group: args.group,
-                                        eyes: args.eyes,
-                                        mbti: args.mbti,
-                                        hobby: args.hobby,
-                                        style: args.style,
-                                        isSubscribe: args.isSubscribe,
-                                        candyCount: args.candyCount,
-                                        recentDailyBonusReceiveDate:
-                                            args.recentDailyBonusReceiveDate,
-                                        recentQuestionBonusReceiveDate:
-                                            args.recentQuestionBonusReceiveDate,
-                                        questionInfos: args.questionInfos,
-                                        answeredQuestions:
-                                            args.answeredQuestions,
-                                        currentQuestion: args.currentQuestion,
-                                        serviceNeedsAgreement: check[0],
-                                        privacyNeedsAgreement: check[1],
-                                      ),
-                                    );
-                                  }
+                              Navigator.pushNamed(
+                                context,
+                                'welcome',
+                                arguments: User(
+                                  uid: args.uid,
+                                  name: args.name,
+                                  profileImage: args.profileImage,
+                                  gender: args.gender,
+                                  number: args.number,
+                                  age: args.age,
+                                  birthday: args.birthday,
+                                  school: args.school,
+                                  schoolCode: args.schoolCode,
+                                  schoolOrg: args.schoolOrg,
+                                  grade: args.grade,
+                                  group: args.group,
+                                  eyes: args.eyes,
+                                  mbti: args.mbti,
+                                  hobby: args.hobby,
+                                  style: args.style,
+                                  isSubscribe: args.isSubscribe,
+                                  candyCount: args.candyCount,
+                                  recentDailyBonusReceiveDate:
+                                  args.recentDailyBonusReceiveDate,
+                                  recentQuestionBonusReceiveDate:
+                                  args.recentQuestionBonusReceiveDate,
+                                  questionInfos: args.questionInfos,
+                                  answeredQuestions:
+                                  args.answeredQuestions,
+                                  currentQuestion: args.currentQuestion,
+                                  serviceNeedsAgreement: check[0],
+                                  privacyNeedsAgreement: check[1],
+                                ),
+                              );
+                            }
                                 : null,
                             child: Text('모두 동의하기',
                                 style: TextStyle(
