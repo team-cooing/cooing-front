@@ -17,6 +17,7 @@ sendAnswer(User toUser, User fromUser, Question question) async {
       contentId: '1',
       questionId: question.id,
       questionOwner: question.owner,
+      questionOwnerFcmToken: question.fcmToken,
       isAnonymous: true,
       nickname: '활발한 남학생',
       hint: ['힌트 1', '힌트 2', '힌트 3'],

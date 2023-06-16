@@ -9,6 +9,7 @@ class Answer {
   String contentId;
   String questionId;
   String questionOwner;
+  String questionOwnerFcmToken;
   bool isAnonymous;
   String nickname;
   List<String> hint;
@@ -24,6 +25,7 @@ class Answer {
       required this.contentId,
       required this.questionId,
       required this.questionOwner,
+        required this.questionOwnerFcmToken,
       required this.isAnonymous,
       required this.nickname,
       required this.hint,
@@ -40,6 +42,7 @@ class Answer {
       contentId: json['contentId'],
       questionId: json['questionId'],
       questionOwner: json['questionOwner'],
+      questionOwnerFcmToken: json['questionOwnerFcmToken'],
       isAnonymous: json['isAnonymous'] == 'true' ? true : false,
       nickname: json['nickname'],
       hint: json['hint'].substring(1, json['hint'].length - 1).split(", "),
@@ -60,6 +63,7 @@ class Answer {
       'contentId': contentId,
       'questionId': questionId,
       'questionOwner': questionOwner,
+      'questionOwnerFcmToken': questionOwnerFcmToken,
       'isAnonymous': isAnonymous,
       'nickname': nickname,
       'hint': hint,

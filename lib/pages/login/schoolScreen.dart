@@ -21,6 +21,8 @@ class _SchoolScreenState extends State<SchoolScreen> {
   String searchSchool = '';
   String beforeSearch = '';
   SchoolsProviders schoolsProvider = SchoolsProviders();
+  User? args;
+
 
   Future initSchools(args) async {
     schools = await schoolsProvider.getSchools(args);
@@ -36,6 +38,8 @@ class _SchoolScreenState extends State<SchoolScreen> {
   @override
   void initState() {
     super.initState();
+
+
   }
 
   void hideKeyboard() {
@@ -43,24 +47,69 @@ class _SchoolScreenState extends State<SchoolScreen> {
   }
 
   void searchButton() {
-    initSchools(searchSchool).then((_) {
-      setState(() {
-        beforeSearch = searchSchool;
-        isLoading = false;
-        button = false;
+    // TODO: 임시 - 지워야함
+    Navigator.pushNamed(
+      context,
+      'class',
+      arguments: User(
+        uid: args!.uid,
+        name: args!.name,
+        profileImage:
+        args!.profileImage,
+        gender: args!.gender,
+        number: args!.number,
+        age: args!.age,
+        birthday: args!.birthday,
+        school: '충현고등학교',
+        schoolCode: '7530128',
+        schoolOrg: '경기도교육청',
+        grade: args!.grade,
+        group: args!.group,
+        eyes: args!.eyes,
+        mbti: args!.mbti,
+        hobby: args!.hobby,
+        style: args!.style,
+        isSubscribe:
+        args!.isSubscribe,
+        candyCount: args!.candyCount,
+        recentDailyBonusReceiveDate:
+        args!.recentDailyBonusReceiveDate,
+        recentQuestionBonusReceiveDate:
+        args!.recentQuestionBonusReceiveDate,
+        questionInfos:
+        args!.questionInfos,
+        answeredQuestions:
+        args!.answeredQuestions,
+        currentQuestion: args!.currentQuestion,
+        serviceNeedsAgreement: args!
+            .serviceNeedsAgreement,
+        privacyNeedsAgreement: args!
+            .privacyNeedsAgreement,
+      ),
+    );
 
-        if (empty) {
-          button = true;
-          isLoading = true;
-        }
-      });
-    });
+    // TODO: 임시 - 주석해제해야함
+    // initSchools(searchSchool).then((_) {
+    //   setState(() {
+    //     beforeSearch = searchSchool;
+    //     isLoading = false;
+    //     button = false;
+    //
+    //     if (empty) {
+    //       button = true;
+    //       isLoading = true;
+    //     }
+    //   });
+    // });
   }
 
   @override
   Widget build(BuildContext context) {
     // final node1 = FocusNode();
+    // TODO: 임시 - 지워야함
+    this.args = ModalRoute.of(context)!.settings.arguments as User;
     final args = ModalRoute.of(context)!.settings.arguments as User;
+
 
     return WillPopScope(
         onWillPop: () async {

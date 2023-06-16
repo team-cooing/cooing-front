@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cooing_front/firebase_options.dart';
 import 'package:cooing_front/pages/login/AgreeScreen.dart';
 import 'package:cooing_front/pages/CandyScreen.dart';
@@ -36,7 +38,18 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 late AndroidNotificationChannel channel;
 late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
+// 인증서 유효성 무시
+class NoCheckCertificateHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+  }
+}
+
 void main() async {
+  HttpOverrides.global = NoCheckCertificateHttpOverrides();
   kakao.KakaoSdk.init(nativeAppKey: '010e5977ad5bf0cfbc9ab47ebfaa14a2');
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -112,7 +125,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
   @override
   void initState() {
     print('sss');
@@ -145,40 +157,38 @@ class _MyAppState extends State<MyApp> {
       print(message);
     });
 
-
     super.initState();
   }
 
   static FirebaseAnalytics analytics = FirebaseAnalytics.instance;
   static FirebaseAnalyticsObserver observer =
-  FirebaseAnalyticsObserver(analytics: analytics);
+      FirebaseAnalyticsObserver(analytics: analytics);
 
   Widget build(BuildContext context) {
     return ScreenUtilInit(
         designSize: const Size(360, 690),
-    minTextAdapt: true,
-    builder: (context , child) {
-    return GetMaterialApp(
-      navigatorObservers:<NavigatorObserver>[
-        observer
-      ],
-      initialRoute: SplashScreen.routeName,
-      routes: {
-        SplashScreen.routeName: (context) => SplashScreen(),
-        'home': (context) => const LoginScreen(),
-        'token': (context) => const TokenLoginScreen(),
-        'signUp': (context) => const SignUpScreen(),
-        'school': (context) => const SchoolScreen(),
-        'class': (context) => const ClassScreen(),
-        'feature': (context) => const FeatureScreen(),
-        'select': (context) => const MultiSelectscreen(),
-        'agree': (context) => const AgreeScreen(),
-        'welcome': (context) => const WelcomeScreen(),
-        'tab': (context) => const TabPage(),
-        // 'hint': (context) => const HintScreen(),
-        // 'candy': (context) => const CandyScreen(),
-        '_working': (context) => const TabPage(),
-      },
-    );});
+        minTextAdapt: true,
+        builder: (context, child) {
+          return GetMaterialApp(
+            navigatorObservers: <NavigatorObserver>[observer],
+            initialRoute: SplashScreen.routeName,
+            routes: {
+              SplashScreen.routeName: (context) => SplashScreen(),
+              'home': (context) => const LoginScreen(),
+              'token': (context) => const TokenLoginScreen(),
+              'signUp': (context) => const SignUpScreen(),
+              'school': (context) => const SchoolScreen(),
+              'class': (context) => const ClassScreen(),
+              'feature': (context) => const FeatureScreen(),
+              'select': (context) => const MultiSelectscreen(),
+              'agree': (context) => const AgreeScreen(),
+              'welcome': (context) => const WelcomeScreen(),
+              'tab': (context) => const TabPage(),
+              // 'hint': (context) => const HintScreen(),
+              // 'candy': (context) => const CandyScreen(),
+              '_working': (context) => const TabPage(),
+            },
+          );
+        });
   }
 }

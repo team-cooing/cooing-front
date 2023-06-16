@@ -497,6 +497,7 @@ class _AnswerPageState extends State<AnswerPage> {
                     contentId: question.contentId,
                     questionId: question.id,
                     questionOwner: question.owner,
+                    questionOwnerFcmToken: question.fcmToken,
                     isAnonymous: _checkSecret,
                     nickname: nickname,
                     hint: hintList,

@@ -29,6 +29,7 @@ class Question {
       required this.fcmToken});
 
   factory Question.fromJson(Map<String, dynamic> json) {
+    print(json);
     print('---');
     print(json['isOpen'] == 'true' ? true : false);
     print(json['isOpen'].runtimeType);
@@ -63,7 +64,7 @@ class Question {
       'openTime': openTime,
       'url': url,
       'schoolCode': schoolCode,
-      'isOpen': isOpen,
+      'isOpen': isOpen.toString(),
       'fcmToken': fcmToken
     };
   }
