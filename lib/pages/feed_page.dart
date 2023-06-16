@@ -140,21 +140,23 @@ class _FeedPageState extends State<FeedPage> {
     return Card(
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
-              bottomRight: Radius.circular(20)).w),
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                  bottomRight: Radius.circular(20))
+              .w),
       elevation: 0,
       margin: EdgeInsets.only(
-          left: 20,
-          right: 20,
-          top: (index == 0 &&
-                      !DateTime.now().isAfter(DateTime.parse(
-                              widget.user.recentDailyBonusReceiveDate)
-                          .add(Duration(hours: 24)))) ||
-                  index == -1
-              ? 30
-              : 10,
-          bottom: index == widget.feed.length - 1 ? 30 : 10).w,
+              left: 20,
+              right: 20,
+              top: (index == 0 &&
+                          !DateTime.now().isAfter(DateTime.parse(
+                                  widget.user.recentDailyBonusReceiveDate)
+                              .add(Duration(hours: 24)))) ||
+                      index == -1
+                  ? 30
+                  : 10,
+              bottom: index == widget.feed.length - 1 ? 30 : 10)
+          .w,
       child: SizedBox(
         width: double.infinity,
         child: Container(
@@ -162,9 +164,10 @@ class _FeedPageState extends State<FeedPage> {
           decoration: BoxDecoration(
               color: Color(0xffF2F3F3),
               borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
-                  bottomRight: Radius.circular(20)).w),
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20),
+                      bottomRight: Radius.circular(20))
+                  .w),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -224,7 +227,6 @@ class _FeedPageState extends State<FeedPage> {
                                     ),
                                   ),
                                 ),
-
                               ]),
                         ),
                       ],
@@ -374,7 +376,7 @@ class _FeedPageState extends State<FeedPage> {
   Future<void> _handleRefresh() async {
     // Firebase Schools > Questions > Question 1개 추가로 읽기
     List<Question?> newQuestions =
-        await Response.getQuestionsWithLimit(1, widget.user.schoolCode);
+        await Response.getQuestionsWithLimit(10, widget.user.schoolCode);
     widget.feed.addAll(newQuestions);
 
     if (newQuestions.isEmpty) {

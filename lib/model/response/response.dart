@@ -90,8 +90,6 @@ class Response {
     }
   }
 
-
-
   static Future<bool> readQuestionInFeed({required String schoolCode}) async {
     List<Question> newQuestions = [];
 
@@ -99,7 +97,7 @@ class Response {
         .collection("feeds")
         .doc(schoolCode)
         .collection('feed_strings')
-        .limit(1)
+        .orderBy('time', descending: true)
         .get();
 
     if (feedsSnapshot.docs.isNotEmpty) {
@@ -143,14 +141,17 @@ class Response {
 
   static Future<List<Question>> getQuestionsWithLimit(
       int limit, schoolCode) async {
-    final startIndex = _nextQuestionIndex;
-    final endIndex = startIndex + limit;
+    int startIndex = _nextQuestionIndex;
+    int endIndex = startIndex + limit;
 
     if (startIndex >= _questions.length) {
       final a = await Response.readQuestionInFeed(schoolCode: schoolCode);
       if (!a) {
         return [];
       }
+    }
+    if (endIndex >= _questions.length) {
+      endIndex = _questions.length - 1;
     }
 
     _nextQuestionIndex = endIndex;
@@ -187,8 +188,6 @@ class Response {
   //   return questions;
   // }
 
-
-
   static Future<bool> readAnswerInMessage({required String userId}) async {
     // List<Answer?> _answers = [];
 
@@ -197,6 +196,7 @@ class Response {
         .collection("messages")
         .doc(userId)
         .collection('message_strings')
+        .orderBy('time', descending: true)
         .limit(1)
         .get();
 
@@ -237,14 +237,17 @@ class Response {
   }
 
   static Future<List<Answer>> getAnswersWithLimit(int limit, userId) async {
-    final startIndex = _nextMsgIndex;
-    final endIndex = startIndex + limit;
+    int startIndex = _nextMsgIndex;
+    int endIndex = startIndex + limit;
 
     if (startIndex >= _answers.length) {
       final a = await Response.readAnswerInMessage(userId: userId);
       if (!a) {
         return [];
       }
+    }
+    if (endIndex >= _answers.length) {
+      endIndex = _answers.length - 1;
     }
 
     _nextMsgIndex = endIndex;
@@ -279,7 +282,6 @@ class Response {
   //   return answers;
   // }
 
-
   static Future<void> updateHint(
       {required Map<String, dynamic> newHint, required ownerId}) async {
     final docRef = db.collection('openStatus').doc(ownerId);
@@ -303,5 +305,4 @@ class Response {
   //     print("[updateAnswer] Error getting document: $e");
   //   }
   // }
-
 }

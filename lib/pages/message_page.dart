@@ -54,77 +54,82 @@ class _MessagePageState extends State<MessagePage> {
   }
 
   Widget _buildMessagePage() {
-    return CustomRefreshIndicator(
-      onRefresh: _handleRefresh,
-      trigger: IndicatorTrigger.trailingEdge,
-      trailingScrollIndicatorVisible: false,
-      leadingScrollIndicatorVisible: true,
-      child: ListView.builder(
-          itemCount: widget.user.questionInfos.length,
-          itemBuilder: (BuildContext context, int index) {
-            return Padding(
-                padding: EdgeInsets.only(
-                    bottom:
-                        index == widget.user.questionInfos.length - 1 ? 30 : 0),
-                child: questionItem(index));
-          }),
-      builder: (
-        BuildContext context,
-        Widget child,
-        IndicatorController controller,
-      ) {
-        return AnimatedBuilder(
-            animation: controller,
-            builder: (context, _) {
-              final dy =
-                  controller.value.clamp(0.0, 1.25) * -(150 - (150 * 0.25));
-              return Stack(
-                children: [
-                  Transform.translate(
-                    offset: Offset(0.0, dy),
-                    child: child,
-                  ),
-                  Positioned(
-                    bottom: -150,
-                    left: 0,
-                    right: 0,
-                    height: 150,
-                    child: Container(
-                      transform: Matrix4.translationValues(0.0, dy, 0.0),
-                      padding: const EdgeInsets.only(top: 30.0),
-                      constraints: const BoxConstraints.expand(),
-                      child: Column(
-                        children: [
-                          if (controller.isLoading)
-                            Container(
-                              margin: const EdgeInsets.only(bottom: 8.0),
-                              width: 16,
-                              height: 16,
-                              child: const CircularProgressIndicator(
-                                color: Palette.mainPurple,
-                                strokeWidth: 2,
-                              ),
-                            )
-                          else
-                            const Icon(
-                              Icons.keyboard_arrow_up,
-                              color: Palette.mainPurple,
-                            ),
-                          Text(
-                            controller.isLoading ? "답변을 가져오고 있어요" : "당겨요",
-                            style: const TextStyle(
-                              color: Palette.mainPurple,
-                            ),
-                          )
-                        ],
+    return WillPopScope(
+        onWillPop: () async {
+          return false;
+        },
+        child: CustomRefreshIndicator(
+          onRefresh: _handleRefresh,
+          trigger: IndicatorTrigger.trailingEdge,
+          trailingScrollIndicatorVisible: false,
+          leadingScrollIndicatorVisible: true,
+          child: ListView.builder(
+              itemCount: widget.user.questionInfos.length,
+              itemBuilder: (BuildContext context, int index) {
+                return Padding(
+                    padding: EdgeInsets.only(
+                        bottom: index == widget.user.questionInfos.length - 1
+                            ? 30
+                            : 0),
+                    child: questionItem(index));
+              }),
+          builder: (
+            BuildContext context,
+            Widget child,
+            IndicatorController controller,
+          ) {
+            return AnimatedBuilder(
+                animation: controller,
+                builder: (context, _) {
+                  final dy =
+                      controller.value.clamp(0.0, 1.25) * -(150 - (150 * 0.25));
+                  return Stack(
+                    children: [
+                      Transform.translate(
+                        offset: Offset(0.0, dy),
+                        child: child,
                       ),
-                    ),
-                  ),
-                ],
-              );
-            });
-      },
-    );
+                      Positioned(
+                        bottom: -150,
+                        left: 0,
+                        right: 0,
+                        height: 150,
+                        child: Container(
+                          transform: Matrix4.translationValues(0.0, dy, 0.0),
+                          padding: const EdgeInsets.only(top: 30.0),
+                          constraints: const BoxConstraints.expand(),
+                          child: Column(
+                            children: [
+                              if (controller.isLoading)
+                                Container(
+                                  margin: const EdgeInsets.only(bottom: 8.0),
+                                  width: 16,
+                                  height: 16,
+                                  child: const CircularProgressIndicator(
+                                    color: Palette.mainPurple,
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              else
+                                const Icon(
+                                  Icons.keyboard_arrow_up,
+                                  color: Palette.mainPurple,
+                                ),
+                              Text(
+                                controller.isLoading ? "답변을 가져오고 있어요" : "당겨요",
+                                style: const TextStyle(
+                                  color: Palette.mainPurple,
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                });
+          },
+        ));
   }
 
   Widget questionItem(int questionIndex) {
@@ -364,7 +369,7 @@ class _MessagePageState extends State<MessagePage> {
   Future<void> _handleRefresh() async {
     // Firebase Answers > Answers > Answer 5개 추가로 읽기
     List<Answer?> newAnswers =
-        await Response.getAnswersWithLimit(1, widget.user.uid);
+        await Response.getAnswersWithLimit(10, widget.user.uid);
     widget.answers.addAll(newAnswers);
 
     if (newAnswers.isEmpty) {

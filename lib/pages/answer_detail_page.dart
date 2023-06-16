@@ -69,52 +69,58 @@ class AnswerDetailPageState extends State<AnswerDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        resizeToAvoidBottomInset: false,
-        appBar: AppBar(
-          backgroundColor: Color.fromARGB(0, 87, 56, 56),
-          elevation: 0.0,
-          leading: BackButton(color: Color.fromRGBO(51, 61, 75, 1)),
-          actions: [
-            IconButton(
-                onPressed: () async {
-                  final reportUrl = Uri.parse('https://pf.kakao.com/_kexoDxj');
+    return WillPopScope(
+        onWillPop: () async {
+          return false;
+        },
+        child: Scaffold(
+            resizeToAvoidBottomInset: false,
+            appBar: AppBar(
+              backgroundColor: Color.fromARGB(0, 87, 56, 56),
+              elevation: 0.0,
+              leading: BackButton(color: Color.fromRGBO(51, 61, 75, 1)),
+              actions: [
+                IconButton(
+                    onPressed: () async {
+                      final reportUrl =
+                          Uri.parse('https://pf.kakao.com/_kexoDxj');
 
-                  if (await canLaunchUrl(reportUrl)) {
-                    launchUrl(reportUrl, mode: LaunchMode.externalApplication);
-                  } else {
-                    // ignore: avoid_print
-                    print("Can't launch $reportUrl");
-                  }
-                },
-                icon: Icon(Icons.warning_rounded),
-                iconSize: 30,
-                color: Colors.black45),
-            Padding(
-              padding: EdgeInsets.all(5),
-            )
-          ],
-        ),
-        body: LayoutBuilder(
-          builder: (context, constraints) {
-            return SingleChildScrollView(
-                physics: BouncingScrollPhysics(),
-                child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      minHeight: constraints.maxHeight,
-                    ),
-                    child: IntrinsicHeight(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          _answerBody(),
-                          Spacer(),
-                          bottomBtns(answerData.isAnonymous),
-                        ],
-                      ),
-                    )));
-          },
-        ));
+                      if (await canLaunchUrl(reportUrl)) {
+                        launchUrl(reportUrl,
+                            mode: LaunchMode.externalApplication);
+                      } else {
+                        // ignore: avoid_print
+                        print("Can't launch $reportUrl");
+                      }
+                    },
+                    icon: Icon(Icons.warning_rounded),
+                    iconSize: 30,
+                    color: Colors.black45),
+                Padding(
+                  padding: EdgeInsets.all(5),
+                )
+              ],
+            ),
+            body: LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                    physics: BouncingScrollPhysics(),
+                    child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          minHeight: constraints.maxHeight,
+                        ),
+                        child: IntrinsicHeight(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              _answerBody(),
+                              Spacer(),
+                              bottomBtns(answerData.isAnonymous),
+                            ],
+                          ),
+                        )));
+              },
+            )));
   }
 
   Future<String?> screenshot() async {
@@ -159,8 +165,8 @@ class AnswerDetailPageState extends State<AnswerDetailPage> {
                   children: [
                     Text(
                       "${answerData.nickname}이 보낸 메시지",
-                      style:
-                          TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                          fontSize: 18.sp, fontWeight: FontWeight.bold),
                     ),
                     _answerDetailCard(),
                   ],
@@ -268,7 +274,9 @@ class AnswerDetailPageState extends State<AnswerDetailPage> {
           child: Text(
             "누가 보냈는지 확인하기",
             style: TextStyle(
-                fontSize: 16.sp, fontWeight: FontWeight.bold, color: Colors.white),
+                fontSize: 16.sp,
+                fontWeight: FontWeight.bold,
+                color: Colors.white),
           )),
     );
 
@@ -297,7 +305,9 @@ class AnswerDetailPageState extends State<AnswerDetailPage> {
           child: Text(
             "답장하기",
             style: TextStyle(
-                fontSize: 16.sp, fontWeight: FontWeight.bold, color: Colors.white),
+                fontSize: 16.sp,
+                fontWeight: FontWeight.bold,
+                color: Colors.white),
           )),
     );
 
