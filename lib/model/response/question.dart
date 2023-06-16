@@ -29,7 +29,6 @@ class Question {
       required this.fcmToken});
 
   factory Question.fromJson(Map<String, dynamic> json) {
-    print(json);
     print('---');
     print(json['isOpen'] == 'true' ? true : false);
     print(json['isOpen'].runtimeType);
@@ -54,18 +53,18 @@ class Question {
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'ownerProfileImage': ownerProfileImage,
-      'ownerName': ownerName,
-      'owner': owner,
-      'content': content,
-      'contentId': contentId,
-      'receiveTime': receiveTime,
-      'openTime': openTime,
-      'url': url,
-      'schoolCode': schoolCode,
-      'isOpen': isOpen.toString(),
-      'fcmToken': fcmToken
+      "id": id,
+      "ownerProfileImage": ownerProfileImage,
+      "ownerName": ownerName,
+      "owner": owner,
+      "content": content,
+      "contentId": contentId,
+      "receiveTime": receiveTime,
+      "openTime": openTime,
+      "url": url,
+      "schoolCode": schoolCode,
+      "isOpen": isOpen.toString(),
+      "fcmToken": fcmToken
     };
   }
 }

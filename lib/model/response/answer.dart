@@ -55,20 +55,20 @@ class Answer {
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id, // 마이크로세컨드까지 보낸 시간으로 사용
-      'time': time,
-      'owner': owner,
-      'ownerGender': ownerGender,
-      'content': content,
-      'contentId': contentId,
-      'questionId': questionId,
-      'questionOwner': questionOwner,
-      'questionOwnerFcmToken': questionOwnerFcmToken,
-      'isAnonymous': isAnonymous,
-      'nickname': nickname,
-      'hint': hint,
-      'isOpenedHint': isOpenedHint, //bool List
-      'isOpened': isOpened,
+      "id": id, // 마이크로세컨드까지 보낸 시간으로 사용
+      "time": time,
+      "owner": owner,
+      "ownerGender": ownerGender,
+      "content": content,
+      "contentId": contentId,
+      "questionId": questionId,
+      "questionOwner": questionOwner,
+      "questionOwnerFcmToken": questionOwnerFcmToken,
+      "isAnonymous": isAnonymous,
+      "nickname": nickname,
+      "hint": hint,
+      "isOpenedHint": isOpenedHint, //bool List
+      "isOpened": isOpened,
     };
   }
 }
