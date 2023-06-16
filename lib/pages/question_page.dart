@@ -33,6 +33,7 @@ class QuestionPage extends StatefulWidget {
 }
 
 class _QuestionPageState extends State<QuestionPage> {
+  late BuildContext pageContext;
   bool isQuestionReceived = false;
   bool isQuestionOpen = false;
   bool hasQuestionCloseTimePassed = false;
@@ -51,6 +52,7 @@ class _QuestionPageState extends State<QuestionPage> {
 
   @override
   Widget build(BuildContext context) {
+    pageContext = context;
 
     return Scaffold(
         body: SingleChildScrollView(
@@ -335,6 +337,21 @@ class _QuestionPageState extends State<QuestionPage> {
           await Response.updateUser(newUser: widget.user);
           // 2-4. 기기 내 캐시 반영
           userProvider.updateCurrentQuestion(widget.currentQuestion!.toJson());
+
+          // 3-1. 0, 30분 마다 업데이트 알려주기
+          DateTime currentTime = DateTime.now();
+          if(currentTime.minute != 0 && currentTime.minute!=30){
+            String messageContent = '';
+            if(currentTime.minute>30){
+              currentTime = currentTime.add(Duration(hours: 1));
+              messageContent = '${currentTime.day}일 ${currentTime.hour}시 00분에 피드에 질문이 등록될 예정입니다!';
+            }else{
+              messageContent = '${currentTime.day}일 ${currentTime.hour}시 30분에 피드에 질문이 등록될 예정입니다!';
+            }
+            showSnackBar(pageContext, messageContent);
+          }else{
+            showSnackBar(pageContext, '곧 피드에 질문이 등록됩니다!');
+          }
         }
       } else {
         // 주요 기능: 질문 닫기
@@ -512,6 +529,16 @@ class _QuestionPageState extends State<QuestionPage> {
             ),
           ]),
         ),
+      ),
+    );
+  }
+
+  void showSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: Palette.mainPurple,
+        content: Text(message),
+        duration: Duration(seconds: 4),
       ),
     );
   }

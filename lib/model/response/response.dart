@@ -154,6 +154,7 @@ class Response {
     }
 
     _nextQuestionIndex = endIndex;
+
     return _questions.sublist(startIndex, endIndex);
   }
 
