@@ -43,6 +43,20 @@ class AnswerCompleteScreenState extends State<AnswerCompleteScreen> {
   }
 
   Widget mainView() {
+    String messageContent = '';
+    DateTime currentTime = DateTime.now();
+    if(currentTime.minute != 0 && currentTime.minute!=30){
+      if(currentTime.minute>30){
+        currentTime = currentTime.add(Duration(hours: 1));
+        messageContent = '${currentTime.day}일 ${currentTime.hour}시 00분에\n$owner님께 답변이 전달돼요';
+      }else{
+        messageContent = '${currentTime.day}일 ${currentTime.hour}시 30분에\n$owner님께 답변이 전달돼요';
+      }
+    }else{
+      messageContent = '성공적으로 $owner님께\n답변을 전달했어요';
+    }
+
+
     return Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -54,24 +68,18 @@ class AnswerCompleteScreenState extends State<AnswerCompleteScreen> {
           Container(
             padding: EdgeInsets.only(top: 50, bottom: 7).r,
             child: Text(
-              "성공적으로 $owner님께",
+              messageContent,
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 22.sp,
                   color: Color.fromARGB(255, 51, 61, 75)),
             ),
           ),
-          Text(
-            "답변을 전달했어요",
-            style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 22.sp,
-                color: Color.fromARGB(255, 51, 61, 75)),
-          ),
         ]);
   }
 
   Widget okBtn() {
+
     return SafeArea(
         child: Padding(
             padding: EdgeInsets.only(
