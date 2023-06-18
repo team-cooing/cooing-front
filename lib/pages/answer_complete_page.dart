@@ -69,7 +69,7 @@ class AnswerCompleteScreenState extends State<AnswerCompleteScreen> {
           SizedBox(
               width: 100.w,
               height: 100.w,
-              child: Image(image: AssetImage('images/icon_complete_send.png'))),
+              child: Image(image: AssetImage('assets/images/icon_complete_send.png'))),
           Container(
             padding: EdgeInsets.only(top: 50, bottom: 7).r,
             child: Text(

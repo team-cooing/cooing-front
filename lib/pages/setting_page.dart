@@ -87,7 +87,7 @@ class _SettingScreenState extends State<SettingScreen> {
                                   width: 27.w,
                                   height: 27.h,
                                   child: Image(
-                                      image: AssetImage('images/candy1.png'))),
+                                      image: AssetImage('assets/images/candy1.png'))),
                               Padding(padding: EdgeInsets.only(right: 10.0).r),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,

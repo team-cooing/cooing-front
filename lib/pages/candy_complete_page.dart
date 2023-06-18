@@ -38,7 +38,7 @@ class CandyCompleteScreenState extends State<CandyCompleteScreen> {
           SizedBox(
               width: 120.w,
               height: 120.h,
-              child: Image(image: AssetImage('images/icon_complete_send.png'))),
+              child: Image(image: AssetImage('assets/images/icon_complete_send.png'))),
           Container(
             padding: EdgeInsets.only(top: 50, bottom: 7),
             child: Text(

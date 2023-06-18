@@ -126,6 +126,6 @@ class _SplashScreenState extends State<SplashScreen> {
                     image: DecorationImage(
                         alignment: Alignment.topCenter,
                         fit: BoxFit.cover,
-                        image: AssetImage('images/splash.png'))))));
+                        image: AssetImage('assets/images/splash.png'))))));
   }
 }

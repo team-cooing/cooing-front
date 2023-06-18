@@ -280,7 +280,7 @@ class _LoginScreenState extends State<LoginScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Image.asset(
-                'images/apple_symbol.png',
+                'assets/images/apple_symbol.png',
                 height: 20.h,
               ),
               SizedBox(
@@ -313,7 +313,7 @@ class _LoginScreenState extends State<LoginScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Image.asset(
-                'images/kakao_symbol.png',
+                'assets/images/kakao_symbol.png',
                 height: 20.h,
               ),
               SizedBox(

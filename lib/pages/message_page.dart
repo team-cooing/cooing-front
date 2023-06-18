@@ -291,10 +291,10 @@ class _MessagePageState extends State<MessagePage> {
                                             0
                                         ? Image(
                                             image: AssetImage(
-                                                'images/icon_msg_boy.png'))
+                                                'assets/images/icon_msg_boy.png'))
                                         : Image(
                                             image: AssetImage(
-                                                'images/icon_msg_girl.png'))),
+                                                'assets/images/icon_msg_girl.png'))),
                                 Positioned(
                                     bottom: 10,
                                     left: 15,
@@ -305,7 +305,7 @@ class _MessagePageState extends State<MessagePage> {
                                               widget.answers[index]!.id))
                                           ? Image(
                                               image: AssetImage(
-                                                  'images/icon_msg_opened.png'),
+                                                  'assets/images/icon_msg_opened.png'),
                                             )
                                           : null,
                                     ))

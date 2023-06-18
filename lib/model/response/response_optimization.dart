@@ -61,11 +61,16 @@ class ResponseOptimization {
   }
 
   static String getNowString(){
+    String result = '';
     DateTime now = DateTime.now();
-    String time =
-        '${now.year}-${formatXX(now.month.toString())}-${formatXX(now.day.toString())} ${formatXX(now.hour.toString())}:${formatXX(now.minute.toString())}';
 
-    return time;
+    if(now.minute<30){
+      result = '${now.year}-${formatXX(now.month.toString())}-${formatXX(now.day.toString())} ${formatXX(now.hour.toString())}:00';
+    }else{
+      result = '${now.year}-${formatXX(now.month.toString())}-${formatXX(now.day.toString())} ${formatXX(now.hour.toString())}:30';
+    }
+
+    return result;
   }
   
   static String formatXX(String date){

@@ -185,7 +185,7 @@ class _FeedPageState extends State<FeedPage> {
                           height: 42.0.h,
                           child: CircleAvatar(
                             backgroundImage: index == -1
-                                ? AssetImage('images/logo_128.png')
+                                ? AssetImage('assets/images/logo_128.png')
                                     as ImageProvider
                                 : NetworkImage(
                                     widget.feed[index]!.ownerProfileImage),
@@ -347,7 +347,7 @@ class _FeedPageState extends State<FeedPage> {
                               width: 15.w,
                               height: 15.h,
                               child: Image(
-                                  image: AssetImage('images/candy1.png'))),
+                                  image: AssetImage('assets/images/candy1.png'))),
                           SizedBox(
                             width: 6.w,
                           ),

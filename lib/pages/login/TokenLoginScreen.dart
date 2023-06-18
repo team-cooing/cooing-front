@@ -110,7 +110,7 @@ class _TokenLoginScreenState extends State<TokenLoginScreen> {
     return SizedBox(
       width: double.infinity,
       child: TextButton(
-        child: Image.asset('images/kakao_login_medium_wide.png'),
+        child: Image.asset('assets/images/kakao_login_medium_wide.png'),
         onPressed: () {
           signInWithKakao();
         },

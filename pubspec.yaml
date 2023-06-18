@@ -93,21 +93,8 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - images/kakao_login_medium_wide.png
-    - images/icon_copyLink.png
-    - images/icon_instagram.png
-    - images/candy1.png
-    - images/candy2.png
-    - images/icon_complete_send.png
-    - images/icon_msg_girl.png
-    - images/icon_msg_boy.png
-    - images/icon_msg_opened.png
-    - images/icon_candy.png
-    - images/logo_128.png
-    - images/sohee.jpg
-    - images/splash.png
-    - images/kakao_symbol.png
-    - images/apple_symbol.png
+    - assets/images/
+    - assets/data/
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

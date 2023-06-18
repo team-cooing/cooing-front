@@ -55,9 +55,12 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         Get.to(TabPage(), arguments: uid);
       } else {
         final user = await kakao.UserApi.instance.me();
+        print('문제 부분 kakao user: ${user.toJson().toString()}');
         final newUser = await _authentication.createUserWithEmailAndPassword(
             email: user.kakaoAccount!.email.toString(),
             password: user.id.toString());
+
+        print('문제 부분 firebase user: ${newUser.toString()}');
 
         final uid = newUser.user!.uid.toString();
         args.uid = uid;

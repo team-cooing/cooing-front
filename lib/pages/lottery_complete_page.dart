@@ -35,7 +35,7 @@ class _CandyCompletePageState extends State<CandyCompletePage> {
                           height: 120.h,
                           child: Image(
                               image:
-                                  AssetImage('images/icon_complete_send.png'))),
+                                  AssetImage('assets/images/icon_complete_send.png'))),
                       Container(
                         padding: EdgeInsets.only(top: 50, bottom: 7).r,
                         child: Text(

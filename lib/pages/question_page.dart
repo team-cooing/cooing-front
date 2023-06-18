@@ -442,8 +442,8 @@ class _QuestionPageState extends State<QuestionPage> {
 
   Widget shareCard() {
     //링크복사, 인스타그램 아이콘
-    AssetImage iconLink = AssetImage('images/icon_copyLink.png');
-    AssetImage iconInstagram = AssetImage('images/icon_instagram.png');
+    AssetImage iconLink = AssetImage('assets/images/icon_copyLink.png');
+    AssetImage iconInstagram = AssetImage('assets/images/icon_instagram.png');
 
     return (Column(children: <Widget>[
       shareBlock(iconLink, "1단계", "링크 복사하기", "복사"),

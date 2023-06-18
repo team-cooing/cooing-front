@@ -120,7 +120,7 @@ class _CandyScreenState extends State<CandyScreen> {
                                           height: 25.h,
                                           child: Image(
                                               image: AssetImage(
-                                                  'images/candy1.png'))),
+                                                  'assets/images/candy1.png'))),
                                       Padding(
                                           padding:
                                               EdgeInsets.only(right: 10.0)),
@@ -183,7 +183,7 @@ class _CandyScreenState extends State<CandyScreen> {
                                           height: 25.h,
                                           child: Image(
                                               image: AssetImage(
-                                                  'images/candy1.png'))),
+                                                  'assets/images/candy1.png'))),
                                       Padding(
                                           padding:
                                               EdgeInsets.only(right: 10.0)),
@@ -246,7 +246,7 @@ class _CandyScreenState extends State<CandyScreen> {
                                           height: 25.h,
                                           child: Image(
                                               image: AssetImage(
-                                                  'images/candy1.png'))),
+                                                  'assets/images/candy1.png'))),
                                       Padding(
                                           padding:
                                               EdgeInsets.only(right: 10.0)),
@@ -309,7 +309,7 @@ class _CandyScreenState extends State<CandyScreen> {
                     //                       height: 25.0,
                     //                       child: Image(
                     //                           image:
-                    //                               AssetImage('images/candy2.png'))),
+                    //                               AssetImage('assets/images/candy2.png'))),
                     //                   Padding(
                     //                       padding: EdgeInsets.only(right: 10.0)),
                     //                   Column(

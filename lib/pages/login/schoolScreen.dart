@@ -61,7 +61,7 @@ class _SchoolScreenState extends State<SchoolScreen> {
         age: args!.age,
         birthday: args!.birthday,
         school: '충현고등학교',
-        schoolCode: '7530128',
+        schoolCode: '666666',
         schoolOrg: '경기도교육청',
         grade: args!.grade,
         group: args!.group,
