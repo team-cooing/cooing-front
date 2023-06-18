@@ -6,6 +6,7 @@ import 'package:cooing_front/pages/feed_page.dart';
 import 'package:cooing_front/pages/login/LoginScreen.dart';
 import 'package:cooing_front/pages/message_page.dart';
 import 'package:cooing_front/providers/UserProvider.dart';
+import 'package:cooing_front/widgets/loading_view.dart';
 import 'package:flutter/material.dart';
 import 'package:cooing_front/pages/question_page.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -146,21 +147,7 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
             ));
   }
 
-  Widget loadingView() {
-    return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Expanded(
-            child: Center(
-                child: CircularProgressIndicator(
-              color: Palette.mainPurple,
-            )),
-          ),
-        ],
-      ),
-    );
-  }
+
 
   Future<void> _loadIsOpenedFromCookie() async {
     prefs = await SharedPreferences.getInstance();

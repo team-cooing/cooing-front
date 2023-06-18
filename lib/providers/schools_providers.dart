@@ -1,30 +1,34 @@
-import 'dart:convert';
-
 import 'package:cooing_front/model/response/school.dart';
-import 'package:http/http.dart' as http;
+import 'package:csv/csv.dart';
+import 'package:flutter/services.dart';
 
 class SchoolsProviders {
-  Future<List<School>> getSchools(args) async {
-    List<School> schools = [];
+  List<School> schoolData = [];
 
-    Uri uri = Uri.parse(
-        "https://open.neis.go.kr/hub/schoolInfo?Type=json&SCHUL_NM=${args}&apiKey=5ba72443538b44759c48f5ed4289cb21");
-
-    final response = await http.get(uri);
-    if (response.statusCode == 200) {
-      // schools = jsonDecode(response.body)['articles'].map<Schools>((article) {
-      print(jsonDecode(response.body).keys.toString());
-      if (jsonDecode(response.body).keys.toString() == '(schoolInfo)') {
-        schools = jsonDecode(response.body)['schoolInfo'][1]['row']
-            .map<School>((school) {
-          return School.fromMap(school);
-        }).toList();
-      }
-      // if (jsonDecode(response.body).k)
-    } else {
-      print('error');
+  Future<void> initSchoolProvider() async {
+    String csvData = await rootBundle.loadString('assets/data/school_data.csv');
+    List<List<dynamic>> csvTable = CsvToListConverter().convert(csvData, eol: '\n');
+    for (var csvRow in csvTable) {
+      School school = School(
+          id: csvRow[0].toString(),
+          name: csvRow[1].toString(),
+          level: csvRow[2].toString(),
+          establishmentDate: csvRow[3].toString(),
+          establishmentType: csvRow[4].toString(),
+          schoolType: csvRow[5].toString(),
+          operationalStatus: csvRow[6].toString(),
+          address: csvRow[7].toString(),
+          schoolOrg: csvRow[10].toString());
+      schoolData.add(school);
     }
+  }
 
-    return schools;
+  List<School> searchSchools(String query) {
+    return schoolData
+        .where((school) {
+          return school.name.contains(query);
+        })
+        .take(50)
+        .toList();
   }
 }

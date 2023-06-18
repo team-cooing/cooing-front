@@ -1,6 +1,7 @@
-import 'package:cooing_front/model/response/user.dart';
-import 'package:flutter/material.dart';
 import 'package:cooing_front/model/response/school.dart';
+import 'package:cooing_front/model/response/user.dart';
+import 'package:cooing_front/widgets/loading_view.dart';
+import 'package:flutter/material.dart';
 import 'package:cooing_front/providers/schools_providers.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -21,97 +22,24 @@ class _SchoolScreenState extends State<SchoolScreen> {
   String searchSchool = '';
   String beforeSearch = '';
   SchoolsProviders schoolsProvider = SchoolsProviders();
-  User? args;
-
-
-  Future initSchools(args) async {
-    schools = await schoolsProvider.getSchools(args);
-    print(schools.length);
-    if (schools.isEmpty) {
-      empty = true;
-    } else {
-      empty = false;
-    }
-    // print(schools[0].location);
-  }
+  bool isSchoolDataLoading = true;
 
   @override
   void initState() {
     super.initState();
 
-
-  }
-
-  void hideKeyboard() {
-    FocusScope.of(context).unfocus();
-  }
-
-  void searchButton() {
-    // TODO: 임시 - 지워야함
-    Navigator.pushNamed(
-      context,
-      'class',
-      arguments: User(
-        uid: args!.uid,
-        name: args!.name,
-        profileImage:
-        args!.profileImage,
-        gender: args!.gender,
-        number: args!.number,
-        age: args!.age,
-        birthday: args!.birthday,
-        school: '충현고등학교',
-        schoolCode: '666666',
-        schoolOrg: '경기도교육청',
-        grade: args!.grade,
-        group: args!.group,
-        eyes: args!.eyes,
-        mbti: args!.mbti,
-        hobby: args!.hobby,
-        style: args!.style,
-        isSubscribe:
-        args!.isSubscribe,
-        candyCount: args!.candyCount,
-        recentDailyBonusReceiveDate:
-        args!.recentDailyBonusReceiveDate,
-        recentQuestionBonusReceiveDate:
-        args!.recentQuestionBonusReceiveDate,
-        questionInfos:
-        args!.questionInfos,
-        answeredQuestions:
-        args!.answeredQuestions,
-        currentQuestion: args!.currentQuestion,
-        serviceNeedsAgreement: args!
-            .serviceNeedsAgreement,
-        privacyNeedsAgreement: args!
-            .privacyNeedsAgreement,
-      ),
-    );
-
-    // TODO: 임시 - 주석해제해야함
-    // initSchools(searchSchool).then((_) {
-    //   setState(() {
-    //     beforeSearch = searchSchool;
-    //     isLoading = false;
-    //     button = false;
-    //
-    //     if (empty) {
-    //       button = true;
-    //       isLoading = true;
-    //     }
-    //   });
-    // });
+    schoolsProvider.initSchoolProvider().then((value){
+      setState(() {
+        isSchoolDataLoading = false;
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    // final node1 = FocusNode();
-    // TODO: 임시 - 지워야함
-    this.args = ModalRoute.of(context)!.settings.arguments as User;
     final args = ModalRoute.of(context)!.settings.arguments as User;
 
-
-    return WillPopScope(
+    return isSchoolDataLoading? loadingView() : WillPopScope(
         onWillPop: () async {
           return false;
         },
@@ -193,7 +121,7 @@ class _SchoolScreenState extends State<SchoolScreen> {
                                             Color.fromARGB(255, 151, 84, 251),
                                         disabledForegroundColor: Color.fromRGBO(151, 84, 251, 0.2).withOpacity(0.38), disabledBackgroundColor: Color.fromRGBO(151, 84, 251, 0.2).withOpacity(0.12)),
                                     onPressed:
-                                        disableButton ? searchButton : null,
+                                        disableButton ? clickSearchButton : null,
                                     child: Text('검색',
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
@@ -237,9 +165,9 @@ class _SchoolScreenState extends State<SchoolScreen> {
                                                     birthday: args.birthday,
                                                     school: schools[index].name,
                                                     schoolCode:
-                                                        schools[index].code,
+                                                        schools[index].id,
                                                     schoolOrg:
-                                                        schools[index].org,
+                                                        schools[index].schoolOrg,
                                                     grade: args.grade,
                                                     group: args.group,
                                                     eyes: args.eyes,
@@ -322,7 +250,7 @@ class _SchoolScreenState extends State<SchoolScreen> {
                                                         )),
                                                       ),
                                                       Text(
-                                                        schools[index].location,
+                                                        schools[index].address,
                                                         style: TextStyle(
                                                             fontSize: 13.sp,
                                                             fontWeight:
@@ -343,5 +271,35 @@ class _SchoolScreenState extends State<SchoolScreen> {
                         ]),
                   ),
                 ))));
+  }
+
+  Future searchMySchool(query) async {
+    schools = schoolsProvider.searchSchools(query);
+    print(schools.length);
+    if (schools.isEmpty) {
+      empty = true;
+    } else {
+      empty = false;
+    }
+    // print(schools[0].location);
+  }
+
+  void hideKeyboard() {
+    FocusScope.of(context).unfocus();
+  }
+
+  void clickSearchButton() {
+    searchMySchool(searchSchool).then((_) {
+      setState(() {
+        beforeSearch = searchSchool;
+        isLoading = false;
+        button = false;
+
+        if (empty) {
+          button = true;
+          isLoading = true;
+        }
+      });
+    });
   }
 }
