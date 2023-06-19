@@ -2,7 +2,7 @@ import 'package:cooing_front/model/response/question.dart';
 import 'package:cooing_front/model/response/response_optimization.dart';
 import 'package:cooing_front/model/response/user.dart' as ru;
 import 'package:cooing_front/model/response/response.dart' as r;
-import 'package:cooing_front/pages/login/LoginScreen.dart';
+import 'package:cooing_front/pages/login/login_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

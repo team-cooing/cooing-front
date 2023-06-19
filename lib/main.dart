@@ -1,29 +1,22 @@
-import 'dart:io';
+// 2023.06.18 SUN Midas: ✅
 
 import 'package:cooing_front/firebase_options.dart';
-import 'package:cooing_front/pages/login/AgreeScreen.dart';
-import 'package:cooing_front/pages/CandyScreen.dart';
-import 'package:cooing_front/pages/login/ClassScreen.dart';
-import 'package:cooing_front/pages/HintPage.dart';
-import 'package:cooing_front/pages/login/TokenLoginScreen.dart';
-import 'package:cooing_front/pages/login/LoginScreen.dart';
-import 'package:cooing_front/pages/login/schoolScreen.dart';
-import 'package:cooing_front/pages/login/SignUpScreen.dart';
-import 'package:cooing_front/pages/login/SplashScreen.dart';
-import 'package:cooing_front/pages/WelcomeScreen.dart';
-import 'package:cooing_front/pages/question_page.dart';
+import 'package:cooing_front/pages/login/agree_screen.dart';
+import 'package:cooing_front/pages/login/class_screen.dart';
+import 'package:cooing_front/pages/login/login_screen.dart';
+import 'package:cooing_front/pages/login/school_screen.dart';
+import 'package:cooing_front/pages/login/sign_up_screen.dart';
+import 'package:cooing_front/pages/login/splash_screen.dart';
+import 'package:cooing_front/pages/login/welcome_screen.dart';
 import 'package:cooing_front/pages/tab_page.dart';
-import 'package:cooing_front/providers/FeedProvider.dart';
 import 'package:cooing_front/providers/UserProvider.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:cooing_front/pages/login/FeatureScreen.dart';
-import 'package:cooing_front/pages/login/MultiSelectscreen.dart';
+import 'package:cooing_front/pages/login/feature_screen.dart';
+import 'package:cooing_front/pages/login/multi_select_screen.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get_navigation/get_navigation.dart';
-import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
@@ -31,27 +24,14 @@ import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  print('Handling a background message ${message.messageId}');
-}
-
 late AndroidNotificationChannel channel;
 late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
-// 인증서 유효성 무시
-class NoCheckCertificateHttpOverrides extends HttpOverrides {
-  @override
-  HttpClient createHttpClient(SecurityContext? context) {
-    return super.createHttpClient(context)
-      ..badCertificateCallback =
-          (X509Certificate cert, String host, int port) => true;
-  }
-}
-
 void main() async {
-  HttpOverrides.global = NoCheckCertificateHttpOverrides();
+  // 카카오 SDK 초기화
   kakao.KakaoSdk.init(nativeAppKey: '010e5977ad5bf0cfbc9ab47ebfaa14a2');
   WidgetsFlutterBinding.ensureInitialized();
+  // 파이어베이스 초기화
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
@@ -96,21 +76,10 @@ void main() async {
     InAppPurchaseAndroidPlatformAddition.enablePendingPurchases();
   }
 
-  // DynamicLink().setup("").then((value) {
-  //   print("Main ::::::::::: DynamicLink() ");
-  //   if (value) {
-  //     print(value);
-  //     print("dynamic link 로 접속");
-  //   } else {
-  //     print("dynamic link 로 접속하지 않음 ");
-  //   }
-  // });
-
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => UserDataProvider()),
-        // ChangeNotifierProvider(create: (_) => SchoolFeedProvider(), lazy: false),
       ],
       child: MyApp(),
     ),
@@ -121,17 +90,12 @@ class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
 
   @override
-  _MyAppState createState() => _MyAppState();
+  State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
   @override
   void initState() {
-    print('sss');
-    // var token = await FirebaseMessaging.instance.getToken();
-
-    // print("token : ${token ?? 'token NULL!'}");
-
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       RemoteNotification? notification = message.notification;
       AndroidNotification? android = message.notification?.android;
@@ -164,6 +128,7 @@ class _MyAppState extends State<MyApp> {
   static FirebaseAnalyticsObserver observer =
       FirebaseAnalyticsObserver(analytics: analytics);
 
+  @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
         designSize: const Size(375, 844),
@@ -175,20 +140,21 @@ class _MyAppState extends State<MyApp> {
             routes: {
               SplashScreen.routeName: (context) => SplashScreen(),
               'home': (context) => const LoginScreen(),
-              'token': (context) => const TokenLoginScreen(),
               'signUp': (context) => const SignUpScreen(),
               'school': (context) => const SchoolScreen(),
               'class': (context) => const ClassScreen(),
               'feature': (context) => const FeatureScreen(),
-              'select': (context) => const MultiSelectscreen(),
+              'select': (context) => const MultiSelectScreen(),
               'agree': (context) => const AgreeScreen(),
               'welcome': (context) => const WelcomeScreen(),
               'tab': (context) => const TabPage(),
-              // 'hint': (context) => const HintScreen(),
-              // 'candy': (context) => const CandyScreen(),
               '_working': (context) => const TabPage(),
             },
           );
         });
   }
+}
+
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  print('Handling a background message ${message.messageId}');
 }

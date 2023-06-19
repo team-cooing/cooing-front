@@ -3,7 +3,7 @@ import 'package:cooing_front/model/response/question.dart';
 import 'package:cooing_front/model/response/user.dart';
 import 'package:cooing_front/pages/setting_page.dart';
 import 'package:cooing_front/pages/feed_page.dart';
-import 'package:cooing_front/pages/login/LoginScreen.dart';
+import 'package:cooing_front/pages/login/login_screen.dart';
 import 'package:cooing_front/pages/message_page.dart';
 import 'package:cooing_front/providers/UserProvider.dart';
 import 'package:cooing_front/widgets/loading_view.dart';
