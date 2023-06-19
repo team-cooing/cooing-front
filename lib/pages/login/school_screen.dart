@@ -1,3 +1,8 @@
+// 2023.06.19 MON Midas: ✅
+// 코드 효율성 점검: ✅
+// 예외처리: ✅
+// 중복 서버 송수신 방지: ✅
+
 import 'package:cooing_front/model/response/school.dart';
 import 'package:cooing_front/model/response/user.dart';
 import 'package:cooing_front/widgets/loading_view.dart';
@@ -17,7 +22,7 @@ class _SchoolScreenState extends State<SchoolScreen> {
   List<School> schools = [];
   bool isLoading = true;
   bool empty = false;
-  bool button = true;
+  bool button = false;
   bool disableButton = true;
   String searchSchool = '';
   String beforeSearch = '';
@@ -119,7 +124,7 @@ class _SchoolScreenState extends State<SchoolScreen> {
                                     style: ElevatedButton.styleFrom(
                                         backgroundColor:
                                             Color.fromARGB(255, 151, 84, 251),
-                                        disabledForegroundColor: Color.fromRGBO(151, 84, 251, 0.2).withOpacity(0.38), disabledBackgroundColor: Color.fromRGBO(151, 84, 251, 0.2).withOpacity(0.12)),
+                                        disabledForegroundColor: Colors.white, disabledBackgroundColor: Color.fromRGBO(151, 84, 251, 0.2).withOpacity(0.2)),
                                     onPressed:
                                         disableButton ? clickSearchButton : null,
                                     child: Text('검색',

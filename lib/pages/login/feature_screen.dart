@@ -1,3 +1,8 @@
+// 2023.06.19 MON Midas: ✅
+// 코드 효율성 점검: ✅
+// 예외처리: ✅
+// 중복 서버 송수신 방지: ✅
+
 import 'package:cooing_front/model/response/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -36,9 +41,7 @@ class _FeatureScreenState extends State<FeatureScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // final node1 = FocusNode();
     final args = ModalRoute.of(context)!.settings.arguments as User;
-    print(args);
 
     return WillPopScope(
         onWillPop: () async {
@@ -331,84 +334,82 @@ class _FeatureScreenState extends State<FeatureScreen> {
                                                 )),
                                           ),
                                         ),
-                                        Container(
-                                          child: SizedBox(
-                                            height: 60.h,
-                                            child: Container(
-                                                padding: EdgeInsets.zero,
-                                                decoration: BoxDecoration(
-                                                  color: Color.fromRGBO(
-                                                      243, 243, 243, 1),
-                                                  borderRadius:
-                                                      BorderRadius.all(
-                                                          Radius.circular(10)),
-                                                ),
-                                                child: ToggleButtons(
-                                                  color: Color.fromRGBO(
-                                                      51, 61, 75, 0.4),
-                                                  selectedColor: Color.fromARGB(
-                                                      255, 151, 84, 251),
-                                                  fillColor: Color.fromRGBO(
-                                                      151, 84, 251, 0.4),
-                                                  disabledColor: Color.fromRGBO(
-                                                      243, 243, 243, 1),
-                                                  borderRadius:
-                                                      BorderRadius.all(
-                                                          Radius.circular(10)),
-                                                  borderColor:
-                                                      Colors.transparent,
-                                                  selectedBorderColor:
-                                                      Colors.transparent,
-                                                  isSelected: _mbti4,
-                                                  onPressed: (int index) {
-                                                    setState(() {
-                                                      // The button that is tapped is set to true, and the others to false.
-                                                      for (int i = 0;
-                                                          i < _mbti4.length;
-                                                          i++) {
-                                                        _mbti4[i] = i == index;
-                                                      }
-                                                      _button[3] = true;
-                                                    });
-                                                  },
-                                                  children: <Widget>[
-                                                    Container(
-                                                      alignment:
-                                                          Alignment.center,
-                                                      width: (MediaQuery.of(
-                                                                      context)
-                                                                  .size
-                                                                  .width -
-                                                              43) /
-                                                          2,
-                                                      child: Text('J',
-                                                          style: TextStyle(
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            fontSize: 20.sp,
-                                                            // color:
-                                                            //     Color.fromRGBO(51, 61, 75, 0.4)
-                                                          )),
-                                                    ),
-                                                    Container(
-                                                      alignment:
-                                                          Alignment.center,
-                                                      width: (MediaQuery.of(
-                                                                      context)
-                                                                  .size
-                                                                  .width -
-                                                              43) /
-                                                          2,
-                                                      child: Text('P',
-                                                          style: TextStyle(
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            fontSize: 20.sp,
-                                                          )),
-                                                    ),
-                                                  ],
-                                                )),
-                                          ),
+                                        SizedBox(
+                                          height: 60.h,
+                                          child: Container(
+                                              padding: EdgeInsets.zero,
+                                              decoration: BoxDecoration(
+                                                color: Color.fromRGBO(
+                                                    243, 243, 243, 1),
+                                                borderRadius:
+                                                    BorderRadius.all(
+                                                        Radius.circular(10)),
+                                              ),
+                                              child: ToggleButtons(
+                                                color: Color.fromRGBO(
+                                                    51, 61, 75, 0.4),
+                                                selectedColor: Color.fromARGB(
+                                                    255, 151, 84, 251),
+                                                fillColor: Color.fromRGBO(
+                                                    151, 84, 251, 0.4),
+                                                disabledColor: Color.fromRGBO(
+                                                    243, 243, 243, 1),
+                                                borderRadius:
+                                                    BorderRadius.all(
+                                                        Radius.circular(10)),
+                                                borderColor:
+                                                    Colors.transparent,
+                                                selectedBorderColor:
+                                                    Colors.transparent,
+                                                isSelected: _mbti4,
+                                                onPressed: (int index) {
+                                                  setState(() {
+                                                    // The button that is tapped is set to true, and the others to false.
+                                                    for (int i = 0;
+                                                        i < _mbti4.length;
+                                                        i++) {
+                                                      _mbti4[i] = i == index;
+                                                    }
+                                                    _button[3] = true;
+                                                  });
+                                                },
+                                                children: <Widget>[
+                                                  Container(
+                                                    alignment:
+                                                        Alignment.center,
+                                                    width: (MediaQuery.of(
+                                                                    context)
+                                                                .size
+                                                                .width -
+                                                            43) /
+                                                        2,
+                                                    child: Text('J',
+                                                        style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          fontSize: 20.sp,
+                                                          // color:
+                                                          //     Color.fromRGBO(51, 61, 75, 0.4)
+                                                        )),
+                                                  ),
+                                                  Container(
+                                                    alignment:
+                                                        Alignment.center,
+                                                    width: (MediaQuery.of(
+                                                                    context)
+                                                                .size
+                                                                .width -
+                                                            43) /
+                                                        2,
+                                                    child: Text('P',
+                                                        style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          fontSize: 20.sp,
+                                                        )),
+                                                  ),
+                                                ],
+                                              )),
                                         ),
                                       ]),
                                     ],
@@ -469,7 +470,6 @@ class _FeatureScreenState extends State<FeatureScreen> {
                                                     _eyes[i] = i == index;
                                                   }
                                                   eyes = index;
-                                                  print(eyes);
                                                   title = 1;
                                                   visibleMbti = true;
                                                 });
@@ -550,7 +550,6 @@ class _FeatureScreenState extends State<FeatureScreen> {
                                       }
                                       gender = index;
 
-                                      print(gender);
                                       title = 2;
                                       visibleEyes = true;
                                     });
@@ -625,40 +624,41 @@ class _FeatureScreenState extends State<FeatureScreen> {
                             } else {
                               _mbti.add('P');
                             }
+                            User newUser = User(
+                              uid: args.uid,
+                              name: args.name,
+                              profileImage: args.profileImage,
+                              gender: gender,
+                              number: args.number,
+                              age: args.age,
+                              birthday: args.birthday,
+                              school: args.school,
+                              schoolCode: args.schoolCode,
+                              schoolOrg: args.schoolOrg,
+                              grade: args.grade,
+                              group: args.group,
+                              eyes: eyes,
+                              mbti: _mbti.join(''),
+                              hobby: args.hobby,
+                              style: args.style,
+                              isSubscribe: args.isSubscribe,
+                              candyCount: args.candyCount,
+                              recentDailyBonusReceiveDate:
+                              args.recentDailyBonusReceiveDate,
+                              recentQuestionBonusReceiveDate:
+                              args.recentQuestionBonusReceiveDate,
+                              questionInfos: args.questionInfos,
+                              answeredQuestions: args.answeredQuestions,
+                              currentQuestion: args.currentQuestion,
+                              serviceNeedsAgreement:
+                              args.serviceNeedsAgreement,
+                              privacyNeedsAgreement:
+                              args.privacyNeedsAgreement,
+                            );
                             Navigator.pushNamed(
                               context,
                               'select',
-                              arguments: User(
-                                uid: args.uid,
-                                name: args.name,
-                                profileImage: args.profileImage,
-                                gender: gender,
-                                number: args.number,
-                                age: args.age,
-                                birthday: args.birthday,
-                                school: args.school,
-                                schoolCode: args.schoolCode,
-                                schoolOrg: args.schoolOrg,
-                                grade: args.grade,
-                                group: args.group,
-                                eyes: eyes,
-                                mbti: _mbti.join(''),
-                                hobby: args.hobby,
-                                style: args.style,
-                                isSubscribe: args.isSubscribe,
-                                candyCount: args.candyCount,
-                                recentDailyBonusReceiveDate:
-                                    args.recentDailyBonusReceiveDate,
-                                recentQuestionBonusReceiveDate:
-                                    args.recentQuestionBonusReceiveDate,
-                                questionInfos: args.questionInfos,
-                                answeredQuestions: args.answeredQuestions,
-                                currentQuestion: args.currentQuestion,
-                                serviceNeedsAgreement:
-                                    args.serviceNeedsAgreement,
-                                privacyNeedsAgreement:
-                                    args.privacyNeedsAgreement,
-                              ),
+                              arguments: newUser
                             );
                           }),
                     ),

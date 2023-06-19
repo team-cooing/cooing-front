@@ -9,6 +9,9 @@ class SchoolsProviders {
     String csvData = await rootBundle.loadString('assets/data/school_data.csv');
     List<List<dynamic>> csvTable = CsvToListConverter().convert(csvData, eol: '\n');
     for (var csvRow in csvTable) {
+      if(csvRow == csvTable[0]){
+        continue;
+      }
       School school = School(
           id: csvRow[0].toString(),
           name: csvRow[1].toString(),

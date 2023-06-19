@@ -1,22 +1,25 @@
+// 2023.06.19 MON Midas: ✅
+// 코드 효율성 점검: ✅
+// 예외처리: ✅
+// 중복 서버 송수신 방지: ✅
+
 import 'package:cooing_front/model/response/user.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:flutter/material.dart';
 
-class MultiSelectscreen extends StatefulWidget {
-  const MultiSelectscreen({super.key});
+class MultiSelectScreen extends StatefulWidget {
+  const MultiSelectScreen({super.key});
   @override
-  State<MultiSelectscreen> createState() => _MultiSelectscreenState();
+  State<MultiSelectScreen> createState() => _MultiSelectScreenState();
 }
 
-class _MultiSelectscreenState extends State<MultiSelectscreen> {
-  final _authentication = firebase.FirebaseAuth.instance;
-  List<String> _styleList = [];
-  List<Style> style = new List.empty(growable: true);
-  List<Hobby> hobby = new List.empty(growable: true);
+class _MultiSelectScreenState extends State<MultiSelectScreen> {
+  final List<String> _styleList = [];
+  List<Style> style = List.empty(growable: true);
+  List<Hobby> hobby = List.empty(growable: true);
 
-  List<Style> femaleStyle = new List.empty(growable: true);
-  List<Style> maleStyle = new List.empty(growable: true);
+  List<Style> femaleStyle = List.empty(growable: true);
+  List<Style> maleStyle = List.empty(growable: true);
 
   final List<String> _textList = [
     '좋아하는 취미는?',
@@ -32,12 +35,8 @@ class _MultiSelectscreenState extends State<MultiSelectscreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    // _userDataProvider = UserDataProvider();
-    // _loadData();
 
-    // if (_gender == 0) {
     maleStyle.add(Style('귀여운', false));
     maleStyle.add(Style('잘생긴', false));
     maleStyle.add(Style('어른스러운', false));
@@ -50,8 +49,7 @@ class _MultiSelectscreenState extends State<MultiSelectscreen> {
     maleStyle.add(Style("매너 있는", false));
     maleStyle.add(Style("순진한", false));
     maleStyle.add(Style("호감형인", false));
-    // }
-    // if (_gender == 1) {
+
     femaleStyle.add(Style('귀여운', false));
     femaleStyle.add(Style('예쁜', false));
     femaleStyle.add(Style('해맑은', false));
@@ -64,7 +62,6 @@ class _MultiSelectscreenState extends State<MultiSelectscreen> {
     femaleStyle.add(Style("마음 여린", false));
     femaleStyle.add(Style("순진한", false));
     femaleStyle.add(Style("호감형인", false));
-    // }
 
     hobby.add(Hobby('영화', '\u{1F37F}', false));
     hobby.add(Hobby('운동', '\u{26BD}', false));
@@ -229,7 +226,6 @@ class _MultiSelectscreenState extends State<MultiSelectscreen> {
                                   _hobby = hobby[i].title;
                                 }
                               }
-                              print(_styleList);
 
                               Navigator.pushNamed(
                                 context,
@@ -314,6 +310,7 @@ class _MultiSelectscreenState extends State<MultiSelectscreen> {
                                       color: Color.fromRGBO(51, 61, 75, 1),
                                       fontSize: 28.sp),
                                 ),
+                                SizedBox(height: 10.h,),
                                 Text(
                                   hobby[k].title,
                                   style: TextStyle(
@@ -356,6 +353,7 @@ class _MultiSelectscreenState extends State<MultiSelectscreen> {
                                       color: Color.fromRGBO(51, 61, 75, 1),
                                       fontSize: 28.sp),
                                 ),
+                                SizedBox(height: 10.h,),
                                 Text(
                                   hobby[k].title,
                                   style: TextStyle(

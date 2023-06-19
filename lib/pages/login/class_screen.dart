@@ -1,3 +1,8 @@
+// 2023.06.19 MON Midas: ✅
+// 코드 효율성 점검: ✅
+// 예외처리: ✅
+// 중복 서버 송수신 방지: ✅
+
 import 'package:cooing_front/model/response/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,6 +16,8 @@ class ClassScreen extends StatefulWidget {
 }
 
 class _ClassScreenState extends State<ClassScreen> {
+  final formKey = GlobalKey<FormState>();
+
   final List<String> _textList = ['몇 학년인가요?', '몇 반인가요?'];
 
   final FocusNode _gradeFocus = FocusNode();
@@ -50,6 +57,7 @@ class _ClassScreenState extends State<ClassScreen> {
                   padding:
                       const EdgeInsets.only(left: 20, right: 20, bottom: 20),
                   child: Form(
+                    key: formKey,
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -151,41 +159,42 @@ class _ClassScreenState extends State<ClassScreen> {
                                               fontWeight: FontWeight.bold,
                                               fontSize: 15.sp)),
                                       onPressed: () {
+                                        User newUser = User(
+                                          uid: args.uid,
+                                          name: args.name,
+                                          profileImage: args.profileImage,
+                                          gender: args.gender,
+                                          number: args.number,
+                                          age: args.age,
+                                          birthday: args.birthday,
+                                          school: args.school,
+                                          schoolCode: args.schoolCode,
+                                          schoolOrg: args.schoolOrg,
+                                          grade: int.parse(_grade),
+                                          group: int.parse(_group),
+                                          eyes: args.eyes,
+                                          mbti: args.mbti,
+                                          hobby: args.hobby,
+                                          style: args.style,
+                                          isSubscribe: args.isSubscribe,
+                                          candyCount: args.candyCount,
+                                          recentDailyBonusReceiveDate: args
+                                              .recentDailyBonusReceiveDate,
+                                          recentQuestionBonusReceiveDate: args
+                                              .recentQuestionBonusReceiveDate,
+                                          questionInfos: args.questionInfos,
+                                          answeredQuestions:
+                                          args.answeredQuestions,
+                                          currentQuestion: args.currentQuestion,
+                                          serviceNeedsAgreement:
+                                          args.serviceNeedsAgreement,
+                                          privacyNeedsAgreement:
+                                          args.privacyNeedsAgreement,
+                                        );
                                         Navigator.pushNamed(
                                           context,
                                           'feature',
-                                          arguments: User(
-                                            uid: args.uid,
-                                            name: args.name,
-                                            profileImage: args.profileImage,
-                                            gender: args.gender,
-                                            number: args.number,
-                                            age: args.age,
-                                            birthday: args.birthday,
-                                            school: args.school,
-                                            schoolCode: args.schoolCode,
-                                            schoolOrg: args.schoolOrg,
-                                            grade: int.parse(_grade),
-                                            group: int.parse(_group),
-                                            eyes: args.eyes,
-                                            mbti: args.mbti,
-                                            hobby: args.hobby,
-                                            style: args.style,
-                                            isSubscribe: args.isSubscribe,
-                                            candyCount: args.candyCount,
-                                            recentDailyBonusReceiveDate: args
-                                                .recentDailyBonusReceiveDate,
-                                            recentQuestionBonusReceiveDate: args
-                                                .recentQuestionBonusReceiveDate,
-                                            questionInfos: args.questionInfos,
-                                            answeredQuestions:
-                                                args.answeredQuestions,
-                                            currentQuestion: args.currentQuestion,
-                                            serviceNeedsAgreement:
-                                                args.serviceNeedsAgreement,
-                                            privacyNeedsAgreement:
-                                                args.privacyNeedsAgreement,
-                                          ),
+                                          arguments: newUser
                                         );
                                       })))
                         ]),
