@@ -1,3 +1,8 @@
+// 2023.06.19 MON Midas: ✅
+// 코드 효율성 점검: ✅
+// 예외처리: ✅
+// 중복 서버 송수신 방지: ✅
+
 import 'package:cooing_front/model/config/palette.dart';
 import 'package:cooing_front/model/data/question_list.dart';
 import 'package:cooing_front/model/response/answer.dart';
@@ -28,6 +33,8 @@ class MessagePage extends StatefulWidget {
 
 class _MessagePageState extends State<MessagePage> {
   late BuildContext pageContext;
+  bool isLoading = false;
+  bool isMessageLoading = false;
   Map<String, List<Answer>> categorizedAnswers = {};
 
   @override
@@ -235,27 +242,39 @@ class _MessagePageState extends State<MessagePage> {
   Widget answerItem(int index) {
     return GestureDetector(
         onTap: () async {
-          if (!(widget.cache!.contains(widget.answers[index]!.id))) {
-            widget.cache!.add(widget.answers[index]!.id);
+          if(!isLoading){
+            setState(() {
+              isLoading = true;
+            });
 
-            final prefs = await SharedPreferences.getInstance();
+            try{
+              if (!(widget.cache!.contains(widget.answers[index]!.id))) {
+                widget.cache!.add(widget.answers[index]!.id);
 
-            // 캐시 값을 업데이트하고 싶은 경우
-            await prefs.setStringList('AnswerId', widget.cache!.cast<String>());
+                final prefs = await SharedPreferences.getInstance();
 
-            print(prefs);
-            // 다른 setXXX() 메서드를 사용하여 필요한 값들을 업데이트할 수 있습니다.
+                // 캐시 값을 업데이트하고 싶은 경우
+                await prefs.setStringList('AnswerId', widget.cache!.cast<String>());
 
-            setState(() {});
+                setState(() {});
+              }
+
+              if(!mounted) return;
+              await Navigator.of(context).push(MaterialPageRoute(
+                builder: (BuildContext context) => AnswerDetailPage(
+                  user: widget.user,
+                  answer: widget.answers[index]!,
+                  hint: widget.hint,
+                ),
+              ));
+            }catch(e){
+              print('알 수 없는 에러 - E: $e');
+            }
+
+            setState(() {
+              isLoading = false;
+            });
           }
-
-          await Navigator.of(context).push(MaterialPageRoute(
-            builder: (BuildContext context) => AnswerDetailPage(
-              user: widget.user,
-              answer: widget.answers[index]!,
-              hint: widget.hint,
-            ),
-          ));
         },
         child: Container(
           margin: EdgeInsets.only(
@@ -367,20 +386,30 @@ class _MessagePageState extends State<MessagePage> {
   }
 
   Future<void> _handleRefresh() async {
-    // Firebase Answers > Answers > Answer 5개 추가로 읽기
-    List<Answer?> newAnswers =
-        await Response.getAnswersWithLimit(10, widget.user.uid);
-    widget.answers.addAll(newAnswers);
+    if(!isMessageLoading){
+      setState(() {
+        isMessageLoading = true;
+      });
+      try{
+        List<Answer?> newAnswers =
+        await Response.getMessageWithLimit(10);
+        widget.answers.addAll(newAnswers);
 
-    if (newAnswers.isEmpty) {
-      await Future.delayed(Duration(seconds: 2));
-    }
-
-    setState(() {
-      if (newAnswers.isEmpty) {
-        showSnackBar(pageContext, '받은 답변을 모두 가져왔어요!');
+        if (newAnswers.isEmpty) {
+          await Future.delayed(Duration(seconds: 2));
+        }
+        setState(() {
+          if (newAnswers.isEmpty) {
+            showSnackBar(pageContext, '받은 답변을 모두 가져왔어요!');
+          }
+        });
+      }catch(e){
+        print('알 수 없는 에러 - E: $e');
       }
-    });
+      setState(() {
+        isMessageLoading = false;
+      });
+    }
   }
 
   void showSnackBar(BuildContext context, String message) {

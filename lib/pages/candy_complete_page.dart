@@ -1,7 +1,10 @@
+// 2023.06.20 TUE Midas: ✅
+// 코드 효율성 점검: ✅
+// 예외처리: ✅
+// 중복 서버 송수신 방지: ✅
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get.dart';
-import 'package:cooing_front/pages/tab_page.dart';
 
 class CandyCompleteScreen extends StatefulWidget {
   const CandyCompleteScreen({super.key});
@@ -75,7 +78,7 @@ class CandyCompleteScreenState extends State<CandyCompleteScreen> {
                         Navigator.of(context).pop();
                       },
                       style: OutlinedButton.styleFrom(
-                        fixedSize: Size.fromHeight(50),
+                        fixedSize: Size.fromHeight(60),
                         foregroundColor: Colors.white,
                         backgroundColor: const Color(0xff9754FB),
                         shape: RoundedRectangleBorder(

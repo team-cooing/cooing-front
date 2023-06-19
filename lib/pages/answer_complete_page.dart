@@ -1,18 +1,17 @@
-import 'package:cooing_front/pages/tab_page.dart';
+// 2023.06.20 TUE Midas: ✅
+// 코드 효율성 점검: ✅
+// 예외처리: ✅
+// 중복 서버 송수신 방지: ✅
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get.dart';
-// import 'package:firebase_analytics/firebase_analytics.dart';
-// import 'package:cooing_front/widgets/google_analytics_widget.dart';
 
 class AnswerCompleteScreen extends StatefulWidget {
   final String owner;
   final String uid;
-  final bool isFromLink;
   const AnswerCompleteScreen(
       {required this.owner,
       required this.uid,
-      required this.isFromLink,
       super.key});
 
   @override
@@ -22,14 +21,12 @@ class AnswerCompleteScreen extends StatefulWidget {
 class AnswerCompleteScreenState extends State<AnswerCompleteScreen> {
   late String owner;
   late String uid;
-  late bool isFromLink;
   @override
   void initState() {
     super.initState();
     print(widget.uid);
     owner = widget.owner;
     uid = widget.uid;
-    isFromLink = widget.isFromLink;
   }
 
   @override
@@ -97,15 +94,7 @@ class AnswerCompleteScreenState extends State<AnswerCompleteScreen> {
                 children: [
                   ElevatedButton(
                       onPressed: () {
-                        if (isFromLink) {
-                          Get.offAll(TabPage(), arguments: uid);
-                        } else {
-                          Navigator.of(context).pop();
-                          Navigator.of(context).pop(true);
-                        }
-
-                        // final FirebaseAnalytics analytics = FirebaseAnalytics.instance;
-                        // setCurrentScreen(analytics, 'answer_complete');
+                        Navigator.of(context).pop(true);
                       },
                       style: OutlinedButton.styleFrom(
                         fixedSize: Size.fromHeight(50),

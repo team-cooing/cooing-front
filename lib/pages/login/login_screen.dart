@@ -113,7 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       await FlutterSecureStorage().write(key: 'userPlatform', value: 'kakao');
       print('카카오톡 로그인 성공 👋');
-      Get.offAll(TabPage(), arguments: userCredential.user!.uid);
+      Get.offAll(TabPage(isLinkEntered: false,), arguments: userCredential.user!.uid);
     } on kakao.KakaoAuthException catch (e) {
       setState(() {
         isLoading = false;
@@ -254,7 +254,7 @@ class _LoginScreenState extends State<LoginScreen> {
           await FlutterSecureStorage()
               .write(key: "appleUserUid", value: firebaseUser.uid);
           print('애플 로그인 성공 👋');
-          Get.offAll(TabPage(), arguments: firebaseUser.uid);
+          Get.offAll(TabPage(isLinkEntered: false,), arguments: firebaseUser.uid);
         }
       }else{
         setState(() {

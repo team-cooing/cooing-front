@@ -1,26 +1,32 @@
-import 'dart:convert';
+// 2023.06.19 MON Midas: ❌
+// 코드 효율성 점검: ❌
+// 예외처리: ❌
+// 중복 서버 송수신 방지: ❌
 
+import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cooing_front/model/response/question.dart';
 import 'package:cooing_front/model/response/user.dart';
 import 'package:cooing_front/model/response/answer.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:get/get_rx/src/rx_types/rx_types.dart';
-import 'package:provider/provider.dart';
 
 class Response {
   static FirebaseFirestore db = FirebaseFirestore.instance;
-  static List<Question> _questions = [];
-  static List<Answer> _answers = [];
-  static List<dynamic> _hints = [];
+  static final List<Question> _questions = [];
+  static final List<Answer> _answers = [];
 
-  static int _nextQuestionIndex = 0;
-  static int _nextFeedContentStringIndex = 0;
+  static int _feedContentStringIndex = 1;
+  static int _feedCurrentPosition = 0;
+  static bool _feedContentStringIsEmpty = false;
 
-  static int _nextMsgIndex = 0;
-  static int _nextMsgContentStringIndex = 0;
+  static int _messageContentStringIndex = 1;
+  static int _messageCurrentPosition = 0;
+  static bool _messageContentStringIsEmpty = false;
+
+  static QuerySnapshot<Map<String, dynamic>>? feedQuerySnapshot;
+  static QuerySnapshot<Map<String, dynamic>>? messageQuerySnapshot;
 
   // user
+  // ✅
   static Future<void> createUser({required User newUser}) async {
     final docRef = db.collection("users").doc(newUser.uid);
     try {
@@ -30,6 +36,7 @@ class Response {
     }
   }
 
+  // ✅
   static Future<User?> readUser({required String userUid}) async {
     User? user;
     final docRef = db.collection("users").doc(userUid);
@@ -45,6 +52,7 @@ class Response {
     return user;
   }
 
+  // ✅
   static Future<void> updateUser({required User newUser}) async {
     final docRef = db.collection("users").doc(newUser.uid);
     try {
@@ -54,6 +62,7 @@ class Response {
     }
   }
 
+  // ✅
   static Future<void> deleteUser({required String userUid}) async {
     final docRef = db.collection("users").doc(userUid);
     try {
@@ -64,225 +73,149 @@ class Response {
   }
 
   // Question
-
-  static Future<Object?> readHint({required String ownerId}) async {
-    try {
-      Map<String, dynamic>? hints;
-      final docRef = await FirebaseFirestore.instance
-          .collection('openStatus')
-          .doc(ownerId)
-          .get();
-
-      if (docRef.exists) {
-        hints = {};
-
-        docRef.data()?.entries.toList().forEach((entry) {
-          hints![entry.key] = entry.value;
-        });
-
-        print(hints);
-      }
-
-      return hints;
-    } catch (e) {
-      print("[readHint] Error getting document: $e");
-      return [];
-    }
+  static Future initFeedContentString({required String schoolCode}) async{
+    feedQuerySnapshot = await db.collection('feeds').doc(schoolCode).collection('feed_strings')
+        .orderBy('time', descending: true).limit(1)
+        .get();
   }
 
-  static Future<bool> readQuestionInFeed({required String schoolCode}) async {
-    List<Question> newQuestions = [];
+  static Future readFeedContentString() async {
+    if(!_feedContentStringIsEmpty){
+      try{
+        // content_string_${index} 의 content 가져오기
+        List content = [];
 
-    final feedsSnapshot = await db
-        .collection("feeds")
-        .doc(schoolCode)
-        .collection('feed_strings')
-        .orderBy('time', descending: true)
-        .get();
+        if(feedQuerySnapshot!=null){
+          final docRef = feedQuerySnapshot!.docs.first.reference.collection('content_strings').doc('content_string_$_feedContentStringIndex');
 
-    if (feedsSnapshot.docs.isNotEmpty) {
-      final latestFeedDoc = feedsSnapshot.docs.first;
+          await docRef.get().then((DocumentSnapshot doc){
+            final data = doc.data() as Map<String, dynamic>;
+            content = data['content'];
+          });
 
-      final contentSnapshot =
-          await latestFeedDoc.reference.collection('content_strings').get();
+          for (var contentStr in content) {
+            final contentList = List<Map<String, dynamic>>.from(jsonDecode(contentStr));
 
-      if (contentSnapshot.docs.isNotEmpty) {
-        final contentDocs = contentSnapshot.docs;
-        print('contentDocs.length');
-        print(contentDocs.length);
-        // contentDocs.length
-        if (_nextFeedContentStringIndex < contentDocs.length) {
-          final latestContentDoc = contentDocs[_nextFeedContentStringIndex];
-          final contentData = latestContentDoc.data()['content'];
-
-          for (var data in contentData) {
-            final waht = List<Map<String, dynamic>>.from(jsonDecode(data));
-
-            for (var item in waht) {
+            for (var item in contentList) {
               Question question = Question.fromJson(item);
               _questions.add(question);
             }
           }
 
-          _nextFeedContentStringIndex += 1;
-          return true; // 다음 content_string이 존재함
-        } else {
-          print('No more content_strings to fetch');
+          _feedContentStringIndex += 1;
         }
-      } else {
-        print('content_strings collection is empty');
+      }catch(e){
+        print('[readFeedContentString] Error getting document: $e');
       }
-    } else {
-      print('feed_strings collection is empty');
+    }else{
+      print('더이상 데이터가 존재하지 않습니다');
     }
-
-    return false; // 다음 content_string이 존재하지 않음
   }
 
-  static Future<List<Question>> getQuestionsWithLimit(
-      int limit, schoolCode) async {
-    int startIndex = _nextQuestionIndex;
-    int endIndex = startIndex + limit;
+  static Future<List<Question>> getQuestionsWithLimit(int limit) async{
+    List<Question> result = [];
 
-    if (startIndex >= _questions.length) {
-      final a = await Response.readQuestionInFeed(schoolCode: schoolCode);
-      if (!a) {
-        return [];
+    int endPosition = 0;
+
+    // 만약, 남은 _question 10개 미만이라면
+    if(_feedCurrentPosition+limit>_questions.length){
+      await readFeedContentString();
+    }
+
+    if(_feedCurrentPosition+limit<=_questions.length){
+      // 만약, 남은 _question 10개 이상이라면
+      endPosition = _feedCurrentPosition+limit;
+    }else{
+      // 만약, 남은 _question 10개 미만이라면
+      endPosition = _questions.length;
+    }
+
+    if(_feedCurrentPosition==_questions.length){
+      _feedContentStringIsEmpty = true;
+      return [];
+    }else{
+      for(var i =_feedCurrentPosition; i<endPosition;i++){
+        result.add(_questions[i]);
       }
-    }
-    if (endIndex >= _questions.length) {
-      endIndex = _questions.length - 1;
-    }
 
-    _nextQuestionIndex = endIndex;
+      _feedCurrentPosition = endPosition;
 
-    return _questions.sublist(startIndex, endIndex);
+      return result;
+    }
   }
 
-  // static Future<List<Question?>> readQuestionsInFeedWithLimit(
-  //     {required String schoolCode, required int limit}) async {
-  //   List<Question?> questions = [];
-  //   try {
-  //     final middleQuery = db
-  //         .collection('schools')
-  //         .doc(schoolCode)
-  //         .collection('feed')
-  //         .orderBy('id', descending: true);
-  //     final finalQuery = lastQuestionId.isNotEmpty
-  //         ? middleQuery.startAfter([lastQuestionId]).limit(limit)
-  //         : middleQuery.limit(limit);
-  //     await finalQuery.get().then((documentSnapshots) {
-  //       lastQuestionId = documentSnapshots.docs.last.data()['id'] as String;
-
-  //       for (var i in documentSnapshots.docs) {
-  //         print('i.data');
-  //         print(i.data().runtimeType);
-  //         questions.add(Question.fromJson(i.data()));
-  //       }
-  //       // print(questions);
-  //     });
-  //   } catch (e) {
-  //     print("[readQuestionsInFeedWithLimit] Error getting document: $e");
-  //   }
-
-  //   return questions;
-  // }
-
-  static Future<bool> readAnswerInMessage({required String userId}) async {
-    // List<Answer?> _answers = [];
-
-    Answer? answer;
-    final msgsSnapshot = await db
-        .collection("messages")
-        .doc(userId)
-        .collection('message_strings')
-        .orderBy('time', descending: true)
-        .limit(1)
+  static Future initMessageContentString({required String uid}) async{
+    messageQuerySnapshot = await db.collection('messages').doc(uid).collection('message_strings')
+        .orderBy('time', descending: true).limit(1)
         .get();
+  }
 
-    if (msgsSnapshot.docs.isNotEmpty) {
-      final latestMsgDoc = msgsSnapshot.docs.first;
+  static Future readMessageContentString() async {
+    if(!_messageContentStringIsEmpty){
+      try{
+        // content_string_${index} 의 content 가져오기
+        List content = [];
 
-      final contentSnapshot =
-          await latestMsgDoc.reference.collection("content_strings").get();
+        if(messageQuerySnapshot!=null){
+          final docRef = messageQuerySnapshot!.docs.first.reference.collection('content_strings').doc('content_string_$_messageContentStringIndex');
 
-      if (contentSnapshot.docs.isNotEmpty) {
-        final contentDocs = contentSnapshot.docs;
+          await docRef.get().then((DocumentSnapshot doc){
+            final data = doc.data() as Map<String, dynamic>;
+            content = data['content'];
+          });
 
-        if (_nextMsgContentStringIndex < contentDocs.length) {
-          final latestContentDoc = contentDocs[_nextMsgContentStringIndex];
-          final contentData = latestContentDoc.data()['content'];
+          for (var contentStr in content) {
+            final contentList = List<Map<String, dynamic>>.from(jsonDecode(contentStr));
 
-          for (var data in contentData) {
-            final waht = List<Map<String, dynamic>>.from(jsonDecode(data));
-
-            for (var item in waht) {
+            for (var item in contentList) {
               Answer answer = Answer.fromJson(item);
               _answers.add(answer);
             }
           }
-          _nextMsgContentStringIndex += 1;
-          return true;
-        } else {
-          print('No more msg content_strings to fetch');
+
+          _messageContentStringIndex += 1;
         }
-      } else {
-        print('msg content_strings collection is empty');
+      }catch(e){
+        print('[readMessageContentString] Error getting document: $e');
       }
-    } else {
-      print('msg_strings collection is empty');
+    }else{
+      print('더이상 데이터가 존재하지 않습니다');
     }
-
-    return false;
   }
 
-  static Future<List<Answer>> getAnswersWithLimit(int limit, userId) async {
-    int startIndex = _nextMsgIndex;
-    int endIndex = startIndex + limit;
+  static Future<List<Answer>> getMessageWithLimit(int limit) async{
+    List<Answer> result = [];
 
-    if (startIndex >= _answers.length) {
-      final a = await Response.readAnswerInMessage(userId: userId);
-      if (!a) {
-        return [];
+    int endPosition = 0;
+
+    // 만약, 남은 _answers 10개 미만이라면
+    if(_messageCurrentPosition+limit>_answers.length){
+      await readMessageContentString();
+    }
+
+    if(_messageCurrentPosition+limit<=_answers.length){
+      // 만약, 남은 _answers 10개 이상이라면
+      endPosition = _messageCurrentPosition+limit;
+    }else{
+      // 만약, 남은 _answers 10개 미만이라면
+      endPosition = _answers.length;
+    }
+
+    if(_messageCurrentPosition==_answers.length){
+      _messageContentStringIsEmpty = true;
+      return [];
+    }else{
+      for(var i =_messageCurrentPosition; i<endPosition;i++){
+        result.add(_answers[i]);
       }
-    }
-    if (endIndex >= _answers.length) {
-      endIndex = _answers.length - 1;
-    }
 
-    _nextMsgIndex = endIndex;
-    return _answers.sublist(startIndex, endIndex);
+      _messageCurrentPosition = endPosition;
+
+      return result;
+    }
   }
 
-  // static Future<List<Answer?>> readAnswersWithLimit(
-  //     {required String userId, required int limit}) async {
-  //   List<Answer?> answers = [];
-
-  //   try {
-  //     final middleQuery = db
-  //         .collection('answers')
-  //         .doc(userId)
-  //         .collection('answers')
-  //         .orderBy('time', descending: true);
-  //     final finalQuery = lastAnswerId.isNotEmpty
-  //         ? middleQuery.startAfter([lastAnswerId]).limit(limit)
-  //         : middleQuery.limit(limit);
-  //     await finalQuery.get().then((documentSnapshots) {
-  //       lastAnswerId = documentSnapshots.docs.last.data()['time'] as String;
-
-  //       for (var i in documentSnapshots.docs) {
-  //         answers.add(Answer.fromJson(i.data()));
-  //         print(i.data());
-  //       }
-  //     });
-  //   } catch (e) {
-  //     print("[readAnswersWithLimit] Error getting document: $e");
-  //   }
-
-  //   return answers;
-  // }
-
-  static Future<void> updateHint(
+  static Future<void> createHint(
       {required Map<String, dynamic> newHint, required ownerId}) async {
     final docRef = db.collection('openStatus').doc(ownerId);
 
@@ -293,16 +226,52 @@ class Response {
     }
   }
 
-  // static Future<void> updateAnswer({required Answer newAnswer}) async {
-  //   final docRef = db
-  //       .collection("answers")
-  //       .doc(newAnswer.questionOwner)
-  //       .collection('answers')
-  //       .doc(newAnswer.id);
-  //   try {
-  //     await docRef.update(newAnswer.toJson());
-  //   } catch (e) {
-  //     print("[updateAnswer] Error getting document: $e");
-  //   }
-  // }
+  static Future<Map<String, dynamic>> readHint({required String ownerId}) async {
+    try {
+      Map<String, dynamic> hints = {};
+
+      final docRef = FirebaseFirestore.instance
+          .collection('openStatus')
+          .doc(ownerId);
+
+      await docRef.get().then((DocumentSnapshot doc){
+        final data = doc.data() as Map<String, dynamic>;
+        for (var entry in data['is_hint_opends'].entries){
+          hints[entry.key] = entry.value;
+        }
+      });
+
+      return hints;
+    } catch (e) {
+      print("[readHint] Error getting document: $e");
+      return {};
+    }
+  }
+
+  static Future<void> updateHint(
+      {required Map<String, dynamic> newHint, required ownerId}) async {
+    final docRef = db.collection('openStatus').doc(ownerId);
+
+    try {
+      await docRef.update(newHint);
+    } catch (e) {
+      print("[updateAnswer] Error getting document: $e");
+    }
+  }
+
+  static void initializeStaticVariables() {
+    _questions.clear();
+    _answers.clear();
+
+    _feedContentStringIndex = 1;
+    _feedCurrentPosition = 0;
+    _feedContentStringIsEmpty = false;
+
+    _messageContentStringIndex = 1;
+    _messageCurrentPosition = 0;
+    _messageContentStringIsEmpty = false;
+
+    feedQuerySnapshot = null;
+    messageQuerySnapshot = null;
+  }
 }

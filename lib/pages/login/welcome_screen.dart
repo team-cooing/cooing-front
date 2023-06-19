@@ -44,7 +44,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         Future.delayed(Duration(seconds: 2)).then((value){
 
           if (isSuccess) {
-            Get.offAll(TabPage(), arguments: newUserUid);
+            Get.offAll(TabPage(isLinkEntered: false,), arguments: newUserUid);
           } else {
             Get.offAll(LoginScreen(), arguments: newUserUid);
           }
@@ -117,6 +117,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           newUserUid = uid;
 
           await r.Response.createUser(newUser: args);
+          await r.Response.createHint(newHint: {'is_hint_opends': {}}, ownerId: args.uid);
 
           // Store user Id (자동로그인을 위한 인증된 user 정보 저장)
           await FlutterSecureStorage()
@@ -151,6 +152,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         newUserUid = uid;
 
         await r.Response.createUser(newUser: args);
+        await r.Response.createHint(newHint: {'is_hint_opends': {}}, ownerId: args.uid);
 
         print('카카오 회원가입 성공 👋');
         isSuccess = true;

@@ -1,11 +1,16 @@
-import 'dart:math';
+// 2023.06.19 MON Midas: ✅
+// 코드 효율성 점검: ✅
+// 예외처리: ✅
+// 중복 서버 송수신 방지: ✅
 
+import 'dart:math';
 import 'package:cooing_front/model/config/palette.dart';
 import 'package:cooing_front/model/response/question.dart';
 import 'package:cooing_front/model/response/response.dart';
 import 'package:cooing_front/model/response/user.dart';
 import 'package:cooing_front/pages/answer_page.dart';
 import 'package:cooing_front/pages/lottery_complete_page.dart';
+import 'package:cooing_front/providers/UserProvider.dart';
 import 'package:custom_refresh_indicator/custom_refresh_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -14,11 +19,13 @@ class FeedPage extends StatefulWidget {
   final User user;
   final List<Question?> feed;
   final String bonusQuestionId;
+  final Map<String, dynamic> hints;
 
   const FeedPage(
       {required this.user,
       required this.feed,
       required this.bonusQuestionId,
+        required this.hints,
       super.key});
 
   @override
@@ -26,13 +33,15 @@ class FeedPage extends StatefulWidget {
 }
 
 class _FeedPageState extends State<FeedPage> {
+  bool isLoading = false;
+  String selectedQuestionId = '';
+  bool isLotteryButtonClicked = false;
+  bool isFeedLoading = false;
   late BuildContext pageContext;
 
   @override
   void initState() {
     super.initState();
-
-    // Response.readQuestionInFeed(schoolCode: '7530128');
 
     // 만약, 유저 데이터에 recentDailyBonusReceiveDate가 없다면
     if (widget.user.recentDailyBonusReceiveDate.isEmpty) {
@@ -229,6 +238,7 @@ class _FeedPageState extends State<FeedPage> {
                                 ),
                               ]),
                         ),
+                        SizedBox(width: 10.w,)
                       ],
                     )
                   ],
@@ -246,22 +256,36 @@ class _FeedPageState extends State<FeedPage> {
     return GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: () async {
-          int candyNum = Random().nextInt(3) + 1;
+          if (!isLoading) {
+            setState(() {
+              isLotteryButtonClicked = true;
+              isLoading = true;
+            });
+            try {
+              int candyNum = Random().nextInt(3) + 1;
 
-          // 복권 페이지로 이동
-          await Navigator.of(context).push(MaterialPageRoute(
-              builder: (BuildContext context) => CandyCompletePage(
-                    num: candyNum,
-                  )));
+              // 복권 페이지로 이동
+              await Navigator.of(context).push(MaterialPageRoute(
+                  builder: (BuildContext context) => CandyCompletePage(
+                        num: candyNum,
+                      )));
 
-          // User 반영
-          widget.user.recentDailyBonusReceiveDate = DateTime.now().toString();
-          widget.user.candyCount += candyNum;
+              // User 반영
+              widget.user.recentDailyBonusReceiveDate =
+                  DateTime.now().toString();
+              widget.user.candyCount += candyNum;
+              await UserDataProvider().updateRecentDailyBonusReceiveDate();
 
-          // Firebase > Users > User 업데이트
-          await Response.updateUser(newUser: widget.user);
-
-          setState(() {});
+              // Firebase > Users > User 업데이트
+              await Response.updateUser(newUser: widget.user);
+            } catch (e) {
+              print('알 수 없는 에러 - E: $e');
+            }
+            setState(() {
+              isLotteryButtonClicked = false;
+              isLoading = false;
+            });
+          }
         },
         child: Container(
           width: 70.w,
@@ -275,7 +299,14 @@ class _FeedPageState extends State<FeedPage> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0)),
               ),
-              child: Text('받기',
+              child: isLoading && isLotteryButtonClicked ? SizedBox(
+                width: 15.w,
+                height: 15.h,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2,
+                ),
+              ) : Text('받기',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 11.sp,
@@ -296,30 +327,44 @@ class _FeedPageState extends State<FeedPage> {
     return GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: () async {
-          if (!widget.user.answeredQuestions.contains(question.id)) {
-            // 만약, 보너스를 받을 수 있다면
-            bool? isCompleted =
-                await Navigator.of(context).push(MaterialPageRoute(
-                    builder: (BuildContext context) => AnswerPage(
-                          user: widget.user,
-                          uid: widget.user.uid,
-                          question: question,
-                          isFromLink: false,
-                        )));
+          if (!isLoading) {
+            if (!widget.user.answeredQuestions.contains(question.id)) {
+              setState(() {
+                selectedQuestionId = question.id;
+                isLoading = true;
+              });
+              try {
+                // 만약, 보너스를 받을 수 있다면
+                bool? isCompleted =
+                    await Navigator.of(context).push(MaterialPageRoute(
+                        builder: (BuildContext context) => AnswerPage(
+                              user: widget.user,
+                              uid: widget.user.uid,
+                              question: question,
+                          hints: widget.hints,
+                            )));
 
-            if (isCompleted != null) {
-              // 만약, 답변이 완료되었다면
-              if (isCompleted) {
-                widget.user.answeredQuestions.add(question.id);
-                if (canReceiveBonus) {
-                  widget.user.recentQuestionBonusReceiveDate =
-                      DateTime.now().toString();
-                  widget.user.candyCount += 3;
+                if (isCompleted != null) {
+                  // 만약, 답변이 완료되었다면
+                  if (isCompleted) {
+                    if (canReceiveBonus) {
+                      widget.user.recentQuestionBonusReceiveDate =
+                          DateTime.now().toString();
+                      await UserDataProvider()
+                          .updateRecentQuestionBonusReceiveDate();
+                      widget.user.candyCount += 3;
+                    }
+
+                    await Response.updateUser(newUser: widget.user);
+                  }
                 }
-
-                await Response.updateUser(newUser: widget.user);
-                setState(() {});
+              } catch (e) {
+                print('알 수 없는 에러 - E: $e');
               }
+              setState(() {
+                selectedQuestionId = '';
+                isLoading = false;
+              });
             }
           }
         },
@@ -338,56 +383,75 @@ class _FeedPageState extends State<FeedPage> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0)),
               ),
-              child: canReceiveBonus
+              child: isLoading&&selectedQuestionId==question.id? SizedBox(
+                width: 15.w,
+                height: 15.h,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Colors.white,
+                ),
+              ) : canReceiveBonus
                   ? Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                          SizedBox(
-                              width: 15.w,
-                              height: 15.h,
-                              child: Image(
-                                  image: AssetImage('assets/images/candy1.png'))),
-                          SizedBox(
-                            width: 6.w,
-                          ),
-                          Text(
-                            '3',
-                            style: TextStyle(
-                                fontSize: 12.sp,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white),
-                          )
-                        ])
-                  : Text(
-                      widget.user.answeredQuestions.contains(question.id)
-                          ? '답변완료'
-                          : '답변하기',
-                      textAlign: TextAlign.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                        width: 15.w,
+                        height: 15.h,
+                        child: Image(
+                            image:
+                            AssetImage('assets/images/candy1.png'))),
+                    SizedBox(
+                      width: 6.w,
+                    ),
+                    Text(
+                      '3',
                       style: TextStyle(
-                        fontSize: 11.sp,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    )),
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white),
+                    )
+                  ])
+                  : Text(
+                widget.user.answeredQuestions.contains(question.id)
+                    ? '답변완료'
+                    : '답변하기',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 11.sp,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              )),
         ));
   }
 
   Future<void> _handleRefresh() async {
-    // Firebase Schools > Questions > Question 1개 추가로 읽기
-    List<Question?> newQuestions =
-        await Response.getQuestionsWithLimit(10, widget.user.schoolCode);
-    widget.feed.addAll(newQuestions);
+    if(!isFeedLoading){
+      setState(() {
+        isFeedLoading = true;
+      });
+      try{
+        // Firebase Schools > Questions > Question 1개 추가로 읽기
+        List<Question?> newQuestions = await Response.getQuestionsWithLimit(10);
+        widget.feed.addAll(newQuestions);
 
-    if (newQuestions.isEmpty) {
-      await Future.delayed(Duration(seconds: 2));
-    }
+        if (newQuestions.isEmpty) {
+          await Future.delayed(Duration(seconds: 2));
+        }
 
-    setState(() {
-      if (newQuestions.isEmpty) {
-        showSnackBar(pageContext, '우리 학교 질문을 모두 가져왔어요!');
+        setState(() {
+          if (newQuestions.isEmpty) {
+            showSnackBar(pageContext, '우리 학교 질문을 모두 가져왔어요!');
+          }
+        });
+      }catch(e){
+        print('알 수 없는 에러 - E: $e');
       }
-    });
+      setState(() {
+        isFeedLoading = false;
+      });
+    }
   }
 
   void showSnackBar(BuildContext context, String message) {

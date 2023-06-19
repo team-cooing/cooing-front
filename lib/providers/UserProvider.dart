@@ -6,34 +6,71 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
 class UserDataProvider with ChangeNotifier {
-  User? _userData;
+  static User? _userData;
   bool _isDataLoaded = false;
 
-  UserDataProvider() {
-    _loadUserDataFromCookie();
+  static void initializeStaticVariables(){
+    _userData = null;
   }
 
-  void updateQuestionInfos(List<Map<String, dynamic>> questionInfos) {
+  Future updateQuestionInfos(List<Map<String, dynamic>> questionInfos) async{
     if (_userData != null) {
       _userData!.updateQuestionInfos(questionInfos);
-      _saveUserDataToCookie(_userData!);
+      await _saveUserDataToCookie(_userData!);
       notifyListeners();
     }
   }
 
-  void updateCurrentQuestion(Map<String, dynamic> currentQuestion) {
+  Future updateAnsweredQuestion(String questionId) async{
+    if (_userData != null) {
+      await _saveUserDataToCookie(_userData!);
+      notifyListeners();
+    }
+  }
+
+  Future updateRecentQuestionBonusReceiveDate() async{
+    if (_userData != null) {
+      _userData!.updateRecentQuestionBonusReceiveDate();
+      await _saveUserDataToCookie(_userData!);
+      notifyListeners();
+    }
+  }
+
+  Future updateRecentDailyBonusReceiveDate() async{
+    if (_userData != null) {
+      _userData!.updateRecentDailyBonusReceiveDate();
+      await _saveUserDataToCookie(_userData!);
+      notifyListeners();
+    }
+  }
+
+  Future updateCurrentQuestion(Map<String, dynamic> currentQuestion) async{
     if (_userData != null) {
       _userData!.updateCurrentQuestion(currentQuestion);
-      _saveUserDataToCookie(_userData!);
+      await _saveUserDataToCookie(_userData!);
       notifyListeners();
     }
   }
 
-  void updateCandyCount(int additionalCandyCount) {
+  Future updateCandyCount(int candyCount) async{
     if (_userData != null) {
-      _userData!.candyCount += additionalCandyCount;
-      _saveUserDataToCookie(_userData!);
+      _userData!.candyCount = candyCount;
+      await _saveUserDataToCookie(_userData!);
       notifyListeners();
+    }
+  }
+
+  Future<void> loadUserDataFromCookie() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    final String? userDataJson = prefs.getString('userData');
+
+    if (userDataJson != null) {
+      _userData = User.fromJson(json.decode(userDataJson));
+      _isDataLoaded = true;
+      notifyListeners();
+    } else {
+      loadData();
     }
   }
 
@@ -86,27 +123,10 @@ class UserDataProvider with ChangeNotifier {
     }
   }
 
-  Future<void> _loadUserDataFromCookie() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    final String? userDataJson = prefs.getString('userData');
-
-    if (userDataJson != null) {
-      _userData = User.fromJson(json.decode(userDataJson));
-      print('쿠키 있음.');
-      _isDataLoaded = true;
-      notifyListeners();
-    } else {
-      loadData();
-      print('쿠키 없음.');
-    }
-  }
-
-  void _saveUserDataToCookie(User userData) async {
+  Future _saveUserDataToCookie(User userData) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final String userDataJson = jsonEncode(userData);
     prefs.setString('userData', userDataJson);
-    print('쿠키 저장됨.');
   }
 
   User? get userData => _userData;

@@ -1,3 +1,8 @@
+// 2023.06.19 MON Midas: ✅
+// 코드 효율성 점검: ✅
+// 예외처리: ✅
+// 중복 서버 송수신 방지: ✅
+
 import 'package:cooing_front/model/config/palette.dart';
 import 'package:cooing_front/model/data/question_list.dart';
 import 'package:cooing_front/model/response/question.dart';
@@ -38,7 +43,7 @@ class _QuestionPageState extends State<QuestionPage> {
   bool isQuestionOpen = false;
   bool hasQuestionCloseTimePassed = false;
   late String currentQuestionUrl;
-  var token;
+  bool isLoading = false;
   UserDataProvider userProvider = UserDataProvider();
 
   @override
@@ -161,10 +166,17 @@ class _QuestionPageState extends State<QuestionPage> {
                   }
 
                   // 버튼 클릭 이벤트
-                  onButtonInPurpleBoxClicked();
+                  if(!isLoading){
+                    setState(() {
+                      isLoading = true;
+                    });
+                    await onButtonInPurpleBoxClicked();
+                    setState(() {
+                      isLoading = false;
+                    });
+                  }
                 },
                 style: OutlinedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15).r,
                   backgroundColor: (isQuestionReceived &
                   isQuestionOpen &
                   !hasQuestionCloseTimePassed)
@@ -175,25 +187,37 @@ class _QuestionPageState extends State<QuestionPage> {
                   ),
                 ),
                 // 버튼 텍스트
-                child: Text(
-                  isQuestionReceived
-                      ? isQuestionOpen
-                      ? '질문 닫기'
-                      : (DateTime
-                      .now()
-                      .day >
-                      DateTime
-                          .parse(
-                          widget.currentQuestion!.receiveTime)
-                          .day)
-                      ? '새로운 질문 받기'
-                      : '답변 받기'
-                      : '질문 받기',
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16.sp,
-                      color: Palette.mainPurple),
-                ),
+                child: Container(
+                  alignment: Alignment.center,
+                  width: 140.w,
+                  height: 55.h,
+                  child: isLoading? SizedBox(
+                    width: 20.w,
+                    height: 20.h,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 3,
+                      color: Palette.mainPurple,
+                    ),
+                  ) : Text(
+                    isQuestionReceived
+                        ? isQuestionOpen
+                        ? '질문 닫기'
+                        : (DateTime
+                        .now()
+                        .day >
+                        DateTime
+                            .parse(
+                            widget.currentQuestion!.receiveTime)
+                            .day)
+                        ? '새로운 질문 받기'
+                        : '답변 받기'
+                        : '질문 받기',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16.sp,
+                        color: Palette.mainPurple),
+                  ),
+                )
               ),
               SizedBox(
                 height: isQuestionReceived ? 20.h : 0,
@@ -253,9 +277,8 @@ class _QuestionPageState extends State<QuestionPage> {
     }
   }
 
-  onButtonInPurpleBoxClicked() async {
-    token = await FirebaseMessaging.instance.getToken();
-    print(token);
+  Future onButtonInPurpleBoxClicked() async {
+    final token = await FirebaseMessaging.instance.getToken();
     // 만약, 질문을 받지 않은 상태라면
     if (!isQuestionReceived) {
       // 주요 기능: 질문 받기
@@ -285,7 +308,7 @@ class _QuestionPageState extends State<QuestionPage> {
           url: '',
           schoolCode: widget.user.schoolCode,
           isOpen: false,
-          fcmToken: token);
+          fcmToken: token.toString());
 
       // 1-1. User 반영
       widget.user.questionInfos.add(
@@ -297,10 +320,10 @@ class _QuestionPageState extends State<QuestionPage> {
 
       // 2-1. Firebase > Users > User 업데이트
       await Response.updateUser(newUser: widget.user);
-      // 2-2. 기기 내 캐시 반영
-      userProvider.updateQuestionInfos(widget.user.questionInfos);
-      userProvider.updateCurrentQuestion(newQuestion.toJson());
 
+      // 2-2. 기기 내 캐시 반영
+      await userProvider.updateQuestionInfos(widget.user.questionInfos);
+      await userProvider.updateCurrentQuestion(newQuestion.toJson());
     } else {
       // 만약, 질문을 오픈하지 않은 상태라면
       if (!isQuestionOpen) {
@@ -316,7 +339,7 @@ class _QuestionPageState extends State<QuestionPage> {
           // 2-1. Firebase Users > User 업데이트
           await Response.updateUser(newUser: widget.user);
           // 2-2. 기기 내 캐시 반영
-          userProvider.updateCurrentQuestion({});
+          await userProvider.updateCurrentQuestion({});
           widget.currentQuestion = null;
         } else {
           // 주요 기능: 질문 오픈하기
@@ -333,7 +356,7 @@ class _QuestionPageState extends State<QuestionPage> {
           // 2-2. Firebase Users > User 업데이트
           await Response.updateUser(newUser: widget.user);
           // 2-4. 기기 내 캐시 반영
-          userProvider.updateCurrentQuestion(widget.currentQuestion!.toJson());
+          await userProvider.updateCurrentQuestion(widget.currentQuestion!.toJson());
 
           // 3-1. 0, 30분 마다 업데이트 알려주기
           DateTime currentTime = DateTime.now();
@@ -345,8 +368,10 @@ class _QuestionPageState extends State<QuestionPage> {
             }else{
               messageContent = '${currentTime.day}일 ${currentTime.hour}시 30분에 피드에 질문이 등록될 예정입니다!';
             }
+            if(!mounted) return;
             showSnackBar(pageContext, messageContent);
           }else{
+            if(!mounted) return;
             showSnackBar(pageContext, '곧 피드에 질문이 등록됩니다!');
           }
         }
@@ -375,7 +400,7 @@ class _QuestionPageState extends State<QuestionPage> {
         widget.currentQuestion = null;
 
         // 3-1 기기내 캐시 반영
-        userProvider.updateCurrentQuestion({});
+        await userProvider.updateCurrentQuestion({});
       }
     }
 
@@ -403,7 +428,6 @@ class _QuestionPageState extends State<QuestionPage> {
       if (data == "error") {
         final reportUrl = Uri.parse(
             'https://we-cooing.notion.site/e802f6eaf1594ff6bd01dbd5ddcc3396');
-        print("notion Link로 이동");
 
         if (await canLaunchUrl(reportUrl)) {
           launchUrl(reportUrl, mode: LaunchMode.externalApplication);
@@ -417,27 +441,23 @@ class _QuestionPageState extends State<QuestionPage> {
 
   void _onCopyButtonPressed(String url) {
     //복사 버튼 클릭시 클립보드에 복사
+  Clipboard.setData(ClipboardData(text: url));
 
-    if(url != null){
-    Clipboard.setData(ClipboardData(text: url));
-
-    //하단에 "링크복사완료!" 메시지 스낵바
-
-    // 스낵바 나타남
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        backgroundColor: Palette.mainPurple,
-        content: Text(
-          '링크 복사완료!',
-          style: TextStyle(
-            fontSize: 15.sp,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
+  // 스낵바 나타남
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      backgroundColor: Palette.mainPurple,
+      content: Text(
+        '링크 복사완료!',
+        style: TextStyle(
+          fontSize: 15.sp,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
         ),
-        duration: Duration(seconds: 2),
       ),
-    );}
+      duration: Duration(seconds: 2),
+    ),
+  );
   }
 
   Widget shareCard() {

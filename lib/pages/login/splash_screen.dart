@@ -141,7 +141,7 @@ class _SplashScreenState extends State<SplashScreen> {
     if (initialRoute == 'tab') {
       print('$userPlatform 토큰 자동 로그인 성공 👋');
 
-      Get.offAll(TabPage(), arguments: newUserUid);
+      Get.offAll(TabPage(isLinkEntered: false,), arguments: newUserUid);
     } else {
       if(!mounted) return;
       Navigator.pushReplacementNamed(context, initialRoute);

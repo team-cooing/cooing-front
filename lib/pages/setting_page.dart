@@ -1,7 +1,13 @@
+// 2023.06.19 MON Midas: ✅
+// 코드 효율성 점검: ✅
+// 예외처리: ✅
+// 중복 서버 송수신 방지: ✅
+
 import 'package:cooing_front/model/response/question.dart';
 import 'package:cooing_front/model/response/response_optimization.dart';
 import 'package:cooing_front/model/response/user.dart' as ru;
 import 'package:cooing_front/model/response/response.dart' as r;
+import 'package:cooing_front/model/util/static_variable_initializer.dart';
 import 'package:cooing_front/pages/login/login_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter/material.dart';
@@ -10,7 +16,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'CandyScreen.dart';
+import 'candy_screen.dart';
 
 class SettingScreen extends StatefulWidget {
   final ru.User user;
@@ -24,6 +30,8 @@ class SettingScreen extends StatefulWidget {
 
 class _SettingScreenState extends State<SettingScreen> {
   late BuildContext scaffoldContext;
+  bool isLoading = false;
+
   final List settingElements = [
     {
       'title': '인스타 팔로우',
@@ -54,6 +62,11 @@ class _SettingScreenState extends State<SettingScreen> {
       'link': '',
     }
   ];
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +100,8 @@ class _SettingScreenState extends State<SettingScreen> {
                                   width: 27.w,
                                   height: 27.h,
                                   child: Image(
-                                      image: AssetImage('assets/images/candy1.png'))),
+                                      image: AssetImage(
+                                          'assets/images/candy1.png'))),
                               Padding(padding: EdgeInsets.only(right: 10.0).r),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -147,7 +161,7 @@ class _SettingScreenState extends State<SettingScreen> {
               itemCount: settingElements.length,
               shrinkWrap: true,
               itemBuilder: ((context, index) {
-                if(index==settingElements.length-1){
+                if (index == settingElements.length - 1) {
                   return GestureDetector(
                     behavior: HitTestBehavior.opaque,
                     onTap: () async {
@@ -157,7 +171,7 @@ class _SettingScreenState extends State<SettingScreen> {
                       Navigator.of(scaffoldContext).pushAndRemoveUntil(
                           MaterialPageRoute(
                               builder: (BuildContext context) => LoginScreen()),
-                              (route) => false);
+                          (route) => false);
                     },
                     child: Padding(
                         padding: EdgeInsets.only(left: 25.0, top: 20).w,
@@ -185,9 +199,10 @@ class _SettingScreenState extends State<SettingScreen> {
                   );
                 }
                 return Padding(
-                    padding: EdgeInsets.only(
-                        left: 25.0, top: 20.0, bottom: 20).r,
+                    padding:
+                        EdgeInsets.only(left: 25.0, top: 20.0, bottom: 20).r,
                     child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
                       child: Text(
                         "${settingElements[index]['title']}",
                         style: TextStyle(
@@ -198,8 +213,8 @@ class _SettingScreenState extends State<SettingScreen> {
                       onTap: () async {
                         // 만약, 로그아웃이 아니라면
                         if (index != settingElements.length - 2) {
-                          final reportUrl = Uri.parse(
-                              "${settingElements[index]['link']}");
+                          final reportUrl =
+                              Uri.parse("${settingElements[index]['link']}");
                           print("${settingElements[index]['title']}");
 
                           if (await canLaunchUrl(reportUrl)) {
@@ -213,12 +228,11 @@ class _SettingScreenState extends State<SettingScreen> {
                           await logout();
                           // 로그인 페이지로 이동
                           if (!mounted) return;
-                          Navigator.of(scaffoldContext)
-                              .pushAndRemoveUntil(
+                          Navigator.of(scaffoldContext).pushAndRemoveUntil(
                               MaterialPageRoute(
                                   builder: (BuildContext context) =>
                                       LoginScreen()),
-                                  (route) => false);
+                              (route) => false);
                         }
                       },
                     ));
@@ -229,79 +243,83 @@ class _SettingScreenState extends State<SettingScreen> {
   }
 
   Future logout() async {
-    // 카카오, 파베 로그아웃
-    try {
-      await UserApi.instance.logout();
-      await fb.FirebaseAuth.instance.signOut();
-    } catch (e) {
-      print(e.toString());
-    }
+    if (!isLoading) {
+      setState(() {
+        isLoading = true;
+      });
+      // 카카오, 파베 로그아웃
+      try {
+        await UserApi.instance.logout();
+        await fb.FirebaseAuth.instance.signOut();
+      } catch (e) {
+        print(e.toString());
+      }
 
-    final userPlatform = await FlutterSecureStorage().read(key: "userPlatform");
-
-    // 만약, 애플 로그인이라면
-    if(userPlatform!=null&&userPlatform=='apple'){
-      await FlutterSecureStorage().delete(key: "userPlatform");
-      await FlutterSecureStorage().delete(key: "userId");
-      await FlutterSecureStorage().delete(key: "appleUserUid");
-      await FlutterSecureStorage().delete(key: "appleUserEmail");
-    }
-
-    // 만약, 카카오 로그인이라면
-    else{
       // 토큰 정보 제거
       try {
         await TokenManagerProvider.instance.manager.clear();
       } catch (e) {
         print(e.toString());
       }
+
+      await FlutterSecureStorage().deleteAll();
+      final pref = await SharedPreferences.getInstance();
+      pref.clear();
+      initializeStaticVariables();
     }
+    setState(() {
+      isLoading = false;
+    });
   }
 
   Future deleteUser() async {
-    // 파베 유저 데이터 관련 정보 삭제
-    await r.Response.deleteUser(userUid: widget.user.uid);
+    if (!isLoading) {
+      setState(() {
+        isLoading = true;
+      });
+      // 파베 유저 데이터 관련 정보 삭제
+      await r.Response.deleteUser(userUid: widget.user.uid);
 
-    // 파베 피드 데이터 관련 정보 삭제
-    if(widget.user.currentQuestion.isNotEmpty){
-      if(widget.user.currentQuestion['isOpen']==true){
-        await ResponseOptimization.createQuestionDeleteRequest(newQuestion: Question.fromJson(widget.user.currentQuestion));
+      // 파베 피드 데이터 관련 정보 삭제
+      if (widget.user.currentQuestion.isNotEmpty) {
+        if (widget.user.currentQuestion['isOpen'] == true) {
+          await ResponseOptimization.createQuestionDeleteRequest(
+              newQuestion: Question.fromJson(widget.user.currentQuestion));
+        }
       }
-    }
 
-    final userPlatform = await FlutterSecureStorage().read(key: "userPlatform");
-
-    // 만약, 애플 로그인이라면
-    if(userPlatform!=null&&userPlatform=='apple'){
-      await FlutterSecureStorage().delete(key: "userPlatform");
-      await FlutterSecureStorage().delete(key: "userId");
-      await FlutterSecureStorage().delete(key: "appleUserUid");
-      await FlutterSecureStorage().delete(key: "appleUserEmail");
-    }
-    // 만약, 카카오로그인이라면
-    else{
       // 카카오 회원 정보 삭제
       try {
         await UserApi.instance.unlink();
       } catch (e) {
         print(e.toString());
       }
+
       // 토큰 정보 제거
       try {
         await TokenManagerProvider.instance.manager.clear();
       } catch (e) {
         print(e.toString());
       }
-    }
 
-    // 파베 Auth 회원 정보 삭제
-    try {
-      final firebaseUser = fb.FirebaseAuth.instance.currentUser;
-      if (firebaseUser != null) {
-        await firebaseUser.delete();
+      // 파베 Auth 회원 정보 삭제
+      try {
+        final firebaseUser = fb.FirebaseAuth.instance.currentUser;
+        if (firebaseUser != null) {
+          await firebaseUser.delete();
+        }
+      } catch (e) {
+        print(e.toString());
       }
-    } catch (e) {
-      print(e.toString());
+
+      await FlutterSecureStorage().deleteAll();
+      final pref = await SharedPreferences.getInstance();
+      pref.clear();
+      initializeStaticVariables();
+
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 }

@@ -118,7 +118,19 @@ class User {
     this.questionInfos = questionInfos;
   }
 
+  void updateAnsweredQuestions(String questionId) {
+    answeredQuestions.add(questionId);
+  }
+
   void updateCurrentQuestion(Map<String, dynamic> currentQuestion) {
     this.currentQuestion = currentQuestion;
+  }
+
+  void updateRecentQuestionBonusReceiveDate() {
+    recentQuestionBonusReceiveDate = DateTime.now().toString();
+  }
+
+  void updateRecentDailyBonusReceiveDate() {
+    recentDailyBonusReceiveDate = DateTime.now().toString();
   }
 }

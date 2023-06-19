@@ -29,9 +29,6 @@ class Question {
       required this.fcmToken});
 
   factory Question.fromJson(Map<String, dynamic> json) {
-    print('---');
-    print(json['isOpen'] == 'true' ? true : false);
-    print(json['isOpen'].runtimeType);
     return Question(
         id: json['id'],
         ownerProfileImage: json['ownerProfileImage'],

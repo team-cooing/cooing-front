@@ -1,4 +1,9 @@
-import 'package:cooing_front/pages/HintPage.dart';
+// 2023.06.20 TUE Midas: ✅
+// 코드 효율성 점검: ✅
+// 예외처리: ✅
+// 중복 서버 송수신 방지: ✅
+
+import 'package:cooing_front/pages/hint_page.dart';
 import 'package:cooing_front/model/response/answer.dart';
 import 'package:cooing_front/model/response/user.dart';
 import 'package:cooing_front/model/data/question_list.dart';
@@ -37,8 +42,7 @@ class AnswerDetailPageState extends State<AnswerDetailPage> {
   late User userData;
   late Answer answerData;
   late String imgUrl = '';
-  late String targetKey;
-  late dynamic? targetValue;
+
   @override
   void initState() {
     super.initState();
@@ -48,79 +52,64 @@ class AnswerDetailPageState extends State<AnswerDetailPage> {
         .elementAt(int.parse(widget.answer.contentId))['question'] as String;
 
     imgUrl = userData.profileImage;
-
-    targetKey = answerData.id;
-    List<String> parts = targetKey.split('_');
-
-    if (parts.length > 1) {
-      targetKey = parts[1];
-      print(targetKey);
-    }
-    // 찾고자 하는 키
-    // 키에 해당하는 값
-    print(widget.hint);
-    if (widget.hint!.containsKey(targetKey)) {
-      targetValue = widget.hint![targetKey];
-      print(targetValue);
-    }
   }
 
   int maxLength = 100;
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-        onWillPop: () async {
-          return false;
-        },
-        child: Scaffold(
-            resizeToAvoidBottomInset: false,
-            appBar: AppBar(
-              backgroundColor: Color.fromARGB(0, 87, 56, 56),
-              elevation: 0.0,
-              leading: BackButton(color: Color.fromRGBO(51, 61, 75, 1)),
-              actions: [
-                IconButton(
-                    onPressed: () async {
-                      final reportUrl =
-                          Uri.parse('https://pf.kakao.com/_kexoDxj');
+    return Scaffold(
+        resizeToAvoidBottomInset: false,
+        appBar: AppBar(
+          backgroundColor: Color.fromARGB(0, 87, 56, 56),
+          elevation: 0.0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios),
+            color: Colors.black54,
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+          actions: [
+            IconButton(
+                onPressed: () async {
+                  final reportUrl = Uri.parse('https://pf.kakao.com/_kexoDxj');
 
-                      if (await canLaunchUrl(reportUrl)) {
-                        launchUrl(reportUrl,
-                            mode: LaunchMode.externalApplication);
-                      } else {
-                        // ignore: avoid_print
-                        print("Can't launch $reportUrl");
-                      }
-                    },
-                    icon: Icon(Icons.warning_rounded),
-                    iconSize: 30,
-                    color: Colors.black45),
-                Padding(
-                  padding: EdgeInsets.all(5),
-                )
-              ],
-            ),
-            body: LayoutBuilder(
-              builder: (context, constraints) {
-                return SingleChildScrollView(
-                    physics: BouncingScrollPhysics(),
-                    child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          minHeight: constraints.maxHeight,
-                        ),
-                        child: IntrinsicHeight(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              _answerBody(),
-                              Spacer(),
-                              bottomBtns(answerData.isAnonymous),
-                            ],
-                          ),
-                        )));
-              },
-            )));
+                  if (await canLaunchUrl(reportUrl)) {
+                    launchUrl(reportUrl, mode: LaunchMode.externalApplication);
+                  } else {
+                    // ignore: avoid_print
+                    print("Can't launch $reportUrl");
+                  }
+                },
+                icon: Icon(Icons.warning_rounded),
+                iconSize: 30,
+                color: Colors.black45),
+            Padding(
+              padding: EdgeInsets.all(5),
+            )
+          ],
+        ),
+        body: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+                physics: BouncingScrollPhysics(),
+                child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight,
+                    ),
+                    child: IntrinsicHeight(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _answerBody(),
+                          Spacer(),
+                          bottomBtns(answerData.isAnonymous),
+                        ],
+                      ),
+                    )));
+          },
+        ));
   }
 
   Future<String?> screenshot() async {
@@ -136,6 +125,17 @@ class AnswerDetailPageState extends State<AnswerDetailPage> {
   }
 
   ScreenshotController screenshotController = ScreenshotController();
+
+  Future<bool> checkInstagramAppInstalled() async {
+    const instagramAppUrl = 'instagram://app';
+    bool appInstalled = await canLaunchUrl(Uri.parse(instagramAppUrl));
+
+    if (appInstalled) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 
   Widget _answerBody() {
     return Column(
@@ -239,30 +239,16 @@ class AnswerDetailPageState extends State<AnswerDetailPage> {
   }
 
   Widget bottomBtns(bool? isAnony) {
-    // for (dynamic element in widget.hint) {
-    //   print(element);
-    //   print(element.containsKey);
-    //   if (element is Map<String, dynamic> && element.containsKey(targetKey)) {
-    //     targetValue = element[targetKey];
-
-    //     print(element.keys);
-    //     print(targetValue);
-    //     break; // 값을 찾았으므로 순회 중단
-    //   }
-    // }
-
     var fromWhoButton = SizedBox(
       width: double.infinity,
-      height: 50.h,
+      height: 60.h,
       child: ElevatedButton(
           onPressed: () async {
             await Navigator.of(context).push(MaterialPageRoute(
-                builder: (BuildContext context) => HintScreen(
+                builder: (BuildContext context) => HintPage(
                       user: widget.user,
                       answer: widget.answer,
                       hint: widget.hint,
-                      targetKey: targetKey,
-                      targetValue: targetValue,
                     )));
           },
           style: OutlinedButton.styleFrom(
@@ -282,19 +268,39 @@ class AnswerDetailPageState extends State<AnswerDetailPage> {
 
     var replyBtn = SizedBox(
       width: double.infinity,
-      height: 50.h,
+      height: 60.h,
       child: ElevatedButton(
           onPressed: () async {
             var path = await screenshot();
             if (path == null) {
               return;
             }
-            SocialShare.shareInstagramStory(
-                appId: '617417756966237',
-                imagePath: path,
-                backgroundTopColor: "#FFFFFF",
-                backgroundBottomColor: "#9754FB",
-                attributionURL: "");
+            try {
+              SocialShare.shareInstagramStory(
+                      appId: '617417756966237',
+                      imagePath: path,
+                      backgroundTopColor: "#FFFFFF",
+                      backgroundBottomColor: "#9754FB",
+                      attributionURL: "")
+                  .then((data) async {
+                if (data == "error") {
+                  const String instagramAndroidUrl =
+                      'https://play.google.com/store/apps/details?id=com.instagram.android'; // Android Play Store 링크
+                  const String instagramIOSUrl =
+                      'https://apps.apple.com/app/instagram/id389801252'; // iOS App Store 링크
+
+                  if (Platform.isAndroid) {
+                    launchUrl(Uri.parse(instagramAndroidUrl),
+                        mode: LaunchMode.externalApplication);
+                  } else {
+                    launchUrl(Uri.parse(instagramIOSUrl),
+                        mode: LaunchMode.externalApplication);
+                  }
+                }
+              });
+            } catch (e) {
+              print('인스타그램 공유 에러 - E: $e');
+            }
           },
           style: OutlinedButton.styleFrom(
             foregroundColor: Colors.white,

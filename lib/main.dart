@@ -147,8 +147,8 @@ class _MyAppState extends State<MyApp> {
               'select': (context) => const MultiSelectScreen(),
               'agree': (context) => const AgreeScreen(),
               'welcome': (context) => const WelcomeScreen(),
-              'tab': (context) => const TabPage(),
-              '_working': (context) => const TabPage(),
+              'tab': (context) => const TabPage(isLinkEntered: false,),
+              '_working': (context) => const TabPage(isLinkEntered: false,),
             },
           );
         });
