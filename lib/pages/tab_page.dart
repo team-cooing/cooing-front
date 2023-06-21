@@ -173,9 +173,12 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
       await response.Response.initFeedContentString(
           schoolCode: user!.schoolCode);
       feeds = await response.Response.getQuestionsWithLimit(10);
-      Question? bonusQuestion = feeds[Random().nextInt(feeds.length)];
-      if(bonusQuestion!=null){
-        bonusQuestionId = bonusQuestion.id;
+
+      if (feeds.length > 0) {
+        Question? bonusQuestion = feeds[Random().nextInt(feeds.length)];
+        if (bonusQuestion != null) {
+          bonusQuestionId = bonusQuestion.id;
+        }
       }
 
       // 4. Answer 데이터 가져오기
@@ -184,9 +187,9 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
 
       openedIds = await _loadIsOpenedFromCookie();
 
-      for(var i in answers){
-        if(i!=null){
-          if(!openedIds.contains(i.id)){
+      for (var i in answers) {
+        if (i != null) {
+          if (!openedIds.contains(i.id)) {
             setState(() {
               isNewMessage = true;
             });
@@ -201,9 +204,15 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
         isLoading = false;
       });
 
-      if(widget.isLinkEntered){
-        if(!mounted) return;
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) => AnswerPage(user: user, uid: uid, question: DynamicLink.targetQuestion!, hints: hints,)));
+      if (widget.isLinkEntered) {
+        if (!mounted) return;
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => AnswerPage(
+                  user: user,
+                  uid: uid,
+                  question: DynamicLink.targetQuestion!,
+                  hints: hints,
+                )));
       }
     } catch (e) {
       // 로그인 페이지로 이동
