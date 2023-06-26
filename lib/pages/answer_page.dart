@@ -70,14 +70,14 @@ class _AnswerPageState extends State<AnswerPage> {
           question.isOpen = value;
           isDataLoading = false;
         });
-      }).catchError((error){
+      }).catchError((error) {
         print('dynamicLink - E: $error');
         setState(() {
           question.isOpen = false;
           isDataLoading = false;
         });
       });
-    }else{
+    } else {
       setState(() {
         isDataLoading = false;
       });
@@ -246,11 +246,7 @@ class _AnswerPageState extends State<AnswerPage> {
                 children: [
                   ElevatedButton(
                       onPressed: () {
-                        Get.offAll(
-                            TabPage(
-                              isLinkEntered: false,
-                            ),
-                            arguments: widget.user!.uid);
+                        Get.offAll(TabPage(), arguments: widget.user!.uid);
                       },
                       style: OutlinedButton.styleFrom(
                         fixedSize: Size.fromHeight(50),

@@ -8,7 +8,6 @@ import 'dart:math';
 import 'package:cooing_front/model/response/answer.dart';
 import 'package:cooing_front/model/response/question.dart';
 import 'package:cooing_front/model/response/user.dart';
-import 'package:cooing_front/pages/answer_page.dart';
 import 'package:cooing_front/pages/setting_page.dart';
 import 'package:cooing_front/pages/feed_page.dart';
 import 'package:cooing_front/pages/login/login_screen.dart';
@@ -25,15 +24,14 @@ import 'package:cooing_front/model/response/response.dart' as response;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class TabPage extends StatefulWidget {
-  final bool isLinkEntered;
-
-  const TabPage({super.key, required this.isLinkEntered});
+  const TabPage({super.key});
 
   @override
   TabPageState createState() => TabPageState();
 }
 
 class TabPageState extends State<TabPage> with TickerProviderStateMixin {
+  BuildContext? scaffoldContext;
   late TabController _tabController;
   late String uid = '';
   late User? user;
@@ -45,6 +43,7 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
   late SharedPreferences prefs;
   bool isUserDataGetting = true;
   bool isLoading = true;
+  bool isDynamicLoading = true;
   List<dynamic> openedIds = [];
   late Map<String, dynamic> hints = {};
 
@@ -72,6 +71,15 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
 
     _tabController =
         TabController(length: myTabs.length, vsync: this, initialIndex: 0);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      DynamicLink.scaffoldContext = scaffoldContext;
+      DynamicLink().setup(uid).then((value){
+        setState(() {
+          isDynamicLoading = false;
+        });
+      });
+    });
   }
 
   @override
@@ -82,6 +90,8 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    scaffoldContext = context;
+
     myTabs[2] = Tab(
         icon: Stack(
       children: [
@@ -112,7 +122,7 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
       ],
     ));
 
-    return isLoading
+    return isLoading || isDynamicLoading
         ? loadingView()
         : DefaultTabController(
             length: myTabs.length,
@@ -167,7 +177,7 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
       // 1-2. HintStatus 데이터 가져오기
       HintStatusProvider hintStatusProvider = HintStatusProvider();
       await hintStatusProvider.loadHintStatusDataFromCookie();
-      if(hintStatusProvider.hintStatusData!=null){
+      if (hintStatusProvider.hintStatusData != null) {
         hints = hintStatusProvider.hintStatusData!.isHintOpends;
       }
 
@@ -209,19 +219,6 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
       setState(() {
         isLoading = false;
       });
-
-      if (widget.isLinkEntered) {
-        if (!mounted) return;
-        Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => AnswerPage(
-                  user: user,
-                  uid: uid,
-                  question: DynamicLink.targetQuestion!,
-                  hints: hints,
-                  isBonusQuestion: false,
-                  isFromLink: true,
-                )));
-      }
     } catch (e) {
       // 로그인 페이지로 이동
       Get.offAll(LoginScreen());

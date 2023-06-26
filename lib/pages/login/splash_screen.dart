@@ -65,15 +65,12 @@ class _SplashScreenState extends State<SplashScreen> {
           var digest = sha256.convert(bytes); // SHA-256 알고리즘을 사용하여 해시화
           String newPassword = digest.toString();
 
-          try{
+          try {
             await firebase.FirebaseAuth.instance.signInWithEmailAndPassword(
                 email: appleUserEmail.toString(), password: newPassword);
 
-            await DynamicLink().setup(newUserUid);
-
-            // tab 으로 이동
             initialRoute = 'tab';
-          }catch(e){
+          } catch (e) {
             print('파이어베이스 로그인 에러 - E: $e');
             // home 으로 이동
           }
@@ -108,17 +105,13 @@ class _SplashScreenState extends State<SplashScreen> {
               // 만약, 유저 정보가 있다면
               newUserUid = userCredential.user!.uid;
 
-              DynamicLink().setup(newUserUid).then((value) {
-                if(value == false) {
-                  initialRoute = 'tab';
-              }
-              });
+              initialRoute = 'tab';
               // tab 으로 이동
             } else {
               // 만약, 유저 정보가 없다면
               // home 으로 이동
             }
-          }else{
+          } else {
             // 만약, 카카오 로그인 토큰이 없다면
             // home 으로 이동
           }
@@ -143,9 +136,9 @@ class _SplashScreenState extends State<SplashScreen> {
     if (initialRoute == 'tab') {
       print('$userPlatform 토큰 자동 로그인 성공 👋');
 
-      Get.offAll(TabPage(isLinkEntered: false,), arguments: newUserUid);
+      Get.offAll(TabPage(), arguments: newUserUid);
     } else {
-      if(!mounted) return;
+      if (!mounted) return;
       Navigator.pushReplacementNamed(context, initialRoute);
     }
   }

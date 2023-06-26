@@ -1,28 +1,29 @@
 import 'package:app_links/app_links.dart';
+import 'package:cooing_front/model/response/hint_status.dart';
 import 'package:cooing_front/model/response/question.dart';
+import 'package:cooing_front/pages/answer_page.dart';
 import 'package:cooing_front/pages/tab_page.dart';
+import 'package:cooing_front/providers/hint_status_provider.dart';
+import 'package:cooing_front/providers/user_provider.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:uni_links/uni_links.dart';
 
 class DynamicLink {
   static Question? targetQuestion;
+  static BuildContext? scaffoldContext;
 
   Future<bool> setup(String uid) async {
     bool isExistDynamicLink = await _getInitialDynamicLink(uid);
-
     _addListener(uid);
 
     return isExistDynamicLink;
   }
 
   Future<bool> _getInitialDynamicLink(String uid) async {
-
-    // await Future.delayed(Duration(seconds: 2));
-
-    final _appLinks = AppLinks();
+    final appLinks = AppLinks();
     final String? deepLink = await getInitialLink();
-
 
     if (deepLink != null) {
       PendingDynamicLinkData? dynamicLinkData = await FirebaseDynamicLinks
@@ -30,21 +31,24 @@ class DynamicLink {
           .getDynamicLink(Uri.parse(deepLink));
 
       if (dynamicLinkData != null) {
+        print(3);
         _redirectScreen(uid, dynamicLinkData);
         return true;
       }
     }
     //terminate 상태에서 링크캐치하기
-    else{
-      final Uri? uri = await _appLinks.getInitialAppLink();
-        if (uri != null){
-          final PendingDynamicLinkData? appLinkData = await FirebaseDynamicLinks.instance.getDynamicLink(uri);
+    else {
+      final Uri? uri = await appLinks.getInitialAppLink();
+      if (uri != null) {
+        final PendingDynamicLinkData? appLinkData =
+            await FirebaseDynamicLinks.instance.getDynamicLink(uri);
 
-          if(appLinkData != null){
-            _redirectScreen(uid, appLinkData);
-            return true;
-          }
+        if (appLinkData != null) {
+          print(4);
+          _redirectScreen(uid, appLinkData);
+          return true;
         }
+      }
     }
 
     return false;
@@ -52,7 +56,8 @@ class DynamicLink {
 
   void _addListener(String uid) {
     FirebaseDynamicLinks.instance.onLink.listen((
-        PendingDynamicLinkData dynamicLinkData,) {
+      PendingDynamicLinkData dynamicLinkData,
+    ) {
       _redirectScreen(uid, dynamicLinkData);
     }).onError((error) {
       print("In dynamicLink() - addListener : $error");
@@ -63,9 +68,7 @@ class DynamicLink {
     if (dynamicLinkData.link.queryParameters.containsKey('cid')) {
       // String? questionId
       String questionId =
-          dynamicLinkData.link.path
-              .split('/')
-              .last; //questionId
+          dynamicLinkData.link.path.split('/').last; //questionId
 
       String contentId =
           dynamicLinkData.link.queryParameters['cid'] ?? ""; //contentId
@@ -96,13 +99,18 @@ class DynamicLink {
           url: '',
           schoolCode: '',
           isOpen: false,
-          fcmToken: fcmToken.replaceAll('%20', ' ')
-      );
+          fcmToken: fcmToken.replaceAll('%20', ' '));
 
       targetQuestion = question;
 
-      Get.offAll(() =>
-          TabPage(isLinkEntered: true));
+      Navigator.of(scaffoldContext!).push(MaterialPageRoute(
+          builder: (context) => AnswerPage(
+              user: UserDataProvider().userData,
+              uid: UserDataProvider().userData!.uid,
+              question: question,
+              isFromLink: true,
+              hints: HintStatusProvider().hintStatusData!.isHintOpends,
+              isBonusQuestion: false)));
     }
   }
 }
@@ -112,10 +120,7 @@ Future<String> getShortLink(Question question) async {
   final dynamicLinkParams = DynamicLinkParameters(
       uriPrefix: dynamicLinkPrefix,
       link: Uri.parse(
-          '$dynamicLinkPrefix/${question.id}?cid=${question
-              .contentId}&content=${question.content}&ownerId=${question
-              .owner}&ownerName=${question.ownerName}&imgUrl=${question
-              .ownerProfileImage}&rcvTime=${question.receiveTime}&fcmToken=${question.fcmToken}'),
+          '$dynamicLinkPrefix/${question.id}?cid=${question.contentId}&content=${question.content}&ownerId=${question.owner}&ownerName=${question.ownerName}&imgUrl=${question.ownerProfileImage}&rcvTime=${question.receiveTime}&fcmToken=${question.fcmToken}'),
       androidParameters: const AndroidParameters(
         packageName: 'com.midas.cooing',
         minimumVersion: 0,
@@ -126,12 +131,11 @@ Future<String> getShortLink(Question question) async {
         minimumVersion: '0',
       ),
       navigationInfoParameters:
-      NavigationInfoParameters(forcedRedirectEnabled: false)
-  );
+          NavigationInfoParameters(forcedRedirectEnabled: false));
 
-  final dynamicLink =
-  await FirebaseDynamicLinks.instance.buildShortLink(
-      dynamicLinkParams, shortLinkType: ShortDynamicLinkType.unguessable);
+  final dynamicLink = await FirebaseDynamicLinks.instance.buildShortLink(
+      dynamicLinkParams,
+      shortLinkType: ShortDynamicLinkType.unguessable);
 
   return dynamicLink.shortUrl.toString();
 }

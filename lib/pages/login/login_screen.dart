@@ -51,7 +51,7 @@ class _LoginScreenState extends State<LoginScreen> {
             backgroundColor: Color(0xFFffffff),
             body: Container(
                 padding:
-                const EdgeInsets.only(left: 20, right: 20, bottom: 20).r,
+                    const EdgeInsets.only(left: 20, right: 20, bottom: 20).r,
                 child: Form(
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -113,7 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       await FlutterSecureStorage().write(key: 'userPlatform', value: 'kakao');
       print('카카오톡 로그인 성공 👋');
-      Get.offAll(TabPage(isLinkEntered: false,), arguments: userCredential.user!.uid);
+      Get.offAll(TabPage(), arguments: userCredential.user!.uid);
     } on kakao.KakaoAuthException catch (e) {
       setState(() {
         isLoading = false;
@@ -181,8 +181,8 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       // Firebase Auth 로그인
-      firebase.UserCredential authResult = await firebase.FirebaseAuth.instance
-          .signInWithCredential(credential);
+      firebase.UserCredential authResult =
+          await firebase.FirebaseAuth.instance.signInWithCredential(credential);
 
       // null 예외 처리 ✅
       firebase.User? firebaseUser = authResult.user;
@@ -199,7 +199,7 @@ class _LoginScreenState extends State<LoginScreen> {
         // null 예외 처리 ✅
         // 유저 정보 읽기
         User? appleUserInDB =
-        await r.Response.readUser(userUid: firebaseUser.uid);
+            await r.Response.readUser(userUid: firebaseUser.uid);
 
         if (appleUserInDB == null) {
           // 만약, FirebaseDB에 Apple 유저 정보가 없다면
@@ -209,38 +209,34 @@ class _LoginScreenState extends State<LoginScreen> {
           MyUser.appleUserUid = firebaseUser.uid;
           MyUser.appleUserEmail = firebaseUser.email!;
           User newUser = User(
-            uid: firebaseUser.uid,
-            name: 'apple',
-            profileImage: getRandomProfile(),
-            gender: 0,
-            number: '',
-            age: '',
-            birthday: '0000-00-00',
-            school: '',
-            schoolCode: '',
-            schoolOrg: '',
-            grade: 0,
-            group: 0,
-            eyes: 0,
-            mbti: '',
-            hobby: '',
-            style: [],
-            isSubscribe: false,
-            candyCount: 0,
-            recentDailyBonusReceiveDate: '',
-            recentQuestionBonusReceiveDate: '',
-            questionInfos: [],
-            answeredQuestions: [],
-            currentQuestion: {},
-            serviceNeedsAgreement: false,
-            privacyNeedsAgreement: false);
+              uid: firebaseUser.uid,
+              name: 'apple',
+              profileImage: getRandomProfile(),
+              gender: 0,
+              number: '',
+              age: '',
+              birthday: '0000-00-00',
+              school: '',
+              schoolCode: '',
+              schoolOrg: '',
+              grade: 0,
+              group: 0,
+              eyes: 0,
+              mbti: '',
+              hobby: '',
+              style: [],
+              isSubscribe: false,
+              candyCount: 0,
+              recentDailyBonusReceiveDate: '',
+              recentQuestionBonusReceiveDate: '',
+              questionInfos: [],
+              answeredQuestions: [],
+              currentQuestion: {},
+              serviceNeedsAgreement: false,
+              privacyNeedsAgreement: false);
 
           if (!mounted) return;
-          Navigator.pushNamed(
-            scaffoldContext,
-            'signUp',
-            arguments: newUser
-          );
+          Navigator.pushNamed(scaffoldContext, 'signUp', arguments: newUser);
         } else {
           // 만약, FirebaseDB에 Apple 유저 정보가 있다면
 
@@ -254,9 +250,9 @@ class _LoginScreenState extends State<LoginScreen> {
           await FlutterSecureStorage()
               .write(key: "appleUserUid", value: firebaseUser.uid);
           print('애플 로그인 성공 👋');
-          Get.offAll(TabPage(isLinkEntered: false,), arguments: firebaseUser.uid);
+          Get.offAll(TabPage(), arguments: firebaseUser.uid);
         }
-      }else{
+      } else {
         setState(() {
           isLoading = false;
         });
@@ -298,7 +294,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _appleLoginButton() {
     return GestureDetector(
       onTap: () {
-        if(!isLoading){
+        if (!isLoading) {
           signInWithApple();
         }
       },
@@ -310,31 +306,31 @@ class _LoginScreenState extends State<LoginScreen> {
             color: Color(0XFF000000), borderRadius: BorderRadius.circular(12)),
         child: isLoading == true && isKakaoClicked == false
             ? SizedBox(
-          height: 20.h,
-          width: 20.w,
-          child: CircularProgressIndicator(
-            color: Colors.white,
-            strokeWidth: 3,
-          ),
-        )
-            :GestureDetector(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(
-                'assets/images/apple_symbol.png',
                 height: 20.h,
-              ),
-              SizedBox(
-                width: 10.w,
-              ),
-              Text(
-                'Apple로 로그인 ',
-                style: TextStyle(fontSize: 15.sp, color: Colors.white),
+                width: 20.w,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 3,
+                ),
               )
-            ],
-          ),
-        ),
+            : GestureDetector(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      'assets/images/apple_symbol.png',
+                      height: 20.h,
+                    ),
+                    SizedBox(
+                      width: 10.w,
+                    ),
+                    Text(
+                      'Apple로 로그인 ',
+                      style: TextStyle(fontSize: 15.sp, color: Colors.white),
+                    )
+                  ],
+                ),
+              ),
       ),
     );
   }
@@ -343,7 +339,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _kakaoLoginButton() {
     return GestureDetector(
       onTap: () {
-        if(!isLoading){
+        if (!isLoading) {
           signInWithKakao();
         }
       },
@@ -355,33 +351,33 @@ class _LoginScreenState extends State<LoginScreen> {
             color: Color(0XFFFEE500), borderRadius: BorderRadius.circular(12)),
         child: isLoading == true && isKakaoClicked == true
             ? SizedBox(
-          height: 20.h,
-          width: 20.w,
-          child: CircularProgressIndicator(
-            color: Colors.black.withOpacity(0.85),
-            strokeWidth: 3,
-          ),
-        )
-            : GestureDetector(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(
-                'assets/images/kakao_symbol.png',
                 height: 20.h,
-              ),
-              SizedBox(
-                width: 10.w,
-              ),
-              Text(
-                '카카오 로그인 ',
-                style: TextStyle(
-                    fontSize: 15.sp,
-                    color: Colors.black.withOpacity(0.85)),
+                width: 20.w,
+                child: CircularProgressIndicator(
+                  color: Colors.black.withOpacity(0.85),
+                  strokeWidth: 3,
+                ),
               )
-            ],
-          ),
-        ),
+            : GestureDetector(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      'assets/images/kakao_symbol.png',
+                      height: 20.h,
+                    ),
+                    SizedBox(
+                      width: 10.w,
+                    ),
+                    Text(
+                      '카카오 로그인 ',
+                      style: TextStyle(
+                          fontSize: 15.sp,
+                          color: Colors.black.withOpacity(0.85)),
+                    )
+                  ],
+                ),
+              ),
       ),
     );
   }
