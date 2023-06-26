@@ -341,6 +341,7 @@ class _FeedPageState extends State<FeedPage> {
                       question: question,
                       hints: widget.hints,
                       isBonusQuestion: canReceiveBonus,
+                      isFromLink: false,
                     )));
               } catch (e) {
                 print('알 수 없는 에러 - E: $e');

@@ -23,6 +23,7 @@ class AnswerPage extends StatefulWidget {
   final User? user;
   final String uid;
   final Question question;
+  final bool isFromLink;
   final Map<String, dynamic> hints;
   final bool isBonusQuestion;
 
@@ -30,7 +31,8 @@ class AnswerPage extends StatefulWidget {
       {required this.user,
       required this.uid,
       required this.question,
-      required this.hints,
+        required this.isFromLink,
+        required this.hints,
         required this.isBonusQuestion,
       super.key});
 
@@ -60,8 +62,10 @@ class _AnswerPageState extends State<AnswerPage> {
     super.initState();
 
     question = widget.question;
+    if(widget.isFromLink){
+      question.isOpen = checkingOpenState(question);
+    }
     uid = widget.uid;
-    question = question;
     hintList = generateHint(widget.user!);
     nickname = getNickname(widget.user!);
 
@@ -113,6 +117,23 @@ class _AnswerPageState extends State<AnswerPage> {
           );
   }
 
+  bool checkingOpenState(Question question) {
+    DateTime now = DateTime.now();
+    print("receiveTime = ${question.receiveTime}");
+    DateTime receiveTime = DateTime.parse(question.receiveTime);
+    Duration difference = now.difference(receiveTime);
+
+    //질문 open한 지 24시간이 지나면
+    if (difference.inHours >= 24){
+      //TODO: 기련 서버의 Dynamic Link 상태 불러오기
+      bool isOpened = true;
+      return isOpened;
+    }
+    //24시간이 지나기 전에는 isOpened가 true
+    return true;
+
+
+  }
   String getNickname(User user) {
     List styles = user.style;
     int gender = user.gender; // 0: male, 1: female
@@ -136,7 +157,7 @@ class _AnswerPageState extends State<AnswerPage> {
           questionOwner: question.owner,
           questionOwnerFcmToken: question.fcmToken,
           isAnonymous: _checkSecret,
-          nickname: nickname,
+          nickname:  _checkSecret ? nickname : widget.user!.name,
           hint: hintList,
           isOpenedHint: [false, false, false],
           isOpened: false);
@@ -165,12 +186,9 @@ class _AnswerPageState extends State<AnswerPage> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SizedBox(
-              width: 120.0.w,
-              height: 120.0.h,
-              child: Icon(
-                Icons.cancel,
-                color: Palette.mainPurple,
-              )),
+              width: 100.w,
+              height: 100.w,
+              child:  Image(image: AssetImage('assets/images/icon_isNotOpened.png')),),
           Container(
             padding: EdgeInsets.only(top: 50, bottom: 7).r,
             child: Text(

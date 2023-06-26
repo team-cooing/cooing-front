@@ -108,10 +108,12 @@ class _SplashScreenState extends State<SplashScreen> {
               // 만약, 유저 정보가 있다면
               newUserUid = userCredential.user!.uid;
 
-              await DynamicLink().setup(newUserUid);
-
+              DynamicLink().setup(newUserUid).then((value) {
+                if(value == false) {
+                  initialRoute = 'tab';
+              }
+              });
               // tab 으로 이동
-              initialRoute = 'tab';
             } else {
               // 만약, 유저 정보가 없다면
               // home 으로 이동
