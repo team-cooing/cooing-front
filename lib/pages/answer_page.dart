@@ -43,8 +43,6 @@ class _AnswerPageState extends State<AnswerPage> {
   late String nickname;
   late Question? updateQuestion;
   late String uid;
-  late bool isFromLink;
-
   bool _checkSecret = true;
   bool canLogin = true;
   late List<String> hintList;
@@ -62,10 +60,13 @@ class _AnswerPageState extends State<AnswerPage> {
     super.initState();
 
     question = widget.question;
+    if(widget.isFromLink){
+      question.isOpen = checkingOpenState(question);
+    }
     uid = widget.uid;
     hintList = generateHint(widget.user!);
     nickname = getNickname(widget.user!);
-    isFromLink = widget.isFromLink;
+
 
 
     _textController.addListener(() {
@@ -116,13 +117,20 @@ class _AnswerPageState extends State<AnswerPage> {
           );
   }
 
-  checkingOpenState(Question question) {
+  bool checkingOpenState(Question question) {
     DateTime now = DateTime.now();
-    Duration difference = now.difference(question.receiveTime as DateTime);
+    print("receiveTime = ${question.receiveTime}");
+    DateTime receiveTime = DateTime.parse(question.receiveTime);
+    Duration difference = now.difference(receiveTime);
 
+    //질문 open한 지 24시간이 지나면
     if (difference.inHours >= 24){
-
+      //TODO: 기련 서버의 Dynamic Link 상태 불러오기
+      bool isOpened = true;
+      return isOpened;
     }
+    //24시간이 지나기 전에는 isOpened가 true
+    return true;
 
 
   }

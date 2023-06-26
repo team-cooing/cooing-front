@@ -1,3 +1,4 @@
+import 'package:app_links/app_links.dart';
 import 'package:cooing_front/model/response/question.dart';
 import 'package:cooing_front/pages/tab_page.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
@@ -18,9 +19,12 @@ class DynamicLink {
   }
 
   Future<bool> _getInitialDynamicLink(String uid) async {
-    await Future.delayed(Duration(seconds: 1));
 
+    // await Future.delayed(Duration(seconds: 2));
+
+    final _appLinks = AppLinks();
     final String? deepLink = await getInitialLink();
+
 
     if (deepLink != null) {
       PendingDynamicLinkData? dynamicLinkData = await FirebaseDynamicLinks
@@ -29,9 +33,20 @@ class DynamicLink {
 
       if (dynamicLinkData != null) {
         _redirectScreen(uid, dynamicLinkData);
-
         return true;
       }
+    }
+    //terminate 상태에서 링크캐치하기
+    else{
+      final Uri? uri = await _appLinks.getInitialAppLink();
+        if (uri != null){
+          final PendingDynamicLinkData? appLinkData = await FirebaseDynamicLinks.instance.getDynamicLink(uri);
+
+          if(appLinkData != null){
+            _redirectScreen(uid, appLinkData);
+            return true;
+          }
+        }
     }
 
     return false;
@@ -47,7 +62,9 @@ class DynamicLink {
   }
 
   void _redirectScreen(String uid, PendingDynamicLinkData dynamicLinkData) {
+
     print("In dynamicLink() - _redirectScreen : ${dynamicLinkData.link}");
+
     if (dynamicLinkData.link.queryParameters.containsKey('cid')) {
       // String? questionId
       String questionId =
@@ -66,6 +83,8 @@ class DynamicLink {
       String ownerProfileImage =
           dynamicLinkData.link.queryParameters['imgUrl'] ??
               ""; //ownerProfileImg
+      String receiveTime =
+          dynamicLinkData.link.queryParameters['rcvTime'] ?? ""; //receiveTime
 
       // print("_redirectScreen: questionId-$questionId, contentId-$contentId");
       // 임시 Question
@@ -77,7 +96,7 @@ class DynamicLink {
           owner: ownerId,
           content: content.replaceAll('%20', ' '),
           contentId: contentId,
-          receiveTime: '',
+          receiveTime: receiveTime.replaceAll('+', ' '),
           openTime: '',
           url: '',
           schoolCode: '',
@@ -100,7 +119,7 @@ Future<String> getShortLink(Question question) async {
           '$dynamicLinkPrefix/${question.id}?cid=${question
               .contentId}&content=${question.content}&ownerId=${question
               .owner}&ownerName=${question.ownerName}&imgUrl=${question
-              .ownerProfileImage}'),
+              .ownerProfileImage}&rcvTime=${question.receiveTime}'),
       androidParameters: const AndroidParameters(
         packageName: 'com.midas.cooing',
         minimumVersion: 0,
