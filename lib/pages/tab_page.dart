@@ -13,7 +13,8 @@ import 'package:cooing_front/pages/setting_page.dart';
 import 'package:cooing_front/pages/feed_page.dart';
 import 'package:cooing_front/pages/login/login_screen.dart';
 import 'package:cooing_front/pages/message_page.dart';
-import 'package:cooing_front/providers/UserProvider.dart';
+import 'package:cooing_front/providers/hint_status_provider.dart';
+import 'package:cooing_front/providers/user_provider.dart';
 import 'package:cooing_front/widgets/dynamic_link.dart';
 import 'package:cooing_front/widgets/loading_view.dart';
 import 'package:flutter/material.dart';
@@ -163,6 +164,13 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
       // 1. User 데이터 가져오기
       user = await getUserData();
 
+      // 1-2. HintStatus 데이터 가져오기
+      HintStatusProvider hintStatusProvider = HintStatusProvider();
+      await hintStatusProvider.loadHintStatusDataFromCookie();
+      if(hintStatusProvider.hintStatusData!=null){
+        hints = hintStatusProvider.hintStatusData!.isHintOpends;
+      }
+
       // 2. Current Question 데이터 가져오기
       currentQuestion = user!.currentQuestion.isNotEmpty
           ? Question.fromJson(user!.currentQuestion)
@@ -197,7 +205,6 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
           }
         }
       }
-      hints = await response.Response.readHint(ownerId: uid);
 
       setState(() {
         isLoading = false;
@@ -224,7 +231,6 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
   Future<User?> getUserData() async {
     UserDataProvider userProvider = UserDataProvider();
     await userProvider.loadUserDataFromCookie();
-    await userProvider.loadData();
     User? newUser = userProvider.userData;
 
     return newUser;

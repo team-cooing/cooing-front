@@ -6,9 +6,12 @@
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cooing_front/model/response/dynamic_link_status.dart';
+import 'package:cooing_front/model/response/hint_status.dart';
 import 'package:cooing_front/model/response/question.dart';
 import 'package:cooing_front/model/response/user.dart';
 import 'package:cooing_front/model/response/answer.dart';
+import 'package:cooing_front/providers/hint_status_provider.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase;
 
 class Response {
   static FirebaseFirestore db = FirebaseFirestore.instance;
@@ -175,6 +178,19 @@ class Response {
             }
           }
 
+          bool isHintStatusChanged = false;
+
+          for (var answer in _answers){
+            if(!HintStatusProvider().hintStatusData!.isHintOpends.containsKey(answer.id)){
+              HintStatusProvider().hintStatusData!.isHintOpends[answer.id]= [false, false, false];
+              isHintStatusChanged = true;
+            }
+          }
+          if(isHintStatusChanged){
+            await HintStatusProvider().saveCookie();
+            await updateHintStatus(isHintOpends: HintStatusProvider().hintStatusData!.isHintOpends, ownerId: firebase.FirebaseAuth.instance.currentUser!.uid);
+          }
+
           _messageContentStringIndex += 1;
         }
       }catch(e){
@@ -229,36 +245,33 @@ class Response {
     }
   }
 
-  static Future<Map<String, dynamic>> readHint({required String ownerId}) async {
+  static Future<HintStatus?> readHintStatus({required String ownerId}) async {
+    HintStatus? hintStatus;
     try {
-      Map<String, dynamic> hints = {};
-
       final docRef = FirebaseFirestore.instance
-          .collection('openStatus')
+          .collection('hintStatus')
           .doc(ownerId);
 
       await docRef.get().then((DocumentSnapshot doc){
         final data = doc.data() as Map<String, dynamic>;
-        for (var entry in data['is_hint_opends'].entries){
-          hints[entry.key] = entry.value;
-        }
+        hintStatus = HintStatus.fromJson(data);
       });
-
-      return hints;
     } catch (e) {
-      print("[readHint] Error getting document: $e");
-      return {};
+      print("[readHintStatus] Error getting document: $e");
+      hintStatus = HintStatus(isHintOpends: {});
     }
+
+    return hintStatus;
   }
 
-  static Future<void> updateHint(
-      {required Map<String, dynamic> newHint, required ownerId}) async {
-    final docRef = db.collection('openStatus').doc(ownerId);
+  static Future<void> updateHintStatus(
+      {required Map<String, dynamic> isHintOpends, required ownerId}) async {
+    final docRef = db.collection('hintStatus').doc(ownerId);
 
     try {
-      await docRef.update(newHint);
+      await docRef.set(HintStatus(isHintOpends: isHintOpends).toJson());
     } catch (e) {
-      print("[updateAnswer] Error getting document: $e");
+      print("[updateHintStatus] Error getting document: $e");
     }
   }
 

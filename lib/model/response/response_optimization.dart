@@ -60,6 +60,7 @@ class ResponseOptimization {
     }
   }
 
+
   static String getNowString(){
     String result = '';
     DateTime now = DateTime.now();

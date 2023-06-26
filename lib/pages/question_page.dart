@@ -9,7 +9,7 @@ import 'package:cooing_front/model/response/question.dart';
 import 'package:cooing_front/model/response/response.dart';
 import 'package:cooing_front/model/response/response_optimization.dart';
 import 'package:cooing_front/model/response/user.dart';
-import 'package:cooing_front/providers/UserProvider.dart';
+import 'package:cooing_front/providers/user_provider.dart';
 import 'package:cooing_front/widgets/dynamic_link.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';

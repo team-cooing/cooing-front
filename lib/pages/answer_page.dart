@@ -13,7 +13,7 @@ import 'package:cooing_front/pages/answer_complete_page.dart';
 import 'package:cooing_front/pages/tab_page.dart';
 import 'package:cooing_front/model/response/response.dart' as response;
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cooing_front/providers/UserProvider.dart';
+import 'package:cooing_front/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -154,10 +154,6 @@ class _AnswerPageState extends State<AnswerPage> {
           newAnswer: newAnswer);
 
       await response.Response.updateUser(newUser: widget.user!);
-
-      widget.hints[timeId] = [false, false, false];
-      await response.Response.updateHint(
-          newHint: {'is_hint_opends': widget.hints}, ownerId: question.owner);
     } catch (e) {
       print(e);
     }

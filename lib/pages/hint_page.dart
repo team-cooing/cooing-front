@@ -6,7 +6,8 @@
 import 'package:cooing_front/model/response/answer.dart';
 import 'package:cooing_front/model/response/user.dart';
 import 'package:cooing_front/pages/candy_screen.dart';
-import 'package:cooing_front/providers/UserProvider.dart';
+import 'package:cooing_front/providers/hint_status_provider.dart';
+import 'package:cooing_front/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:cooing_front/model/response/response.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -29,6 +30,7 @@ class HintPage extends StatefulWidget {
 class _HintPageState extends State<HintPage> {
   bool isLoading = false;
   UserDataProvider userProvider = UserDataProvider();
+  HintStatusProvider hintStatusProvider = HintStatusProvider();
 
   @override
   void initState() {
@@ -174,7 +176,7 @@ class _HintPageState extends State<HintPage> {
                                                         3) {
                                                       widget.user.candyCount -= 3;
 
-                                                      UserDataProvider()
+                                                      await UserDataProvider()
                                                           .saveCookie();
                                                       await Response.updateUser(
                                                           newUser: widget.user);
@@ -182,13 +184,12 @@ class _HintPageState extends State<HintPage> {
                                                       widget.hint![widget
                                                           .answer.id][0] = true;
 
-                                                      await Response.updateHint(
-                                                          newHint: {
-                                                            'is_hint_opends':
-                                                                widget.hint
-                                                          },
+                                                      await HintStatusProvider().saveCookie();
+
+                                                      await Response.updateHintStatus(
+                                                          isHintOpends: widget.hint!,
                                                           ownerId:
-                                                              widget.user.uid);
+                                                          widget.user.uid);
                                                     } else {
                                                       Navigator.of(context).push(
                                                           MaterialPageRoute(
@@ -303,7 +304,7 @@ class _HintPageState extends State<HintPage> {
                                                           widget.user
                                                               .candyCount -= 3;
 
-                                                          UserDataProvider()
+                                                          await UserDataProvider()
                                                               .saveCookie();
                                                           await Response
                                                               .updateUser(
@@ -314,14 +315,12 @@ class _HintPageState extends State<HintPage> {
                                                               .answer
                                                               .id][1] = true;
 
-                                                          await Response
-                                                              .updateHint(
-                                                                  newHint: {
-                                                                'is_hint_opends':
-                                                                    widget.hint
-                                                              },
-                                                                  ownerId: widget
-                                                                      .user.uid);
+                                                          await HintStatusProvider().saveCookie();
+
+                                                          await Response.updateHintStatus(
+                                                              isHintOpends: widget.hint!,
+                                                              ownerId:
+                                                              widget.user.uid);
                                                         } else {
                                                           Navigator.of(context).push(
                                                               MaterialPageRoute(
@@ -435,7 +434,7 @@ class _HintPageState extends State<HintPage> {
                                                         widget.user.candyCount -=
                                                             3;
 
-                                                        UserDataProvider()
+                                                        await UserDataProvider()
                                                             .saveCookie();
                                                         await Response.updateUser(
                                                             newUser: widget.user);
@@ -443,11 +442,10 @@ class _HintPageState extends State<HintPage> {
                                                         widget.hint![widget
                                                             .answer.id][2] = true;
 
-                                                        await Response.updateHint(
-                                                            newHint: {
-                                                              'is_hint_opends':
-                                                                  widget.hint
-                                                            },
+                                                        await HintStatusProvider().saveCookie();
+
+                                                        await Response.updateHintStatus(
+                                                            isHintOpends: widget.hint!,
                                                             ownerId:
                                                                 widget.user.uid);
                                                       } else {

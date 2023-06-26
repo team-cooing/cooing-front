@@ -10,7 +10,7 @@ import 'package:cooing_front/model/response/user.dart';
 import 'package:cooing_front/model/response/storeState.dart';
 import 'package:cooing_front/model/response/response.dart';
 import 'package:cooing_front/pages/candy_complete_page.dart';
-import 'package:cooing_front/providers/UserProvider.dart';
+import 'package:cooing_front/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
@@ -473,7 +473,7 @@ class _CandyScreenState extends State<CandyScreen> {
     widget.user.candyCount += number;
 
     await Response.updateUser(newUser: widget.user);
-    userProvider.saveCookie();
+    await userProvider.saveCookie();
 
     final uid = widget.user.uid;
     final purchaseRef = FirebaseFirestore.instance

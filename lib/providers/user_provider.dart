@@ -30,7 +30,7 @@ class UserDataProvider with ChangeNotifier {
       _isDataLoaded = true;
       notifyListeners();
     } else {
-      loadData();
+      await loadData();
     }
   }
 
@@ -77,7 +77,7 @@ class UserDataProvider with ChangeNotifier {
             serviceNeedsAgreement: data['serviceNeedsAgreement'],
             privacyNeedsAgreement: data['privacyNeedsAgreement']);
         _isDataLoaded = true;
-        _saveUserDataToCookie(_userData!);
+        await _saveUserDataToCookie(_userData!);
         notifyListeners();
       }
     }

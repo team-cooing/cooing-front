@@ -9,7 +9,8 @@ import 'package:cooing_front/pages/login/sign_up_screen.dart';
 import 'package:cooing_front/pages/login/splash_screen.dart';
 import 'package:cooing_front/pages/login/welcome_screen.dart';
 import 'package:cooing_front/pages/tab_page.dart';
-import 'package:cooing_front/providers/UserProvider.dart';
+import 'package:cooing_front/providers/hint_status_provider.dart';
+import 'package:cooing_front/providers/user_provider.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -80,6 +81,7 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => UserDataProvider()),
+        ChangeNotifierProvider(create: (_) => HintStatusProvider())
       ],
       child: MyApp(),
     ),
