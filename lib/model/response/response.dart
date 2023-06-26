@@ -276,16 +276,10 @@ class Response {
   }
 
   // Dynamic Link
-  static Future<void> createDynamicLink({required String url}) async {
-    String? extractedString = "";
-    final match = RegExp(r"(?<=\/)[A-Za-z0-9]+$").firstMatch(url);
-    if (match != null) {
-      extractedString = match.group(0);
-    }
-
+  static Future<void> createDynamicLink({required String questionId}) async {
     final data = DynamicLinkStatus(isOpened: true);
 
-    final docRef = db.collection("dynamicLinks").doc(extractedString);
+    final docRef = db.collection("dynamicLinks").doc(questionId);
     try {
       await docRef.set(data.toJson());
     } catch (e) {
@@ -294,22 +288,17 @@ class Response {
   }
 
   // TODO: 혜은과 병합 후, 다이나믹 링크 사용하는 곳에서 질문 활성화 상태 확인용으로 쓰기
-  static Future<DynamicLinkStatus?> readDynamicLink({required String url}) async {
+  static Future<DynamicLinkStatus?> readDynamicLink({required String questionId}) async {
     DynamicLinkStatus? dynamicLinkStatus;
-    String? extractedString = "";
-    final match = RegExp(r"(?<=\/)[A-Za-z0-9]+$").firstMatch(url);
-    if (match != null) {
-      extractedString = match.group(0);
-    }
 
-    final docRef = db.collection("dynamicLinks").doc(extractedString);
+    final docRef = db.collection("dynamicLinks").doc(questionId);
     try {
       await docRef.get().then((DocumentSnapshot doc) {
         final data = doc.data() as Map<String, dynamic>;
         dynamicLinkStatus = DynamicLinkStatus.fromJson(data);
       });
     } catch (e) {
-      print("[createDynamicLink] Error getting document: $e");
+      print("[readDynamicLink] Error getting document: $e");
     }
 
     return dynamicLinkStatus;

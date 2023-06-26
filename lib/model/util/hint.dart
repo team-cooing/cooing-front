@@ -36,8 +36,6 @@ List<String> generateHint(User user) {
     '${getRandomStyle(user.style)} 스타일'
   ];
 
-  print(hints);
-
   final random = Random();
   List<String> selected = [];
 

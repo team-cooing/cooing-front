@@ -2,8 +2,6 @@ import 'package:app_links/app_links.dart';
 import 'package:cooing_front/model/response/question.dart';
 import 'package:cooing_front/pages/tab_page.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
-import 'package:cooing_front/pages/answer_page.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:uni_links/uni_links.dart';
 
@@ -62,9 +60,6 @@ class DynamicLink {
   }
 
   void _redirectScreen(String uid, PendingDynamicLinkData dynamicLinkData) {
-
-    print("In dynamicLink() - _redirectScreen : ${dynamicLinkData.link}");
-
     if (dynamicLinkData.link.queryParameters.containsKey('cid')) {
       // String? questionId
       String questionId =
@@ -85,8 +80,8 @@ class DynamicLink {
               ""; //ownerProfileImg
       String receiveTime =
           dynamicLinkData.link.queryParameters['rcvTime'] ?? ""; //receiveTime
+      String fcmToken = dynamicLinkData.link.queryParameters['fcmToken'] ?? "";
 
-      // print("_redirectScreen: questionId-$questionId, contentId-$contentId");
       // 임시 Question
       Question question = Question(
           id: questionId.replaceAll('%20', ' '),
@@ -101,7 +96,8 @@ class DynamicLink {
           url: '',
           schoolCode: '',
           isOpen: false,
-          fcmToken: '');
+          fcmToken: fcmToken.replaceAll('%20', ' ')
+      );
 
       targetQuestion = question;
 
@@ -119,7 +115,7 @@ Future<String> getShortLink(Question question) async {
           '$dynamicLinkPrefix/${question.id}?cid=${question
               .contentId}&content=${question.content}&ownerId=${question
               .owner}&ownerName=${question.ownerName}&imgUrl=${question
-              .ownerProfileImage}&rcvTime=${question.receiveTime}'),
+              .ownerProfileImage}&rcvTime=${question.receiveTime}&fcmToken=${question.fcmToken}'),
       androidParameters: const AndroidParameters(
         packageName: 'com.midas.cooing',
         minimumVersion: 0,

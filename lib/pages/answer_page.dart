@@ -4,6 +4,7 @@
 // 중복 서버 송수신 방지: ✅
 
 import 'package:cooing_front/model/response/answer.dart';
+import 'package:cooing_front/model/response/dynamic_link_status.dart';
 import 'package:cooing_front/model/response/question.dart';
 import 'package:cooing_front/model/response/response_optimization.dart';
 import 'package:cooing_front/model/response/user.dart';
@@ -31,9 +32,9 @@ class AnswerPage extends StatefulWidget {
       {required this.user,
       required this.uid,
       required this.question,
-        required this.isFromLink,
-        required this.hints,
-        required this.isBonusQuestion,
+      required this.isFromLink,
+      required this.hints,
+      required this.isBonusQuestion,
       super.key});
 
   @override
@@ -56,14 +57,30 @@ class _AnswerPageState extends State<AnswerPage> {
   late CollectionReference userCollectionRef;
   final TextEditingController _textController = TextEditingController();
   bool isLoading = false;
+  bool isDataLoading = true;
 
   @override
   void initState() {
     super.initState();
 
     question = widget.question;
-    if(widget.isFromLink){
-      question.isOpen = checkingOpenState(question);
+    if (widget.isFromLink) {
+      checkingOpenState(question).then((value) {
+        setState(() {
+          question.isOpen = value;
+          isDataLoading = false;
+        });
+      }).catchError((error){
+        print('dynamicLink - E: $error');
+        setState(() {
+          question.isOpen = false;
+          isDataLoading = false;
+        });
+      });
+    }else{
+      setState(() {
+        isDataLoading = false;
+      });
     }
     uid = widget.uid;
     hintList = generateHint(widget.user!);
@@ -78,62 +95,68 @@ class _AnswerPageState extends State<AnswerPage> {
 
   @override
   Widget build(BuildContext context) {
-    return question.isOpen
-        ? GestureDetector(
-            onTap: () => hideKeyboard(),
-            child: Scaffold(
-              resizeToAvoidBottomInset: false,
-              appBar: AppBar(
-                automaticallyImplyLeading: false,
-                backgroundColor: Colors.transparent,
-                elevation: 0.0,
-                leading: IconButton(
-                  icon: const Icon(Icons.close_rounded),
-                  color: Colors.black54,
-                  onPressed: () {
-                    Navigator.pop(context, false);
-                  },
+    return isDataLoading
+        ? loadingView()
+        : question.isOpen
+            ? GestureDetector(
+                onTap: () => hideKeyboard(),
+                child: Scaffold(
+                  resizeToAvoidBottomInset: false,
+                  appBar: AppBar(
+                    automaticallyImplyLeading: false,
+                    backgroundColor: Colors.transparent,
+                    elevation: 0.0,
+                    leading: IconButton(
+                      icon: const Icon(Icons.close_rounded),
+                      color: Colors.black54,
+                      onPressed: () {
+                        Navigator.pop(context, false);
+                      },
+                    ),
+                  ),
+                  body: Column(
+                    children: [
+                      Expanded(child: _answerBody()),
+                      Align(
+                          alignment: Alignment.bottomCenter, child: sendBtn()),
+                    ],
+                  ),
                 ),
-              ),
-              body: Column(
-                children: [
-                  Expanded(child: _answerBody()),
-                  Align(alignment: Alignment.bottomCenter, child: sendBtn()),
-                ],
-              ),
-            ),
-          )
-        : Scaffold(
-            backgroundColor: Color(0xFFffffff),
-            body: SizedBox(
-              width: double.infinity,
-              child: Column(
-                children: [
-                  Expanded(child: isNotOpenedView()),
-                  okBtn(),
-                ],
-              ),
-            ),
-          );
+              )
+            : Scaffold(
+                backgroundColor: Color(0xFFffffff),
+                body: SizedBox(
+                  width: double.infinity,
+                  child: Column(
+                    children: [
+                      Expanded(child: isNotOpenedView()),
+                      okBtn(),
+                    ],
+                  ),
+                ),
+              );
   }
 
-  bool checkingOpenState(Question question) {
+  Future<bool> checkingOpenState(Question question) async {
     DateTime now = DateTime.now();
-    print("receiveTime = ${question.receiveTime}");
     DateTime receiveTime = DateTime.parse(question.receiveTime);
     Duration difference = now.difference(receiveTime);
 
     //질문 open한 지 24시간이 지나면
-    if (difference.inHours >= 24){
-      //TODO: 기련 서버의 Dynamic Link 상태 불러오기
-      bool isOpened = true;
+    if (difference.inHours >= 24) {
+      bool isOpened = false;
+      DynamicLinkStatus? dynamicLinkStatus =
+          await response.Response.readDynamicLink(questionId: question.id);
+      if (dynamicLinkStatus != null) {
+        isOpened = dynamicLinkStatus.isOpened;
+      }
+
       return isOpened;
     }
     //24시간이 지나기 전에는 isOpened가 true
     return true;
-
-
   }
+
   String getNickname(User user) {
     List styles = user.style;
     int gender = user.gender; // 0: male, 1: female
@@ -157,15 +180,14 @@ class _AnswerPageState extends State<AnswerPage> {
           questionOwner: question.owner,
           questionOwnerFcmToken: question.fcmToken,
           isAnonymous: _checkSecret,
-          nickname:  _checkSecret ? nickname : widget.user!.name,
+          nickname: _checkSecret ? nickname : widget.user!.name,
           hint: hintList,
           isOpenedHint: [false, false, false],
           isOpened: false);
 
       widget.user!.answeredQuestions.add(question.id);
-      if(widget.isBonusQuestion){
-        widget.user!.recentQuestionBonusReceiveDate =
-            DateTime.now().toString();
+      if (widget.isBonusQuestion) {
+        widget.user!.recentQuestionBonusReceiveDate = DateTime.now().toString();
         widget.user!.candyCount += 3;
       }
 
@@ -186,9 +208,11 @@ class _AnswerPageState extends State<AnswerPage> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SizedBox(
-              width: 100.w,
-              height: 100.w,
-              child:  Image(image: AssetImage('assets/images/icon_isNotOpened.png')),),
+            width: 100.w,
+            height: 100.w,
+            child:
+                Image(image: AssetImage('assets/images/icon_isNotOpened.png')),
+          ),
           Container(
             padding: EdgeInsets.only(top: 50, bottom: 7).r,
             child: Text(
@@ -451,21 +475,23 @@ class _AnswerPageState extends State<AnswerPage> {
                   borderRadius: BorderRadius.circular(14.0),
                 ),
               ),
-              child: isLoading? SizedBox(
-                width: 20.w,
-                height: 20.h,
-                child: CircularProgressIndicator(
-                  color: Colors.white,
-                  strokeWidth: 3,
-                ),
-              ) : Text(
-                "보내기",
-                style: TextStyle(
-                  fontSize: 18.sp,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
+              child: isLoading
+                  ? SizedBox(
+                      width: 20.w,
+                      height: 20.h,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 3,
+                      ),
+                    )
+                  : Text(
+                      "보내기",
+                      style: TextStyle(
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
             ),
           ),
         ],

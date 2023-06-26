@@ -347,7 +347,7 @@ class _QuestionPageState extends State<QuestionPage> {
           widget.currentQuestion!.openTime = DateTime.now().toString();
           final String url = await getUrl(widget.currentQuestion!);
           widget.currentQuestion!.url = url;
-          await Response.createDynamicLink(url: url);
+          await Response.createDynamicLink(questionId: widget.currentQuestion!.id);
 
           // 1-3. User 반영
           widget.user.currentQuestion = widget.currentQuestion!.toJson();
