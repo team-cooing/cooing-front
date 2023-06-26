@@ -24,12 +24,14 @@ class AnswerPage extends StatefulWidget {
   final String uid;
   final Question question;
   final Map<String, dynamic> hints;
+  final bool isBonusQuestion;
 
   const AnswerPage(
       {required this.user,
       required this.uid,
       required this.question,
       required this.hints,
+        required this.isBonusQuestion,
       super.key});
 
   @override
@@ -140,10 +142,16 @@ class _AnswerPageState extends State<AnswerPage> {
           isOpened: false);
 
       widget.user!.answeredQuestions.add(question.id);
+      if(widget.isBonusQuestion){
+        widget.user!.recentQuestionBonusReceiveDate =
+            DateTime.now().toString();
+        widget.user!.candyCount += 3;
+      }
+
+      await UserDataProvider().saveCookie();
 
       await ResponseOptimization.createMessageUploadRequest(
           newAnswer: newAnswer);
-      await UserDataProvider().updateAnsweredQuestion(question.id);
 
       await response.Response.updateUser(newUser: widget.user!);
 

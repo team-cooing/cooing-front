@@ -5,6 +5,7 @@
 
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cooing_front/model/response/dynamic_link_status.dart';
 import 'package:cooing_front/model/response/question.dart';
 import 'package:cooing_front/model/response/user.dart';
 import 'package:cooing_front/model/response/answer.dart';
@@ -144,6 +145,7 @@ class Response {
     }
   }
 
+  // Message
   static Future initMessageContentString({required String uid}) async{
     messageQuerySnapshot = await db.collection('messages').doc(uid).collection('message_strings')
         .orderBy('time', descending: true).limit(1)
@@ -215,6 +217,7 @@ class Response {
     }
   }
 
+  // Hint
   static Future<void> createHint(
       {required Map<String, dynamic> newHint, required ownerId}) async {
     final docRef = db.collection('openStatus').doc(ownerId);
@@ -257,6 +260,46 @@ class Response {
     } catch (e) {
       print("[updateAnswer] Error getting document: $e");
     }
+  }
+
+  // Dynamic Link
+  static Future<void> createDynamicLink({required String url}) async {
+    String? extractedString = "";
+    final match = RegExp(r"(?<=\/)[A-Za-z0-9]+$").firstMatch(url);
+    if (match != null) {
+      extractedString = match.group(0);
+    }
+
+    final data = DynamicLinkStatus(isOpened: true);
+
+    final docRef = db.collection("dynamicLinks").doc(extractedString);
+    try {
+      await docRef.set(data.toJson());
+    } catch (e) {
+      print("[createDynamicLink] Error getting document: $e");
+    }
+  }
+
+  // TODO: 혜은과 병합 후, 다이나믹 링크 사용하는 곳에서 질문 활성화 상태 확인용으로 쓰기
+  static Future<DynamicLinkStatus?> readDynamicLink({required String url}) async {
+    DynamicLinkStatus? dynamicLinkStatus;
+    String? extractedString = "";
+    final match = RegExp(r"(?<=\/)[A-Za-z0-9]+$").firstMatch(url);
+    if (match != null) {
+      extractedString = match.group(0);
+    }
+
+    final docRef = db.collection("dynamicLinks").doc(extractedString);
+    try {
+      await docRef.get().then((DocumentSnapshot doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        dynamicLinkStatus = DynamicLinkStatus.fromJson(data);
+      });
+    } catch (e) {
+      print("[createDynamicLink] Error getting document: $e");
+    }
+
+    return dynamicLinkStatus;
   }
 
   static void initializeStaticVariables() {

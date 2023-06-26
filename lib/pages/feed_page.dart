@@ -274,7 +274,7 @@ class _FeedPageState extends State<FeedPage> {
               widget.user.recentDailyBonusReceiveDate =
                   DateTime.now().toString();
               widget.user.candyCount += candyNum;
-              await UserDataProvider().updateRecentDailyBonusReceiveDate();
+              await UserDataProvider().saveCookie();
 
               // Firebase > Users > User 업데이트
               await Response.updateUser(newUser: widget.user);
@@ -334,30 +334,14 @@ class _FeedPageState extends State<FeedPage> {
                 isLoading = true;
               });
               try {
-                // 만약, 보너스를 받을 수 있다면
-                bool? isCompleted =
-                    await Navigator.of(context).push(MaterialPageRoute(
-                        builder: (BuildContext context) => AnswerPage(
-                              user: widget.user,
-                              uid: widget.user.uid,
-                              question: question,
-                          hints: widget.hints,
-                            )));
-
-                if (isCompleted != null) {
-                  // 만약, 답변이 완료되었다면
-                  if (isCompleted) {
-                    if (canReceiveBonus) {
-                      widget.user.recentQuestionBonusReceiveDate =
-                          DateTime.now().toString();
-                      await UserDataProvider()
-                          .updateRecentQuestionBonusReceiveDate();
-                      widget.user.candyCount += 3;
-                    }
-
-                    await Response.updateUser(newUser: widget.user);
-                  }
-                }
+                await Navigator.of(context).push(MaterialPageRoute(
+                    builder: (BuildContext context) => AnswerPage(
+                      user: widget.user,
+                      uid: widget.user.uid,
+                      question: question,
+                      hints: widget.hints,
+                      isBonusQuestion: canReceiveBonus,
+                    )));
               } catch (e) {
                 print('알 수 없는 에러 - E: $e');
               }

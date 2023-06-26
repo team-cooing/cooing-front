@@ -175,8 +175,7 @@ class _HintPageState extends State<HintPage> {
                                                       widget.user.candyCount -= 3;
 
                                                       UserDataProvider()
-                                                          .updateCandyCount(widget
-                                                              .user.candyCount);
+                                                          .saveCookie();
                                                       await Response.updateUser(
                                                           newUser: widget.user);
 
@@ -305,9 +304,7 @@ class _HintPageState extends State<HintPage> {
                                                               .candyCount -= 3;
 
                                                           UserDataProvider()
-                                                              .updateCandyCount(
-                                                                  widget.user
-                                                                      .candyCount);
+                                                              .saveCookie();
                                                           await Response
                                                               .updateUser(
                                                                   newUser: widget
@@ -439,9 +436,7 @@ class _HintPageState extends State<HintPage> {
                                                             3;
 
                                                         UserDataProvider()
-                                                            .updateCandyCount(
-                                                                widget.user
-                                                                    .candyCount);
+                                                            .saveCookie();
                                                         await Response.updateUser(
                                                             newUser: widget.user);
 

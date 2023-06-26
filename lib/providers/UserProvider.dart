@@ -13,48 +13,8 @@ class UserDataProvider with ChangeNotifier {
     _userData = null;
   }
 
-  Future updateQuestionInfos(List<Map<String, dynamic>> questionInfos) async{
+  Future saveCookie() async{
     if (_userData != null) {
-      _userData!.updateQuestionInfos(questionInfos);
-      await _saveUserDataToCookie(_userData!);
-      notifyListeners();
-    }
-  }
-
-  Future updateAnsweredQuestion(String questionId) async{
-    if (_userData != null) {
-      await _saveUserDataToCookie(_userData!);
-      notifyListeners();
-    }
-  }
-
-  Future updateRecentQuestionBonusReceiveDate() async{
-    if (_userData != null) {
-      _userData!.updateRecentQuestionBonusReceiveDate();
-      await _saveUserDataToCookie(_userData!);
-      notifyListeners();
-    }
-  }
-
-  Future updateRecentDailyBonusReceiveDate() async{
-    if (_userData != null) {
-      _userData!.updateRecentDailyBonusReceiveDate();
-      await _saveUserDataToCookie(_userData!);
-      notifyListeners();
-    }
-  }
-
-  Future updateCurrentQuestion(Map<String, dynamic> currentQuestion) async{
-    if (_userData != null) {
-      _userData!.updateCurrentQuestion(currentQuestion);
-      await _saveUserDataToCookie(_userData!);
-      notifyListeners();
-    }
-  }
-
-  Future updateCandyCount(int candyCount) async{
-    if (_userData != null) {
-      _userData!.candyCount = candyCount;
       await _saveUserDataToCookie(_userData!);
       notifyListeners();
     }

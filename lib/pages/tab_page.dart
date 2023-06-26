@@ -25,6 +25,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class TabPage extends StatefulWidget {
   final bool isLinkEntered;
+
   const TabPage({super.key, required this.isLinkEntered});
 
   @override
@@ -168,13 +169,11 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
           : null;
 
       // 3. Feed Questions 데이터 가져오기
-      // TODO: 임의 학교 코드
-      user!.schoolCode = '7530128';
       await response.Response.initFeedContentString(
           schoolCode: user!.schoolCode);
       feeds = await response.Response.getQuestionsWithLimit(10);
 
-      if (feeds.length > 0) {
+      if (feeds.isNotEmpty) {
         Question? bonusQuestion = feeds[Random().nextInt(feeds.length)];
         if (bonusQuestion != null) {
           bonusQuestionId = bonusQuestion.id;
@@ -212,6 +211,7 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
                   uid: uid,
                   question: DynamicLink.targetQuestion!,
                   hints: hints,
+                  isBonusQuestion: false,
                 )));
       }
     } catch (e) {

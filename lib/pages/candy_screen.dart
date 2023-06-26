@@ -473,7 +473,7 @@ class _CandyScreenState extends State<CandyScreen> {
     widget.user.candyCount += number;
 
     await Response.updateUser(newUser: widget.user);
-    userProvider.updateCandyCount(widget.user.candyCount);
+    userProvider.saveCookie();
 
     final uid = widget.user.uid;
     final purchaseRef = FirebaseFirestore.instance

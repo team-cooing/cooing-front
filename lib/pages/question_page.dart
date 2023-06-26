@@ -48,7 +48,6 @@ class _QuestionPageState extends State<QuestionPage> {
 
   @override
   void initState() {
-
     super.initState();
 
     // Question에 대힌 변수 값 세팅
@@ -57,6 +56,7 @@ class _QuestionPageState extends State<QuestionPage> {
 
   @override
   Widget build(BuildContext context) {
+
     pageContext = context;
 
     return Scaffold(
@@ -322,8 +322,7 @@ class _QuestionPageState extends State<QuestionPage> {
       await Response.updateUser(newUser: widget.user);
 
       // 2-2. 기기 내 캐시 반영
-      await userProvider.updateQuestionInfos(widget.user.questionInfos);
-      await userProvider.updateCurrentQuestion(newQuestion.toJson());
+      await userProvider.saveCookie();
     } else {
       // 만약, 질문을 오픈하지 않은 상태라면
       if (!isQuestionOpen) {
@@ -339,14 +338,16 @@ class _QuestionPageState extends State<QuestionPage> {
           // 2-1. Firebase Users > User 업데이트
           await Response.updateUser(newUser: widget.user);
           // 2-2. 기기 내 캐시 반영
-          await userProvider.updateCurrentQuestion({});
+          await userProvider.saveCookie();
           widget.currentQuestion = null;
         } else {
           // 주요 기능: 질문 오픈하기
           // 1-1. Question 반영
           widget.currentQuestion!.isOpen = true;
           widget.currentQuestion!.openTime = DateTime.now().toString();
-          widget.currentQuestion!.url = await getUrl(widget.currentQuestion!);
+          final String url = await getUrl(widget.currentQuestion!);
+          widget.currentQuestion!.url = url;
+          await Response.createDynamicLink(url: url);
 
           // 1-3. User 반영
           widget.user.currentQuestion = widget.currentQuestion!.toJson();
@@ -356,7 +357,7 @@ class _QuestionPageState extends State<QuestionPage> {
           // 2-2. Firebase Users > User 업데이트
           await Response.updateUser(newUser: widget.user);
           // 2-4. 기기 내 캐시 반영
-          await userProvider.updateCurrentQuestion(widget.currentQuestion!.toJson());
+          await userProvider.saveCookie();
 
           // 3-1. 0, 30분 마다 업데이트 알려주기
           DateTime currentTime = DateTime.now();
@@ -400,7 +401,7 @@ class _QuestionPageState extends State<QuestionPage> {
         widget.currentQuestion = null;
 
         // 3-1 기기내 캐시 반영
-        await userProvider.updateCurrentQuestion({});
+        await userProvider.saveCookie();
       }
     }
 

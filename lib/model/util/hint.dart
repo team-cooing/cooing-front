@@ -20,8 +20,8 @@ List<String> generateHint(User user) {
     '이름에 받침이 ${getSumOfConsonants(name)}개',
     // 네번째 힌트: 휴대폰 번호에 가장 많은 숫자
     "휴대폰번호에 가장 많은 숫자는 '${getMostFrequentDigit(user.number)}'",
-    // 다섯번째 힌트: 생일 월
-    '${getMonthFromBirthday(user.birthday)}월 생일',
+    // 다섯번째 힌트: 생일 월 - 보류
+    // '${getMonthFromBirthday(user.birthday)}월 생일',
     // 여섯번째 힌트: 학년
     '${user.grade}학년',
     // 일곱번째 힌트: 몇~몇반 사이
@@ -233,6 +233,7 @@ int getMostFrequentDigit(String phoneNumber) {
 }
 
 // 다섯번째 힌트: 생일 월을 반환하는 함수
+// 생년월일 정보가 없어서 잠시 보류
 String getMonthFromBirthday(String birthday) {
   String? result = '';
 
