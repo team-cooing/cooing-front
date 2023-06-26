@@ -212,6 +212,7 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
                   uid: uid,
                   question: DynamicLink.targetQuestion!,
                   hints: hints,
+                  isFromLink: true,
                 )));
       }
     } catch (e) {

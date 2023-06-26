@@ -23,13 +23,15 @@ class AnswerPage extends StatefulWidget {
   final User? user;
   final String uid;
   final Question question;
+  final bool isFromLink;
   final Map<String, dynamic> hints;
 
   const AnswerPage(
       {required this.user,
       required this.uid,
       required this.question,
-      required this.hints,
+        required this.isFromLink,
+        required this.hints,
       super.key});
 
   @override
@@ -41,6 +43,8 @@ class _AnswerPageState extends State<AnswerPage> {
   late String nickname;
   late Question? updateQuestion;
   late String uid;
+  late bool isFromLink;
+
   bool _checkSecret = true;
   bool canLogin = true;
   late List<String> hintList;
@@ -62,6 +66,8 @@ class _AnswerPageState extends State<AnswerPage> {
     question = question;
     hintList = generateHint(widget.user!);
     nickname = getNickname(widget.user!);
+    isFromLink = widget.isFromLink;
+
 
     _textController.addListener(() {
       setState(() {
@@ -134,7 +140,7 @@ class _AnswerPageState extends State<AnswerPage> {
           questionOwner: question.owner,
           questionOwnerFcmToken: question.fcmToken,
           isAnonymous: _checkSecret,
-          nickname: nickname,
+          nickname:  _checkSecret ? nickname : widget.user!.name,
           hint: hintList,
           isOpenedHint: [false, false, false],
           isOpened: false);

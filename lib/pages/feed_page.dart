@@ -342,6 +342,7 @@ class _FeedPageState extends State<FeedPage> {
                               uid: widget.user.uid,
                               question: question,
                           hints: widget.hints,
+                          isFromLink: false,
                             )));
 
                 if (isCompleted != null) {
