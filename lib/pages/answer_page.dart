@@ -63,7 +63,6 @@ class _AnswerPageState extends State<AnswerPage> {
 
     question = widget.question;
     uid = widget.uid;
-    question = question;
     hintList = generateHint(widget.user!);
     nickname = getNickname(widget.user!);
     isFromLink = widget.isFromLink;
@@ -117,6 +116,16 @@ class _AnswerPageState extends State<AnswerPage> {
           );
   }
 
+  checkingOpenState(Question question) {
+    DateTime now = DateTime.now();
+    Duration difference = now.difference(question.receiveTime as DateTime);
+
+    if (difference.inHours >= 24){
+
+    }
+
+
+  }
   String getNickname(User user) {
     List styles = user.style;
     int gender = user.gender; // 0: male, 1: female
@@ -167,12 +176,9 @@ class _AnswerPageState extends State<AnswerPage> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SizedBox(
-              width: 120.0.w,
-              height: 120.0.h,
-              child: Icon(
-                Icons.cancel,
-                color: Palette.mainPurple,
-              )),
+              width: 100.w,
+              height: 100.w,
+              child:  Image(image: AssetImage('assets/images/icon_isNotOpened.png')),),
           Container(
             padding: EdgeInsets.only(top: 50, bottom: 7).r,
             child: Text(
