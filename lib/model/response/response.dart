@@ -234,17 +234,6 @@ class Response {
   }
 
   // Hint
-  static Future<void> createHint(
-      {required Map<String, dynamic> newHint, required ownerId}) async {
-    final docRef = db.collection('openStatus').doc(ownerId);
-
-    try {
-      await docRef.set(newHint);
-    } catch (e) {
-      print("[updateAnswer] Error getting document: $e");
-    }
-  }
-
   static Future<HintStatus?> readHintStatus({required String ownerId}) async {
     HintStatus? hintStatus;
     try {
@@ -287,7 +276,6 @@ class Response {
     }
   }
 
-  // TODO: 혜은과 병합 후, 다이나믹 링크 사용하는 곳에서 질문 활성화 상태 확인용으로 쓰기
   static Future<DynamicLinkStatus?> readDynamicLink({required String questionId}) async {
     DynamicLinkStatus? dynamicLinkStatus;
 
