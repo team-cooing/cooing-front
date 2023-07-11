@@ -246,7 +246,7 @@ class _AnswerPageState extends State<AnswerPage> {
                 children: [
                   ElevatedButton(
                       onPressed: () {
-                        Get.offAll(TabPage(), arguments: widget.user!.uid);
+                        Navigator.pop(context);
                       },
                       style: OutlinedButton.styleFrom(
                         fixedSize: Size.fromHeight(50),

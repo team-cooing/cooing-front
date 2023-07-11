@@ -322,7 +322,7 @@ class _HintPageState extends State<HintPage> {
                                                               ownerId:
                                                               widget.user.uid);
                                                         } else {
-                                                          Navigator.of(context).push(
+                                                          await Navigator.of(context).push(
                                                               MaterialPageRoute(
                                                                   builder: (BuildContext
                                                                           context) =>
@@ -331,6 +331,10 @@ class _HintPageState extends State<HintPage> {
                                                                               .user,
                                                                           number:
                                                                               1)));
+
+                                                          setState(() {
+
+                                                          });
                                                         }
                                                       }
                                                     } catch (e) {

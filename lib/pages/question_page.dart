@@ -382,17 +382,6 @@ class _QuestionPageState extends State<QuestionPage> {
         widget.user.currentQuestion = {};
         // 1-2. Question 반영
         widget.currentQuestion!.isOpen = false;
-        // 1-3. Feed 반영
-        for (var i = 0; i < widget.feed.length; i++) {
-          // 만약, 아이템이 있다면
-          if (widget.feed[i] != null) {
-            // 만약, 아이템의 현재 질문 아이다와 같다면
-            if (widget.feed[i]!.id == widget.currentQuestion!.id) {
-              widget.feed.removeAt(i);
-              break;
-            }
-          }
-        }
         // 2-1. Firebase Users > User 업데이트
         await Response.updateUser(newUser: widget.user);
         // 2-2. Firebase Requests > QuestionDeleteRequest 생성
