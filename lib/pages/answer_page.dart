@@ -473,8 +473,8 @@ class _AnswerPageState extends State<AnswerPage> {
               ),
               child: isLoading
                   ? SizedBox(
-                      width: 20.w,
-                      height: 20.h,
+                      width: 20,
+                      height: 20,
                       child: CircularProgressIndicator(
                         color: Colors.white,
                         strokeWidth: 3,

@@ -192,8 +192,8 @@ class _QuestionPageState extends State<QuestionPage> {
                   width: 140.w,
                   height: 55.h,
                   child: isLoading? SizedBox(
-                    width: 20.w,
-                    height: 20.h,
+                    width: 20,
+                    height: 20,
                     child: CircularProgressIndicator(
                       strokeWidth: 3,
                       color: Palette.mainPurple,

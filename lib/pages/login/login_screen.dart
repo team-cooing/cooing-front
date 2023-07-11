@@ -306,8 +306,8 @@ class _LoginScreenState extends State<LoginScreen> {
             color: Color(0XFF000000), borderRadius: BorderRadius.circular(12)),
         child: isLoading == true && isKakaoClicked == false
             ? SizedBox(
-                height: 20.h,
-                width: 20.w,
+                height: 20,
+                width: 20,
                 child: CircularProgressIndicator(
                   color: Colors.white,
                   strokeWidth: 3,
@@ -351,8 +351,8 @@ class _LoginScreenState extends State<LoginScreen> {
             color: Color(0XFFFEE500), borderRadius: BorderRadius.circular(12)),
         child: isLoading == true && isKakaoClicked == true
             ? SizedBox(
-                height: 20.h,
-                width: 20.w,
+                height: 20,
+                width: 20,
                 child: CircularProgressIndicator(
                   color: Colors.black.withOpacity(0.85),
                   strokeWidth: 3,

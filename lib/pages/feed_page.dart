@@ -116,8 +116,8 @@ class _FeedPageState extends State<FeedPage> {
                           if (controller.isLoading)
                             Container(
                               margin: const EdgeInsets.only(bottom: 8.0).h,
-                              width: 16.w,
-                              height: 16.h,
+                              width: 16,
+                              height: 16,
                               child: const CircularProgressIndicator(
                                 color: Palette.mainPurple,
                                 strokeWidth: 2,
@@ -300,8 +300,8 @@ class _FeedPageState extends State<FeedPage> {
                     borderRadius: BorderRadius.circular(10.0)),
               ),
               child: isLoading && isLotteryButtonClicked ? SizedBox(
-                width: 15.w,
-                height: 15.h,
+                width: 15,
+                height: 15,
                 child: CircularProgressIndicator(
                   color: Colors.white,
                   strokeWidth: 2,
@@ -369,8 +369,8 @@ class _FeedPageState extends State<FeedPage> {
                     borderRadius: BorderRadius.circular(10.0)),
               ),
               child: isLoading&&selectedQuestionId==question.id? SizedBox(
-                width: 15.w,
-                height: 15.h,
+                width: 15,
+                height: 15,
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
                   color: Colors.white,
