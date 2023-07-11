@@ -68,7 +68,7 @@ dependencies:
   firebase_messaging: ^14.6.2
   flutter_local_notifications: ^9.2.0
   app_links: ^3.4.3
-
+  google_mobile_ads: ^3.0.0
 
 
 dev_dependencies:

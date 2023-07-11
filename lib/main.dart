@@ -18,6 +18,7 @@ import 'package:cooing_front/pages/login/feature_screen.dart';
 import 'package:cooing_front/pages/login/multi_select_screen.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get_navigation/get_navigation.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
@@ -28,6 +29,27 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 late AndroidNotificationChannel channel;
 late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
+// 애드몹 광고
+const Map<String, String> UNIT_ID_BANNER = kReleaseMode
+    ? {
+        'ios': 'ca-app-pub-7052384650666721/2654154006',
+        'android': 'ca-app-pub-7052384650666721/2582001812',
+      }
+    : {
+        'ios': 'ca-app-pub-3940256099942544/2934735716',
+        'android': 'ca-app-pub-3940256099942544/6300978111',
+      };
+
+const Map<String, String> UNIT_ID_REWARD = kReleaseMode
+    ? {
+        'ios': 'ca-app-pub-7052384650666721/1676114253',
+        'android': 'ca-app-pub-7052384650666721/2802010589',
+      }
+    : {
+        'ios': 'ca-app-pub-3940256099942544/1712485313',
+        'android': 'ca-app-pub-3940256099942544/5224354917',
+      };
+
 void main() async {
   // 카카오 SDK 초기화
   kakao.KakaoSdk.init(nativeAppKey: '010e5977ad5bf0cfbc9ab47ebfaa14a2');
@@ -35,6 +57,8 @@ void main() async {
   // 파이어베이스 초기화
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  // AD 초기화
+  await MobileAds.instance.initialize();
 
   channel = const AndroidNotificationChannel(
     'high_importance_channel', // id

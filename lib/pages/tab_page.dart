@@ -3,8 +3,10 @@
 // 예외처리: ✅
 // 중복 서버 송수신 방지: ✅
 
+import 'dart:io';
 import 'dart:math';
 
+import 'package:cooing_front/main.dart';
 import 'package:cooing_front/model/response/answer.dart';
 import 'package:cooing_front/model/response/question.dart';
 import 'package:cooing_front/model/response/user.dart';
@@ -21,6 +23,7 @@ import 'package:cooing_front/pages/question_page.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:cooing_front/model/response/response.dart' as response;
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class TabPage extends StatefulWidget {
@@ -58,6 +61,16 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
     ),
   ];
 
+  BannerAd banner = BannerAd(
+    listener: BannerAdListener(
+      onAdFailedToLoad: (Ad ad, LoadAdError error) {},
+      onAdLoaded: (_) {},
+    ),
+    size: AdSize.banner,
+    adUnitId: UNIT_ID_BANNER[Platform.isIOS ? 'ios' : 'android']!,
+    request: AdRequest(),
+  )..load();
+
   @override
   void initState() {
     super.initState();
@@ -74,7 +87,7 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       DynamicLink.scaffoldContext = scaffoldContext;
-      DynamicLink().setup(uid).then((value){
+      DynamicLink().setup(uid).then((value) {
         setState(() {
           isDynamicLoading = false;
         });
@@ -85,6 +98,7 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
   @override
   void dispose() {
     _tabController.dispose();
+    banner.dispose();
     super.dispose();
   }
 
@@ -144,28 +158,40 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
                   ],
                 ),
               ),
-              body: TabBarView(controller: _tabController, children: [
-                QuestionPage(
-                  user: user!,
-                  currentQuestion: currentQuestion,
-                  feed: feeds,
-                ),
-                FeedPage(
-                  user: user!,
-                  feed: feeds,
-                  bonusQuestionId: bonusQuestionId,
-                  hints: hints,
-                ),
-                MessagePage(
-                    user: user!,
-                    answers: answers,
-                    hint: hints,
-                    cache: openedIds),
-                SettingScreen(
-                  user: user!,
-                  currentQuestion: currentQuestion,
-                ),
-              ]),
+              body: Column(
+                children: [
+                  Expanded(
+                      child: TabBarView(controller: _tabController, children: [
+                    QuestionPage(
+                      user: user!,
+                      currentQuestion: currentQuestion,
+                      feed: feeds,
+                    ),
+                    FeedPage(
+                      user: user!,
+                      feed: feeds,
+                      bonusQuestionId: bonusQuestionId,
+                      hints: hints,
+                    ),
+                    MessagePage(
+                        user: user!,
+                        answers: answers,
+                        hint: hints,
+                        cache: openedIds),
+                    SettingScreen(
+                      user: user!,
+                      currentQuestion: currentQuestion,
+                    ),
+                  ])),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: AdWidget(
+                      ad: banner,
+                    ),
+                  )
+                ],
+              ),
             ));
   }
 
@@ -192,9 +218,17 @@ class TabPageState extends State<TabPage> with TickerProviderStateMixin {
       feeds = await response.Response.getQuestionsWithLimit(10);
 
       if (feeds.isNotEmpty) {
-        Question? bonusQuestion = feeds[Random().nextInt(feeds.length)];
-        if (bonusQuestion != null) {
-          bonusQuestionId = bonusQuestion.id;
+        List<String> unansweredFeeds = [];
+        for(var question in feeds){
+          if(question!=null){
+            if(user!.answeredQuestions.contains(question.id) == false){
+              unansweredFeeds.add(question.id);
+            }
+          }
+        }
+
+        if(unansweredFeeds.isNotEmpty){
+          bonusQuestionId = unansweredFeeds[Random().nextInt(unansweredFeeds.length)];
         }
       }
 

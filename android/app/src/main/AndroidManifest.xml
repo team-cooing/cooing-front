@@ -28,6 +28,9 @@
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-7052384650666721~1915787401"/>
 
         <activity
             android:name="com.kakao.sdk.flutter.AuthCodeCustomTabsActivity"
